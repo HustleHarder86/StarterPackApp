@@ -1,3 +1,4 @@
+
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background-color: #f8f9fa;
@@ -68,10 +69,4 @@ body {
   font-size: 0.85rem;
   color: #777;
   margin-top: 0.5rem;
-}
-.footer {
-  text-align: center;
-  padding: 1rem;
-  font-size: 0.9rem;
-  color: #666;
 }
