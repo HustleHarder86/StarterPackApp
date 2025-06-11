@@ -1,24 +1,63 @@
 body {
   font-family: Arial, sans-serif;
   margin: 0;
-  padding: 20px;
+  padding: 0;
   background: #f4f4f4;
 }
+
+nav {
+  background-color: #222;
+  padding: 10px;
+  text-align: center;
+}
+
+nav a {
+  color: white;
+  margin: 0 15px;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+nav a:hover {
+  text-decoration: underline;
+}
+
 header {
   text-align: center;
   padding: 20px;
 }
+
+.hero {
+  padding: 100px 20px;
+  text-align: center;
+  background: #006d77;
+  color: white;
+}
+
+.cta-button {
+  margin-top: 20px;
+  display: inline-block;
+  padding: 12px 24px;
+  background-color: #83c5be;
+  color: black;
+  font-weight: bold;
+  text-decoration: none;
+  border-radius: 8px;
+}
+
 form {
   display: flex;
   flex-direction: column;
   max-width: 400px;
   margin: 0 auto 30px auto;
 }
+
 input, button {
   margin: 10px 0;
   padding: 10px;
   font-size: 1rem;
 }
+
 #results {
   max-width: 600px;
   margin: auto;
