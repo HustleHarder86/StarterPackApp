@@ -1,0 +1,20 @@
+[
+  {
+    "address": "123 Oak Street, Toronto",
+    "city": "Toronto",
+    "price": 750000,
+    "rent": 3200,
+    "roi": 5.8,
+    "propertyType": "Duplex",
+    "link": "https://example.com/listing/1"
+  },
+  {
+    "address": "456 Maple Ave, Mississauga",
+    "city": "Mississauga",
+    "price": 650000,
+    "rent": 2900,
+    "roi": 6.2,
+    "propertyType": "Single Family",
+    "link": "https://example.com/listing/2"
+  }
+]

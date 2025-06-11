@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Real Estate ROI Finder</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <h1>Find Cash-Flowing Real Estate Deals</h1>
+    <p>Enter your criteria to see properties that might be ROI positive</p>
+  </header>
+  <main>
+    <form id="search-form">
+      <input type="text" name="city" placeholder="City or Postal Code" required />
+      <input type="number" name="maxPrice" placeholder="Max Price" required />
+      <input type="text" name="propertyType" placeholder="Property Type (e.g., Duplex)" required />
+      <input type="number" step="0.1" name="minROI" placeholder="Min ROI %" required />
+      <button type="submit">Search</button>
+    </form>
+    <section id="results"></section>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>
