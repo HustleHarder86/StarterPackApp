@@ -5,81 +5,33 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>InvestorProps - Real Estate SaaS</title>
   <link rel="stylesheet" href="styles.css" />
-  <script src="https://unpkg.com/framer-motion/dist/framer-motion.umd.js"></script>
 </head>
 <body>
   <nav class="nav-bar">
     <div class="nav-logo">InvestorProps</div>
     <div><a href="index.html" class="nav-link">Launch ROI Finder</a></div>
   </nav>
-<section class='benefit-bar'><p>✨ Investors want ROI. Realtors want speed. We deliver both. 🚀</p></section>
 
   <section class="hero-section">
     <div class="hero-content">
       <h1>Real estate investing <span class="highlight">made simple</span></h1>
       <p>Discover cash-flow positive properties in seconds. Empower your clients with investment-ready listings, instantly.</p>
-      <div class="hero-buttons">
-        <a href="index.html" class="btn-primary">Get Started Free</a>
-        <a href="#" class="btn-secondary">Watch Demo</a>
-      </div>
+      <a href="#" class="btn-primary" id="show-lead-form">Get Started Free</a>
+      <form class="hero-lead-form" id="lead-form" style="display: none;" method="POST">
+        <input type="text" name="name" placeholder="Your Name" required />
+        <input type="email" name="email" placeholder="Your Email" required />
+        <button type="submit">Send My Free ROI Report</button>
+        <p class="form-note">No spam. Just one powerful sample report.</p>
+      </form>
     </div>
   </section>
 
-  <section class="trusted-section">
-    <h2>Trusted by top real estate professionals</h2>
-    <div class="trusted-logos">
-      <img src="assets/remax.png" alt="REMAX" />
-      <img src="assets/royal_lepage.png" alt="Royal LePage" />
-      <img src="assets/century21.png" alt="Century 21" />
-      <img src="assets/exp_realty.png" alt="EXP Realty" />
-    </div>
-  </section>
-
-  <section class="features-section">
-    <h2>Why Realtors Love Us</h2>
-    <div class="features-grid">
-      <div class="feature-card"><h3>Saves Time</h3><p>Instantly identify investment-ready listings without sifting through hundreds of properties.</p></div>
-      <div class="feature-card"><h3>Client-Ready Reports</h3><p>Generate beautiful, branded reports that investors love and trust.</p></div>
-      <div class="feature-card"><h3>Boosts Credibility</h3><p>Stand out with data-backed insights and attract more investor clients.</p></div>
-      <div class="feature-card"><h3>Easy to Use</h3><p>No training needed. Just input your criteria and get results in seconds.</p></div>
-    </div>
-  </section>
-
-  <section class="pricing-section">
-    <h2>Simple Pricing</h2>
-    <div class="pricing-grid">
-      <div class="pricing-card"><h3>Starter</h3><p>$49/month</p><ul><li>✓ 100 reports/month</li><li>✓ Basic property filters</li><li>✓ Email support</li></ul></div>
-      <div class="pricing-card highlight-card"><h3>Pro</h3><p>$99/month</p><ul><li>✓ 250 reports/month</li><li>✓ Advanced filters & analytics</li><li>✓ Priority support</li></ul></div>
-      <div class="pricing-card"><h3>Enterprise</h3><p>Custom</p><ul><li>✓ Unlimited reports</li><li>✓ White-labeling</li><li>✓ Dedicated success manager</li></ul></div>
-    </div>
-  </section>
-
-  <section class="testimonials-section">
-    <h2>What Realtors Are Saying</h2>
-    <div class="testimonial">
-      <p>"Finally, a tool that speaks the investor’s language. It’s become my listing presentation secret weapon."</p>
-      <strong>— Sarah K., Toronto Realtor</strong>
-    </div>
-    <div class="testimonial">
-      <p>"My clients love how clear and data-driven the reports are. It's made the buying process much smoother."</p>
-      <strong>— Jason L., Mississauga Agent</strong>
-    </div>
-  </section>
-
-  
-  <section class="lead-capture-section">
-    <h2>Get a Sample ROI Report</h2>
-    <p>See exactly what your clients will receive. Enter your email below and get a free report in your inbox.</p>
-    <form class="lead-form" method="POST">
-      <input type="text" name="name" placeholder="Your Name" required />
-      <input type="email" name="email" placeholder="Your Email" required />
-      <button type="submit">Send My Free Report</button>
-    </form>
-    <p class="small-print">No spam. Just one powerful sample.</p>
-  </section>
-
-<footer class="footer">
-    &copy; 2025 InvestorProps. All rights reserved.
-  </footer>
+  <script>
+    document.getElementById('show-lead-form').addEventListener('click', function (e) {
+      e.preventDefault();
+      document.getElementById('lead-form').style.display = 'flex';
+      this.style.display = 'none';
+    });
+  </script>
 </body>
 </html>
