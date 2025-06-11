@@ -13,3 +13,9 @@ A simple web app to filter dummy real estate listings based on ROI and user inpu
 - Users enter search criteria
 - Dummy listings are filtered based on ROI, price, city, and type
 - Results are shown with links to listings
+- Click any listing to open it in a new tab.
+
+## Development
+
+Edit the HTML, CSS, and JavaScript files then push updates to your repository. Vercel will redeploy automatically.
+

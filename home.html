@@ -77,6 +77,11 @@
       document.getElementById('lead-form').style.display = 'flex';
       this.style.display = 'none';
     });
+    document.getElementById('lead-form').addEventListener('submit', function (e) {
+      e.preventDefault();
+      alert('Thanks! We will be in touch soon.');
+      this.reset();
+    });
   </script>
 </body>
 </html>
