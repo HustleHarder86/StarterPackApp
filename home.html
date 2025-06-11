@@ -27,6 +27,46 @@
   </section>
 
   <script>
+    <script>
+  document.getElementById('lead-form').addEventListener('submit', async function (e) {
+    e.preventDefault();
+
+    const name = this.name.value;
+    const email = this.email.value;
+
+    const apiKey = 'pathdP9cKwhfMZA8i.0adadd2f16006e2e3a665663395305ef246574e33e07de3307c82c5ca684ebf8'; // Your API key
+    const baseId = 'appulB9SOqm16pklS';
+    const tableName = 'Leads';
+
+    try {
+      const res = await fetch(`https://api.airtable.com/v0/${baseId}/${tableName}`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${apiKey}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          fields: {
+            Name: name,
+            Email: email,
+            "Submitted At": new Date().toISOString()
+          }
+        })
+      });
+
+      if (res.ok) {
+        alert('Form submitted to Airtable!');
+        this.reset();
+      } else {
+        const err = await res.json();
+        alert('Error: ' + JSON.stringify(err));
+      }
+    } catch (err) {
+      alert('Network Error: ' + err.message);
+    }
+  });
+</script>
+
     document.getElementById('lead-form').addEventListener('submit', async function (e) {
       e.preventDefault();
 
