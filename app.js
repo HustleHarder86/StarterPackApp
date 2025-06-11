@@ -17,14 +17,14 @@ document.getElementById('search-form').addEventListener('submit', async function
   );
 
   const results = document.getElementById('results');
-  results.innerHTML = filtered.map(l => \`
+  results.innerHTML = filtered.map(l => `
     <div>
-      <h3>\${l.address}</h3>
-      <p>Price: \$\${l.price}</p>
-      <p>Rent Estimate: \$\${l.rent}/month</p>
-      <p>ROI: \${l.roi}%</p>
-      <a href="\${l.link}" target="_blank">View Listing</a>
+      <h3>${l.address}</h3>
+      <p>Price: $${l.price}</p>
+      <p>Rent Estimate: $${l.rent}/month</p>
+      <p>ROI: ${l.roi}%</p>
+      <a href="${l.link}" target="_blank">View Listing</a>
     </div>
     <hr />
-  \`).join('') || "<p>No results found.</p>";
+  `).join('') || "<p>No results found.</p>";
 });
