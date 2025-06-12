@@ -77,10 +77,26 @@
       document.getElementById('lead-form').style.display = 'flex';
       this.style.display = 'none';
     });
-    document.getElementById('lead-form').addEventListener('submit', function (e) {
+    document.getElementById('lead-form').addEventListener('submit', async function(e) {
       e.preventDefault();
-      alert('Thanks! We will be in touch soon.');
-      this.reset();
+      const name = this.name.value;
+      const email = this.email.value;
+      try {
+        const response = await fetch('/api/submit-lead', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email })
+        });
+        if (response.ok) {
+          alert('Thanks! Your sample report is on its way.');
+          this.reset();
+        } else {
+          alert('Oops! Something went wrong.');
+        }
+      } catch (err) {
+        console.error(err);
+        alert('Network error, please try again later.');
+      }
     });
   </script>
 </body>
