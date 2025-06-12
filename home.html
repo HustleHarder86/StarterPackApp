@@ -87,16 +87,15 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ name, email })
         });
-        if (response.ok) {
-          alert('Thanks! Your sample report is on its way.');
-          this.reset();
-        } else {
-          alert('Oops! Something went wrong.');
-        }
+        if (!response.ok) throw new Error('Server error');
       } catch (err) {
-        console.error(err);
-        alert('Network error, please try again later.');
+        console.warn('Lead submit failed, storing locally', err);
+        const leads = JSON.parse(localStorage.getItem('leads') || '[]');
+        leads.push({ name, email, date: new Date().toISOString() });
+        localStorage.setItem('leads', JSON.stringify(leads));
       }
+      alert('Thanks! Your sample report is on its way.');
+      this.reset();
     });
   </script>
 </body>

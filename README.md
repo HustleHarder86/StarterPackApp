@@ -19,3 +19,7 @@ A simple web app to filter dummy real estate listings based on ROI and user inpu
 
 Edit the HTML, CSS, and JavaScript files then push updates to your repository. Vercel will redeploy automatically.
 
+### Lead Form
+
+The lead capture form on `home.html` posts to `/api/submit-lead`. If that endpoint isn't available, submissions are stored in `localStorage` so the demo still works offline.
+
