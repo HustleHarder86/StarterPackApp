@@ -11,6 +11,7 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Missing name or email' });
   }
 
+  // Airtable credentials are provided via environment variables in Vercel
   const airtableApiKey = process.env.AIRTABLE_API_KEY;
   const baseId = process.env.AIRTABLE_BASE_ID || 'appulB9SOqm16pklS';
   const tableName = process.env.AIRTABLE_TABLE_NAME || 'Leads';
