@@ -14,7 +14,7 @@ export default async function handler(req, res) {
   // Airtable credentials are provided via environment variables in Vercel
   const airtableApiKey = process.env.AIRTABLE_API_KEY;
   const baseId = process.env.AIRTABLE_BASE_ID || 'appulB9SOqm16pklS';
-  const tableName = process.env.AIRTABLE_TABLE_NAME || 'Leads';
+  const tableName = 'Contact Us Requests'; // Different table for contact form
 
   try {
     const response = await fetch(`https://api.airtable.com/v0/${baseId}/${tableName}`, {
@@ -27,8 +27,7 @@ export default async function handler(req, res) {
         fields: {
           Name: name,
           Email: email,
-          Message: message,
-          'Submitted At': new Date().toISOString()
+          Message: message
         }
       })
     });
