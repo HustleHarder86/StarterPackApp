@@ -10,13 +10,13 @@ A simple web app to filter dummy real estate listings based on ROI and user inpu
 
 ### Environment Variables
 
-Create the following environment variables in your Vercel project so the lead
-capture form can post new records to Airtable:
+Create the following environment variables in your Vercel project so the lead capture form and contact form can post new records to Airtable:
 
 ```
 AIRTABLE_API_KEY      # Your Airtable API key
 AIRTABLE_BASE_ID      # The base ID that contains the Leads table
 AIRTABLE_TABLE_NAME   # The table to store new leads (e.g. "Leads")
+AIRTABLE_CONTACT_TABLE_NAME # Table for Contact Us submissions (e.g. "Contact Us Requests")
 ```
 
 ## How It Works

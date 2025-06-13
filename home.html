@@ -13,7 +13,7 @@
       <li><a href="home.html" class="nav-link">Home</a></li>
       <li><a href="#features" class="nav-link">Features</a></li>
       <li><a href="#pricing" class="nav-link">Pricing</a></li>
-      <li><a href="#footer" class="nav-link">Contact</a></li>
+      <li><a href="#contact" class="nav-link">Contact</a></li>
       <li><a href="index.html" class="nav-link btn-primary">Launch ROI Finder</a></li>
     </ul>
   </nav>
@@ -72,6 +72,15 @@
       <strong>— Jason L., Mississauga Agent</strong>
     </div>
   </section>
+  <section class="contact-section" id="contact">
+    <h2>Contact Us</h2>
+    <form id="contact-form" class="contact-form">
+      <input type="text" name="name" placeholder="Your Name" required />
+      <input type="email" name="email" placeholder="Your Email" required />
+      <textarea name="message" placeholder="Your Message" required></textarea>
+      <button type="submit">Send</button>
+    </form>
+  </section>
 
   <footer class="footer" id="footer">
     &copy; 2025 InvestorProps. All rights reserved.
@@ -100,6 +109,23 @@
         alert("Oops! Something went wrong.");
       }
     });
+      document.getElementById("contact-form").addEventListener("submit", async function(e) {
+        e.preventDefault();
+        const name = this.name.value;
+        const email = this.email.value;
+        const message = this.message.value;
+        const response = await fetch('/api/submit-contact', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, message })
+        });
+        if (response.ok) {
+          alert("Thanks for reaching out! We'll be in touch.");
+          this.reset();
+        } else {
+          alert("Oops! Something went wrong.");
+        }
+      });
   </script>
 </body>
 </html>
