@@ -119,10 +119,38 @@ body {
 .highlight-card {
   border: 2px solid #16a34a;
 }
-.testimonial {
+.testimonial-carousel {
+  position: relative;
   max-width: 600px;
   margin: 2rem auto;
+}
+
+.testimonial-slide {
+  display: none;
   font-style: italic;
+}
+
+.testimonial-slide.active {
+  display: block;
+}
+
+.carousel-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  font-size: 2rem;
+  color: #16a34a;
+  cursor: pointer;
+}
+
+.carousel-btn.prev {
+  left: -40px;
+}
+
+.carousel-btn.next {
+  right: -40px;
 }
 .footer {
   background-color: #1f2937;

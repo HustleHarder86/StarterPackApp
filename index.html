@@ -63,14 +63,34 @@
 
   <section class="testimonials-section">
     <h2>What Realtors Are Saying</h2>
-    <div class="testimonial">
-      <p>"Finally, a tool that speaks the investor’s language. It’s become my listing presentation secret weapon."</p>
-      <strong>— Sarah K., Toronto Realtor</strong>
+    <div class="testimonial-carousel">
+      <div class="testimonial-slide">
+        <p>"Finally, a tool that speaks the investor’s language. It’s become my listing presentation secret weapon."</p>
+        <strong>— Sarah K., Realtor, Maple Leaf Realty</strong>
+      </div>
+      <div class="testimonial-slide">
+        <p>"My clients love how clear and data-driven the reports are. It's made the buying process much smoother."</p>
+        <strong>— Jason L., Real Estate Agent, Urban Nest Realty</strong>
+      </div>
+      <div class="testimonial-slide">
+        <p>"InvestorProps helped me land more investor clients in just a few weeks."</p>
+        <strong>— Reema S., Real Estate Agent, Dream Realty</strong>
+      </div>
+      <div class="testimonial-slide">
+        <p>"The ROI reports are so professional that I feel like a top-tier agency."</p>
+        <strong>— Michael B., Broker, Summit Property Group</strong>
+      </div>
+      <div class="testimonial-slide">
+        <p>"This platform saves me countless hours every month. It’s a game-changer."</p>
+        <strong>— Aisha N., Realtor, Crescent City Realty</strong>
+      </div>
+      <div class="testimonial-slide">
+        <p>"I’ve closed more deals since using InvestorProps. The data is incredibly convincing."</p>
+        <strong>— Daniel C., Real Estate Agent, Riverfront Estates</strong>
+      </div>
     </div>
-    <div class="testimonial">
-      <p>"My clients love how clear and data-driven the reports are. It's made the buying process much smoother."</p>
-      <strong>— Jason L., Mississauga Agent</strong>
-    </div>
+    <button class="carousel-btn prev">&#10094;</button>
+    <button class="carousel-btn next">&#10095;</button>
   </section>
 
   <footer class="footer" id="footer">
@@ -84,7 +104,7 @@
       this.style.display = 'none';
     });
 
-    document.getElementById('lead-form').addEventListener('submit', async function(e) {
+  document.getElementById('lead-form').addEventListener('submit', async function(e) {
       e.preventDefault();
       const name = this.name.value;
       const email = this.email.value;
@@ -98,8 +118,36 @@
         this.reset();
       } else {
         alert("Oops! Something went wrong.");
-      }
+    }
+  });
+
+  const slides = document.querySelectorAll('.testimonial-slide');
+  const prevBtn = document.querySelector('.carousel-btn.prev');
+  const nextBtn = document.querySelector('.carousel-btn.next');
+  let currentSlide = 0;
+
+  function showSlide(n) {
+    slides.forEach((slide, i) => {
+      slide.style.display = i === n ? 'block' : 'none';
     });
+  }
+
+  prevBtn.addEventListener('click', () => {
+    currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+    showSlide(currentSlide);
+  });
+
+  nextBtn.addEventListener('click', () => {
+    currentSlide = (currentSlide + 1) % slides.length;
+    showSlide(currentSlide);
+  });
+
+  setInterval(() => {
+    currentSlide = (currentSlide + 1) % slides.length;
+    showSlide(currentSlide);
+  }, 5000);
+
+  showSlide(currentSlide);
   </script>
 </body>
 </html>
