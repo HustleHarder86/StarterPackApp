@@ -1,15 +1,28 @@
 // File: api/submit-contact.js (for Vercel)
 
 export default async function handler(req, res) {
+  // Add CORS headers
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { name, email, message } = req.body;
+  try {
+    console.log('Request body:', req.body);
+    
+    const { name, email, message } = req.body;
 
-  if (!name || !email || !message) {
-    return res.status(400).json({ error: 'Missing required fields: name, email, or message' });
-  }
+    if (!name || !email || !message) {
+      console.log('Missing fields:', { name: !!name, email: !!email, message: !!message });
+      return res.status(400).json({ error: 'Missing required fields: name, email, or message' });
+    }
 
   // Airtable credentials from environment variables
   const airtableApiKey = process.env.AIRTABLE_API_KEY;
