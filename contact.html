@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Contact Us - InvestorProps</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <nav class="nav-bar">
+    <div class="nav-logo">InvestorProps</div>
+    <ul class="nav-links">
+      <li><a href="home.html" class="nav-link">Home</a></li>
+      <li><a href="home.html#features" class="nav-link">Features</a></li>
+      <li><a href="home.html#pricing" class="nav-link">Pricing</a></li>
+      <li><a href="contact.html" class="nav-link">Contact</a></li>
+      <li><a href="index.html" class="nav-link btn-primary">Launch ROI Finder</a></li>
+    </ul>
+  </nav>
+
+  <!-- Contact Hero Section -->
+  <section class="hero-section">
+    <div class="hero-content">
+      <h1>Get In <span class="highlight">Touch</span></h1>
+      <p>Have questions about InvestorProps? We'd love to hear from you. Send us a message and we'll respond as soon as possible.</p>
+    </div>
+  </section>
+
+  <!-- Contact Form Section -->
+  <section class="contact-section">
+    <div class="contact-content">
+      <h2>Send Us a Message</h2>
+      <p>Whether you have questions about our features, pricing, or need technical support, our team is here to help.</p>
+      
+      <form class="contact-form" id="contact-form">
+        <div class="form-group">
+          <input type="text" name="name" placeholder="Your Name" required />
+        </div>
+        <div class="form-group">
+          <input type="email" name="email" placeholder="Your Email" required />
+        </div>
+        <div class="form-group">
+          <textarea name="message" placeholder="Your Message" rows="6" required></textarea>
+        </div>
+        <button type="submit" class="btn-primary">Send Message</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- Contact Info Section -->
+  <section class="contact-info-section">
+    <div class="contact-info-content">
+      <h2>Other Ways to Reach Us</h2>
+      <div class="contact-info-grid">
+        <div class="contact-info-card">
+          <h3>📧 Email Support</h3>
+          <p>For general inquiries and support</p>
+          <a href="mailto:support@investorprops.com">support@investorprops.com</a>
+        </div>
+        <div class="contact-info-card">
+          <h3>💼 Sales Team</h3>
+          <p>Ready to get started? Talk to our sales team</p>
+          <a href="mailto:sales@investorprops.com">sales@investorprops.com</a>
+        </div>
+        <div class="contact-info-card">
+          <h3>⏰ Response Time</h3>
+          <p>We typically respond within</p>
+          <strong>24 hours</strong>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    &copy; 2025 InvestorProps. All rights reserved.
+  </footer>
+
+  <script>
+    // Contact form functionality
+    document.getElementById('contact-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const name = this.name.value;
+      const email = this.email.value;
+      const message = this.message.value;
+      
+      const response = await fetch('/api/submit-contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, message })
+      });
+      
+      if (response.ok) {
+        alert("Thanks for your message! We'll get back to you soon.");
+        this.reset();
+      } else {
+        alert("Oops! Something went wrong. Please try again.");
+      }
+    });
+  </script>
+</body>
+</html>
