@@ -61,11 +61,15 @@ body {
   margin: 2rem auto 0 auto;
 }
 .hero-lead-form input,
+.hero-lead-form textarea,
 .hero-lead-form button {
   padding: 12px;
   font-size: 1rem;
   border-radius: 8px;
   border: 1px solid #ccc;
+}
+.hero-lead-form textarea {
+  min-height: 120px;
 }
 .hero-lead-form button {
   background-color: #16a34a;
