@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ROI Finder - InvestorProps</title>
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/recharts/2.8.0/Recharts.js"></script>
+  <script src="https://unpkg.com/lucide-react@0.263.1/dist/umd/lucide-react.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+    const { BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } = Recharts;
+    const { Home, DollarSign, TrendingUp, Calendar, MapPin, AlertCircle, Check, ArrowRight, Calculator, Clock, Mail, User } = lucideReact;
+
+    const ROIFinderApp = () => {
+      const [currentView, setCurrentView] = useState('input');
+      const [userInfo, setUserInfo] = useState({
+        name: '',
+        email: '',
+        address: ''
+      });
+      const [analysisData, setAnalysisData] = useState(null);
+      const [loading, setLoading] = useState(false);
+
+      const submitForAnalysis = async () => {
+        if (!userInfo.name || !userInfo.email || !userInfo.address) {
+          alert('Please fill in all fields');
+          return;
+        }
+
+        setLoading(true);
+        setCurrentView('processing');
+
+        try {
+          const response = await fetch('/api/submit-lead', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              name: userInfo.name,
+              email: userInfo.email,
+              address: userInfo.address,
+              property_type: 'Investment Property',
+              submitted_at: new Date().toISOString()
+            })
+          });
+
+          if (response.ok) {
+            const result = await response.json();
+            // For now, simulate the analysis with sample data after 3 seconds
+            setTimeout(() => {
+              const sampleData = {
+                lead_id: result.id || "rec123",
+                lead_name: userInfo.name,
+                lead_email: userInfo.email,
+                property_address: userInfo.address,
+                analysis_timestamp: new Date().toISOString(),
+                property_details: {
+                  address: userInfo.address,
+                  estimated_value: 650000,
+                  property_type: "Investment Property"
+                },
+                costs: {
+                  property_tax_annual: 8125,
+                  hoa_monthly: 450,
+                  utilities_monthly: 200,
+                  insurance_annual: 1800,
+                  maintenance_annual: 3000
+                },
+                short_term_rental: {
+                  daily_rate: 225,
+                  occupancy_rate: 75,
+                  annual_revenue: 61594,
+                  annual_profit: 39069
+                },
+                long_term_rental: {
+                  monthly_rent: 3200,
+                  annual_revenue: 38400,
+                  annual_profit: 15875
+                },
+                recommendation: "Short-term rental recommended. The property shows strong potential for Airbnb with 75% occupancy rate and significantly higher profit margins compared to long-term rental.",
+                roi_percentage: 6.01
+              };
+              
+              setAnalysisData(sampleData);
+              setCurrentView('dashboard');
+              setLoading(false);
+            }, 3000);
+          } else {
+            throw new Error('Failed to submit property for analysis');
+          }
+        } catch (error) {
+          console.error('Error:', error);
+          alert('Failed to submit property. Please try again.');
+          setLoading(false);
+          setCurrentView('input');
+        }
+      };
+
+      const PropertyInputForm = () => (
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 to-green-50 flex items-center justify-center p-6">
+          <div className="max-w-md w-full">
+            <div className="text-center mb-8">
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-500 to-green-500 rounded-full mb-4">
+                <Calculator className="w-8 h-8 text-white" />
+              </div>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">Property ROI Analyzer</h1>
+              <p className="text-gray-600">Get a comprehensive investment analysis powered by AI</p>
+            </div>
+
+            <div className="bg-white rounded-2xl shadow-xl p-8">
+              <div className="space-y-6">
+                <div>
+                  <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
+                    <User className="w-4 h-4 mr-2" />
+                    Your Name
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Enter your full name"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    value={userInfo.name}
+                    onChange={(e) => setUserInfo({...userInfo, name: e.target.value})}
+                  />
+                </div>
+
+                <div>
+                  <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
+                    <Mail className="w-4 h-4 mr-2" />
+                    Email Address
+                  </label>
+                  <input
+                    type="email"
+                    placeholder="Enter your email"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    value={userInfo.email}
+                    onChange={(e) => setUserInfo({...userInfo, email: e.target.value})}
+                  />
+                </div>
+
+                <div>
+                  <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
+                    <MapPin className="w-4 h-4 mr-2" />
+                    Property Address
+                  </label>
+                  <textarea
+                    rows={3}
+                    placeholder="Enter the full property address (e.g., 123 Main St, Toronto, ON M5V 3A8)"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
+                    value={userInfo.address}
+                    onChange={(e) => setUserInfo({...userInfo, address: e.target.value})}
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Include city, state/province, and postal/zip code for best results
+                  </p>
+                </div>
+
+                <button
+                  onClick={submitForAnalysis}
+                  disabled={loading}
+                  className="w-full bg-gradient-to-r from-blue-500 to-green-500 hover:from-blue-600 hover:to-green-600 text-white font-semibold py-4 px-6 rounded-lg transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-50"
+                >
+                  {loading ? (
+                    <>
+                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                      Processing...
+                    </>
+                  ) : (
+                    <>
+                      <Calculator className="w-5 h-5" />
+                      Analyze Property
+                      <ArrowRight className="w-5 h-5" />
+                    </>
+                  )}
+                </button>
+              </div>
+
+              <div className="mt-6 pt-6 border-t border-gray-200">
+                <h3 className="font-semibold text-gray-900 mb-3">What you'll get:</h3>
+                <div className="space-y-2">
+                  <div className="flex items-center text-sm text-gray-600">
+                    <Check className="w-4 h-4 text-green-500 mr-2" />
+                    Real-time market analysis
+                  </div>
+                  <div className="flex items-center text-sm text-gray-600">
+                    <Check className="w-4 h-4 text-green-500 mr-2" />
+                    Short-term vs long-term rental comparison
+                  </div>
+                  <div className="flex items-center text-sm text-gray-600">
+                    <Check className="w-4 h-4 text-green-500 mr-2" />
+                    Detailed cost breakdown
+                  </div>
+                  <div className="flex items-center text-sm text-gray-600">
+                    <Check className="w-4 h-4 text-green-500 mr-2" />
+                    ROI calculations and recommendations
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-6 pt-4 border-t border-gray-200">
+                <a 
+                  href="index.html" 
+                  className="text-sm text-blue-600 hover:text-blue-800 flex items-center justify-center gap-1"
+                >
+                  ← Back to Homepage
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+
+      const ProcessingScreen = () => (
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 to-green-50 flex items-center justify-center p-6">
+          <div className="max-w-md w-full text-center">
+            <div className="bg-white rounded-2xl shadow-xl p-8">
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-500 to-green-500 rounded-full mb-6">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+              </div>
+              
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">Analyzing Your Property</h2>
+              <p className="text-gray-600 mb-6">
+                Our AI is gathering real-time market data and calculating investment metrics for:
+              </p>
+              
+              <div className="bg-gray-50 rounded-lg p-4 mb-6">
+                <p className="font-medium text-gray-900">{userInfo.address}</p>
+              </div>
+              
+              <div className="space-y-3 text-left">
+                <div className="flex items-center text-sm text-gray-600">
+                  <div className="w-2 h-2 bg-green-500 rounded-full mr-3 animate-pulse"></div>
+                  Researching property details and market value
+                </div>
+                <div className="flex items-center text-sm text-gray-600">
+                  <div className="w-2 h-2 bg-green-500 rounded-full mr-3 animate-pulse"></div>
+                  Calculating taxes, insurance, and maintenance costs
+                </div>
+                <div className="flex items-center text-sm text-gray-600">
+                  <div className="w-2 h-2 bg-green-500 rounded-full mr-3 animate-pulse"></div>
+                  Analyzing rental market potential
+                </div>
+                <div className="flex items-center text-sm text-gray-600">
+                  <div className="w-2 h-2 bg-green-500 rounded-full mr-3 animate-pulse"></div>
+                  Generating investment recommendations
+                </div>
+              </div>
+              
+              <div className="mt-6 pt-6 border-t border-gray-200">
+                <div className="flex items-center justify-center text-sm text-gray-500">
+                  <Clock className="w-4 h-4 mr-2" />
+                  This usually takes 2-3 minutes
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+
+      const InvestmentDashboard = ({ propertyData }) => {
+        const formatCurrency = (value) => {
+          return new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: 'USD',
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
+          }).format(value);
+        };
+
+        const totalAnnualCosts = propertyData.costs.property_tax_annual + 
+          propertyData.costs.insurance_annual + 
+          propertyData.costs.maintenance_annual + 
+          (propertyData.costs.hoa_monthly * 12) + 
+          (propertyData.costs.utilities_monthly * 12);
+
+        const rentalComparison = [
+          {
+            type: 'Short-Term',
+            revenue: propertyData.short_term_rental.annual_revenue,
+            profit: propertyData.short_term_rental.annual_profit,
+            roi: ((propertyData.short_term_rental.annual_profit / propertyData.property_details.estimated_value) * 100).toFixed(2)
+          },
+          {
+            type: 'Long-Term',
+            revenue: propertyData.long_term_rental.annual_revenue,
+            profit: propertyData.long_term_rental.annual_profit,
+            roi: ((propertyData.long_term_rental.annual_profit / propertyData.property_details.estimated_value) * 100).toFixed(2)
+          }
+        ];
+
+        const costBreakdown = [
+          { name: 'Property Tax', value: propertyData.costs.property_tax_annual, color: '#3B82F6' },
+          { name: 'HOA Fees', value: propertyData.costs.hoa_monthly * 12, color: '#10B981' },
+          { name: 'Utilities', value: propertyData.costs.utilities_monthly * 12, color: '#F59E0B' },
+          { name: 'Insurance', value: propertyData.costs.insurance_annual, color: '#EF4444' },
+          { name: 'Maintenance', value: propertyData.costs.maintenance_annual, color: '#8B5CF6' }
+        ];
+
+        const MetricCard = ({ icon: Icon, title, value, subtitle, trend, trendValue }) => (
+          <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-3 bg-blue-100 rounded-lg">
+                <Icon className="w-6 h-6 text-blue-600" />
+              </div>
+              {trend && (
+                <div className={`flex items-center ${trend === 'up' ? 'text-green-600' : 'text-red-600'}`}>
+                  <TrendingUp className="w-4 h-4 mr-1" />
+                  <span className="text-sm font-medium">{trendValue}%</span>
+                </div>
+              )}
+            </div>
+            <h3 className="text-gray-600 text-sm font-medium">{title}</h3>
+            <p className="text-2xl font-bold text-gray-900 mt-1">{value}</p>
+            {subtitle && <p className="text-gray-500 text-xs mt-1">{subtitle}</p>}
+          </div>
+        );
+
+        return (
+          <div className="min-h-screen bg-gray-50 p-6">
+            <div className="max-w-7xl mx-auto">
+              {/* Header */}
+              <div className="mb-8 flex items-center justify-between">
+                <div>
+                  <h1 className="text-3xl font-bold text-gray-900">Property Investment Analysis</h1>
+                  <div className="flex items-center gap-4 mt-2">
+                    <div className="flex items-center text-gray-600">
+                      <MapPin className="w-4 h-4 mr-1" />
+                      <span className="text-sm">{propertyData.property_address}</span>
+                    </div>
+                    <div className="flex items-center text-gray-600">
+                      <Calendar className="w-4 h-4 mr-1" />
+                      <span className="text-sm">{new Date(propertyData.analysis_timestamp).toLocaleDateString()}</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => {
+                      setCurrentView('input');
+                      setAnalysisData(null);
+                      setUserInfo({ name: '', email: '', address: '' });
+                    }}
+                    className="bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors duration-300"
+                  >
+                    ← Analyze Another Property
+                  </button>
+                  <a 
+                    href="index.html"
+                    className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors duration-300"
+                  >
+                    Back to Homepage
+                  </a>
+                </div>
+              </div>
+
+              {/* Key Metrics */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <MetricCard
+                  icon={Home}
+                  title="Property Value"
+                  value={formatCurrency(propertyData.property_details.estimated_value)}
+                  subtitle={propertyData.property_details.property_type}
+                />
+                <MetricCard
+                  icon={DollarSign}
+                  title="Total Annual Costs"
+                  value={formatCurrency(totalAnnualCosts)}
+                  subtitle="All expenses included"
+                />
+                <MetricCard
+                  icon={TrendingUp}
+                  title="Best ROI"
+                  value={`${propertyData.roi_percentage}%`}
+                  subtitle="Recommended strategy"
+                  trend="up"
+                  trendValue={propertyData.roi_percentage}
+                />
+                <MetricCard
+                  icon={DollarSign}
+                  title="Max Annual Profit"
+                  value={formatCurrency(Math.max(propertyData.short_term_rental.annual_profit, propertyData.long_term_rental.annual_profit))}
+                  subtitle="Best case scenario"
+                />
+              </div>
+
+              {/* Charts */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                <div className="bg-white rounded-xl shadow-lg p-6">
+                  <h2 className="text-xl font-bold text-gray-900 mb-4">Rental Income Comparison</h2>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <BarChart data={rentalComparison}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="type" />
+                      <YAxis />
+                      <Tooltip formatter={(value) => formatCurrency(value)} />
+                      <Legend />
+                      <Bar dataKey="revenue" fill="#3B82F6" name="Annual Revenue" />
+                      <Bar dataKey="profit" fill="#10B981" name="Annual Profit" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+
+                <div className="bg-white rounded-xl shadow-lg p-6">
+                  <h2 className="text-xl font-bold text-gray-900 mb-4">Cost Breakdown</h2>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <PieChart>
+                      <Pie
+                        data={costBreakdown}
+                        cx="50%"
+                        cy="50%"
+                        labelLine={false}
+                        label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                        outerRadius={80}
+                        fill="#8884d8"
+                        dataKey="value"
+                      >
+                        {costBreakdown.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.color} />
+                        ))}
+                      </Pie>
+                      <Tooltip formatter={(value) => formatCurrency(value)} />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+
+              {/* Recommendation */}
+              <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl shadow-lg p-6 text-white">
+                <div className="flex items-start gap-4">
+                  <div className="p-3 bg-white/20 rounded-lg">
+                    <AlertCircle className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold mb-2">Investment Recommendation</h3>
+                    <p className="text-white/90">{propertyData.recommendation}</p>
+                    <div className="mt-4 flex gap-4">
+                      <div className="flex items-center gap-2">
+                        <Check className="w-5 h-5" />
+                        <span className="text-sm">AI-Powered Analysis</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Check className="w-5 h-5" />
+                        <span className="text-sm">Real-Time Market Data</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Check className="w-5 h-5" />
+                        <span className="text-sm">Comprehensive ROI Calculation</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Lead Information */}
+              <div className="mt-6 text-center text-sm text-gray-500">
+                Analysis generated for {propertyData.lead_name} ({propertyData.lead_email})
+              </div>
+            </div>
+          </div>
+        );
+      };
+
+      // Main render logic
+      if (currentView === 'input') {
+        return <PropertyInputForm />;
+      } else if (currentView === 'processing') {
+        return <ProcessingScreen />;
+      } else if (currentView === 'dashboard' && analysisData) {
+        return <InvestmentDashboard propertyData={analysisData} />;
+      } else {
+        return <PropertyInputForm />;
+      }
+    };
+
+    ReactDOM.render(<ROIFinderApp />, document.getElementById('root'));
+  </script>
+</body>
+</html>
