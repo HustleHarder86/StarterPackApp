@@ -16,8 +16,12 @@ capture form can post new records to Airtable:
 ```
 AIRTABLE_API_KEY      # Your Airtable API key
 AIRTABLE_BASE_ID      # The base ID that contains the Leads table
-AIRTABLE_TABLE_NAME   # The table to store new leads (e.g. "Leads")
+AIRTABLE_TABLE_NAME   # Default table for storing leads (e.g. "Leads")
 ```
+
+You can override the default table by including a `table` property in the JSON
+payload sent to `/api/submit-lead`. The built-in contact form does this to save
+messages to a table named `Contacts`.
 
 ## How It Works
 

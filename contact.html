@@ -43,7 +43,7 @@
       const response = await fetch('/api/submit-lead', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, message })
+        body: JSON.stringify({ name, email, message, table: 'Contacts' })
       });
       if (response.ok) {
         alert('Thanks for reaching out!');
