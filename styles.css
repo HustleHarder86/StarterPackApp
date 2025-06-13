@@ -1,266 +1,53 @@
-body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #f8f9fa;
-  margin: 0;
-  padding: 0;
-  color: #333;
-}
-.nav-bar {
-  background-color: #fff;
-  padding: 1rem 2rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-}
-.nav-logo {
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: #16a34a;
-}
-.nav-link {
-  color: #16a34a;
-  font-weight: 600;
-}
-.nav-links {
-  list-style: none;
-  display: flex;
-  gap: 1.5rem;
-  margin: 0;
-  padding: 0;
-}
-.hero-section {
-  padding: 100px 20px;
-  text-align: center;
-  background: linear-gradient(to bottom, #ffffff 0%, #f0fdf4 100%);
-}
-.highlight {
-  color: #16a34a;
-  text-decoration: underline;
-  text-decoration-color: #bbf7d0;
-}
-.btn-primary {
-  background-color: #16a34a;
-  color: white;
-  padding: 12px 24px;
-  border-radius: 8px;
-  font-weight: bold;
-  display: inline-block;
-  text-decoration: none;
-  margin-top: 1.5rem;
-}
-.btn-primary:hover {
-  background-color: #15803d;
-}
-.hero-lead-form {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  max-width: 400px;
-  margin: 2rem auto 0 auto;
-}
-.hero-lead-form input,
-.hero-lead-form button {
-  padding: 12px;
-  font-size: 1rem;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-}
-.hero-lead-form button {
-  background-color: #16a34a;
-  color: white;
-  font-weight: bold;
-  cursor: pointer;
-}
-.hero-lead-form .form-note {
-  font-size: 0.85rem;
-  color: #777;
-  margin-top: 0.5rem;
-}
-.trusted-section,
-.features-section,
-.testimonials-section,
-.pricing-section,
-.contact-section {
+/* Add these styles to your existing styles.css file */
+
+/* Contact Info Section */
+.contact-info-section {
   padding: 60px 20px;
-  text-align: center;
   background-color: #ffffff;
+  text-align: center;
 }
-.trusted-section {
-  background-color: #f9fafb;
+
+.contact-info-content {
+  max-width: 800px;
+  margin: 0 auto;
 }
-.contact-section {
-  background-color: #f9fafb;
-}
-.trusted-logos img {
-  height: 40px;
-  margin: 0 20px;
-}
-.features-grid,
-.pricing-grid {
+
+.contact-info-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 20px;
+  gap: 30px;
   margin-top: 2rem;
 }
-.feature-card,
-.pricing-card {
-  background-color: white;
+
+.contact-info-card {
+  background-color: #f9fafb;
   border-radius: 12px;
   padding: 24px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
-.pricing-card ul {
-  list-style-type: none;
-  padding-left: 0;
-}
-.pricing-card ul li::before {
-  content: "✔";
-  margin-right: 8px;
+
+.contact-info-card h3 {
+  margin-bottom: 12px;
   color: #16a34a;
-}
-.highlight-card {
-  border: 2px solid #16a34a;
+  font-size: 1.1rem;
 }
 
-.pricing-card .tag {
-  display: inline-block;
-  background-color: #16a34a;
-  color: #fff;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 0.75rem;
+.contact-info-card p {
   margin-bottom: 8px;
-}
-.testimonial {
-  max-width: 600px;
-  margin: 2rem auto;
-  font-style: italic;
-  background-color: #fff;
-  padding: 1.5rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  color: #6b7280;
 }
 
-/* Contact Form Styles */
-.contact-content {
-  max-width: 600px;
-  margin: 0 auto;
+.contact-info-card a {
+  color: #16a34a;
+  text-decoration: none;
+  font-weight: 600;
 }
 
-.contact-form {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  margin-top: 2rem;
+.contact-info-card a:hover {
+  text-decoration: underline;
 }
 
-.form-group {
-  display: flex;
-  flex-direction: column;
-}
-
-.contact-form input,
-.contact-form textarea {
-  padding: 12px;
-  font-size: 1rem;
-  border-radius: 8px;
-  border: 1px solid #d1d5db;
-  background-color: #ffffff;
-  transition: border-color 0.2s ease;
-}
-
-.contact-form input:focus,
-.contact-form textarea:focus {
-  outline: none;
-  border-color: #16a34a;
-  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1);
-}
-
-.contact-form textarea {
-  resize: vertical;
-  min-height: 120px;
-}
-
-.contact-form button {
-  background-color: #16a34a;
-  color: white;
-  padding: 12px 24px;
-  border: none;
-  border-radius: 8px;
-  font-weight: bold;
-  cursor: pointer;
-  font-size: 1rem;
-  transition: background-color 0.2s ease;
-}
-
-.contact-form button:hover {
-  background-color: #15803d;
-}
-
-.contact-form button:active {
-  transform: translateY(1px);
-}
-
-.footer {
-  background-color: #1f2937;
-  color: white;
-  padding: 20px;
-  text-align: center;
-}
-
-/* Testimonial carousel styles */
-.testimonial-carousel {
-  position: relative;
-  overflow: hidden;
-  max-width: 600px;
-  margin: 0 auto;
-}
-
-.testimonial-slide {
-  display: none;
-  transition: opacity 0.5s ease-in-out;
-}
-
-.testimonial-slide.active {
-  display: block;
-}
-
-.carousel-btn {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  background-color: #16a34a;
-  color: #fff;
-  border: none;
-  padding: 8px 12px;
-  border-radius: 50%;
-  cursor: pointer;
-}
-
-.carousel-btn.prev {
-  left: 10px;
-}
-
-.carousel-btn.next {
-  right: 10px;
-}
-
-.carousel-dots {
-  text-align: center;
-  margin-top: 10px;
-}
-
-.carousel-dot {
-  display: inline-block;
-  width: 10px;
-  height: 10px;
-  background-color: #d1d5db;
-  border-radius: 50%;
-  margin: 0 4px;
-  cursor: pointer;
-}
-
-.carousel-dot.active {
-  background-color: #16a34a;
+.contact-info-card strong {
+  color: #16a34a;
+  font-size: 1.1rem;
 }
