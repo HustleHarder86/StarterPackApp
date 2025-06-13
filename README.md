@@ -21,7 +21,7 @@ AIRTABLE_TABLE_NAME   # Default table for storing leads (e.g. "Leads")
 
 You can override the default table by including a `table` property in the JSON
 payload sent to `/api/submit-lead`. The built-in contact form does this to save
-messages to a table named `Contacts`.
+messages to a table named `Contact Us Requests`.
 
 ## How It Works
 
