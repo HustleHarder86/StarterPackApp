@@ -119,6 +119,16 @@ body {
 .highlight-card {
   border: 2px solid #16a34a;
 }
+
+.pricing-card .tag {
+  display: inline-block;
+  background-color: #16a34a;
+  color: #fff;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  margin-bottom: 8px;
+}
 .testimonial {
   max-width: 600px;
   margin: 2rem auto;
