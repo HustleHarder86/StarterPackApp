@@ -13,7 +13,7 @@ export default async function handler(req, res) {
 
   // Airtable credentials from environment variables
   const airtableApiKey = process.env.AIRTABLE_API_KEY;
-  const baseId = process.env.AIRTABLE_BASE_ID || 'appulB9SOqm16pklS';
+  const baseId = process.env.AIRTABLE_BASE_ID || 'your_actual_base_id_here';
   const tableName = process.env.AIRTABLE_TABLE_NAME || 'Leads';
 
   if (!airtableApiKey) {
