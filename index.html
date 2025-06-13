@@ -13,7 +13,7 @@
       <li><a href="index.html" class="nav-link">Home</a></li>
       <li><a href="#features" class="nav-link">Features</a></li>
       <li><a href="#pricing" class="nav-link">Pricing</a></li>
-      <li><a href="#footer" class="nav-link">Contact</a></li>
+      <li><a href="#contact" class="nav-link">Contact</a></li>
       <li><a href="index.html" class="nav-link btn-primary">Launch ROI Finder</a></li>
     </ul>
   </nav>
@@ -64,7 +64,7 @@
   <section class="testimonials-section">
     <h2>What Realtors Are Saying</h2>
     <div class="testimonial">
-      <p>"Finally, a tool that speaks the investor’s language. It’s become my listing presentation secret weapon."</p>
+      <p>"Finally, a tool that speaks the investor's language. It's become my listing presentation secret weapon."</p>
       <strong>— Sarah K., Toronto Realtor</strong>
     </div>
     <div class="testimonial">
@@ -73,11 +73,33 @@
     </div>
   </section>
 
+  <!-- New Contact Section -->
+  <section class="contact-section" id="contact">
+    <div class="contact-content">
+      <h2>Get In Touch</h2>
+      <p>Have questions? We'd love to hear from you. Send us a message and we'll respond as soon as possible.</p>
+      
+      <form class="contact-form" id="contact-form">
+        <div class="form-group">
+          <input type="text" name="name" placeholder="Your Name" required />
+        </div>
+        <div class="form-group">
+          <input type="email" name="email" placeholder="Your Email" required />
+        </div>
+        <div class="form-group">
+          <textarea name="message" placeholder="Your Message" rows="5" required></textarea>
+        </div>
+        <button type="submit" class="btn-primary">Send Message</button>
+      </form>
+    </div>
+  </section>
+
   <footer class="footer" id="footer">
     &copy; 2025 InvestorProps. All rights reserved.
   </footer>
 
   <script>
+    // Hero lead form functionality
     document.getElementById('show-lead-form').addEventListener('click', function (e) {
       e.preventDefault();
       document.getElementById('lead-form').style.display = 'flex';
@@ -98,6 +120,27 @@
         this.reset();
       } else {
         alert("Oops! Something went wrong.");
+      }
+    });
+
+    // Contact form functionality
+    document.getElementById('contact-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const name = this.name.value;
+      const email = this.email.value;
+      const message = this.message.value;
+      
+      const response = await fetch('/api/submit-contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, message })
+      });
+      
+      if (response.ok) {
+        alert("Thanks for your message! We'll get back to you soon.");
+        this.reset();
+      } else {
+        alert("Oops! Something went wrong. Please try again.");
       }
     });
   </script>
