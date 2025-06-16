@@ -1,7 +1,11 @@
 // File: api/submit-lead.js
-// Updated to save leads to Firebase instead of Airtable
+// Enhanced version with detailed logging
 
 export default async function handler(req, res) {
+  console.log('=== Submit Lead API Called ===');
+  console.log('Method:', req.method);
+  console.log('Body:', req.body);
+  
   // Set CORS headers
   res.setHeader('Access-Control-Allow-Credentials', true);
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -12,35 +16,57 @@ export default async function handler(req, res) {
   );
 
   if (req.method === 'OPTIONS') {
+    console.log('OPTIONS request, returning 200');
     res.status(200).end();
     return;
   }
 
   if (req.method !== 'POST') {
+    console.log('Invalid method:', req.method);
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
   try {
     const { name, email, address } = req.body;
+    console.log('Extracted data:', { name, email, address });
 
     if (!name || !email) {
+      console.log('Missing required fields');
       return res.status(400).json({ error: 'Missing name or email' });
     }
 
+    console.log('Environment variables check:');
+    console.log('FIREBASE_PROJECT_ID:', process.env.FIREBASE_PROJECT_ID ? 'EXISTS' : 'MISSING');
+    console.log('FIREBASE_CLIENT_EMAIL:', process.env.FIREBASE_CLIENT_EMAIL ? 'EXISTS' : 'MISSING');
+    console.log('FIREBASE_PRIVATE_KEY:', process.env.FIREBASE_PRIVATE_KEY ? 'EXISTS (length: ' + process.env.FIREBASE_PRIVATE_KEY.length + ')' : 'MISSING');
+
     // Initialize Firebase Admin
+    console.log('Importing Firebase Admin...');
     const admin = await import('firebase-admin');
+    console.log('Firebase Admin imported successfully');
     
     if (!admin.apps.length) {
-      admin.initializeApp({
-        credential: admin.credential.cert({
-          projectId: process.env.FIREBASE_PROJECT_ID,
-          clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-          privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n')
-        })
-      });
+      console.log('Initializing Firebase Admin...');
+      try {
+        admin.initializeApp({
+          credential: admin.credential.cert({
+            projectId: process.env.FIREBASE_PROJECT_ID,
+            clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+            privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n')
+          })
+        });
+        console.log('Firebase Admin initialized successfully');
+      } catch (initError) {
+        console.error('Firebase Admin initialization error:', initError);
+        throw initError;
+      }
+    } else {
+      console.log('Firebase Admin already initialized');
     }
 
+    console.log('Getting Firestore database...');
     const db = admin.firestore();
+    console.log('Firestore database obtained');
 
     // Save lead information to Firebase
     const leadId = `lead_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -54,9 +80,11 @@ export default async function handler(req, res) {
       leadType: 'free_trial_request'
     };
 
-    await db.collection('leads').doc(leadId).set(leadData);
+    console.log('Attempting to save lead with ID:', leadId);
+    console.log('Lead data:', leadData);
 
-    console.log('Lead saved to Firebase:', leadId);
+    await db.collection('leads').doc(leadId).set(leadData);
+    console.log('✅ Lead saved to Firebase successfully:', leadId);
 
     return res.status(200).json({ 
       success: true,
@@ -65,10 +93,15 @@ export default async function handler(req, res) {
     });
 
   } catch (error) {
-    console.error('Submit lead error:', error);
+    console.error('❌ Submit lead error:', error);
+    console.error('Error name:', error.name);
+    console.error('Error message:', error.message);
+    console.error('Error stack:', error.stack);
+    
     return res.status(500).json({ 
       error: 'Failed to save lead', 
-      details: error.message 
+      details: error.message,
+      errorType: error.name
     });
   }
 }
