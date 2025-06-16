@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>API Debug Test</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    .test-section {
+      background: white;
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    button {
+      background: #16a34a;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin: 5px;
+    }
+    button:hover {
+      background: #15803d;
+    }
+    .result {
+      margin-top: 15px;
+      padding: 15px;
+      background: #f0f0f0;
+      border-radius: 5px;
+      font-family: monospace;
+      white-space: pre-wrap;
+      word-break: break-all;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    .error {
+      background: #fee;
+      color: #c00;
+    }
+    .success {
+      background: #efe;
+      color: #060;
+    }
+    .result h3, .result h4 {
+      margin: 10px 0;
+      font-family: Arial, sans-serif;
+    }
+    .result ul {
+      margin: 10px 0;
+      padding-left: 20px;
+    }
+    .result pre {
+      background: rgba(0,0,0,0.05);
+      padding: 10px;
+      border-radius: 4px;
+      overflow-x: auto;
+    }
+  </style>
+</head>
+<body>
+  <h1>API Debug Test Page</h1>
+  
+  <div class="test-section">
+    <h2>1. Test Debug Endpoint</h2>
+    <button onclick="testDebug()">Test /api/debug</button>
+    <div id="debug-result"></div>
+  </div>
+
+  <div class="test-section">
+    <h2>2. Test Submit Lead</h2>
+    <button onclick="testSubmitLead()">Test /api/submit-lead</button>
+    <div id="lead-result"></div>
+  </div>
+
+  <div class="test-section">
+    <h2>3. Check Environment</h2>
+    <button onclick="checkEnvironment()">Check Config</button>
+    <div id="env-result"></div>
+  </div>
+
+  <div class="test-section">
+    <h2>4. Test Direct Firebase Write</h2>
+    <button onclick="testDirectFirebase()">Test Firebase Write</button>
+    <div id="firebase-result"></div>
+  </div>
+
+  <div class="test-section">
+    <h2>5. Enhanced Firebase Debug</h2>
+    <button onclick="testEnhancedDebug()">Run Complete Diagnostic</button>
+    <div id="enhanced-result"></div>
+  </div>
+
+  <script>
+    async function testDebug() {
+      const resultDiv = document.getElementById('debug-result');
+      resultDiv.innerHTML = 'Testing...';
+      
+      try {
+        const response = await fetch('/api/debug');
+        const data = await response.json();
+        resultDiv.innerHTML = `<div class="result ${response.ok ? 'success' : 'error'}">Status: ${response.status}\n${JSON.stringify(data, null, 2)}</div>`;
+      } catch (error) {
+        resultDiv.innerHTML = `<div class="result error">Error: ${error.message}</div>`;
+      }
+    }
+
+    async function testSubmitLead() {
+      const resultDiv = document.getElementById('lead-result');
+      resultDiv.innerHTML = 'Testing...';
+      
+      try {
+        const response = await fetch('/api/submit-lead', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: 'Test User',
+            email: 'test@example.com',
+            address: '123 Test St'
+          })
+        });
+        
+        const text = await response.text();
+        let data;
+        try {
+          data = JSON.parse(text);
+        } catch {
+          data = text;
+        }
+        
+        resultDiv.innerHTML = `<div class="result ${response.ok ? 'success' : 'error'}">Status: ${response.status}\nResponse: ${typeof data === 'object' ? JSON.stringify(data, null, 2) : data}</div>`;
+      } catch (error) {
+        resultDiv.innerHTML = `<div class="result error">Error: ${error.message}</div>`;
+      }
+    }
+
+    async function checkEnvironment() {
+      const resultDiv = document.getElementById('env-result');
+      resultDiv.innerHTML = 'Checking...';
+      
+      try {
+        const response = await fetch('/api/config');
+        const data = await response.json();
+        
+        // Check if Firebase config exists
+        const hasFirebaseConfig = data.firebase && 
+          data.firebase.apiKey && 
+          data.firebase.projectId;
+          
+        resultDiv.innerHTML = `<div class="result ${hasFirebaseConfig ? 'success' : 'error'}">
+Firebase Config: ${hasFirebaseConfig ? 'Present' : 'MISSING'}
+Project ID: ${data.firebase?.projectId || 'NOT SET'}
+Environment: ${data.app?.environment || 'unknown'}
+
+Full Config:
+${JSON.stringify(data, null, 2)}</div>`;
+      } catch (error) {
+        resultDiv.innerHTML = `<div class="result error">Error: ${error.message}</div>`;
+      }
+    }
+
+    // Test direct Firebase write
+    async function testDirectFirebase() {
+      const resultDiv = document.getElementById('firebase-result');
+      resultDiv.innerHTML = 'Testing direct Firebase write...';
+      
+      try {
+        // This tests if Firebase is properly configured
+        const testData = {
+          test: true,
+          timestamp: new Date().toISOString(),
+          message: 'Direct Firebase test'
+        };
+        
+        // We'll use the submit-lead endpoint but with a special flag
+        const response = await fetch('/api/submit-lead', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: 'Firebase Test',
+            email: 'test@firebase.com',
+            address: 'Test Address',
+            __test__: true
+          })
+        });
+        
+        const result = await response.json();
+        resultDiv.innerHTML = `<div class="result ${response.ok ? 'success' : 'error'}">Direct Firebase Test:\n${JSON.stringify(result, null, 2)}</div>`;
+      } catch (error) {
+        resultDiv.innerHTML = `<div class="result error">Firebase Test Error: ${error.message}</div>`;
+      }
+    }
+
+    // Enhanced debug test
+    async function testEnhancedDebug() {
+      const resultDiv = document.getElementById('enhanced-result');
+      resultDiv.innerHTML = 'Running complete diagnostic...';
+      
+      try {
+        const response = await fetch('/api/debug-firebase');
+        const data = await response.json();
+        
+        // Format the results nicely
+        let html = '<div class="result ' + (data.overallStatus === 'READY' ? 'success' : 'error') + '">';
+        html += '<h3>Overall Status: ' + data.overallStatus + '</h3>';
+        
+        // Environment Variables Check
+        html += '<h4>Environment Variables:</h4>';
+        html += '<ul style="text-align: left;">';
+        Object.entries(data.checks.environmentVariables).forEach(([key, value]) => {
+          html += '<li><strong>' + key + ':</strong> ' + JSON.stringify(value, null, 2) + '</li>';
+        });
+        html += '</ul>';
+        
+        // Firebase Init Check
+        html += '<h4>Firebase Initialization:</h4>';
+        html += '<pre>' + JSON.stringify(data.checks.firebaseInit, null, 2) + '</pre>';
+        
+        // Firestore Test
+        html += '<h4>Firestore Test:</h4>';
+        html += '<pre>' + JSON.stringify(data.checks.firestoreTest, null, 2) + '</pre>';
+        
+        // Recommendations
+        if (data.recommendations && data.recommendations.length > 0) {
+          html += '<h4>Recommendations:</h4>';
+          html += '<ul style="text-align: left; color: red;">';
+          data.recommendations.forEach(rec => {
+            html += '<li>' + rec + '</li>';
+          });
+          html += '</ul>';
+        }
+        
+        html += '</div>';
+        resultDiv.innerHTML = html;
+      } catch (error) {
+        resultDiv.innerHTML = `<div class="result error">Enhanced Debug Error: ${error.message}</div>`;
+      }
+    }
+
+    // Auto-run debug test on load
+    window.onload = () => {
+      testDebug();
+    };
+  </script>
+</body>
+</html>
