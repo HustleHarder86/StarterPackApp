@@ -1,5 +1,5 @@
 // api/stripe-operations.js
-// Stripe payment operations API endpoint
+// Stripe payment operations API endpoint (works without Stripe keys)
 
 export default async function handler(req, res) {
   // Set CORS headers
@@ -20,7 +20,22 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+  // Check if Stripe is configured
+  const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
+  const isStripeConfigured = stripeSecretKey && 
+    stripeSecretKey !== 'sk_test_your_stripe_secret_key' &&
+    stripeSecretKey.startsWith('sk_');
+
+  if (!isStripeConfigured) {
+    console.warn('Stripe operations called but Stripe is not configured');
+    return res.status(200).json({ 
+      success: false,
+      error: 'Payment processing not available',
+      details: 'Stripe not configured. Please add Stripe keys to enable payments.'
+    });
+  }
+
+  const stripe = require('stripe')(stripeSecretKey);
   
   try {
     const { action, data } = req.body;
@@ -28,6 +43,14 @@ export default async function handler(req, res) {
     switch (action) {
       case 'create_checkout_session':
         const { userId, email, tier, priceId, billingCycle, successUrl, cancelUrl } = data;
+        
+        // Validate price ID
+        if (!priceId || priceId.includes('placeholder')) {
+          return res.status(400).json({ 
+            error: 'Invalid price ID',
+            details: 'Stripe price IDs not configured'
+          });
+        }
         
         const session = await stripe.checkout.sessions.create({
           payment_method_types: ['card'],
