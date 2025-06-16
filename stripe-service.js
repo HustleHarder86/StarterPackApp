@@ -1,5 +1,5 @@
 // stripe-service.js
-// Stripe payment integration service
+// Stripe payment integration service (no Make.com dependencies)
 
 import { loadStripe } from '@stripe/stripe-js';
 import { auth, db } from './firebase-config';
@@ -11,6 +11,7 @@ const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || 
 class StripeService {
   constructor() {
     this.stripe = null;
+    this.apiEndpoint = import.meta.env.VITE_API_URL || '/api';
     this.priceIds = {
       starter: {
         monthly: import.meta.env.VITE_STRIPE_PRICE_STARTER_MONTHLY || process.env.VITE_STRIPE_PRICE_STARTER_MONTHLY,
@@ -31,32 +32,28 @@ class StripeService {
     this.stripe = await stripePromise;
   }
 
-  // Create Stripe Checkout session via Make.com webhook
+  // Create Stripe Checkout session
   async createCheckoutSession(userId, tier, billingCycle = 'monthly') {
     try {
       const user = auth.currentUser;
       if (!user) throw new Error('User not authenticated');
 
-      // Call Make.com webhook to create Stripe session
-      const webhookUrl = import.meta.env.VITE_MAKE_STRIPE_WEBHOOK || process.env.VITE_MAKE_STRIPE_WEBHOOK;
-      const response = await fetch(webhookUrl, {
+      // Call our API endpoint to create Stripe session
+      const response = await fetch(`${this.apiEndpoint}/stripe-operations`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           action: 'create_checkout_session',
-          userId: user.uid,
-          email: user.email,
-          tier: tier,
-          priceId: this.priceIds[tier][billingCycle],
-          billingCycle: billingCycle,
-          successUrl: `${window.location.origin}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
-          cancelUrl: `${window.location.origin}/roi-finder`,
-          metadata: {
+          data: {
             userId: user.uid,
+            email: user.email,
             tier: tier,
-            billingCycle: billingCycle
+            priceId: this.priceIds[tier][billingCycle],
+            billingCycle: billingCycle,
+            successUrl: `${window.location.origin}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
+            cancelUrl: `${window.location.origin}/roi-finder`
           }
         })
       });
@@ -66,7 +63,22 @@ class StripeService {
       }
 
       const data = await response.json();
-      return data; // Should contain { url: 'stripe_checkout_url' }
+      
+      // Redirect to Stripe Checkout
+      if (this.stripe && data.sessionId) {
+        const { error } = await this.stripe.redirectToCheckout({
+          sessionId: data.sessionId
+        });
+        
+        if (error) {
+          throw error;
+        }
+      } else {
+        // Fallback to direct URL redirect
+        window.location.href = data.url;
+      }
+      
+      return data;
     } catch (error) {
       console.error('Checkout session error:', error);
       throw error;
@@ -79,16 +91,25 @@ class StripeService {
       const user = auth.currentUser;
       if (!user) throw new Error('User not authenticated');
 
-      const webhookUrl = import.meta.env.VITE_MAKE_STRIPE_WEBHOOK || process.env.VITE_MAKE_STRIPE_WEBHOOK;
-      const response = await fetch(webhookUrl, {
+      // Get user's Stripe customer ID from Firestore
+      const userDoc = await getDoc(doc(db, 'users', user.uid));
+      const userData = userDoc.data();
+      
+      if (!userData.stripeCustomerId) {
+        throw new Error('No active subscription found');
+      }
+
+      const response = await fetch(`${this.apiEndpoint}/stripe-operations`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           action: 'create_portal_session',
-          userId: user.uid,
-          returnUrl: `${window.location.origin}/account`
+          data: {
+            customerId: userData.stripeCustomerId,
+            returnUrl: `${window.location.origin}/account`
+          }
         })
       });
 
@@ -97,7 +118,11 @@ class StripeService {
       }
 
       const data = await response.json();
-      return data; // Should contain { url: 'stripe_portal_url' }
+      
+      // Redirect to Stripe Customer Portal
+      window.location.href = data.url;
+      
+      return data;
     } catch (error) {
       console.error('Portal session error:', error);
       throw error;
@@ -107,15 +132,17 @@ class StripeService {
   // Handle successful payment (called from success page)
   async handlePaymentSuccess(sessionId) {
     try {
-      // Verify payment with Make.com
-      const response = await fetch('YOUR_MAKE_STRIPE_WEBHOOK_URL', {
+      // Verify payment with our API
+      const response = await fetch(`${this.apiEndpoint}/stripe-operations`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           action: 'verify_payment',
-          sessionId: sessionId
+          data: {
+            sessionId: sessionId
+          }
         })
       });
 
@@ -125,16 +152,9 @@ class StripeService {
 
       const data = await response.json();
       
-      // Update user's subscription status
-      if (data.success && data.subscription) {
-        await this.updateUserSubscription(
-          data.metadata.userId,
-          data.metadata.tier,
-          data.customerId,
-          data.subscriptionId
-        );
-      }
-
+      // The API endpoint already updated the user's subscription in Firebase
+      // We can add any additional client-side actions here if needed
+      
       return data;
     } catch (error) {
       console.error('Payment verification error:', error);
@@ -142,36 +162,23 @@ class StripeService {
     }
   }
 
-  // Update user subscription in Firestore
-  async updateUserSubscription(userId, tier, customerId, subscriptionId) {
-    const tierLimits = {
-      starter: 100,
-      pro: 250,
-      enterprise: -1
-    };
-
-    await updateDoc(doc(db, 'users', userId), {
-      subscriptionStatus: 'active',
-      subscriptionTier: tier,
-      stripeCustomerId: customerId,
-      monthlyAnalysisLimit: tierLimits[tier] || 100
-    });
-  }
-
   // Cancel subscription
-  async cancelSubscription() {
+  async cancelSubscription(subscriptionId) {
     try {
       const user = auth.currentUser;
       if (!user) throw new Error('User not authenticated');
 
-      const response = await fetch('YOUR_MAKE_STRIPE_WEBHOOK_URL', {
+      const response = await fetch(`${this.apiEndpoint}/stripe-operations`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           action: 'cancel_subscription',
-          userId: user.uid
+          data: {
+            userId: user.uid,
+            subscriptionId: subscriptionId
+          }
         })
       });
 
@@ -180,6 +187,12 @@ class StripeService {
       }
 
       const data = await response.json();
+      
+      // Update local user state
+      await updateDoc(doc(db, 'users', user.uid), {
+        subscriptionStatus: 'cancelling'
+      });
+      
       return data;
     } catch (error) {
       console.error('Cancellation error:', error);
@@ -190,8 +203,8 @@ class StripeService {
   // Update payment method
   async updatePaymentMethod() {
     try {
-      const portalSession = await this.createPortalSession();
-      window.location.href = portalSession.url;
+      // Simply redirect to customer portal where they can update payment method
+      await this.createPortalSession();
     } catch (error) {
       console.error('Update payment error:', error);
       throw error;
