@@ -1,5 +1,5 @@
 // auth-service.js
-// Authentication and user management service
+// Authentication and user management service (no Make.com dependencies)
 
 import { 
   createUserWithEmailAndPassword, 
@@ -77,13 +77,8 @@ class AuthService {
 
       await setDoc(doc(db, 'users', user.uid), userProfile);
 
-      // Notify Make.com webhook about new user
-      await this.notifyMakeWebhook('user_created', {
-        userId: user.uid,
-        email,
-        displayName,
-        phoneNumber
-      });
+      // Log user creation event (optional - for analytics)
+      console.log('User created:', { userId: user.uid, email });
 
       return { user, userProfile };
     } catch (error) {
@@ -209,9 +204,9 @@ class AuthService {
   // Get Stripe price ID based on tier
   getStripePriceId(tier) {
     const priceIds = {
-      starter: 'price_starter_monthly',
-      pro: 'price_pro_monthly',
-      enterprise: 'price_enterprise_monthly'
+      starter: import.meta.env.VITE_STRIPE_PRICE_STARTER_MONTHLY,
+      pro: import.meta.env.VITE_STRIPE_PRICE_PRO_MONTHLY,
+      enterprise: import.meta.env.VITE_STRIPE_PRICE_ENTERPRISE_MONTHLY
     };
     return priceIds[tier];
   }
@@ -225,31 +220,6 @@ class AuthService {
     } catch (error) {
       console.error('Sign out error:', error);
       throw error;
-    }
-  }
-
-  // Notify Make.com webhook
-  async notifyMakeWebhook(event, data) {
-    try {
-      const webhookUrl = import.meta.env.VITE_MAKE_USER_WEBHOOK || process.env.VITE_MAKE_USER_WEBHOOK;
-      const response = await fetch(webhookUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          event,
-          timestamp: new Date().toISOString(),
-          ...data
-        })
-      });
-      
-      if (!response.ok) {
-        throw new Error('Webhook notification failed');
-      }
-    } catch (error) {
-      console.error('Webhook error:', error);
-      // Don't throw - webhook failures shouldn't break the flow
     }
   }
 }
