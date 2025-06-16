@@ -155,7 +155,8 @@ ${researchContent}`
     const structuredData = JSON.parse(openaiData.choices[0].message.content);
 
     // Step 3: Save to Firebase
-    const admin = await import('firebase-admin');
+    const adminModule = await import('firebase-admin');
+    const admin = adminModule.default;
     
     // Initialize Firebase Admin if not already initialized
     if (!admin.apps.length) {
