@@ -1,40 +1,65 @@
 // stripe-service.js
-// Stripe payment integration service (no Make.com dependencies)
+// Stripe payment integration service (works without Stripe keys)
 
-import { loadStripe } from '@stripe/stripe-js';
 import { auth, db } from './firebase-config';
-import { doc, updateDoc } from 'firebase/firestore';
-
-// Initialize Stripe
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || process.env.VITE_STRIPE_PUBLISHABLE_KEY);
+import { doc, updateDoc, getDoc } from 'firebase/firestore';
 
 class StripeService {
   constructor() {
     this.stripe = null;
     this.apiEndpoint = import.meta.env.VITE_API_URL || '/api';
+    this.stripeEnabled = false;
+    
+    // Check if Stripe keys are available
+    const publishableKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || process.env.VITE_STRIPE_PUBLISHABLE_KEY;
+    if (publishableKey && publishableKey !== 'your_stripe_publishable_key') {
+      this.stripeEnabled = true;
+      this.initStripe(publishableKey);
+    }
+    
     this.priceIds = {
       starter: {
-        monthly: import.meta.env.VITE_STRIPE_PRICE_STARTER_MONTHLY || process.env.VITE_STRIPE_PRICE_STARTER_MONTHLY,
-        yearly: import.meta.env.VITE_STRIPE_PRICE_STARTER_YEARLY || process.env.VITE_STRIPE_PRICE_STARTER_YEARLY
+        monthly: import.meta.env.VITE_STRIPE_PRICE_STARTER_MONTHLY || 'price_starter_monthly_placeholder',
+        yearly: import.meta.env.VITE_STRIPE_PRICE_STARTER_YEARLY || 'price_starter_yearly_placeholder'
       },
       pro: {
-        monthly: import.meta.env.VITE_STRIPE_PRICE_PRO_MONTHLY || process.env.VITE_STRIPE_PRICE_PRO_MONTHLY,
-        yearly: import.meta.env.VITE_STRIPE_PRICE_PRO_YEARLY || process.env.VITE_STRIPE_PRICE_PRO_YEARLY
+        monthly: import.meta.env.VITE_STRIPE_PRICE_PRO_MONTHLY || 'price_pro_monthly_placeholder',
+        yearly: import.meta.env.VITE_STRIPE_PRICE_PRO_YEARLY || 'price_pro_yearly_placeholder'
       },
       enterprise: {
-        monthly: import.meta.env.VITE_STRIPE_PRICE_ENTERPRISE_MONTHLY || process.env.VITE_STRIPE_PRICE_ENTERPRISE_MONTHLY,
-        yearly: import.meta.env.VITE_STRIPE_PRICE_ENTERPRISE_YEARLY || process.env.VITE_STRIPE_PRICE_ENTERPRISE_YEARLY
+        monthly: import.meta.env.VITE_STRIPE_PRICE_ENTERPRISE_MONTHLY || 'price_enterprise_monthly_placeholder',
+        yearly: import.meta.env.VITE_STRIPE_PRICE_ENTERPRISE_YEARLY || 'price_enterprise_yearly_placeholder'
       }
     };
   }
 
+  async initStripe(publishableKey) {
+    try {
+      const { loadStripe } = await import('@stripe/stripe-js');
+      this.stripe = await loadStripe(publishableKey);
+    } catch (error) {
+      console.warn('Stripe initialization skipped:', error);
+      this.stripeEnabled = false;
+    }
+  }
+
   async init() {
-    this.stripe = await stripePromise;
+    // For backward compatibility
+    if (this.stripeEnabled && !this.stripe) {
+      const publishableKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || process.env.VITE_STRIPE_PUBLISHABLE_KEY;
+      await this.initStripe(publishableKey);
+    }
   }
 
   // Create Stripe Checkout session
   async createCheckoutSession(userId, tier, billingCycle = 'monthly') {
     try {
+      if (!this.stripeEnabled) {
+        console.warn('Stripe is not configured. Showing demo mode message.');
+        alert('Payment processing is not available in demo mode. Please contact support to upgrade your account.');
+        return { error: 'Stripe not configured' };
+      }
+
       const user = auth.currentUser;
       if (!user) throw new Error('User not authenticated');
 
@@ -59,6 +84,11 @@ class StripeService {
       });
 
       if (!response.ok) {
+        const error = await response.json();
+        if (error.details?.includes('Stripe not configured')) {
+          alert('Payment processing is not available in demo mode. Please contact support to upgrade your account.');
+          return { error: 'Stripe not configured' };
+        }
         throw new Error('Failed to create checkout session');
       }
 
@@ -73,7 +103,7 @@ class StripeService {
         if (error) {
           throw error;
         }
-      } else {
+      } else if (data.url) {
         // Fallback to direct URL redirect
         window.location.href = data.url;
       }
@@ -88,6 +118,11 @@ class StripeService {
   // Create customer portal session for subscription management
   async createPortalSession() {
     try {
+      if (!this.stripeEnabled) {
+        alert('Subscription management is not available in demo mode.');
+        return { error: 'Stripe not configured' };
+      }
+
       const user = auth.currentUser;
       if (!user) throw new Error('User not authenticated');
 
@@ -132,6 +167,11 @@ class StripeService {
   // Handle successful payment (called from success page)
   async handlePaymentSuccess(sessionId) {
     try {
+      if (!this.stripeEnabled) {
+        console.warn('Stripe payment verification skipped - no Stripe keys');
+        return { success: false, error: 'Stripe not configured' };
+      }
+
       // Verify payment with our API
       const response = await fetch(`${this.apiEndpoint}/stripe-operations`, {
         method: 'POST',
@@ -165,6 +205,11 @@ class StripeService {
   // Cancel subscription
   async cancelSubscription(subscriptionId) {
     try {
+      if (!this.stripeEnabled) {
+        alert('Subscription cancellation is not available in demo mode.');
+        return { error: 'Stripe not configured' };
+      }
+
       const user = auth.currentUser;
       if (!user) throw new Error('User not authenticated');
 
@@ -203,12 +248,22 @@ class StripeService {
   // Update payment method
   async updatePaymentMethod() {
     try {
+      if (!this.stripeEnabled) {
+        alert('Payment method update is not available in demo mode.');
+        return { error: 'Stripe not configured' };
+      }
+
       // Simply redirect to customer portal where they can update payment method
       await this.createPortalSession();
     } catch (error) {
       console.error('Update payment error:', error);
       throw error;
     }
+  }
+
+  // Check if Stripe is enabled
+  isEnabled() {
+    return this.stripeEnabled;
   }
 }
 
