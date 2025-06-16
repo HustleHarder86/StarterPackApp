@@ -1,14 +1,31 @@
 // api/stripe-webhook.js
-// Stripe webhook handler for subscription events
+// Stripe webhook handler for subscription events (works without Stripe keys)
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+  // Check if Stripe is configured
+  const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
   const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
+  
+  const isStripeConfigured = stripeSecretKey && 
+    stripeSecretKey !== 'sk_test_your_stripe_secret_key' &&
+    stripeSecretKey.startsWith('sk_') &&
+    endpointSecret &&
+    endpointSecret !== 'whsec_your_webhook_secret';
 
+  if (!isStripeConfigured) {
+    console.warn('Stripe webhook called but Stripe is not configured');
+    // Return 200 to prevent webhook retries when Stripe is not configured
+    return res.status(200).json({ 
+      received: true,
+      message: 'Stripe not configured, webhook ignored'
+    });
+  }
+
+  const stripe = require('stripe')(stripeSecretKey);
   let event;
 
   try {
