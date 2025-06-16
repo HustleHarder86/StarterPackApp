@@ -11,23 +11,6 @@
   "env": {
     "NODE_ENV": "production"
   },
-  "build": {
-    "env": {
-      "VITE_FIREBASE_API_KEY": "@vite_firebase_api_key",
-      "VITE_FIREBASE_AUTH_DOMAIN": "@vite_firebase_auth_domain",
-      "VITE_FIREBASE_PROJECT_ID": "@vite_firebase_project_id",
-      "VITE_FIREBASE_STORAGE_BUCKET": "@vite_firebase_storage_bucket",
-      "VITE_FIREBASE_MESSAGING_SENDER_ID": "@vite_firebase_messaging_sender_id",
-      "VITE_FIREBASE_APP_ID": "@vite_firebase_app_id",
-      "VITE_STRIPE_PUBLISHABLE_KEY": "@vite_stripe_publishable_key",
-      "VITE_STRIPE_PRICE_STARTER_MONTHLY": "@vite_stripe_price_starter_monthly",
-      "VITE_STRIPE_PRICE_STARTER_YEARLY": "@vite_stripe_price_starter_yearly",
-      "VITE_STRIPE_PRICE_PRO_MONTHLY": "@vite_stripe_price_pro_monthly",
-      "VITE_STRIPE_PRICE_PRO_YEARLY": "@vite_stripe_price_pro_yearly",
-      "VITE_STRIPE_PRICE_ENTERPRISE_MONTHLY": "@vite_stripe_price_enterprise_monthly",
-      "VITE_API_URL": "@vite_api_url"
-    }
-  },
   "headers": [
     {
       "source": "/api/(.*)",
