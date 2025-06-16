@@ -38,7 +38,8 @@ export default async function handler(req, res) {
   }
 
   // Initialize Firebase Admin
-  const admin = await import('firebase-admin');
+  const adminModule = await import('firebase-admin');
+  const admin = adminModule.default;
   
   if (!admin.apps.length) {
     admin.initializeApp({
