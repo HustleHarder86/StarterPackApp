@@ -1,238 +1,257 @@
-# Real Estate ROI Finder - InvestorProps
+# InvestorProps - AI-Powered Real Estate Investment Analysis Platform
 
-A comprehensive real estate investment analysis platform that uses AI to provide detailed property analysis, ROI calculations, and investment recommendations.
+A comprehensive real estate investment analysis platform that provides AI-powered property analysis with authentication, user dashboard, and worldwide property support.
 
-## Features
+## 🚀 Key Features
 
-- 🏠 **AI-Powered Property Analysis** - Uses Perplexity AI for market research and OpenAI for data structuring
-- 📊 **ROI Calculations** - Compares short-term rental (Airbnb) vs long-term rental potential
-- 💰 **Subscription Management** - Integrated Stripe payments with multiple tiers
-- 🔐 **User Authentication** - Firebase Auth with free trial and subscription tracking
-- 📈 **Real-time Market Data** - Current property values, rental rates, and market conditions
-- 🎯 **Investment Recommendations** - AI-generated insights for optimal investment strategies
+- 🔐 **User Authentication** - Sign up/sign in with email and password
+- 📊 **User Dashboard** - View all your property analyses in one place
+- 🌍 **International Support** - Analyze properties anywhere in the world
+- 🤖 **AI-Powered Analysis** - Uses Perplexity AI and OpenAI GPT-4 for accurate market research
+- 💰 **ROI Calculations** - Compare short-term (Airbnb) vs long-term rental potential
+- 📈 **Visual Analytics** - Charts and graphs for easy decision making
+- 🔄 **Real-time Data** - Current market values, rental rates, and costs
+- 💳 **Subscription Management** - Stripe integration for paid plans (optional)
 
-## Tech Stack
+## 🛠️ Tech Stack
 
-- **Frontend**: HTML, CSS, JavaScript, React (in ROI Finder)
+- **Frontend**: HTML, CSS, JavaScript, React (CDN)
 - **Backend**: Vercel Functions (Node.js)
 - **Database**: Firebase Firestore
 - **Authentication**: Firebase Auth
-- **Payments**: Stripe
-- **AI APIs**: Perplexity AI, OpenAI GPT-4
+- **AI APIs**: Perplexity AI (research) + OpenAI GPT-4 (data structuring)
+- **Payments**: Stripe (optional)
 - **Deployment**: Vercel
 
-## Setup Instructions
+## 📋 Prerequisites
+
+- Node.js 16+ installed
+- Vercel account (free tier works)
+- Firebase project
+- API keys for Perplexity AI and OpenAI
+- Stripe account (optional, for payments)
+
+## 🚀 Quick Start
 
 ### 1. Clone the Repository
 
 ```bash
 git clone https://github.com/yourusername/investorprops.git
 cd investorprops
-```
-
-### 2. Environment Variables
-
-Create a `.env` file in the root directory based on `.env.example`:
-
-```bash
-cp .env.example .env
-```
-
-Fill in the required values (Stripe keys are optional):
-
-#### Required Configuration
-
-##### Firebase Configuration
-1. Go to [Firebase Console](https://console.firebase.google.com)
-2. Create a new project or select existing
-3. Go to Project Settings > General
-4. Copy the Firebase config values
-5. For admin SDK: Go to Project Settings > Service Accounts > Generate New Private Key
-
-##### AI API Keys
-1. **Perplexity AI**: Get your API key from [Perplexity AI](https://www.perplexity.ai)
-2. **OpenAI**: Get your API key from [OpenAI Platform](https://platform.openai.com)
-
-#### Optional Configuration (Can be added later)
-
-##### Stripe Configuration
-The app will work without Stripe keys - payment features will be disabled but all other functionality will work normally.
-
-When ready to enable payments:
-1. Go to [Stripe Dashboard](https://dashboard.stripe.com)
-2. Copy your publishable and secret keys
-3. Create products and price IDs for each tier
-4. Set up webhook endpoint: `https://your-domain.com/api/stripe-webhook`
-5. Copy the webhook signing secret
-
-### 3. Firebase Setup
-
-1. Enable Authentication in Firebase Console
-2. Enable Email/Password sign-in method
-3. Create Firestore database with these collections:
-   - `users` - User profiles and subscription data
-   - `analyses` - Property analysis results
-   - `subscriptions` - Subscription records
-
-4. **Stripe Products Setup**
-
-Create the following products and prices in your Stripe Dashboard:
-
-- **Starter Plan**
-  - Monthly: $49
-  - Yearly: $490 (save ~17%)
-  
-- **Pro Plan**  
-  - Monthly: $99
-  - Yearly: $990 (save ~17%)
-  
-- **Enterprise Plan**
-  - Monthly: Custom pricing
-
-After creating, add the price IDs to your `.env` file.
-
-### 5. Deploy to Vercel
-
-1. Install Vercel CLI: `npm i -g vercel`
-2. Run `vercel` in the project directory
-3. Follow the prompts to deploy
-4. Add environment variables in Vercel dashboard
-
-### 5. Configure Stripe Webhook
-
-After deployment, update your Stripe webhook endpoint:
-1. Go to Stripe Dashboard > Webhooks
-2. Add endpoint: `https://your-vercel-domain.com/api/stripe-webhook`
-3. Select events:
-   - `checkout.session.completed`
-   - `customer.subscription.updated`
-   - `customer.subscription.deleted`
-   - `invoice.payment_failed`
-
-## Project Structure
-
-```
-├── api/                    # Vercel Functions (API endpoints)
-│   ├── analyze-property.js # Property analysis endpoint
-│   ├── config.js          # Public config endpoint
-│   ├── stripe-operations.js # Stripe payment operations
-│   ├── stripe-webhook.js  # Stripe webhook handler
-│   └── user-management.js # User operations
-├── assets/                # Images and icons
-├── data/                  # Static data files
-├── *.html                 # HTML pages
-├── *.js                   # Service files and utilities
-├── styles.css            # Global styles
-└── .env.example          # Environment variables template
-```
-
-## API Endpoints
-
-- `POST /api/analyze-property` - Analyze a property using AI
-- `POST /api/stripe-operations` - Handle Stripe operations
-- `POST /api/stripe-webhook` - Stripe webhook handler
-- `GET/POST /api/user-management` - User profile operations
-- `GET /api/config` - Public configuration
-- `POST /api/submit-analysis` - Submit demo analysis request
-- `POST /api/submit-contact` - Submit contact form
-- `POST /api/submit-lead` - Submit lead form (homepage)
-
-## Development
-
-To run locally:
-
-```bash
-# Install dependencies
 npm install
+```
 
-# Run development server
+### 2. Set Up Firebase
+
+1. Go to [Firebase Console](https://console.firebase.google.com)
+2. Create a new project
+3. Enable Authentication > Email/Password
+4. Create Firestore database
+5. Download service account key (Project Settings > Service Accounts)
+
+### 3. Configure Environment Variables
+
+Create `.env` file:
+
+```bash
+# Firebase Configuration (REQUIRED)
+VITE_FIREBASE_API_KEY=your_firebase_api_key
+VITE_FIREBASE_AUTH_DOMAIN=your-project.firebaseapp.com
+VITE_FIREBASE_PROJECT_ID=your-project-id
+VITE_FIREBASE_STORAGE_BUCKET=your-project.appspot.com
+VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+VITE_FIREBASE_APP_ID=your_app_id
+
+# Firebase Admin (REQUIRED)
+FIREBASE_PROJECT_ID=your-project-id
+FIREBASE_CLIENT_EMAIL=firebase-adminsdk@your-project.iam.gserviceaccount.com
+FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nYour private key\n-----END PRIVATE KEY-----\n"
+
+# AI APIs (REQUIRED)
+PERPLEXITY_API_KEY=pplx-your-api-key
+OPENAI_API_KEY=sk-your-openai-key
+
+# Stripe (OPTIONAL - app works without these)
+VITE_STRIPE_PUBLISHABLE_KEY=pk_test_your_key
+STRIPE_SECRET_KEY=sk_test_your_key
+STRIPE_WEBHOOK_SECRET=whsec_your_secret
+```
+
+### 4. Run Development Server
+
+```bash
 vercel dev
 ```
 
-The app will be available at `http://localhost:3000`
+Visit `http://localhost:3000`
 
-### Running Without Stripe
+### 5. Deploy to Production
 
-The app is designed to work without Stripe configuration:
-- All analysis features work normally
-- Users can sign up and use the 7-day trial (3 analyses)
-- Payment buttons will show demo mode alerts
-- You can add Stripe keys later without any code changes
+```bash
+vercel --prod
+```
 
-### Running With Full Features
+## 🔧 Configuration Details
 
-To enable payment processing:
-1. Add Stripe keys to `.env`
-2. Create products in Stripe Dashboard
-3. Update price IDs in `.env`
-4. Restart the development server
+### Firebase Security Rules
 
-## Pricing Tiers
+Add these rules to Firestore:
 
-- **Trial**: 3 free analyses (7 days)
-- **Starter**: $49/month - 100 analyses
-- **Pro**: $99/month - 250 analyses
-- **Enterprise**: Custom pricing - Unlimited analyses
+```javascript
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Users can only read/write their own data
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Users can only read their own analyses
+    match /analyses/{analysisId} {
+      allow read: if request.auth != null && 
+        request.auth.uid == resource.data.userId;
+      allow create: if request.auth != null;
+    }
+    
+    // Leads collection for demo submissions
+    match /leads/{leadId} {
+      allow create: if true;
+      allow read: if request.auth != null && 
+        request.auth.token.admin == true;
+    }
+  }
+}
+```
 
-## Security Notes
+### AI API Configuration
 
-- Never commit `.env` file
-- Keep API keys secure
-- Use environment variables in production
-- Enable CORS only for your domain in production
-- Implement rate limiting for API endpoints
+#### Perplexity AI
+1. Sign up at [Perplexity AI](https://www.perplexity.ai)
+2. Get API key from dashboard
+3. Add to `.env` as `PERPLEXITY_API_KEY`
 
-## Missing Files to Add
+#### OpenAI
+1. Sign up at [OpenAI](https://platform.openai.com)
+2. Create API key
+3. Add to `.env` as `OPENAI_API_KEY`
 
-The following files need to be created in your project:
+## 💡 How It Works
 
-1. **Firebase Admin Service Account Key**
-   - Download from Firebase Console > Project Settings > Service Accounts
-   - Add the values to your `.env` file
+### User Flow
 
-2. **Stripe Products and Prices**
-   - Create in Stripe Dashboard
-   - Add price IDs to `.env` file
+1. **Sign Up/Sign In**
+   - Users create account with email/password
+   - 7-day free trial with 3 analyses
+   - Profile stored in Firestore
 
-## Common Issues
+2. **Property Analysis**
+   - Enter property address (broken down by street, city, state/province, country)
+   - AI researches property using Perplexity (market data, comparables, rental rates)
+   - OpenAI structures the data into investment metrics
+   - Results saved to user's account
 
-1. **"Firebase Admin initialization error"**
-   - Ensure `FIREBASE_PRIVATE_KEY` in `.env` has proper line breaks (`\n`)
-   - Check that all Firebase Admin credentials are correct
+3. **View Results**
+   - Comprehensive dashboard with property value, costs, ROI
+   - Visual charts comparing rental strategies
+   - Investment recommendations
+   - Access previous analyses from dashboard
 
-2. **"Stripe webhook signature verification failed"**
-   - Make sure `STRIPE_WEBHOOK_SECRET` matches the one from Stripe Dashboard
-   - Ensure raw body parsing for webhook endpoint
+### Data Processing
 
-3. **"API endpoint not found"**
-   - Check that all files in `/api` directory have `.js` extension
-   - Verify Vercel deployment includes all API files
+1. **Address Input** → Structured fields for international support
+2. **AI Research** → Perplexity searches real-time market data
+3. **Data Structuring** → OpenAI formats research into JSON
+4. **Calculations** → ROI, profits, and recommendations
+5. **Storage** → Firebase Firestore with user association
 
-## Summary
+## 📊 API Endpoints
 
-I've successfully converted your Make.com workflow to use direct API calls. Here's what changed:
+- `POST /api/analyze-property` - Main analysis endpoint
+- `GET /api/config` - Public configuration
+- `POST /api/submit-lead` - Lead capture
+- `POST /api/stripe-operations` - Payment operations (if configured)
+- `GET/POST /api/user-management` - User profile management
 
-### 🔄 Major Changes:
-1. **Removed Make.com Dependencies** - All webhooks replaced with Vercel API functions
-2. **Removed Airtable** - All data now stored in Firebase Firestore
-3. **Direct AI Integration** - Perplexity and OpenAI APIs called directly from backend
-4. **Simplified Architecture** - Everything runs on Vercel with Firebase
-5. **Stripe Optional** - App works without Stripe keys (payment features disabled)
+## 🐛 Troubleshooting
 
-### 📁 New Files Created:
-- `api/analyze-property.js` - Main analysis endpoint
-- `api/user-management.js` - User operations
-- `api/stripe-operations.js` - Stripe payment handling
-- `api/stripe-webhook.js` - Stripe webhook handler
-- `api/submit-analysis.js` - Demo analysis submissions
-- `package.json` - Node.js dependencies
-- `vercel.json` - Vercel configuration
-- Updated service files to remove Make.com calls
+### Common Issues
 
-### ✅ Next Steps:
-1. Add your Firebase and AI API keys to `.env` file
-2. Set up Firebase Admin SDK credentials
-3. Deploy to Vercel
-4. (Optional) Add Stripe keys later when ready for payments
+1. **"Cannot type in address field"**
+   - Fixed with proper React state management
+   - Uses `useCallback` to prevent re-renders
 
-The application now runs entirely on your own infrastructure without external workflow dependencies!
+2. **"Only demo data shows"**
+   - Ensure AI API keys are configured
+   - Check Vercel environment variables
+   - View logs in Vercel dashboard
+
+3. **"Firebase connection error"**
+   - Verify Firebase credentials
+   - Check private key formatting (needs `\n`)
+   - Ensure Firestore is initialized
+
+4. **"Analysis limit reached"**
+   - Free trial: 3 analyses
+   - Upgrade to paid plan for more
+   - Resets monthly for paid users
+
+### Debug Mode
+
+Visit `/debug-test.html` to run diagnostics:
+- Tests API endpoints
+- Verifies Firebase connection
+- Checks environment variables
+
+## 💰 Subscription Tiers
+
+- **Free Trial**: 7 days, 3 analyses
+- **Starter**: $49/month, 100 analyses
+- **Pro**: $99/month, 250 analyses  
+- **Enterprise**: Custom pricing, unlimited
+
+## 🔒 Security
+
+- Firebase Auth for user management
+- API keys stored as environment variables
+- User data isolation in Firestore
+- HTTPS enforced on Vercel
+- Input validation and sanitization
+
+## 📈 Future Enhancements
+
+- [ ] Mobile app (React Native)
+- [ ] Mortgage calculator integration
+- [ ] Market trend predictions
+- [ ] Portfolio management
+- [ ] Email notifications
+- [ ] PDF report generation
+- [ ] Multi-language support
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit changes (`git commit -m 'Add AmazingFeature'`)
+4. Push to branch (`git push origin feature/AmazingFeature`)
+5. Open Pull Request
+
+## 📝 License
+
+MIT License - see LICENSE file for details
+
+## 🙏 Acknowledgments
+
+- Perplexity AI for market research capabilities
+- OpenAI for data structuring
+- Firebase for authentication and database
+- Vercel for seamless deployment
+
+## 📞 Support
+
+- Documentation: Check this README
+- Issues: GitHub Issues
+- Email: support@investorprops.com
+
+---
+
+**Note**: This app can operate without Stripe configuration. Payment features will be disabled but all analysis functionality remains available.
