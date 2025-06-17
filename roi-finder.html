@@ -1207,3 +1207,334 @@
   </script>
 </body>
 </html>
+/* Modal backdrop */
+    .modal-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    
+    .modal-content {
+      background: white;
+      border-radius: 16px;
+      padding: 24px;
+      max-width: 500px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+    }      // Demo Input Form for Hero Users
+      const DemoInputForm = () => {
+        const [demoData, setDemoData] = useState({
+          name: prefilledData?.name || '',
+          email: prefilledData?.email || '',
+          phone: ''
+        });
+        
+        const handleDemoSubmit = (e) => {
+          e.preventDefault();
+          
+          // Save demo user data
+          sessionStorage.setItem('demoUser', JSON.stringify(demoData));
+          
+          // Move to property input
+          setCurrentView('demo-property');
+        };
+        
+        return (
+          <div className="min-h-screen bg-gradient-to-br from-blue-50 to-green-50 flex items-center justify-center p-6">
+            <div className="max-w-md w-full">
+              <div className="text-center mb-8">
+                <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-500 to-green-500 rounded-full mb-4">
+                  <div className="w-8 h-8 text-white">
+                    <Icons.User />
+                  </div>
+                </div>
+                <h1 className="text-3xl font-bold text-gray-900 mb-2">Get Your Free ROI Report</h1>
+                <p className="text-gray-600">Complete your details to analyze any property</p>
+              </div>
+
+              <div className="bg-white rounded-2xl shadow-xl p-8">
+                <form onSubmit={handleDemoSubmit}>
+                  <div className="space-y-6">
+                    <div>
+                      <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
+                        <div className="w-4 h-4 mr-2"><Icons.User /></div>
+                        Full Name
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        value={demoData.name}
+                        onChange={(e) => setDemoData({...demoData, name: e.target.value})}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        placeholder="John Doe"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
+                        <div className="w-4 h-4 mr-2"><Icons.Mail /></div>
+                        Email Address
+                      </label>
+                      <input
+                        type="email"
+                        required
+                        value={demoData.email}
+                        onChange={(e) => setDemoData({...demoData, email: e.target.value})}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        placeholder="john@example.com"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
+                        <div className="w-4 h-4 mr-2"><Icons.User /></div>
+                        Phone Number (Optional)
+                      </label>
+                      <input
+                        type="tel"
+                        value={demoData.phone}
+                        onChange={(e) => setDemoData({...demoData, phone: e.target.value})}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        placeholder="(555) 123-4567"
+                      />
+                    </div>
+
+                    <button
+                      type="submit"
+                      className="w-full bg-gradient-to-r from-blue-500 to-green-500 hover:from-blue-600 hover:to-green-600 text-white font-semibold py-4 px-6 rounded-lg transition-all duration-300 flex items-center justify-center gap-2"
+                    >
+                      Continue to Property Analysis
+                      <div className="w-5 h-5"><Icons.ArrowRight /></div>
+                    </button>
+                  </div>
+                </form>
+
+                <div className="mt-6 pt-6 border-t border-gray-200 text-center">
+                  <p className="text-sm text-gray-600">
+                    Already have an account?{' '}
+                    <button
+                      onClick={() => {
+                        setDemoMode(false);
+                        setCurrentView('auth');
+                      }}
+                      className="text-blue-600 hover:text-blue-800 font-semibold"
+                    >
+                      Sign In
+                    </button>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      };
+
+      // Demo Property Form
+      const DemoPropertyForm = () => {
+        const [propertyData, setPropertyData] = useState({
+          street: '',
+          city: '',
+          stateProvince: '',
+          country: '',
+          postalCode: ''
+        });
+        const [submitting, setSubmitting] = useState(false);
+
+        const handleInputChange = useCallback((field, value) => {
+          setPropertyData(prev => ({
+            ...prev,
+            [field]: value
+          }));
+        }, []);
+
+        const submitDemoAnalysis = async () => {
+          if (!propertyData.street || !propertyData.city || !propertyData.stateProvince || !propertyData.country) {
+            alert('Please fill in all required fields');
+            return;
+          }
+
+          setSubmitting(true);
+          setCurrentView('processing');
+
+          try {
+            const demoUser = JSON.parse(sessionStorage.getItem('demoUser') || '{}');
+            const fullAddress = `${propertyData.street}, ${propertyData.city}, ${propertyData.stateProvince}, ${propertyData.country} ${propertyData.postalCode}`;
+
+            const response = await fetch('/api/analyze-property', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                propertyAddress: fullAddress,
+                userEmail: demoUser.email,
+                userName: demoUser.name,
+                requestType: 'demo'
+              })
+            });
+
+            if (!response.ok) {
+              throw new Error('Analysis failed');
+            }
+
+            const result = await response.json();
+            setAnalysisData(result.data);
+            setCurrentView('results');
+          } catch (error) {
+            console.error('Analysis error:', error);
+            alert('Analysis failed. Please try again.');
+            setCurrentView('demo-property');
+          } finally {
+            setSubmitting(false);
+          }
+        };
+
+        return (
+          <div className="min-h-screen bg-gradient-to-br from-blue-50 to-green-50 flex items-center justify-center p-6">
+            <div className="max-w-md w-full">
+              <div className="text-center mb-8">
+                <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-500 to-green-500 rounded-full mb-4">
+                  <div className="w-8 h-8 text-white">
+                    <Icons.Calculator />
+                  </div>
+                </div>
+                <h1 className="text-3xl font-bold text-gray-900 mb-2">Analyze Any Property</h1>
+                <p className="text-gray-600">Enter the property address to get your free ROI report</p>
+              </div>
+
+              <div className="bg-white rounded-2xl shadow-xl p-8">
+                <div className="space-y-6">
+                  <div>
+                    <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
+                      <div className="w-4 h-4 mr-2"><Icons.MapPin /></div>
+                      Street Address *
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="123 Main Street"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      value={propertyData.street}
+                      onChange={(e) => handleInputChange('street', e.target.value)}
+                      required
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
+                        <div className="w-4 h-4 mr-2"><Icons.MapPin /></div>
+                        City *
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="Toronto"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        value={propertyData.city}
+                        onChange={(e) => handleInputChange('city', e.target.value)}
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
+                        <div className="w-4 h-4 mr-2"><Icons.MapPin /></div>
+                        State/Province *
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="Ontario"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        value={propertyData.stateProvince}
+                        onChange={(e) => handleInputChange('stateProvince', e.target.value)}
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
+                        <div className="w-4 h-4 mr-2"><Icons.Globe /></div>
+                        Country *
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="Canada"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        value={propertyData.country}
+                        onChange={(e) => handleInputChange('country', e.target.value)}
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
+                        <div className="w-4 h-4 mr-2"><Icons.MapPin /></div>
+                        Postal/Zip Code
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="M5V 3A8"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        value={propertyData.postalCode}
+                        onChange={(e) => handleInputChange('postalCode', e.target.value)}
+                      />
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={submitDemoAnalysis}
+                    disabled={submitting}
+                    className="w-full bg-gradient-to-r from-blue-500 to-green-500 hover:from-blue-600 hover:to-green-600 text-white font-semibold py-4 px-6 rounded-lg transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-50"
+                  >
+                    {submitting ? (
+                      <>
+                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                        Processing...
+                      </>
+                    ) : (
+                      <>
+                        <div className="w-5 h-5"><Icons.Calculator /></div>
+                        Get My Free ROI Report
+                        <div className="w-5 h-5"><Icons.ArrowRight /></div>
+                      </>
+                    )}
+                  </button>
+                </div>
+
+                <div className="mt-6 pt-6 border-t border-gray-200">
+                  <div className="bg-green-50 rounded-lg p-4">
+                    <p className="text-sm text-green-800">
+                      <strong>Free Trial:</strong> Get 3 property analyses free. Create an account to unlock unlimited analyses!
+                    </p>
+                  </div>
+                </div>
+
+                <div className="mt-4 text-center">
+                  <a href="index.html" className="text-sm text-blue-600 hover:text-blue-800">
+                    ← Back to Homepage
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      };    // Main App Component
+    const ROIFinderApp = () => {
+      const [currentView, setCurrentView] = useState('loading');
+      const [user, setUser] = useState(null);
+      const [userProfile, setUserProfile] = useState(null);
+      const [authMode, setAuthMode] = useState('signin');
+      const [loading, setLoading] = useState(true);
+      const [analysisData, setAnalysisData] = useState(null);
+      const [userAnalyses, setUserAnalyses] = useState([]);
+      const [error, setError] = useState('');
+      const [demoMode, setDemoMode] = useState(false);
+      const [prefilledData, setPrefilledData] = useState(null);
