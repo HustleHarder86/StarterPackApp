@@ -1301,3 +1301,33 @@ const loadUserAnalyses = async () => {
   </script>
 </body>
 </html>
+// Add this function to roi-finder.html to reset the analysis count
+
+const resetAnalysisCount = async () => {
+  if (!user) return;
+  
+  try {
+    const db = firebase.firestore();
+    await db.collection('users').doc(user.uid).update({
+      monthlyAnalysisCount: 0,
+      lastResetDate: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    
+    // Reload user profile
+    const profile = await loadUserProfile(user.uid);
+    setUserProfile(profile);
+    
+    alert('Analysis count reset successfully');
+  } catch (error) {
+    console.error('Reset error:', error);
+    alert('Failed to reset count: ' + error.message);
+  }
+};
+
+// Add this button to the dashboard (temporary fix button)
+<button
+  onClick={resetAnalysisCount}
+  className="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-lg transition-all duration-300 ml-4"
+>
+  Reset Count
+</button>
