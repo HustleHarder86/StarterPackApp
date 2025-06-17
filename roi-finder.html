@@ -327,28 +327,83 @@
       };
 
       // Load user analyses
-      const loadUserAnalyses = async () => {
-        if (!user) return;
-        
-        try {
-          const db = firebase.firestore();
-          const snapshot = await db.collection('analyses')
-            .where('userId', '==', user.uid)
-            .orderBy('createdAt', 'desc')
-            .limit(10)
-            .get();
-          
-          const analyses = [];
-          snapshot.forEach(doc => {
-            analyses.push({ id: doc.id, ...doc.data() });
-          });
-          
-          setUserAnalyses(analyses);
-        } catch (error) {
-          console.error('Load analyses error:', error);
-        }
-      };
+     // Replace the loadUserAnalyses function in roi-finder.html with this debug version:
 
+const loadUserAnalyses = async () => {
+  if (!user) {
+    console.log('No user found, cannot load analyses');
+    return;
+  }
+  
+  console.log('Loading analyses for user:', user.uid);
+  
+  try {
+    const db = firebase.firestore();
+    
+    // First, let's check if we can access the collection at all
+    console.log('Attempting to query analyses collection...');
+    
+    // Try to get ALL analyses first to see what's there
+    const allAnalysesSnapshot = await db.collection('analyses').limit(5).get();
+    console.log('Total analyses in database:', allAnalysesSnapshot.size);
+    
+    allAnalysesSnapshot.forEach(doc => {
+      console.log('Analysis doc:', doc.id, 'userId:', doc.data().userId, 'Current user:', user.uid);
+    });
+    
+    // Now try the filtered query
+    console.log('Querying analyses for userId:', user.uid);
+    const snapshot = await db.collection('analyses')
+      .where('userId', '==', user.uid)
+      .orderBy('createdAt', 'desc')
+      .limit(10)
+      .get();
+    
+    console.log('Found analyses for current user:', snapshot.size);
+    
+    const analyses = [];
+    snapshot.forEach(doc => {
+      const data = doc.data();
+      console.log('Analysis data:', data);
+      analyses.push({ id: doc.id, ...data });
+    });
+    
+    setUserAnalyses(analyses);
+    console.log('Set user analyses:', analyses);
+  } catch (error) {
+    console.error('Load analyses error:', error);
+    console.error('Error code:', error.code);
+    console.error('Error message:', error.message);
+    
+    // If it's a permission error, let's try without orderBy
+    if (error.code === 'permission-denied') {
+      console.log('Permission error, trying without orderBy...');
+      try {
+        const simpleSnapshot = await db.collection('analyses')
+          .where('userId', '==', user.uid)
+          .get();
+        
+        console.log('Simple query found:', simpleSnapshot.size, 'analyses');
+        
+        const analyses = [];
+        simpleSnapshot.forEach(doc => {
+          analyses.push({ id: doc.id, ...doc.data() });
+        });
+        
+        // Sort manually
+        analyses.sort((a, b) => {
+          const dateA = a.createdAt?.toDate?.() || new Date(a.analysis_timestamp || 0);
+          const dateB = b.createdAt?.toDate?.() || new Date(b.analysis_timestamp || 0);
+          return dateB - dateA;
+        });
+        
+        setUserAnalyses(analyses.slice(0, 10));
+      } catch (simpleError) {
+        console.error('Simple query also failed:', simpleError);
+      }
+    }
+  }
+};
       // Authentication Component
       const AuthScreen = () => {
         const [email, setEmail] = useState('');
