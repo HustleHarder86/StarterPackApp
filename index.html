@@ -265,3 +265,22 @@
   </script>
 </body>
 </html>
+document.getElementById('lead-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const name = this.name.value;
+      const email = this.email.value;
+      
+      // Store lead info in sessionStorage to pre-fill the form
+      sessionStorage.setItem('leadName', name);
+      sessionStorage.setItem('leadEmail', email);
+      
+      // Save lead to database
+      await fetch('/api/submit-lead', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email })
+      });
+      
+      // Redirect to ROI Finder
+      window.location.href = 'roi-finder.html?source=hero';
+    });
