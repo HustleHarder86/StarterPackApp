@@ -5,24 +5,44 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>ROI Finder - InvestorProps</title>
   
-  <!-- React 18 Production Build -->
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
+  
+  <!-- React 18 -->
   <script crossorigin src="https://unpkg.com/react@18.2.0/umd/react.production.min.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
   
-  <!-- Babel Standalone for JSX -->
+  <!-- Babel -->
   <script src="https://unpkg.com/@babel/standalone@7.23.5/babel.min.js"></script>
   
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   
   <style>
-    /* Custom styles for charts */
-    .chart-container {
-      width: 100%;
-      height: 300px;
-      position: relative;
+    /* Icon styles */
+    .icon {
+      display: inline-block;
+      width: 1em;
+      height: 1em;
+      stroke-width: 2;
+      stroke: currentColor;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
     }
     
+    /* Loading animation */
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    .animate-spin {
+      animation: spin 1s linear infinite;
+    }
+    
+    /* Charts */
     .bar-chart {
       display: flex;
       align-items: flex-end;
@@ -78,20 +98,13 @@
       color: #374151;
     }
     
-    /* Pie chart styles */
+    /* Pie chart */
     .pie-chart {
       width: 200px;
       height: 200px;
       border-radius: 50%;
       position: relative;
       margin: 20px auto;
-    }
-    
-    .pie-slice {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      border-radius: 50%;
     }
     
     .chart-legend {
@@ -114,27 +127,6 @@
       height: 12px;
       border-radius: 2px;
     }
-    
-    /* Loading animation */
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-    
-    .animate-spin {
-      animation: spin 1s linear infinite;
-    }
-    
-    /* Icon styles */
-    .icon {
-      display: inline-block;
-      width: 1em;
-      height: 1em;
-      stroke-width: 2;
-      stroke: currentColor;
-      fill: none;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-    }
   </style>
 </head>
 <body>
@@ -148,11 +140,9 @@
   </div>
 
   <script type="text/babel">
-    console.log('Starting React app...');
+    const { useState, useEffect, useCallback } = React;
     
-    const { useState, useEffect } = React;
-    
-    // Simple SVG Icons as React components
+    // Icons
     const Icons = {
       Calculator: () => (
         <svg className="icon" viewBox="0 0 24 24">
@@ -232,193 +222,664 @@
           <line x1="12" y1="8" x2="12" y2="12" />
           <line x1="12" y1="16" x2="12.01" y2="16" />
         </svg>
+      ),
+      LogOut: () => (
+        <svg className="icon" viewBox="0 0 24 24">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+          <polyline points="16 17 21 12 16 7" />
+          <line x1="21" y1="12" x2="9" y2="12" />
+        </svg>
+      ),
+      Key: () => (
+        <svg className="icon" viewBox="0 0 24 24">
+          <path d="m21 2-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0 2.25-2.25L21 2l-3.25 3.25m-2.25 2.25L19 11" />
+        </svg>
+      ),
+      BarChart: () => (
+        <svg className="icon" viewBox="0 0 24 24">
+          <line x1="12" y1="20" x2="12" y2="10" />
+          <line x1="18" y1="20" x2="18" y2="4" />
+          <line x1="6" y1="20" x2="6" y2="16" />
+        </svg>
+      ),
+      Globe: () => (
+        <svg className="icon" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="10" />
+          <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+        </svg>
       )
     };
 
+    // Main App Component
     const ROIFinderApp = () => {
-      const [currentView, setCurrentView] = useState('input');
-      const [userInfo, setUserInfo] = useState({
-        name: '',
-        email: '',
-        address: ''
-      });
+      const [currentView, setCurrentView] = useState('loading');
+      const [user, setUser] = useState(null);
+      const [userProfile, setUserProfile] = useState(null);
+      const [authMode, setAuthMode] = useState('signin');
+      const [loading, setLoading] = useState(true);
       const [analysisData, setAnalysisData] = useState(null);
-      const [loading, setLoading] = useState(false);
+      const [userAnalyses, setUserAnalyses] = useState([]);
+      const [error, setError] = useState('');
 
-      const submitForAnalysis = async () => {
-        if (!userInfo.name || !userInfo.email || !userInfo.address) {
-          alert('Please fill in all fields');
-          return;
-        }
+      // Initialize Firebase
+      useEffect(() => {
+        const initFirebase = async () => {
+          try {
+            // Load config from API
+            const response = await fetch('/api/config');
+            const config = await response.json();
+            
+            // Initialize Firebase
+            firebase.initializeApp(config.firebase);
+            
+            // Set up auth listener
+            firebase.auth().onAuthStateChanged(async (user) => {
+              if (user) {
+                // Load user profile
+                const profile = await loadUserProfile(user.uid);
+                setUser(user);
+                setUserProfile(profile);
+                setCurrentView('dashboard');
+              } else {
+                setUser(null);
+                setUserProfile(null);
+                setCurrentView('auth');
+              }
+              setLoading(false);
+            });
+          } catch (error) {
+            console.error('Firebase init error:', error);
+            setError('Failed to initialize app');
+            setLoading(false);
+          }
+        };
 
-        setLoading(true);
-        setCurrentView('processing');
+        initFirebase();
+      }, []);
 
-        // Try to submit to API but continue with demo data regardless
+      // Load user profile
+      const loadUserProfile = async (userId) => {
         try {
-          await fetch('/api/submit-lead', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              name: userInfo.name,
-              email: userInfo.email,
-              address: userInfo.address
-            })
-          });
-        } catch (error) {
-          console.log('API call failed, continuing with demo');
-        }
-
-        // Simulate analysis with demo data
-        setTimeout(() => {
-          const sampleData = {
-            lead_id: "rec123",
-            lead_name: userInfo.name,
-            lead_email: userInfo.email,
-            property_address: userInfo.address,
-            analysis_timestamp: new Date().toISOString(),
-            property_details: {
-              address: userInfo.address,
-              estimated_value: 650000,
-              property_type: "Investment Property"
-            },
-            costs: {
-              property_tax_annual: 8125,
-              hoa_monthly: 450,
-              utilities_monthly: 200,
-              insurance_annual: 1800,
-              maintenance_annual: 3000
-            },
-            short_term_rental: {
-              daily_rate: 225,
-              occupancy_rate: 75,
-              annual_revenue: 61594,
-              annual_profit: 39069
-            },
-            long_term_rental: {
-              monthly_rent: 3200,
-              annual_revenue: 38400,
-              annual_profit: 15875
-            },
-            recommendation: "Short-term rental recommended. The property shows strong potential for Airbnb with 75% occupancy rate and significantly higher profit margins compared to long-term rental.",
-            roi_percentage: 6.01
-          };
+          const db = firebase.firestore();
+          const doc = await db.collection('users').doc(userId).get();
           
-          setAnalysisData(sampleData);
-          setCurrentView('dashboard');
-          setLoading(false);
-        }, 3000);
+          if (doc.exists) {
+            return { id: doc.id, ...doc.data() };
+          } else {
+            // Create new profile
+            const newProfile = {
+              email: firebase.auth().currentUser.email,
+              createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+              subscriptionStatus: 'trial',
+              subscriptionTier: 'trial',
+              monthlyAnalysisCount: 0,
+              monthlyAnalysisLimit: 3,
+              trialEndsAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+            };
+            
+            await db.collection('users').doc(userId).set(newProfile);
+            return { id: userId, ...newProfile };
+          }
+        } catch (error) {
+          console.error('Profile load error:', error);
+          return null;
+        }
       };
 
-      const PropertyInputForm = () => (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 to-green-50 flex items-center justify-center p-6">
-          <div className="max-w-md w-full">
-            <div className="text-center mb-8">
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-500 to-green-500 rounded-full mb-4">
-                <div className="w-8 h-8 text-white">
-                  <Icons.Calculator />
-                </div>
-              </div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">Property ROI Analyzer</h1>
-              <p className="text-gray-600">Get a comprehensive investment analysis powered by AI</p>
-            </div>
+      // Load user analyses
+      const loadUserAnalyses = async () => {
+        if (!user) return;
+        
+        try {
+          const db = firebase.firestore();
+          const snapshot = await db.collection('analyses')
+            .where('userId', '==', user.uid)
+            .orderBy('createdAt', 'desc')
+            .limit(10)
+            .get();
+          
+          const analyses = [];
+          snapshot.forEach(doc => {
+            analyses.push({ id: doc.id, ...doc.data() });
+          });
+          
+          setUserAnalyses(analyses);
+        } catch (error) {
+          console.error('Load analyses error:', error);
+        }
+      };
 
-            <div className="bg-white rounded-2xl shadow-xl p-8">
-              <div className="space-y-6">
-                <div>
-                  <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
-                    <div className="w-4 h-4 mr-2"><Icons.User /></div>
-                    Your Name
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="Enter your full name"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                    value={userInfo.name}
-                    onChange={(e) => setUserInfo({...userInfo, name: e.target.value})}
-                  />
-                </div>
+      // Authentication Component
+      const AuthScreen = () => {
+        const [email, setEmail] = useState('');
+        const [password, setPassword] = useState('');
+        const [name, setName] = useState('');
+        const [authError, setAuthError] = useState('');
+        const [loading, setLoading] = useState(false);
 
-                <div>
-                  <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
-                    <div className="w-4 h-4 mr-2"><Icons.Mail /></div>
-                    Email Address
-                  </label>
-                  <input
-                    type="email"
-                    placeholder="Enter your email"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                    value={userInfo.email}
-                    onChange={(e) => setUserInfo({...userInfo, email: e.target.value})}
-                  />
-                </div>
+        const handleSignUp = async (e) => {
+          e.preventDefault();
+          setLoading(true);
+          setAuthError('');
 
-                <div>
-                  <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
-                    <div className="w-4 h-4 mr-2"><Icons.MapPin /></div>
-                    Property Address
-                  </label>
-                  <textarea
-                    rows={3}
-                    placeholder="Enter the full property address"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
-                    value={userInfo.address}
-                    onChange={(e) => setUserInfo({...userInfo, address: e.target.value})}
-                  />
-                </div>
+          try {
+            const result = await firebase.auth().createUserWithEmailAndPassword(email, password);
+            
+            // Update display name
+            await result.user.updateProfile({ displayName: name });
+            
+            // Create user profile
+            const db = firebase.firestore();
+            await db.collection('users').doc(result.user.uid).set({
+              email,
+              displayName: name,
+              createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+              subscriptionStatus: 'trial',
+              subscriptionTier: 'trial',
+              monthlyAnalysisCount: 0,
+              monthlyAnalysisLimit: 3,
+              trialEndsAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+            });
+          } catch (error) {
+            setAuthError(error.message);
+          } finally {
+            setLoading(false);
+          }
+        };
 
-                <button
-                  onClick={submitForAnalysis}
-                  disabled={loading}
-                  className="w-full bg-gradient-to-r from-blue-500 to-green-500 hover:from-blue-600 hover:to-green-600 text-white font-semibold py-4 px-6 rounded-lg transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-50"
-                >
-                  {loading ? (
-                    <>
-                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                      Processing...
-                    </>
-                  ) : (
-                    <>
-                      <div className="w-5 h-5"><Icons.Calculator /></div>
-                      Analyze Property
-                      <div className="w-5 h-5"><Icons.ArrowRight /></div>
-                    </>
-                  )}
-                </button>
-              </div>
+        const handleSignIn = async (e) => {
+          e.preventDefault();
+          setLoading(true);
+          setAuthError('');
 
-              <div className="mt-6 pt-6 border-t border-gray-200">
-                <h3 className="font-semibold text-gray-900 mb-3">What you'll get:</h3>
-                <div className="space-y-2">
-                  <div className="flex items-center text-sm text-gray-600">
-                    <div className="w-4 h-4 text-green-500 mr-2"><Icons.Check /></div>
-                    Real-time market analysis
-                  </div>
-                  <div className="flex items-center text-sm text-gray-600">
-                    <div className="w-4 h-4 text-green-500 mr-2"><Icons.Check /></div>
-                    Short-term vs long-term rental comparison
-                  </div>
-                  <div className="flex items-center text-sm text-gray-600">
-                    <div className="w-4 h-4 text-green-500 mr-2"><Icons.Check /></div>
-                    Detailed cost breakdown
-                  </div>
-                  <div className="flex items-center text-sm text-gray-600">
-                    <div className="w-4 h-4 text-green-500 mr-2"><Icons.Check /></div>
-                    ROI calculations and recommendations
+          try {
+            await firebase.auth().signInWithEmailAndPassword(email, password);
+          } catch (error) {
+            setAuthError(error.message);
+          } finally {
+            setLoading(false);
+          }
+        };
+
+        return (
+          <div className="min-h-screen bg-gradient-to-br from-blue-50 to-green-50 flex items-center justify-center p-6">
+            <div className="max-w-md w-full">
+              <div className="text-center mb-8">
+                <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-500 to-green-500 rounded-full mb-4">
+                  <div className="w-8 h-8 text-white">
+                    <Icons.Key />
                   </div>
                 </div>
+                <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                  {authMode === 'signin' ? 'Welcome Back' : 'Create Account'}
+                </h1>
+                <p className="text-gray-600">
+                  {authMode === 'signin' 
+                    ? 'Sign in to access your property analyses' 
+                    : 'Start your 7-day free trial with 3 analyses'}
+                </p>
               </div>
 
-              <div className="mt-6 pt-4 border-t border-gray-200">
-                <a href="index.html" className="text-sm text-blue-600 hover:text-blue-800 flex items-center justify-center gap-1">
-                  ← Back to Homepage
-                </a>
+              <div className="bg-white rounded-2xl shadow-xl p-8">
+                <form onSubmit={authMode === 'signin' ? handleSignIn : handleSignUp}>
+                  <div className="space-y-6">
+                    {authMode === 'signup' && (
+                      <div>
+                        <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
+                          <div className="w-4 h-4 mr-2"><Icons.User /></div>
+                          Full Name
+                        </label>
+                        <input
+                          type="text"
+                          required
+                          value={name}
+                          onChange={(e) => setName(e.target.value)}
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          placeholder="John Doe"
+                        />
+                      </div>
+                    )}
+
+                    <div>
+                      <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
+                        <div className="w-4 h-4 mr-2"><Icons.Mail /></div>
+                        Email Address
+                      </label>
+                      <input
+                        type="email"
+                        required
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        placeholder="john@example.com"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
+                        <div className="w-4 h-4 mr-2"><Icons.Key /></div>
+                        Password
+                      </label>
+                      <input
+                        type="password"
+                        required
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        placeholder="••••••••"
+                        minLength={6}
+                      />
+                    </div>
+
+                    {authError && (
+                      <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm">
+                        {authError}
+                      </div>
+                    )}
+
+                    <button
+                      type="submit"
+                      disabled={loading}
+                      className="w-full bg-gradient-to-r from-blue-500 to-green-500 hover:from-blue-600 hover:to-green-600 text-white font-semibold py-4 px-6 rounded-lg transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-50"
+                    >
+                      {loading ? (
+                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                      ) : (
+                        <>
+                          {authMode === 'signin' ? 'Sign In' : 'Create Account'}
+                          <div className="w-5 h-5"><Icons.ArrowRight /></div>
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </form>
+
+                <div className="mt-6 text-center">
+                  <p className="text-gray-600">
+                    {authMode === 'signin' ? "Don't have an account? " : "Already have an account? "}
+                    <button
+                      onClick={() => setAuthMode(authMode === 'signin' ? 'signup' : 'signin')}
+                      className="text-blue-600 hover:text-blue-800 font-semibold"
+                    >
+                      {authMode === 'signin' ? 'Sign Up' : 'Sign In'}
+                    </button>
+                  </p>
+                </div>
+
+                <div className="mt-6 pt-6 border-t border-gray-200">
+                  <a href="index.html" className="text-sm text-blue-600 hover:text-blue-800 flex items-center justify-center gap-1">
+                    ← Back to Homepage
+                  </a>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      );
+        );
+      };
 
+      // Dashboard Component
+      const Dashboard = () => {
+        const [showNewAnalysis, setShowNewAnalysis] = useState(false);
+
+        useEffect(() => {
+          loadUserAnalyses();
+        }, []);
+
+        if (showNewAnalysis) {
+          return <PropertyInputForm onBack={() => setShowNewAnalysis(false)} />;
+        }
+
+        return (
+          <div className="min-h-screen bg-gray-50">
+            {/* Header */}
+            <div className="bg-white shadow-sm">
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="flex justify-between items-center py-4">
+                  <div className="flex items-center gap-4">
+                    <h1 className="text-2xl font-bold text-gray-900">InvestorProps</h1>
+                    <span className="text-sm text-gray-500">Dashboard</span>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <span className="text-sm text-gray-700">{user?.email}</span>
+                    <button
+                      onClick={() => firebase.auth().signOut()}
+                      className="flex items-center gap-2 text-gray-600 hover:text-gray-900"
+                    >
+                      <div className="w-5 h-5"><Icons.LogOut /></div>
+                      Sign Out
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Main Content */}
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+              {/* Stats */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div className="bg-white rounded-lg shadow p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-gray-600">Analyses Used</p>
+                      <p className="text-2xl font-bold text-gray-900">
+                        {userProfile?.monthlyAnalysisCount || 0} / {userProfile?.monthlyAnalysisLimit || 3}
+                      </p>
+                    </div>
+                    <div className="p-3 bg-blue-100 rounded-lg">
+                      <div className="w-6 h-6 text-blue-600"><Icons.BarChart /></div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-white rounded-lg shadow p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-gray-600">Subscription</p>
+                      <p className="text-2xl font-bold text-gray-900 capitalize">
+                        {userProfile?.subscriptionTier || 'Trial'}
+                      </p>
+                    </div>
+                    <div className="p-3 bg-green-100 rounded-lg">
+                      <div className="w-6 h-6 text-green-600"><Icons.Check /></div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-white rounded-lg shadow p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-gray-600">Total Analyses</p>
+                      <p className="text-2xl font-bold text-gray-900">{userAnalyses.length}</p>
+                    </div>
+                    <div className="p-3 bg-purple-100 rounded-lg">
+                      <div className="w-6 h-6 text-purple-600"><Icons.Home /></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* New Analysis Button */}
+              <div className="text-center mb-8">
+                <button
+                  onClick={() => setShowNewAnalysis(true)}
+                  className="bg-gradient-to-r from-blue-500 to-green-500 hover:from-blue-600 hover:to-green-600 text-white font-semibold py-4 px-8 rounded-lg transition-all duration-300 flex items-center gap-3 mx-auto"
+                >
+                  <div className="w-6 h-6"><Icons.Calculator /></div>
+                  New Property Analysis
+                </button>
+              </div>
+
+              {/* Recent Analyses */}
+              <div className="bg-white rounded-lg shadow">
+                <div className="px-6 py-4 border-b border-gray-200">
+                  <h2 className="text-lg font-semibold text-gray-900">Recent Analyses</h2>
+                </div>
+                <div className="divide-y divide-gray-200">
+                  {userAnalyses.length === 0 ? (
+                    <div className="px-6 py-12 text-center text-gray-500">
+                      No analyses yet. Click "New Property Analysis" to get started!
+                    </div>
+                  ) : (
+                    userAnalyses.map((analysis) => (
+                      <div key={analysis.id} className="px-6 py-4 hover:bg-gray-50 cursor-pointer"
+                           onClick={() => {
+                             setAnalysisData(analysis);
+                             setCurrentView('results');
+                           }}>
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <h3 className="font-medium text-gray-900">
+                              {analysis.property_details?.address || analysis.propertyAddress}
+                            </h3>
+                            <p className="text-sm text-gray-600 mt-1">
+                              ROI: {analysis.roi_percentage}% • 
+                              {analysis.recommendation?.includes('Short-term') ? ' Short-term' : ' Long-term'} rental recommended
+                            </p>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-sm text-gray-500">
+                              {new Date(analysis.createdAt?.toDate?.() || analysis.analysis_timestamp).toLocaleDateString()}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      };
+
+      // Property Input Form Component
+      const PropertyInputForm = ({ onBack }) => {
+        const [propertyData, setPropertyData] = useState({
+          street: '',
+          city: '',
+          stateProvince: '',
+          country: '',
+          postalCode: ''
+        });
+        const [submitting, setSubmitting] = useState(false);
+
+        const handleInputChange = useCallback((field, value) => {
+          setPropertyData(prev => ({
+            ...prev,
+            [field]: value
+          }));
+        }, []);
+
+        const submitForAnalysis = async () => {
+          // Validate all fields
+          if (!propertyData.street || !propertyData.city || !propertyData.stateProvince || !propertyData.country) {
+            alert('Please fill in all required fields');
+            return;
+          }
+
+          // Check analysis limit
+          if (userProfile.monthlyAnalysisCount >= userProfile.monthlyAnalysisLimit) {
+            alert(`You've reached your monthly limit of ${userProfile.monthlyAnalysisLimit} analyses. Please upgrade your plan.`);
+            return;
+          }
+
+          setSubmitting(true);
+          setCurrentView('processing');
+
+          try {
+            // Construct full address
+            const fullAddress = `${propertyData.street}, ${propertyData.city}, ${propertyData.stateProvince}, ${propertyData.country} ${propertyData.postalCode}`;
+
+            // Call the real API
+            const response = await fetch('/api/analyze-property', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                userId: user.uid,
+                propertyAddress: fullAddress,
+                userEmail: user.email,
+                userName: user.displayName || user.email,
+                requestType: 'authenticated'
+              })
+            });
+
+            if (!response.ok) {
+              throw new Error('Analysis failed');
+            }
+
+            const result = await response.json();
+            
+            // Update analysis count
+            const db = firebase.firestore();
+            await db.collection('users').doc(user.uid).update({
+              monthlyAnalysisCount: firebase.firestore.FieldValue.increment(1)
+            });
+
+            // Set the analysis data and show results
+            setAnalysisData(result.data);
+            setCurrentView('results');
+          } catch (error) {
+            console.error('Analysis error:', error);
+            alert('Analysis failed. Please try again.');
+            setCurrentView('dashboard');
+          } finally {
+            setSubmitting(false);
+          }
+        };
+
+        return (
+          <div className="min-h-screen bg-gradient-to-br from-blue-50 to-green-50 flex items-center justify-center p-6">
+            <div className="max-w-md w-full">
+              <div className="text-center mb-8">
+                <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-500 to-green-500 rounded-full mb-4">
+                  <div className="w-8 h-8 text-white">
+                    <Icons.Calculator />
+                  </div>
+                </div>
+                <h1 className="text-3xl font-bold text-gray-900 mb-2">Property ROI Analyzer</h1>
+                <p className="text-gray-600">Get AI-powered investment analysis for any property worldwide</p>
+              </div>
+
+              <div className="bg-white rounded-2xl shadow-xl p-8">
+                <div className="space-y-6">
+                  <div>
+                    <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
+                      <div className="w-4 h-4 mr-2"><Icons.MapPin /></div>
+                      Street Address *
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="123 Main Street"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      value={propertyData.street}
+                      onChange={(e) => handleInputChange('street', e.target.value)}
+                      required
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
+                        <div className="w-4 h-4 mr-2"><Icons.MapPin /></div>
+                        City *
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="Toronto"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        value={propertyData.city}
+                        onChange={(e) => handleInputChange('city', e.target.value)}
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
+                        <div className="w-4 h-4 mr-2"><Icons.MapPin /></div>
+                        State/Province *
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="Ontario"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        value={propertyData.stateProvince}
+                        onChange={(e) => handleInputChange('stateProvince', e.target.value)}
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
+                        <div className="w-4 h-4 mr-2"><Icons.Globe /></div>
+                        Country *
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="Canada"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        value={propertyData.country}
+                        onChange={(e) => handleInputChange('country', e.target.value)}
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
+                        <div className="w-4 h-4 mr-2"><Icons.MapPin /></div>
+                        Postal/Zip Code
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="M5V 3A8"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        value={propertyData.postalCode}
+                        onChange={(e) => handleInputChange('postalCode', e.target.value)}
+                      />
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={submitForAnalysis}
+                    disabled={submitting}
+                    className="w-full bg-gradient-to-r from-blue-500 to-green-500 hover:from-blue-600 hover:to-green-600 text-white font-semibold py-4 px-6 rounded-lg transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-50"
+                  >
+                    {submitting ? (
+                      <>
+                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                        Processing...
+                      </>
+                    ) : (
+                      <>
+                        <div className="w-5 h-5"><Icons.Calculator /></div>
+                        Analyze Property
+                        <div className="w-5 h-5"><Icons.ArrowRight /></div>
+                      </>
+                    )}
+                  </button>
+                </div>
+
+                <div className="mt-6 pt-6 border-t border-gray-200">
+                  <h3 className="font-semibold text-gray-900 mb-3">Analysis includes:</h3>
+                  <div className="space-y-2">
+                    <div className="flex items-center text-sm text-gray-600">
+                      <div className="w-4 h-4 text-green-500 mr-2"><Icons.Check /></div>
+                      Current market value & comparables
+                    </div>
+                    <div className="flex items-center text-sm text-gray-600">
+                      <div className="w-4 h-4 text-green-500 mr-2"><Icons.Check /></div>
+                      Short-term (Airbnb) vs long-term rental analysis
+                    </div>
+                    <div className="flex items-center text-sm text-gray-600">
+                      <div className="w-4 h-4 text-green-500 mr-2"><Icons.Check /></div>
+                      All costs: taxes, insurance, maintenance, HOA
+                    </div>
+                    <div className="flex items-center text-sm text-gray-600">
+                      <div className="w-4 h-4 text-green-500 mr-2"><Icons.Check /></div>
+                      ROI calculations and investment recommendations
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-6 pt-4 border-t border-gray-200 flex justify-between">
+                  <button 
+                    onClick={onBack}
+                    className="text-sm text-blue-600 hover:text-blue-800 flex items-center gap-1"
+                  >
+                    ← Back to Dashboard
+                  </button>
+                  <span className="text-xs text-gray-500">
+                    {userProfile?.monthlyAnalysisCount || 0}/{userProfile?.monthlyAnalysisLimit || 3} analyses used
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      };
+
+      // Processing Screen
       const ProcessingScreen = () => (
         <div className="min-h-screen bg-gradient-to-br from-blue-50 to-green-50 flex items-center justify-center p-6">
           <div className="max-w-md w-full text-center">
@@ -429,36 +890,36 @@
               
               <h2 className="text-2xl font-bold text-gray-900 mb-4">Analyzing Your Property</h2>
               <p className="text-gray-600 mb-6">
-                Our AI is gathering real-time market data and calculating investment metrics for:
+                Our AI is performing comprehensive market research and analysis...
               </p>
-              
-              <div className="bg-gray-50 rounded-lg p-4 mb-6">
-                <p className="font-medium text-gray-900">{userInfo.address}</p>
-              </div>
               
               <div className="space-y-3 text-left">
                 <div className="flex items-center text-sm text-gray-600">
                   <div className="w-2 h-2 bg-green-500 rounded-full mr-3 animate-pulse"></div>
-                  Researching property details and market value
+                  Researching current market values and comparable sales
                 </div>
                 <div className="flex items-center text-sm text-gray-600">
                   <div className="w-2 h-2 bg-green-500 rounded-full mr-3 animate-pulse"></div>
-                  Calculating taxes, insurance, and maintenance costs
+                  Analyzing local rental market and regulations
                 </div>
                 <div className="flex items-center text-sm text-gray-600">
                   <div className="w-2 h-2 bg-green-500 rounded-full mr-3 animate-pulse"></div>
-                  Analyzing rental market potential
+                  Calculating property taxes, insurance, and costs
                 </div>
                 <div className="flex items-center text-sm text-gray-600">
                   <div className="w-2 h-2 bg-green-500 rounded-full mr-3 animate-pulse"></div>
-                  Generating investment recommendations
+                  Comparing short-term vs long-term rental potential
+                </div>
+                <div className="flex items-center text-sm text-gray-600">
+                  <div className="w-2 h-2 bg-green-500 rounded-full mr-3 animate-pulse"></div>
+                  Generating personalized investment recommendations
                 </div>
               </div>
               
               <div className="mt-6 pt-6 border-t border-gray-200">
                 <div className="flex items-center justify-center text-sm text-gray-500">
                   <div className="w-4 h-4 mr-2"><Icons.Clock /></div>
-                  This usually takes 10-15 seconds
+                  This typically takes 30-60 seconds
                 </div>
               </div>
             </div>
@@ -466,6 +927,7 @@
         </div>
       );
 
+      // Results Dashboard (same as before but with back button)
       const InvestmentDashboard = ({ propertyData }) => {
         const formatCurrency = (value) => {
           return new Intl.NumberFormat('en-US', {
@@ -509,7 +971,7 @@
           </div>
         );
 
-        // Simple bar chart component
+        // Bar chart component
         const SimpleBarChart = () => {
           const maxRevenue = Math.max(propertyData.short_term_rental.annual_revenue, propertyData.long_term_rental.annual_revenue);
           const shortTermRevenueHeight = (propertyData.short_term_rental.annual_revenue / maxRevenue) * 100;
@@ -545,7 +1007,7 @@
           );
         };
 
-        // Simple pie chart component
+        // Pie chart component
         const SimplePieChart = () => {
           const total = costBreakdown.reduce((sum, item) => sum + item.value, 0);
           let currentAngle = 0;
@@ -581,32 +1043,23 @@
                   <div className="flex items-center gap-4 mt-2 flex-wrap">
                     <div className="flex items-center text-gray-600">
                       <div className="w-4 h-4 mr-1"><Icons.MapPin /></div>
-                      <span className="text-sm">{propertyData.property_address}</span>
+                      <span className="text-sm">{propertyData.property_address || propertyData.property_details?.address}</span>
                     </div>
                     <div className="flex items-center text-gray-600">
                       <div className="w-4 h-4 mr-1"><Icons.Calendar /></div>
-                      <span className="text-sm">{new Date(propertyData.analysis_timestamp).toLocaleDateString()}</span>
+                      <span className="text-sm">{new Date(propertyData.analysis_timestamp || Date.now()).toLocaleDateString()}</span>
                     </div>
                   </div>
                 </div>
-                <div className="flex gap-3">
-                  <button
-                    onClick={() => {
-                      setCurrentView('input');
-                      setAnalysisData(null);
-                      setUserInfo({ name: '', email: '', address: '' });
-                    }}
-                    className="bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors duration-300"
-                  >
-                    ← Analyze Another
-                  </button>
-                  <a 
-                    href="index.html"
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors duration-300"
-                  >
-                    Back to Homepage
-                  </a>
-                </div>
+                <button
+                  onClick={() => {
+                    setCurrentView('dashboard');
+                    setAnalysisData(null);
+                  }}
+                  className="bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors duration-300"
+                >
+                  ← Back to Dashboard
+                </button>
               </div>
 
               {/* Key Metrics */}
@@ -688,25 +1141,47 @@
                   </div>
                 </div>
               </div>
-
-              {/* Lead Information */}
-              <div className="mt-6 text-center text-sm text-gray-500">
-                Analysis generated for {propertyData.lead_name} ({propertyData.lead_email})
-              </div>
             </div>
           </div>
         );
       };
 
       // Main render logic
-      if (currentView === 'input') {
-        return <PropertyInputForm />;
-      } else if (currentView === 'processing') {
-        return <ProcessingScreen />;
-      } else if (currentView === 'dashboard' && analysisData) {
-        return <InvestmentDashboard propertyData={analysisData} />;
-      } else {
-        return <PropertyInputForm />;
+      if (loading) {
+        return (
+          <div className="min-h-screen flex items-center justify-center">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+              <p className="mt-4 text-gray-600">Loading...</p>
+            </div>
+          </div>
+        );
+      }
+
+      if (error) {
+        return (
+          <div className="min-h-screen flex items-center justify-center">
+            <div className="text-center">
+              <p className="text-red-600">{error}</p>
+              <a href="index.html" className="mt-4 text-blue-600 hover:text-blue-800">
+                Back to Homepage
+              </a>
+            </div>
+          </div>
+        );
+      }
+
+      switch (currentView) {
+        case 'auth':
+          return <AuthScreen />;
+        case 'dashboard':
+          return <Dashboard />;
+        case 'processing':
+          return <ProcessingScreen />;
+        case 'results':
+          return <InvestmentDashboard propertyData={analysisData} />;
+        default:
+          return <AuthScreen />;
       }
     };
 
@@ -714,28 +1189,15 @@
     try {
       const container = document.getElementById('root');
       if (container) {
-        // Try React 18 API
-        if (ReactDOM.createRoot) {
-          console.log('Using React 18 API');
-          const root = ReactDOM.createRoot(container);
-          root.render(<ROIFinderApp />);
-        } else {
-          // Fallback to React 17 API
-          console.log('Using React 17 API');
-          ReactDOM.render(<ROIFinderApp />, container);
-        }
-        console.log('React app rendered successfully');
-      } else {
-        console.error('Root element not found');
+        const root = ReactDOM.createRoot(container);
+        root.render(<ROIFinderApp />);
       }
     } catch (error) {
-      console.error('Error rendering React app:', error);
+      console.error('Error rendering app:', error);
       document.getElementById('root').innerHTML = `
         <div style="padding: 40px; text-align: center; font-family: sans-serif;">
           <h2 style="color: #dc2626;">Error Loading Application</h2>
-          <p style="color: #6b7280; margin: 20px 0;">
-            ${error.message}
-          </p>
+          <p style="color: #6b7280; margin: 20px 0;">${error.message}</p>
           <a href="index.html" style="color: #16a34a; text-decoration: none; font-weight: bold;">
             ← Back to Homepage
           </a>
