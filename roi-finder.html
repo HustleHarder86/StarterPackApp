@@ -663,46 +663,6 @@ const loadUserAnalyses = async () => {
                   New Property Analysis
                 </button>
               </div>
-// Add this debug button to the Dashboard component in roi-finder.html
-// Place it right after the "New Property Analysis" button:
-
-{/* Debug Button - Add this after the New Analysis Button */}
-<div className="text-center mb-4">
-  <button
-    onClick={async () => {
-      console.log('=== DEBUG INFO ===');
-      console.log('Current User:', user);
-      console.log('User ID:', user?.uid);
-      console.log('User Profile:', userProfile);
-      
-      // Check the actual user document in Firestore
-      const db = firebase.firestore();
-      try {
-        const userDoc = await db.collection('users').doc(user.uid).get();
-        console.log('User document exists:', userDoc.exists);
-        console.log('User document data:', userDoc.data());
-        
-        // Check for analyses with different possible field names
-        const analyses1 = await db.collection('analyses').where('userId', '==', user.uid).get();
-        console.log('Analyses with userId field:', analyses1.size);
-        
-        const analyses2 = await db.collection('analyses').where('userEmail', '==', user.email).get();
-        console.log('Analyses with userEmail field:', analyses2.size);
-        
-        // Get a sample analysis to see its structure
-        const sampleAnalysis = await db.collection('analyses').limit(1).get();
-        if (!sampleAnalysis.empty) {
-          console.log('Sample analysis structure:', sampleAnalysis.docs[0].data());
-        }
-      } catch (error) {
-        console.error('Debug error:', error);
-      }
-    }}
-    className="bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-lg transition-all duration-300"
-  >
-    Debug Info (Check Console)
-  </button>
-</div>
               {/* Recent Analyses */}
               <div className="bg-white rounded-lg shadow">
                 <div className="px-6 py-4 border-b border-gray-200">
