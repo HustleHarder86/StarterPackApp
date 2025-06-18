@@ -1283,4 +1283,14 @@ const resetAnalysisCount = async () => {
     alert('Failed to reset count: ' + error.message);
   }
 };
-
+// In roi-finder.html, add real-time updates
+const subscribeToAnalysisUpdates = (analysisId) => {
+  return db.collection('analyses')
+    .doc(analysisId)
+    .onSnapshot((doc) => {
+      if (doc.exists) {
+        const data = doc.data();
+        updateAnalysisProgress(data.status, data.progress);
+      }
+    });
+};
