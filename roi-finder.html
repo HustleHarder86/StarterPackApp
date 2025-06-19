@@ -634,18 +634,26 @@
         );
       };
 
-      // Dashboard Component
-      const Dashboard = () => {
-        const [showNewAnalysis, setShowNewAnalysis] = useState(false);
+ // Dashboard Component
+const Dashboard = () => {
+  const [showNewAnalysis, setShowNewAnalysis] = useState(false);
 
-        useEffect(() => {
-          loadUserAnalyses();
-        }, []);
+  useEffect(() => {
+    loadUserAnalyses();
+  }, []);
 
-        if (showNewAnalysis) {
-          return <PropertyInputForm onBack={() => setShowNewAnalysis(false)} />;
-        }
+  const handleNewAnalysis = () => {
+    console.log('New Analysis button clicked');
+    setShowNewAnalysis(true);
+  };
 
+  if (showNewAnalysis) {
+    console.log('Showing PropertyInputForm');
+    return <PropertyInputForm onBack={() => {
+      console.log('Going back to dashboard');
+      setShowNewAnalysis(false);
+    }} />;
+  }
         return (
           <div className="min-h-screen bg-gray-50">
             {/* Header */}
