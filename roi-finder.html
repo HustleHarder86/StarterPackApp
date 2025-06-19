@@ -225,7 +225,7 @@
   <script type="text/babel">
     const { useState, useEffect, useCallback, useRef } = React;
     
-    // Icons
+    // Icons Component
     const Icons = {
       Calculator: () => (
         <svg className="icon" viewBox="0 0 24 24">
@@ -472,11 +472,11 @@
         const [password, setPassword] = useState('');
         const [name, setName] = useState('');
         const [authError, setAuthError] = useState('');
-        const [loading, setLoading] = useState(false);
+        const [authLoading, setAuthLoading] = useState(false);
 
         const handleSignUp = async (e) => {
           e.preventDefault();
-          setLoading(true);
+          setAuthLoading(true);
           setAuthError('');
 
           try {
@@ -500,13 +500,13 @@
           } catch (error) {
             setAuthError(error.message);
           } finally {
-            setLoading(false);
+            setAuthLoading(false);
           }
         };
 
         const handleSignIn = async (e) => {
           e.preventDefault();
-          setLoading(true);
+          setAuthLoading(true);
           setAuthError('');
 
           try {
@@ -514,7 +514,7 @@
           } catch (error) {
             setAuthError(error.message);
           } finally {
-            setLoading(false);
+            setAuthLoading(false);
           }
         };
 
@@ -596,10 +596,10 @@
 
                     <button
                       type="submit"
-                      disabled={loading}
+                      disabled={authLoading}
                       className="w-full bg-gradient-to-r from-blue-500 to-green-500 hover:from-blue-600 hover:to-green-600 text-white font-semibold py-4 px-6 rounded-lg transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-50"
                     >
-                      {loading ? (
+                      {authLoading ? (
                         <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
                       ) : (
                         <>
@@ -746,7 +746,7 @@
                         <div className="flex justify-between items-start">
                           <div>
                             <h3 className="font-medium text-gray-900">
-                              {analysis.property_details?.address || analysis.propertyAddress}
+                              {analysis.property_details?.address || analysis.propertyAddress || analysis.property_address}
                             </h3>
                             <p className="text-sm text-gray-600 mt-1">
                               ROI: {analysis.roi_percentage}% • 
@@ -805,7 +805,7 @@
 
           try {
             // Construct full address
-            const fullAddress = `${propertyData.street}, ${propertyData.city}, ${propertyData.stateProvince}, ${propertyData.country} ${propertyData.postalCode}`;
+            const fullAddress = `${propertyData.street}, ${propertyData.city}, ${propertyData.stateProvince}, ${propertyData.country} ${propertyData.postalCode}`.trim();
 
             // Call the real API
             const response = await fetch('/api/analyze-property', {
@@ -1622,6 +1622,8 @@
       if (container) {
         const root = ReactDOM.createRoot(container);
         root.render(<ROIFinderApp />);
+      } else {
+        console.error('Root element not found');
       }
     } catch (error) {
       console.error('Error rendering app:', error);
