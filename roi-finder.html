@@ -642,11 +642,6 @@
           loadUserAnalyses();
         }, []);
 
-        const handleNewAnalysis = useCallback(() => {
-          console.log('New Analysis button clicked');
-          setShowNewAnalysis(true);
-        }, []);
-
         if (showNewAnalysis) {
           console.log('Showing PropertyInputForm');
           return <PropertyInputForm onBack={() => {
@@ -727,10 +722,10 @@
               {/* New Analysis Button */}
               <div className="text-center mb-8">
                 <button
-                  onClick={(e) => {
-                    e.preventDefault();
-                    console.log('Button click event fired');
-                    handleNewAnalysis();
+                  onClick={() => {
+                    console.log('Button clicked!');
+                    alert('Button was clicked! Check if state changes...');
+                    setShowNewAnalysis(true);
                   }}
                   className="bg-gradient-to-r from-blue-500 to-green-500 hover:from-blue-600 hover:to-green-600 text-white font-semibold py-4 px-8 rounded-lg transition-all duration-300 flex items-center gap-3 mx-auto"
                 >
@@ -740,6 +735,12 @@
                 <p className="text-xs text-gray-500 mt-2">
                   Debug: showNewAnalysis = {showNewAnalysis ? 'true' : 'false'}
                 </p>
+                <button 
+                  onClick={() => alert('Test button works!')}
+                  className="mt-2 px-4 py-2 bg-red-500 text-white rounded text-sm"
+                >
+                  Test Click (Remove this after testing)
+                </button>
               </div>
 
               {/* Recent Analyses */}
