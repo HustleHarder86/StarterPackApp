@@ -352,10 +352,10 @@ Required JSON structure:
         ((bestProfit / structuredData.property_details.estimated_value) * 100).toFixed(2);
     }
 
-    // Step 3: Save to Firebase
+    // Step 3: Save to Firebase but skip reuse on future requests
     const adminModule = await import('firebase-admin');
     const admin = adminModule.default;
-    
+
     if (!admin.apps.length) {
       admin.initializeApp({
         credential: admin.credential.cert({
@@ -368,7 +368,7 @@ Required JSON structure:
 
     const db = admin.firestore();
     const analysisId = `analysis_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    
+
     const analysisData = {
       ...structuredData,
       userId: userId || null,

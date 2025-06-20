@@ -155,6 +155,7 @@ service cloud.firestore {
    - Visual charts comparing rental strategies
    - Investment recommendations
    - Access previous analyses from dashboard
+   - Delete saved analyses from dashboard
 
 ### Data Processing
 
