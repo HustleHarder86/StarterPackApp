@@ -61,32 +61,34 @@ export default async function handler(req, res) {
             role: 'user',
             content: `Analyze this property for real estate investment: ${propertyAddress}
 
+IMPORTANT: Limit your research to maximum 3 comparable properties to keep token usage efficient.
+
 Please research and provide:
 
 1. PROPERTY DETAILS:
-   - Current estimated market value (based on comparables)
+   - Current estimated market value (based on max 3 recent comparable sales)
    - Property type (Single Family, Condo, Townhouse, etc.)
    - Typical property characteristics for this area
 
-2. ANNUAL COSTS:
-   - Property taxes (exact annual amount for this area)
-   - Home insurance costs (typical for this property type/area)
-   - Maintenance costs (1-2% of property value typically)
-   - HOA/Condo fees if applicable
-   - Utilities if landlord-paid
+2. ANNUAL COSTS (provide exact dollar amounts):
+   - Property taxes (exact annual amount for this specific area/property type)
+   - Home insurance costs (specific to this property type and location)
+   - Maintenance costs (detailed breakdown: $X for repairs, $Y for upkeep, etc.)
+   - HOA/Condo fees if applicable (exact monthly amount)
+   - Utilities if landlord-paid (specific monthly costs by type: electric, gas, water, etc.)
 
 3. RENTAL POTENTIAL:
-   - Average monthly rent for long-term rentals in this area
-   - Average daily rate for short-term rentals (Airbnb)
-   - Typical occupancy rates for short-term rentals
+   - Average monthly rent for long-term rentals (based on max 3 comparable rentals)
+   - Average daily rate for short-term rentals (Airbnb - from max 3 comparable properties)
+   - Typical occupancy rates for short-term rentals in this specific area
    - Local regulations on short-term rentals
 
 4. MARKET CONDITIONS:
-   - Recent price trends
+   - Recent price trends (last 6-12 months)
    - Rental demand indicators
    - Economic factors affecting property values
 
-Provide specific numbers and data points for accurate ROI calculations.`
+Provide specific dollar amounts and exact percentages for accurate ROI calculations. Focus on quality data from max 3 comparables rather than quantity.
           }
         ],
         max_tokens: 2000,
@@ -321,38 +323,4 @@ function generateEnhancedDemoData(propertyAddress, userName, userEmail) {
       : `Long-term rental recommended. This strategy offers ${bestROI}% ROI with stable monthly income of $${monthlyRent.toLocaleString()}, outperforming short-term rental which yields ${strROI}% ROI.`,
     roi_percentage: bestROI
   };
-}
-// api/analyze-property.js - Add rate limiting
-const rateLimit = new Map();
-
-export default async function handler(req, res) {
-  // Add rate limiting
-  const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-  const key = `${ip}-${req.body.userId || 'anonymous'}`;
-  const now = Date.now();
-  const windowMs = 60 * 1000; // 1 minute
-  const maxRequests = 5;
-  
-  if (rateLimit.has(key)) {
-    const userData = rateLimit.get(key);
-    if (now - userData.firstRequest < windowMs && userData.count >= maxRequests) {
-      return res.status(429).json({ error: 'Too many requests' });
-    }
-  }
-  
-  // Update rate limit
-  rateLimit.set(key, {
-    firstRequest: now,
-    count: (rateLimit.get(key)?.count || 0) + 1
-  });
-
-  // Also add input validation
-  const { propertyAddress } = req.body;
-  
-  // Sanitize address input
-  const sanitizedAddress = propertyAddress
-    .replace(/[<>]/g, '') // Remove potential XSS
-    .substring(0, 500); // Limit length
-  
-  // ... rest of your code
 }
