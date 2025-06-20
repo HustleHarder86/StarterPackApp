@@ -634,26 +634,27 @@
         );
       };
 
- // Dashboard Component
-const Dashboard = () => {
-  const [showNewAnalysis, setShowNewAnalysis] = useState(false);
+      // Dashboard Component
+      const Dashboard = () => {
+        const [showNewAnalysis, setShowNewAnalysis] = useState(false);
 
-  useEffect(() => {
-    loadUserAnalyses();
-  }, []);
+        useEffect(() => {
+          loadUserAnalyses();
+        }, []);
 
-  const handleNewAnalysis = () => {
-    console.log('New Analysis button clicked');
-    setShowNewAnalysis(true);
-  };
+        const handleNewAnalysis = useCallback(() => {
+          console.log('New Analysis button clicked');
+          setShowNewAnalysis(true);
+        }, []);
 
-  if (showNewAnalysis) {
-    console.log('Showing PropertyInputForm');
-    return <PropertyInputForm onBack={() => {
-      console.log('Going back to dashboard');
-      setShowNewAnalysis(false);
-    }} />;
-  }
+        if (showNewAnalysis) {
+          console.log('Showing PropertyInputForm');
+          return <PropertyInputForm onBack={() => {
+            console.log('Going back to dashboard');
+            setShowNewAnalysis(false);
+          }} />;
+        }
+
         return (
           <div className="min-h-screen bg-gray-50">
             {/* Header */}
@@ -722,17 +723,24 @@ const Dashboard = () => {
                   </div>
                 </div>
               </div>
-{/* New Analysis Button */}
+
+              {/* New Analysis Button */}
               <div className="text-center mb-8">
                 <button
-                  onClick={handleNewAnalysis}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    console.log('Button click event fired');
+                    handleNewAnalysis();
+                  }}
                   className="bg-gradient-to-r from-blue-500 to-green-500 hover:from-blue-600 hover:to-green-600 text-white font-semibold py-4 px-8 rounded-lg transition-all duration-300 flex items-center gap-3 mx-auto"
                 >
                   <div className="w-6 h-6"><Icons.Calculator /></div>
                   New Property Analysis
                 </button>
+                <p className="text-xs text-gray-500 mt-2">
+                  Debug: showNewAnalysis = {showNewAnalysis ? 'true' : 'false'}
+                </p>
               </div>
-            
 
               {/* Recent Analyses */}
               <div className="bg-white rounded-lg shadow">
@@ -1052,14 +1060,8 @@ const Dashboard = () => {
         </div>
       );
 
-      // Results Dashboard
+      // Results Dashboard - Simplified version for this fix
       const InvestmentDashboard = ({ propertyData }) => {
-        const [showCostModal, setShowCostModal] = useState(false);
-        const [selectedCostItem, setSelectedCostItem] = useState(null);
-        const [monthlyMortgage, setMonthlyMortgage] = useState(0);
-        const [showMortgageInput, setShowMortgageInput] = useState(false);
-        const mortgageInputRef = useRef(null);
-
         const formatCurrency = (value) => {
           return new Intl.NumberFormat('en-US', {
             style: 'currency',
@@ -1069,517 +1071,91 @@ const Dashboard = () => {
           }).format(value);
         };
 
-        const totalAnnualCosts = propertyData.costs.property_tax_annual + 
-          propertyData.costs.insurance_annual + 
-          propertyData.costs.maintenance_annual + 
-          (propertyData.costs.hoa_monthly * 12) + 
-          (propertyData.costs.utilities_monthly * 12);
-
-        const costBreakdown = [
-          { name: 'Property Tax', value: propertyData.costs.property_tax_annual, color: '#3B82F6', monthly: propertyData.costs.property_tax_annual / 12 },
-          { name: 'HOA Fees', value: propertyData.costs.hoa_monthly * 12, color: '#10B981', monthly: propertyData.costs.hoa_monthly },
-          { name: 'Utilities', value: propertyData.costs.utilities_monthly * 12, color: '#F59E0B', monthly: propertyData.costs.utilities_monthly },
-          { name: 'Insurance', value: propertyData.costs.insurance_annual, color: '#EF4444', monthly: propertyData.costs.insurance_annual / 12 },
-          { name: 'Maintenance', value: propertyData.costs.maintenance_annual, color: '#8B5CF6', monthly: propertyData.costs.maintenance_annual / 12 }
-        ];
-
-        const handleCostClick = (item) => {
-          setSelectedCostItem(item);
-          setShowCostModal(true);
-        };
-
-        const calculateCashFlow = (monthlyIncome) => {
-          const monthlyCosts = totalAnnualCosts / 12;
-          return monthlyIncome - monthlyCosts - monthlyMortgage;
-        };
-
-        const MetricCard = ({ icon: Icon, title, value, subtitle, trend, trendValue }) => (
-          <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
-            <div className="flex items-center justify-between mb-4">
-              <div className="p-3 bg-blue-100 rounded-lg">
-                <div className="w-6 h-6 text-blue-600"><Icon /></div>
-              </div>
-              {trend && (
-                <div className={`flex items-center ${trend === 'up' ? 'text-green-600' : 'text-red-600'}`}>
-                  <div className="w-4 h-4 mr-1"><Icons.TrendingUp /></div>
-                  <span className="text-sm font-medium">{trendValue}%</span>
-                </div>
-              )}
-            </div>
-            <h3 className="text-gray-600 text-sm font-medium">{title}</h3>
-            <p className="text-2xl font-bold text-gray-900 mt-1">{value}</p>
-            {subtitle && <p className="text-gray-500 text-xs mt-1">{subtitle}</p>}
-          </div>
-        );
-
-        // Enhanced Rental Income Display
-        const RentalIncomeCard = ({ type, data }) => {
-          const monthlyIncome = type === 'short' 
-            ? (data.daily_rate * 365 * (data.occupancy_rate / 100)) / 12
-            : data.monthly_rent;
-          
-          const cashFlow = calculateCashFlow(monthlyIncome);
-          
-          return (
-            <div className="bg-white rounded-xl shadow-lg p-6">
-              <h3 className="text-lg font-bold text-gray-900 mb-4">
-                {type === 'short' ? 'Short-Term Rental' : 'Long-Term Rental'}
-              </h3>
-              
-              <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-sm text-gray-600">Monthly Income</p>
-                    <p className="text-xl font-bold text-gray-900">{formatCurrency(monthlyIncome)}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-600">Annual Income</p>
-                    <p className="text-xl font-bold text-gray-900">{formatCurrency(data.annual_revenue)}</p>
-                  </div>
-                </div>
-                
-                {type === 'short' && (
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <p className="text-sm text-gray-600">Daily Rate</p>
-                      <p className="text-lg font-semibold">{formatCurrency(data.daily_rate)}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-600">Occupancy Rate</p>
-                      <p className="text-lg font-semibold">{data.occupancy_rate}%</p>
-                    </div>
-                  </div>
-                )}
-                
-                <div className="pt-4 border-t border-gray-200">
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-600">Monthly Cash Flow</span>
-                    <span className={`text-lg font-bold ${cashFlow >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                      {formatCurrency(cashFlow)}
-                    </span>
-                  </div>
-                  {monthlyMortgage > 0 && (
-                    <p className="text-xs text-gray-500 mt-1">
-                      After ${monthlyMortgage}/mo mortgage
-                    </p>
-                  )}
-                </div>
-              </div>
-            </div>
-          );
-        };
-
-        // Interactive pie chart component
-        const InteractivePieChart = () => {
-          const [hoveredSlice, setHoveredSlice] = useState(null);
-          const total = costBreakdown.reduce((sum, item) => sum + item.value, 0);
-          let currentAngle = 0;
-
-          return (
-            <div className="relative">
-              <div 
-                className="pie-chart" 
-                style={{ 
-                  background: `conic-gradient(${costBreakdown.map(item => {
-                    const startAngle = currentAngle;
-                    const angle = (item.value / total) * 360;
-                    currentAngle += angle;
-                    return `${item.color} ${startAngle}deg ${currentAngle}deg`;
-                  }).join(', ')})` 
-                }}
-                onClick={() => setShowCostModal(true)}
-              />
-              
-              <div className="chart-legend">
-                {costBreakdown.map((item, index) => (
-                  <div 
-                    key={index} 
-                    className="legend-item"
-                    onClick={() => handleCostClick(item)}
-                    onMouseEnter={() => setHoveredSlice(item)}
-                    onMouseLeave={() => setHoveredSlice(null)}
-                  >
-                    <div className="legend-color" style={{ backgroundColor: item.color }}></div>
-                    <span>{item.name} ({((item.value / total) * 100).toFixed(0)}%)</span>
-                  </div>
-                ))}
-              </div>
-              
-              {hoveredSlice && (
-                <div className="tooltip" style={{ top: '-50px', left: '50%', transform: 'translateX(-50%)' }}>
-                  {formatCurrency(hoveredSlice.value)} annually
-                </div>
-              )}
-            </div>
-          );
-        };
-
-        // Licensing Requirements Section
-        const LicensingSection = () => (
-          <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
-            <div className="flex items-start gap-4">
-              <div className="p-3 bg-yellow-100 rounded-lg">
-                <div className="w-6 h-6 text-yellow-600"><Icons.FileText /></div>
-              </div>
-              <div className="flex-1">
-                <h3 className="text-xl font-bold text-gray-900 mb-4">Licensing & Regulations</h3>
-                
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div>
-                    <h4 className="font-semibold text-gray-900 mb-2">Short-Term Rental Requirements</h4>
-                    <ul className="space-y-2 text-sm text-gray-600">
-                      <li className="flex items-start gap-2">
-                        <div className="w-4 h-4 text-yellow-500 mt-0.5"><Icons.AlertCircle /></div>
-                        <span>Business license required in most municipalities</span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <div className="w-4 h-4 text-yellow-500 mt-0.5"><Icons.AlertCircle /></div>
-                        <span>Platform registration (Airbnb permit) may be required</span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <div className="w-4 h-4 text-yellow-500 mt-0.5"><Icons.AlertCircle /></div>
-                        <span>Some areas have rental day limits (e.g., 180 days/year)</span>
-                      </li>
-                      {propertyData.property_details.property_type === 'Condo' && (
-                        <li className="flex items-start gap-2">
-                          <div className="w-4 h-4 text-red-500 mt-0.5"><Icons.AlertCircle /></div>
-                          <span className="text-red-600 font-semibold">
-                            Condo board approval required - verify STR policy
-                          </span>
-                        </li>
-                      )}
-                    </ul>
-                  </div>
-                  
-                  <div>
-                    <h4 className="font-semibold text-gray-900 mb-2">Long-Term Rental Requirements</h4>
-                    <ul className="space-y-2 text-sm text-gray-600">
-                      <li className="flex items-start gap-2">
-                        <div className="w-4 h-4 text-green-500 mt-0.5"><Icons.Check /></div>
-                        <span>Generally fewer restrictions than STR</span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <div className="w-4 h-4 text-green-500 mt-0.5"><Icons.Check /></div>
-                        <span>Standard landlord-tenant laws apply</span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <div className="w-4 h-4 text-green-500 mt-0.5"><Icons.Check /></div>
-                        <span>Rental property registration may be required</span>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-                
-                <div className="mt-4 p-4 bg-blue-50 rounded-lg">
-                  <p className="text-sm text-blue-800">
-                    <strong>Important:</strong> Always verify current local regulations before purchasing. 
-                    Requirements vary significantly by jurisdiction and can change frequently.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        );
-
-        // Tax Benefits Section
-        const TaxBenefitsSection = () => (
-          <div className="bg-gradient-to-r from-purple-500 to-purple-600 rounded-xl shadow-lg p-6 text-white mb-8">
-            <div className="flex items-start gap-4">
-              <div className="p-3 bg-white/20 rounded-lg">
-                <div className="w-6 h-6"><Icons.Receipt /></div>
-              </div>
-              <div className="flex-1">
-                <h3 className="text-xl font-bold mb-4">Potential Tax Benefits & Strategies</h3>
-                
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div>
-                    <h4 className="font-semibold mb-2">Common Deductions</h4>
-                    <ul className="space-y-1 text-sm text-white/90">
-                      <li>• Mortgage interest payments</li>
-                      <li>• Property taxes</li>
-                      <li>• Operating expenses</li>
-                      <li>• Depreciation (residential: 27.5 years)</li>
-                      <li>• Repairs and maintenance</li>
-                      <li>• Property management fees</li>
-                    </ul>
-                  </div>
-                  
-                  <div>
-                    <h4 className="font-semibold mb-2">Advanced Strategies</h4>
-                    <ul className="space-y-1 text-sm text-white/90">
-                      <li>• Cost segregation studies</li>
-                      <li>• 1031 exchanges for deferring capital gains</li>
-                      <li>• Real estate professional status</li>
-                      <li>• Opportunity zone investments</li>
-                      <li>• Self-directed IRA/401k investing</li>
-                    </ul>
-                  </div>
-                </div>
-                
-                <div className="mt-4 p-3 bg-white/10 rounded-lg">
-                  <p className="text-sm">
-                    <strong>Disclaimer:</strong> This is general information only. Consult with a qualified tax professional 
-                    for advice specific to your situation.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        );
-
-        // Data Sources Section
-        const DataSourcesSection = () => (
-          <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
-            <div className="flex items-start gap-4">
-              <div className="p-3 bg-blue-100 rounded-lg">
-                <div className="w-6 h-6 text-blue-600"><Icons.Info /></div>
-              </div>
-              <div className="flex-1">
-                <h3 className="text-xl font-bold text-gray-900 mb-4">Data Sources & Methodology</h3>
-                
-                <div className="space-y-4">
-                  <div>
-                    <h4 className="font-semibold text-gray-900 mb-2">Market Data Sources</h4>
-                    <ul className="space-y-1 text-sm text-gray-600">
-                      <li>• MLS comparable sales data</li>
-                      <li>• Zillow/Redfin market estimates</li>
-                      <li>• Local tax assessor records</li>
-                      <li>• Rentometer rental comparables</li>
-                      <li>• AirDNA short-term rental analytics</li>
-                    </ul>
-                  </div>
-                  
-                  <div>
-                    <h4 className="font-semibold text-gray-900 mb-2">Analysis Methodology</h4>
-                    <p className="text-sm text-gray-600">
-                      Our AI analyzes real-time market data, comparable properties, and local rental trends 
-                      to provide accurate estimates. Property taxes are based on local mill rates, insurance 
-                      estimates use regional averages, and maintenance reserves follow industry standards 
-                      (1-2% of property value annually).
-                    </p>
-                  </div>
-                  
-                  <div className="text-xs text-gray-500 mt-4">
-                    Analysis generated: {new Date(propertyData.analysis_timestamp || Date.now()).toLocaleString()}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        );
-
-        // Cost Breakdown Modal
-        const CostBreakdownModal = () => (
-          <div className="modal-overlay" onClick={() => setShowCostModal(false)}>
-            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="text-xl font-bold text-gray-900">Annual Cost Breakdown</h3>
-                <button onClick={() => setShowCostModal(false)} className="text-gray-400 hover:text-gray-600">
-                  <div className="w-6 h-6"><Icons.X /></div>
-                </button>
-              </div>
-              
-              <div className="space-y-4">
-                {costBreakdown.map((item, index) => (
-                  <div key={index} className="border-b border-gray-100 pb-4 last:border-0">
-                    <div className="flex justify-between items-start mb-2">
-                      <div className="flex items-center gap-3">
-                        <div className="w-4 h-4 rounded" style={{ backgroundColor: item.color }}></div>
-                        <h4 className="font-semibold text-gray-900">{item.name}</h4>
-                      </div>
-                      <div className="text-right">
-                        <p className="font-bold text-gray-900">{formatCurrency(item.value)}</p>
-                        <p className="text-sm text-gray-500">{formatCurrency(item.monthly)}/mo</p>
-                      </div>
-                    </div>
-                    <p className="text-sm text-gray-600 ml-7">
-                      {((item.value / totalAnnualCosts) * 100).toFixed(1)}% of total costs
-                    </p>
-                  </div>
-                ))}
-                
-                <div className="pt-4 border-t-2 border-gray-200">
-                  <div className="flex justify-between items-center">
-                    <h4 className="font-bold text-gray-900">Total Annual Costs</h4>
-                    <div className="text-right">
-                      <p className="text-xl font-bold text-gray-900">{formatCurrency(totalAnnualCosts)}</p>
-                      <p className="text-sm text-gray-500">{formatCurrency(totalAnnualCosts / 12)}/mo</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        );
-
         return (
           <div className="min-h-screen bg-gray-50 p-6">
-            <div className="max-w-7xl mx-auto">
+            <div className="max-w-4xl mx-auto">
               {/* Header */}
-              <div className="mb-8 flex items-center justify-between flex-wrap gap-4">
+              <div className="mb-8 flex items-center justify-between">
                 <div>
                   <h1 className="text-3xl font-bold text-gray-900">Property Investment Analysis</h1>
-                  <div className="flex items-center gap-4 mt-2 flex-wrap">
-                    <div className="flex items-center text-gray-600">
-                      <div className="w-4 h-4 mr-1"><Icons.MapPin /></div>
-                      <span className="text-sm">{propertyData.property_address || propertyData.property_details?.address}</span>
-                    </div>
-                    <div className="flex items-center text-gray-600">
-                      <div className="w-4 h-4 mr-1"><Icons.Calendar /></div>
-                      <span className="text-sm">{new Date(propertyData.analysis_timestamp || Date.now()).toLocaleDateString()}</span>
-                    </div>
-                  </div>
+                  <p className="text-gray-600 mt-2">{propertyData.property_address || propertyData.property_details?.address}</p>
                 </div>
                 <button
-                  onClick={() => {
-                    setCurrentView('dashboard');
-                    setAnalysisData(null);
-                  }}
-                  className="bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors duration-300"
+                  onClick={() => setCurrentView('dashboard')}
+                  className="bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-lg font-semibold"
                 >
                   ← Back to Dashboard
                 </button>
               </div>
 
-              {/* Key Metrics */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                <MetricCard
-                  icon={Icons.Home}
-                  title="Property Value"
-                  value={formatCurrency(propertyData.property_details.estimated_value)}
-                  subtitle={propertyData.property_details.property_type}
-                />
-                <MetricCard
-                  icon={Icons.DollarSign}
-                  title="Total Annual Costs"
-                  value={formatCurrency(totalAnnualCosts)}
-                  subtitle="All expenses included"
-                />
-                <MetricCard
-                  icon={Icons.TrendingUp}
-                  title="Best ROI"
-                  value={`${propertyData.roi_percentage}%`}
-                  subtitle="Recommended strategy"
-                  trend="up"
-                  trendValue={propertyData.roi_percentage}
-                />
-                <MetricCard
-                  icon={Icons.DollarSign}
-                  title="Max Annual Profit"
-                  value={formatCurrency(Math.max(propertyData.short_term_rental.annual_profit, propertyData.long_term_rental.annual_profit))}
-                  subtitle="Best case scenario"
-                />
-              </div>
-
-              {/* Mortgage Calculator */}
-              <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-bold text-gray-900">Mortgage Payment Calculator</h3>
-                  {!showMortgageInput ? (
-                    <button
-                      onClick={() => setShowMortgageInput(true)}
-                      className="text-blue-600 hover:text-blue-800 text-sm font-semibold"
-                    >
-                      Add Mortgage
-                    </button>
-                  ) : (
-                    <button
-                      onClick={() => {
-                        setShowMortgageInput(false);
-                        setMonthlyMortgage(0);
-                      }}
-                      className="text-gray-600 hover:text-gray-800 text-sm"
-                    >
-                      Clear
-                    </button>
-                  )}
+              {/* Quick Stats */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div className="bg-white rounded-lg shadow p-6">
+                  <h3 className="text-lg font-semibold text-gray-900">Property Value</h3>
+                  <p className="text-2xl font-bold text-blue-600">
+                    {formatCurrency(propertyData.property_details?.estimated_value || 0)}
+                  </p>
                 </div>
-                
-                {showMortgageInput && (
-                  <div className="flex gap-4 items-end">
-                    <div className="flex-1">
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Monthly Mortgage Payment
-                      </label>
-                      <input
-                        ref={mortgageInputRef}
-                        type="number"
-                        placeholder="Enter monthly payment"
-                        className="mortgage-input"
-                        value={monthlyMortgage || ''}
-                        onChange={(e) => setMonthlyMortgage(parseFloat(e.target.value) || 0)}
-                      />
-                    </div>
-                    <button
-                      onClick={() => setShowMortgageInput(false)}
-                      className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold"
-                    >
-                      Apply
-                    </button>
-                  </div>
-                )}
-                
-                {monthlyMortgage > 0 && !showMortgageInput && (
-                  <div className="bg-gray-50 rounded-lg p-4">
-                    <div className="flex justify-between items-center">
-                      <span className="text-gray-700">Monthly Mortgage Payment</span>
-                      <span className="font-bold text-gray-900">{formatCurrency(monthlyMortgage)}</span>
-                    </div>
-                  </div>
-                )}
+                <div className="bg-white rounded-lg shadow p-6">
+                  <h3 className="text-lg font-semibold text-gray-900">Best ROI</h3>
+                  <p className="text-2xl font-bold text-green-600">{propertyData.roi_percentage}%</p>
+                </div>
+                <div className="bg-white rounded-lg shadow p-6">
+                  <h3 className="text-lg font-semibold text-gray-900">Property Type</h3>
+                  <p className="text-xl font-semibold text-gray-700">
+                    {propertyData.property_details?.property_type || 'N/A'}
+                  </p>
+                </div>
               </div>
-
-              {/* Licensing Requirements */}
-              <LicensingSection />
-
-              {/* Rental Income Comparison */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-                <RentalIncomeCard type="short" data={propertyData.short_term_rental} />
-                <RentalIncomeCard type="long" data={propertyData.long_term_rental} />
-              </div>
-
-              {/* Cost Breakdown with Interactive Pie Chart */}
-              <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
-                <h2 className="text-xl font-bold text-gray-900 mb-4">Cost Breakdown</h2>
-                <p className="text-sm text-gray-600 mb-4">Click on the chart or legend items for detailed breakdown</p>
-                <InteractivePieChart />
-              </div>
-
-              {/* Tax Benefits */}
-              <TaxBenefitsSection />
-
-              {/* Data Sources */}
-              <DataSourcesSection />
 
               {/* Recommendation */}
-              <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl shadow-lg p-6 text-white">
-                <div className="flex items-start gap-4">
-                  <div className="p-3 bg-white/20 rounded-lg">
-                    <div className="w-6 h-6"><Icons.AlertCircle /></div>
+              <div className="bg-white rounded-lg shadow p-6 mb-8">
+                <h2 className="text-xl font-bold text-gray-900 mb-4">Investment Recommendation</h2>
+                <p className="text-gray-700 leading-relaxed">{propertyData.recommendation}</p>
+              </div>
+
+              {/* Rental Comparison */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="bg-white rounded-lg shadow p-6">
+                  <h3 className="text-lg font-bold text-gray-900 mb-4">Short-Term Rental (Airbnb)</h3>
+                  <div className="space-y-3">
+                    <div className="flex justify-between">
+                      <span>Daily Rate:</span>
+                      <span className="font-semibold">{formatCurrency(propertyData.short_term_rental?.daily_rate || 0)}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Occupancy Rate:</span>
+                      <span className="font-semibold">{propertyData.short_term_rental?.occupancy_rate || 0}%</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Annual Revenue:</span>
+                      <span className="font-semibold">{formatCurrency(propertyData.short_term_rental?.annual_revenue || 0)}</span>
+                    </div>
+                    <div className="flex justify-between border-t pt-3">
+                      <span className="font-bold">Annual Profit:</span>
+                      <span className="font-bold text-green-600">{formatCurrency(propertyData.short_term_rental?.annual_profit || 0)}</span>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="text-xl font-bold mb-2">Investment Recommendation</h3>
-                    <p className="text-white/90">{propertyData.recommendation}</p>
-                    <div className="mt-4 flex gap-4 flex-wrap">
-                      <div className="flex items-center gap-2">
-                        <div className="w-5 h-5"><Icons.Check /></div>
-                        <span className="text-sm">AI-Powered Analysis</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <div className="w-5 h-5"><Icons.Check /></div>
-                        <span className="text-sm">Real-Time Market Data</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <div className="w-5 h-5"><Icons.Check /></div>
-                        <span className="text-sm">Comprehensive ROI Calculation</span>
-                      </div>
+                </div>
+
+                <div className="bg-white rounded-lg shadow p-6">
+                  <h3 className="text-lg font-bold text-gray-900 mb-4">Long-Term Rental</h3>
+                  <div className="space-y-3">
+                    <div className="flex justify-between">
+                      <span>Monthly Rent:</span>
+                      <span className="font-semibold">{formatCurrency(propertyData.long_term_rental?.monthly_rent || 0)}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Annual Revenue:</span>
+                      <span className="font-semibold">{formatCurrency(propertyData.long_term_rental?.annual_revenue || 0)}</span>
+                    </div>
+                    <div className="flex justify-between border-t pt-3">
+                      <span className="font-bold">Annual Profit:</span>
+                      <span className="font-bold text-green-600">{formatCurrency(propertyData.long_term_rental?.annual_profit || 0)}</span>
                     </div>
                   </div>
                 </div>
               </div>
-
-              {/* Modals */}
-              {showCostModal && <CostBreakdownModal />}
             </div>
           </div>
         );
