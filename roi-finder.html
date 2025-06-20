@@ -362,13 +362,14 @@
           <p class="text-xs text-gray-500 mt-1">Market rate</p>
         </div>
         <div class="metric-card">
-          <p class="text-sm text-gray-600">Cap Rate</p>
-          <p class="text-2xl font-bold text-green-600" id="result-cap-rate">-</p>
-          <p class="text-xs text-gray-500 mt-1">Net operating income</p>
+          <p class="text-sm text-gray-600">Monthly Cash Flow</p>
+          <p class="text-2xl font-bold text-green-600" id="result-cash-flow">-</p>
+          <p class="text-xs text-gray-500 mt-1">After expenses</p>
         </div>
         <div class="metric-card">
-          <p class="text-sm text-gray-600">ROI Score</p>
+          <p class="text-sm text-gray-600">ROI Grade</p>
           <p class="text-4xl font-bold" id="result-roi-score">-</p>
+          <p class="text-sm text-gray-600 mt-1">Annual ROI: <span id="result-annual-roi">-</span></p>
           <div class="mt-2">
             <div class="w-full bg-gray-200 rounded-full h-2">
               <div id="roi-bar" class="h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
@@ -457,10 +458,6 @@
                   <div>
                     <span class="text-gray-600">Annual NOI:</span>
                     <span class="font-semibold ml-2" id="ltr-noi">-</span>
-                  </div>
-                  <div>
-                    <span class="text-gray-600">Cap Rate:</span>
-                    <span class="font-semibold ml-2" id="ltr-cap">-</span>
                   </div>
                   <div>
                     <span class="text-gray-600">ROI:</span>
@@ -810,7 +807,9 @@
       // Key metrics
       document.getElementById('result-value').textContent = '$' + (analysis.property_details?.estimated_value || 0).toLocaleString();
       document.getElementById('result-rent').textContent = '$' + (analysis.long_term_rental?.monthly_rent || 0).toLocaleString();
-      document.getElementById('result-cap-rate').textContent = analysis.roi_percentage + '%';
+      const monthlyCashFlow = ((analysis.long_term_rental?.annual_profit || 0) / 12).toFixed(0);
+      document.getElementById("result-cash-flow").textContent = "$" + parseInt(monthlyCashFlow).toLocaleString();
+      document.getElementById("result-annual-roi").textContent = analysis.roi_percentage + "%";
       
       // ROI Grade with color
       const roiGrade = document.getElementById('result-roi-score');
@@ -849,9 +848,8 @@
       // Rental strategies
       document.getElementById('ltr-rent').textContent = '$' + (analysis.long_term_rental?.monthly_rent || 0).toLocaleString();
       document.getElementById('ltr-noi').textContent = '$' + (analysis.long_term_rental?.annual_profit || 0).toLocaleString();
-      const ltrCapRate = ((analysis.long_term_rental?.annual_profit || 0) / (analysis.property_details?.estimated_value || 1) * 100).toFixed(2);
-      document.getElementById('ltr-cap').textContent = ltrCapRate + '%';
-      document.getElementById('ltr-roi').textContent = ltrCapRate + '%';
+      const ltrROI = ((analysis.long_term_rental?.annual_profit || 0) / (analysis.property_details?.estimated_value || 1) * 100).toFixed(2);
+      document.getElementById("ltr-roi").textContent = ltrROI + "%";
       
       document.getElementById('str-rate').textContent = '$' + (analysis.short_term_rental?.daily_rate || 0);
       document.getElementById('str-occupancy').textContent = (analysis.short_term_rental?.occupancy_rate || 0) + '%';
