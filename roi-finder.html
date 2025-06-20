@@ -366,17 +366,25 @@
                 <span class="font-semibold text-green-600" id="breakdown-annual-income">-</span>
               </div>
               <div class="border-t pt-2">
-                <div class="flex justify-between">
-                  <span class="text-gray-600">Property Taxes (Est.)</span>
+                <div class="flex justify-between cursor-pointer hover:bg-gray-50 p-2 rounded" onclick="showExpenseBreakdown('taxes')">
+                  <span class="text-gray-600">Property Taxes (Est.) 📊</span>
                   <span class="font-semibold text-red-600" id="breakdown-taxes">-</span>
                 </div>
-                <div class="flex justify-between">
-                  <span class="text-gray-600">Insurance (Est.)</span>
+                <div class="flex justify-between cursor-pointer hover:bg-gray-50 p-2 rounded" onclick="showExpenseBreakdown('insurance')">
+                  <span class="text-gray-600">Insurance (Est.) 📊</span>
                   <span class="font-semibold text-red-600" id="breakdown-insurance">-</span>
                 </div>
-                <div class="flex justify-between">
-                  <span class="text-gray-600">Maintenance (Est.)</span>
+                <div class="flex justify-between cursor-pointer hover:bg-gray-50 p-2 rounded" onclick="showExpenseBreakdown('maintenance')">
+                  <span class="text-gray-600">Maintenance (Est.) 📊</span>
                   <span class="font-semibold text-red-600" id="breakdown-maintenance">-</span>
+                </div>
+                <div class="flex justify-between cursor-pointer hover:bg-gray-50 p-2 rounded" onclick="showExpenseBreakdown('hoa')" id="hoa-row" style="display: none;">
+                  <span class="text-gray-600">HOA Fees 📊</span>
+                  <span class="font-semibold text-red-600" id="breakdown-hoa">-</span>
+                </div>
+                <div class="flex justify-between cursor-pointer hover:bg-gray-50 p-2 rounded" onclick="showExpenseBreakdown('utilities')" id="utilities-row" style="display: none;">
+                  <span class="text-gray-600">Utilities 📊</span>
+                  <span class="font-semibold text-red-600" id="breakdown-utilities">-</span>
                 </div>
               </div>
               <div class="border-t pt-2">
@@ -436,6 +444,27 @@
         <button id="save-analysis" class="btn-secondary">
           Save Analysis
         </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Expense Breakdown Modal -->
+  <div id="expense-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" style="display: none;">
+    <div class="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
+      <div class="px-6 py-4 border-b border-gray-200">
+        <div class="flex justify-between items-center">
+          <h3 class="text-lg font-semibold text-gray-900" id="modal-title">Expense Breakdown</h3>
+          <button onclick="closeExpenseModal()" class="text-gray-400 hover:text-gray-600">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div class="p-6">
+        <div class="space-y-4" id="modal-content">
+          <!-- Dynamic content will be inserted here -->
+        </div>
       </div>
     </div>
   </div>
@@ -586,44 +615,78 @@
       try {
         console.log('Starting property analysis for:', address);
         
-        // Simulate API delay
-        await new Promise(resolve => setTimeout(resolve, 2000));
+        // Construct full address string
+        const fullAddress = `${address.street}, ${address.city}, ${address.state}, ${address.country} ${address.postal}`.trim();
         
-        // Generate realistic property analysis data
-        const baseValue = Math.floor(Math.random() * 500000) + 200000; // $200k-$700k
-        const rentMultiplier = address.country.toLowerCase().includes('canada') ? 0.004 : 0.005;
-        const monthlyRent = Math.floor(baseValue * rentMultiplier);
-        const annualRent = monthlyRent * 12;
+        // Call the real API endpoint
+        const response = await fetch('/api/analyze-property', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            userId: currentUser?.uid || null,
+            propertyAddress: fullAddress,
+            userEmail: currentUser?.email || null,
+            userName: currentUser?.displayName || 'User',
+            requestType: currentUser ? 'authenticated' : 'demo'
+          })
+        });
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error('API request failed:', response.status, errorText);
+          throw new Error(`API request failed: ${response.status}`);
+        }
+
+        const result = await response.json();
+        console.log('API response:', result);
+
+        if (!result.success) {
+          throw new Error(result.error || 'Analysis failed');
+        }
+
+        // Transform API data to frontend format
+        const data = result.data;
+        const propertyDetails = data.property_details || {};
+        const costs = data.costs || {};
+        const longTermRental = data.long_term_rental || {};
         
-        // Calculate expenses (typical percentages)
-        const propertyTaxes = Math.floor(baseValue * 0.012); // 1.2% annually
-        const insurance = Math.floor(baseValue * 0.003); // 0.3% annually
-        const maintenance = Math.floor(annualRent * 0.08); // 8% of rental income
+        // Calculate metrics
+        const propertyValue = propertyDetails.estimated_value || 0;
+        const monthlyRent = longTermRental.monthly_rent || 0;
+        const annualRent = longTermRental.annual_revenue || (monthlyRent * 12);
+        const netAnnualIncome = longTermRental.annual_profit || 0;
         
-        const totalExpenses = propertyTaxes + insurance + maintenance;
-        const netAnnualIncome = annualRent - totalExpenses;
+        // Calculate expenses
+        const propertyTaxes = costs.property_tax_annual || 0;
+        const insurance = costs.insurance_annual || 0;
+        const maintenance = costs.maintenance_annual || 0;
+        const hoaAnnual = (costs.hoa_monthly || 0) * 12;
+        const utilitiesAnnual = (costs.utilities_monthly || 0) * 12;
+        const totalExpenses = propertyTaxes + insurance + maintenance + hoaAnnual + utilitiesAnnual;
         
         // Calculate key metrics
-        const capRate = ((netAnnualIncome / baseValue) * 100).toFixed(2);
-        const cashOnCashReturn = ((netAnnualIncome / (baseValue * 0.25)) * 100).toFixed(2); // Assuming 25% down
+        const capRate = propertyValue > 0 ? ((netAnnualIncome / propertyValue) * 100).toFixed(2) : '0.00';
+        const cashOnCashReturn = propertyValue > 0 ? ((netAnnualIncome / (propertyValue * 0.25)) * 100).toFixed(2) : '0.00';
         
-        // Determine investment grade
+        // Determine investment grade based on ROI
         let grade, recommendation, scoreColor;
-        const capRateNum = parseFloat(capRate);
+        const roiPercentage = data.roi_percentage || parseFloat(capRate);
         
-        if (capRateNum >= 8) {
+        if (roiPercentage >= 8) {
           grade = 'A+';
           recommendation = 'Excellent investment opportunity';
           scoreColor = 'text-green-600';
-        } else if (capRateNum >= 6) {
+        } else if (roiPercentage >= 6) {
           grade = 'A';
           recommendation = 'Very good investment potential';
           scoreColor = 'text-green-500';
-        } else if (capRateNum >= 4) {
+        } else if (roiPercentage >= 4) {
           grade = 'B';
           recommendation = 'Good investment with moderate returns';
           scoreColor = 'text-blue-600';
-        } else if (capRateNum >= 2) {
+        } else if (roiPercentage >= 2) {
           grade = 'C';
           recommendation = 'Fair investment, consider other options';
           scoreColor = 'text-yellow-600';
@@ -633,22 +696,30 @@
           scoreColor = 'text-red-600';
         }
         
+        // Use API recommendation if available
+        if (data.recommendation) {
+          recommendation = data.recommendation;
+        }
+        
         return {
-          address: `${address.street}, ${address.city}, ${address.state}, ${address.country} ${address.postal}`.trim(),
+          address: fullAddress,
           date: new Date().toLocaleDateString(),
-          value: baseValue,
+          value: propertyValue,
           monthlyRent,
           annualRent,
           propertyTaxes,
           insurance,
           maintenance,
+          hoaAnnual,
+          utilitiesAnnual,
           totalExpenses,
           netAnnualIncome,
           capRate,
           cashOnCashReturn,
           grade,
           recommendation,
-          scoreColor
+          scoreColor,
+          apiData: data  // Store original API data for expense breakdown
         };
         
       } catch (error) {
@@ -679,6 +750,24 @@
       document.getElementById('breakdown-maintenance').textContent = '-$' + analysis.maintenance.toLocaleString();
       document.getElementById('breakdown-net-income').textContent = '$' + analysis.netAnnualIncome.toLocaleString();
       
+      // Show/hide HOA and utilities if they exist
+      if (analysis.hoaAnnual && analysis.hoaAnnual > 0) {
+        document.getElementById('hoa-row').style.display = 'flex';
+        document.getElementById('breakdown-hoa').textContent = '-$' + analysis.hoaAnnual.toLocaleString();
+      } else {
+        document.getElementById('hoa-row').style.display = 'none';
+      }
+      
+      if (analysis.utilitiesAnnual && analysis.utilitiesAnnual > 0) {
+        document.getElementById('utilities-row').style.display = 'flex';
+        document.getElementById('breakdown-utilities').textContent = '-$' + analysis.utilitiesAnnual.toLocaleString();
+      } else {
+        document.getElementById('utilities-row').style.display = 'none';
+      }
+      
+      // Store analysis data globally for expense breakdown modal
+      window.currentAnalysis = analysis;
+      
       // Investment analysis
       document.getElementById('analysis-cap-rate').textContent = analysis.capRate + '%';
       document.getElementById('analysis-cash-return').textContent = analysis.cashOnCashReturn + '%';
@@ -692,6 +781,160 @@
       
       document.getElementById('cap-rate-bar').style.width = capRatePercent + '%';
       document.getElementById('cash-return-bar').style.width = cashReturnPercent + '%';
+    }
+
+    // Expense breakdown modal functions
+    function showExpenseBreakdown(expenseType) {
+      if (!window.currentAnalysis) {
+        console.error('No analysis data available');
+        return;
+      }
+
+      const analysis = window.currentAnalysis;
+      let title, content;
+
+      switch (expenseType) {
+        case 'taxes':
+          title = 'Property Taxes Breakdown';
+          const taxRate = analysis.value > 0 ? ((analysis.propertyTaxes / analysis.value) * 100).toFixed(2) : 0;
+          const taxMonthly = (analysis.propertyTaxes / 12).toFixed(0);
+          const taxPercentOfRent = analysis.annualRent > 0 ? ((analysis.propertyTaxes / analysis.annualRent) * 100).toFixed(1) : 0;
+          
+          content = `
+            <div class="text-center mb-4">
+              <div class="text-3xl font-bold text-red-600">$${analysis.propertyTaxes.toLocaleString()}</div>
+              <div class="text-sm text-gray-500">Annual Property Taxes</div>
+            </div>
+            <div class="space-y-3">
+              <div class="flex justify-between">
+                <span class="text-gray-600">Monthly Cost:</span>
+                <span class="font-semibold">$${taxMonthly.toLocaleString()}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-600">Tax Rate:</span>
+                <span class="font-semibold">${taxRate}% of property value</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-600">% of Rental Income:</span>
+                <span class="font-semibold">${taxPercentOfRent}%</span>
+              </div>
+            </div>
+          `;
+          break;
+
+        case 'insurance':
+          title = 'Insurance Breakdown';
+          const insuranceRate = analysis.value > 0 ? ((analysis.insurance / analysis.value) * 100).toFixed(3) : 0;
+          const insuranceMonthly = (analysis.insurance / 12).toFixed(0);
+          const insurancePercentOfRent = analysis.annualRent > 0 ? ((analysis.insurance / analysis.annualRent) * 100).toFixed(1) : 0;
+          
+          content = `
+            <div class="text-center mb-4">
+              <div class="text-3xl font-bold text-red-600">$${analysis.insurance.toLocaleString()}</div>
+              <div class="text-sm text-gray-500">Annual Insurance Premium</div>
+            </div>
+            <div class="space-y-3">
+              <div class="flex justify-between">
+                <span class="text-gray-600">Monthly Cost:</span>
+                <span class="font-semibold">$${insuranceMonthly.toLocaleString()}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-600">Coverage Rate:</span>
+                <span class="font-semibold">${insuranceRate}% of property value</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-600">% of Rental Income:</span>
+                <span class="font-semibold">${insurancePercentOfRent}%</span>
+              </div>
+            </div>
+          `;
+          break;
+
+        case 'maintenance':
+          title = 'Maintenance Breakdown';
+          const maintenanceRate = analysis.value > 0 ? ((analysis.maintenance / analysis.value) * 100).toFixed(2) : 0;
+          const maintenanceMonthly = (analysis.maintenance / 12).toFixed(0);
+          const maintenancePercentOfRent = analysis.annualRent > 0 ? ((analysis.maintenance / analysis.annualRent) * 100).toFixed(1) : 0;
+          
+          content = `
+            <div class="text-center mb-4">
+              <div class="text-3xl font-bold text-red-600">$${analysis.maintenance.toLocaleString()}</div>
+              <div class="text-sm text-gray-500">Annual Maintenance & Repairs</div>
+            </div>
+            <div class="space-y-3">
+              <div class="flex justify-between">
+                <span class="text-gray-600">Monthly Budget:</span>
+                <span class="font-semibold">$${maintenanceMonthly.toLocaleString()}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-600">% of Property Value:</span>
+                <span class="font-semibold">${maintenanceRate}%</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-600">% of Rental Income:</span>
+                <span class="font-semibold">${maintenancePercentOfRent}%</span>
+              </div>
+            </div>
+          `;
+          break;
+
+        case 'hoa':
+          title = 'HOA Fees Breakdown';
+          const hoaMonthly = (analysis.hoaAnnual / 12).toFixed(0);
+          const hoaPercentOfRent = analysis.annualRent > 0 ? ((analysis.hoaAnnual / analysis.annualRent) * 100).toFixed(1) : 0;
+          
+          content = `
+            <div class="text-center mb-4">
+              <div class="text-3xl font-bold text-red-600">$${analysis.hoaAnnual.toLocaleString()}</div>
+              <div class="text-sm text-gray-500">Annual HOA Fees</div>
+            </div>
+            <div class="space-y-3">
+              <div class="flex justify-between">
+                <span class="text-gray-600">Monthly Fee:</span>
+                <span class="font-semibold">$${hoaMonthly.toLocaleString()}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-600">% of Rental Income:</span>
+                <span class="font-semibold">${hoaPercentOfRent}%</span>
+              </div>
+            </div>
+          `;
+          break;
+
+        case 'utilities':
+          title = 'Utilities Breakdown';
+          const utilitiesMonthly = (analysis.utilitiesAnnual / 12).toFixed(0);
+          const utilitiesPercentOfRent = analysis.annualRent > 0 ? ((analysis.utilitiesAnnual / analysis.annualRent) * 100).toFixed(1) : 0;
+          
+          content = `
+            <div class="text-center mb-4">
+              <div class="text-3xl font-bold text-red-600">$${analysis.utilitiesAnnual.toLocaleString()}</div>
+              <div class="text-sm text-gray-500">Annual Utilities (Landlord-Paid)</div>
+            </div>
+            <div class="space-y-3">
+              <div class="flex justify-between">
+                <span class="text-gray-600">Monthly Cost:</span>
+                <span class="font-semibold">$${utilitiesMonthly.toLocaleString()}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-600">% of Rental Income:</span>
+                <span class="font-semibold">${utilitiesPercentOfRent}%</span>
+              </div>
+            </div>
+          `;
+          break;
+
+        default:
+          return;
+      }
+
+      document.getElementById('modal-title').textContent = title;
+      document.getElementById('modal-content').innerHTML = content;
+      document.getElementById('expense-modal').style.display = 'flex';
+    }
+
+    function closeExpenseModal() {
+      document.getElementById('expense-modal').style.display = 'none';
     }
 
     // Event Listeners
