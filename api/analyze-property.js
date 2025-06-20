@@ -33,22 +33,33 @@ export default async function handler(req, res) {
     const perplexityApiKey = process.env.PERPLEXITY_API_KEY;
     const openaiApiKey = process.env.OPENAI_API_KEY;
 
-    console.log('API Keys configured:', {
-      perplexity: !!perplexityApiKey && perplexityApiKey.startsWith('pplx-'),
-      openai: !!openaiApiKey && openaiApiKey.startsWith('sk-')
+    console.log('API Key validation:', {
+      perplexity: {
+        exists: !!perplexityApiKey,
+        isValid: !!perplexityApiKey && perplexityApiKey.startsWith('pplx-'),
+        length: perplexityApiKey ? perplexityApiKey.length : 0,
+        isPlaceholder: perplexityApiKey === 'your_perplexity_api_key'
+      },
+      openai: {
+        exists: !!openaiApiKey,
+        isValid: !!openaiApiKey && openaiApiKey.startsWith('sk-'),
+        length: openaiApiKey ? openaiApiKey.length : 0,
+        isPlaceholder: openaiApiKey === 'your_openai_api_key'
+      }
     });
 
-    if (!perplexityApiKey || !openaiApiKey || 
-        perplexityApiKey === 'your_perplexity_api_key' || 
-        openaiApiKey === 'your_openai_api_key') {
-      console.warn('AI API keys not properly configured, returning demo data');
+    // Only require Perplexity API for now, since that's what's working
+    if (!perplexityApiKey || perplexityApiKey === 'your_perplexity_api_key') {
+      console.warn('Perplexity API key not properly configured, returning demo data');
       return res.status(200).json({
         success: true,
         analysisId: `demo_${Date.now()}`,
         data: generateEnhancedDemoData(propertyAddress, userName, userEmail),
-        note: 'Using demo data - API keys not configured'
+        note: 'Using demo data - Perplexity API key not configured'
       });
     }
+
+    console.log('✅ API keys validated successfully, proceeding with real API calls');
 
     // Parse address for better searching
     const addressParts = propertyAddress.split(',').map(part => part.trim());
@@ -139,24 +150,30 @@ Format your response with clear sections and include source citations [Source: U
     // Extract citations if available
     const citations = perplexityData.citations || [];
     
-    // Step 2: Structure with OpenAI
-    console.log('Calling OpenAI to structure data...');
-    const openaiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${openaiApiKey}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        model: 'gpt-4-turbo-preview',
-        messages: [
-          {
-            role: 'system',
-            content: 'You are a data structuring assistant for real estate analysis. Extract actual data from research and create accurate JSON. If the research contains specific values, use those exact values. Never make up data.'
+    // Step 2: Structure with OpenAI (or fallback to Perplexity if OpenAI not available)
+    console.log('Structuring research data...');
+    
+    let structuredData;
+    
+    if (openaiApiKey && openaiApiKey !== 'your_openai_api_key' && openaiApiKey.startsWith('sk-')) {
+      console.log('Using OpenAI for data structuring...');
+      try {
+        const openaiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${openaiApiKey}`,
+            'Content-Type': 'application/json'
           },
-          {
-            role: 'user',
-            content: `Convert this property research into structured JSON data.
+          body: JSON.stringify({
+            model: 'gpt-4-turbo-preview',
+            messages: [
+              {
+                role: 'system',
+                content: 'You are a data structuring assistant for real estate analysis. Extract actual data from research and create accurate JSON. If the research contains specific values, use those exact values. Never make up data.'
+              },
+              {
+                role: 'user',
+                content: `Convert this property research into structured JSON data.
 
 IMPORTANT RULES:
 1. Use ACTUAL VALUES from the research, not generic estimates
@@ -209,23 +226,76 @@ Required JSON structure:
   "recommendation": "[Detailed recommendation based on calculations]",
   "roi_percentage": [CALCULATE ACTUAL ROI]
 }`
-          }
-        ],
-        temperature: 0.1,
-        max_tokens: 1500,
-        response_format: { type: "json_object" }
-      })
-    });
+              }
+            ],
+            temperature: 0.1,
+            max_tokens: 1500,
+            response_format: { type: "json_object" }
+          })
+        });
 
-    if (!openaiResponse.ok) {
-      const errorData = await openaiResponse.text();
-      console.error('OpenAI API error:', errorData);
-      throw new Error('OpenAI API request failed');
+        if (!openaiResponse.ok) {
+          const errorData = await openaiResponse.text();
+          console.error('OpenAI API error:', errorData);
+          throw new Error('OpenAI API request failed');
+        }
+
+        const openaiData = await openaiResponse.json();
+        structuredData = JSON.parse(openaiData.choices[0].message.content);
+        console.log('Data structured successfully with OpenAI');
+      } catch (error) {
+        console.warn('OpenAI structuring failed, falling back to Perplexity...', error.message);
+        // Fall through to Perplexity fallback
+      }
     }
+    
+    // Fallback: Use Perplexity for structuring if OpenAI failed or not available
+    if (!structuredData) {
+      console.log('Using Perplexity for data structuring...');
+      const perplexityStructureResponse = await fetch('https://api.perplexity.ai/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${perplexityApiKey}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          model: 'llama-3.1-sonar-large-128k-online',
+          messages: [
+            {
+              role: 'system',
+              content: 'You are a data structuring assistant. Convert research text into valid JSON format. Use actual values from research, never make up data. Respond with ONLY valid JSON, no explanations.'
+            },
+            {
+              role: 'user',
+              content: `Convert this property research into structured JSON. Use actual values mentioned in the research:
 
-    const openaiData = await openaiResponse.json();
-    const structuredData = JSON.parse(openaiData.choices[0].message.content);
-    console.log('Data structured successfully');
+${researchContent}
+
+Return valid JSON with this structure (replace [...] with actual values from research):
+{"property_details":{"address":"${propertyAddress}","estimated_value":0,"property_type":"","bedrooms":0,"bathrooms":0,"square_feet":0},"costs":{"property_tax_annual":0,"insurance_annual":0,"maintenance_annual":0,"hoa_monthly":0,"utilities_monthly":0},"short_term_rental":{"daily_rate":0,"occupancy_rate":0.7,"annual_revenue":0,"annual_profit":0},"long_term_rental":{"monthly_rent":0,"annual_revenue":0,"annual_profit":0},"market_data":{"comparable_sales":[],"days_on_market":0,"appreciation_rate":0},"data_sources":[],"recommendation":"","roi_percentage":0}`
+            }
+          ],
+          max_tokens: 1000,
+          temperature: 0.1
+        })
+      });
+
+      if (!perplexityStructureResponse.ok) {
+        throw new Error('Data structuring failed - both OpenAI and Perplexity unavailable');
+      }
+
+      const perplexityStructureData = await perplexityStructureResponse.json();
+      const structureContent = perplexityStructureData.choices[0].message.content;
+      
+      // Extract JSON from response (in case there's extra text)
+      const jsonMatch = structureContent.match(/\{[\s\S]*\}/);
+      if (jsonMatch) {
+        structuredData = JSON.parse(jsonMatch[0]);
+        console.log('Data structured successfully with Perplexity');
+      } else {
+        throw new Error('Failed to extract valid JSON from structuring response');
+      }
+    }
 
     // Validate and ensure calculations are correct
     if (structuredData.long_term_rental && structuredData.costs) {
@@ -304,14 +374,21 @@ Required JSON structure:
       }
     }
 
+    console.log('✅ Analysis completed successfully with REAL API data');
+    console.log('Property analyzed:', propertyAddress);
+    console.log('Estimated value from research:', structuredData.property_details?.estimated_value);
+    console.log('Data sources used:', structuredData.data_sources?.length || 0);
+
     return res.status(200).json({
       success: true,
       analysisId,
-      data: analysisData
+      data: analysisData,
+      note: 'Analysis completed using real market data from Perplexity AI'
     });
 
   } catch (error) {
-    console.error('Analysis error:', error);
+    console.error('❌ Analysis error:', error);
+    console.log('🔄 Falling back to demo data due to API error');
     
     // Return enhanced demo data as fallback
     const demoData = generateEnhancedDemoData(
@@ -324,7 +401,7 @@ Required JSON structure:
       success: true,
       analysisId: `demo_${Date.now()}`,
       data: demoData,
-      note: 'Using demo data due to API error: ' + error.message
+      note: '⚠️ Using demo data due to API error: ' + error.message
     });
   }
 }
