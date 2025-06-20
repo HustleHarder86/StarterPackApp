@@ -1,5 +1,5 @@
 // api/analyze-property.js
-// Enhanced property analysis API with better error handling and international support
+// Enhanced property analysis API with deep research and cost controls
 
 export default async function handler(req, res) {
   // Set CORS headers
@@ -33,17 +33,36 @@ export default async function handler(req, res) {
     const perplexityApiKey = process.env.PERPLEXITY_API_KEY;
     const openaiApiKey = process.env.OPENAI_API_KEY;
 
-    if (!perplexityApiKey || !openaiApiKey) {
-      console.warn('AI API keys not configured, returning enhanced demo data');
+    console.log('API Keys configured:', {
+      perplexity: !!perplexityApiKey && perplexityApiKey.startsWith('pplx-'),
+      openai: !!openaiApiKey && openaiApiKey.startsWith('sk-')
+    });
+
+    if (!perplexityApiKey || !openaiApiKey || 
+        perplexityApiKey === 'your_perplexity_api_key' || 
+        openaiApiKey === 'your_openai_api_key') {
+      console.warn('AI API keys not properly configured, returning demo data');
       return res.status(200).json({
         success: true,
         analysisId: `demo_${Date.now()}`,
-        data: generateEnhancedDemoData(propertyAddress, userName, userEmail)
+        data: generateEnhancedDemoData(propertyAddress, userName, userEmail),
+        note: 'Using demo data - API keys not configured'
       });
     }
 
-    // Step 1: Research with Perplexity AI
-    console.log('Calling Perplexity AI for research...');
+    // Parse address for better searching
+    const addressParts = propertyAddress.split(',').map(part => part.trim());
+    const address = {
+      street: addressParts[0] || '',
+      city: addressParts[1] || '',
+      state: addressParts[2] || '',
+      country: addressParts[3] || 'Canada',
+      postal: addressParts[4] || ''
+    };
+
+    // Step 1: Deep Research with Perplexity AI
+    console.log('Calling Perplexity AI for deep research...');
+    
     const perplexityResponse = await fetch('https://api.perplexity.ai/chat/completions', {
       method: 'POST',
       headers: {
@@ -55,44 +74,55 @@ export default async function handler(req, res) {
         messages: [
           {
             role: 'system',
-            content: 'You are a real estate investment analyst. Provide detailed, accurate data for property investment analysis.'
+            content: 'You are a real estate investment analyst specializing in Canadian properties. Research deeply using authoritative sources like Realtor.ca, HouseSigma, Zolo, local MLS data, and government property tax databases. Focus on accuracy and use only 3-5 high-quality sources to control costs.'
           },
           {
             role: 'user',
-            content: `Analyze this property for real estate investment: ${propertyAddress}
+            content: `Perform DEEP RESEARCH for this exact property: ${propertyAddress}
 
-Please research and provide:
+CRITICAL INSTRUCTIONS:
+- Use ONLY 3-5 authoritative sources (prioritize: Realtor.ca, HouseSigma, Zolo, municipal websites)
+- Find ACTUAL data, not estimates
+- If exact property data isn't available, use very similar properties on the SAME street
+- Include source URLs for verification
 
-1. PROPERTY DETAILS:
-   - Current estimated market value (based on comparables)
-   - Property type (Single Family, Condo, Townhouse, etc.)
-   - Typical property characteristics for this area
+Research these specific items:
 
-2. ANNUAL COSTS:
-   - Property taxes (exact annual amount for this area)
-   - Home insurance costs (typical for this property type/area)
-   - Maintenance costs (1-2% of property value typically)
-   - HOA/Condo fees if applicable
-   - Utilities if landlord-paid
+1. PROPERTY VALUE (Most Important):
+   - Search for this exact address on Realtor.ca and HouseSigma
+   - Find recent sales (last 6 months) of similar properties on ${address.street}
+   - Look for current listings in the immediate area
+   - Check municipal property tax assessment
 
-3. RENTAL POTENTIAL:
-   - Average monthly rent for long-term rentals in this area
-   - Average daily rate for short-term rentals (Airbnb)
-   - Typical occupancy rates for short-term rentals
-   - Local regulations on short-term rentals
+2. RENTAL MARKET for ${address.city}:
+   - Current rental listings for similar properties in this neighborhood
+   - Use Rentals.ca, PadMapper, or Kijiji for ${address.city}
+   - Find actual rental prices, not estimates
+   - Include both long-term and short-term (Airbnb) rates if available
 
-4. MARKET CONDITIONS:
-   - Recent price trends
-   - Rental demand indicators
-   - Economic factors affecting property values
+3. EXACT COSTS for ${address.city}, ${address.state}:
+   - Property tax rate (mill rate) - check city website
+   - Typical home insurance costs for this property type
+   - Condo/HOA fees if applicable (check listings)
+   - Average utilities if landlord-paid
 
-Provide specific numbers and data points for accurate ROI calculations.`
+4. NEIGHBORHOOD DATA:
+   - Recent price appreciation (last 3-5 years)
+   - Average days on market
+   - Proximity to transit, schools, employment
+
+Format your response with clear sections and include source citations [Source: URL] for each data point.`
           }
         ],
-        max_tokens: 2000,
-        temperature: 0.2,
+        max_tokens: 2500,
+        temperature: 0.1,
         top_p: 0.9,
-        stream: false
+        stream: false,
+        // Cost control parameters
+        search_domain_filter: ["realtor.ca", "housesigma.com", "zolo.ca", "rentals.ca", "kijiji.ca", ".gov", ".ca"],
+        search_recency_filter: "month",
+        return_citations: true,
+        search_depth: "advanced"
       })
     });
 
@@ -104,8 +134,11 @@ Provide specific numbers and data points for accurate ROI calculations.`
 
     const perplexityData = await perplexityResponse.json();
     const researchContent = perplexityData.choices[0].message.content;
-    console.log('Perplexity research completed');
+    console.log('Perplexity research completed, length:', researchContent.length);
 
+    // Extract citations if available
+    const citations = perplexityData.citations || [];
+    
     // Step 2: Structure with OpenAI
     console.log('Calling OpenAI to structure data...');
     const openaiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -119,45 +152,63 @@ Provide specific numbers and data points for accurate ROI calculations.`
         messages: [
           {
             role: 'system',
-            content: 'You are a data structuring assistant. Convert research into exact JSON format with realistic values.'
+            content: 'You are a data structuring assistant for real estate analysis. Extract actual data from research and create accurate JSON. If the research contains specific values, use those exact values. Never make up data.'
           },
           {
             role: 'user',
-            content: `Based on this research, create a JSON structure with realistic investment data:
+            content: `Convert this property research into structured JSON data.
 
-Research data:
+IMPORTANT RULES:
+1. Use ACTUAL VALUES from the research, not generic estimates
+2. If research mentions a specific price/rent, use that exact number
+3. For costs, use actual percentages mentioned or these defaults:
+   - Property tax: Use actual mill rate if provided, otherwise ~1.2% for Ontario
+   - Insurance: ~0.35% of property value annually
+   - Maintenance: 1-1.5% of property value annually
+4. Calculate all derived values accurately
+
+Research data to structure:
 ${researchContent}
 
 Required JSON structure:
 {
   "property_details": {
     "address": "${propertyAddress}",
-    "estimated_value": [number - realistic market value],
-    "property_type": "[Single Family/Condo/Townhouse/Duplex]"
+    "estimated_value": [USE ACTUAL VALUE FROM RESEARCH],
+    "property_type": "[Single Family/Condo/Townhouse/Semi-Detached]",
+    "bedrooms": [number if mentioned],
+    "bathrooms": [number if mentioned],
+    "square_feet": [number if mentioned]
   },
   "costs": {
-    "property_tax_annual": [realistic annual amount],
-    "insurance_annual": [realistic annual amount], 
-    "maintenance_annual": [1-2% of property value],
-    "hoa_monthly": [0 if none, realistic if applicable],
-    "utilities_monthly": [0 if tenant pays, realistic if landlord pays]
+    "property_tax_annual": [CALCULATE FROM ACTUAL TAX RATE],
+    "insurance_annual": [REALISTIC FOR PROPERTY TYPE],
+    "maintenance_annual": [1-1.5% OF VALUE],
+    "hoa_monthly": [ACTUAL IF MENTIONED, 0 if not applicable],
+    "utilities_monthly": [ACTUAL IF MENTIONED, otherwise 200-300]
   },
   "short_term_rental": {
-    "daily_rate": [realistic Airbnb rate],
-    "occupancy_rate": [0.65-0.85 typically],
-    "annual_revenue": [daily_rate * 365 * occupancy_rate],
-    "annual_profit": [revenue - all costs - 15% management]
+    "daily_rate": [FROM AIRBNB RESEARCH],
+    "occupancy_rate": [DECIMAL, typically 0.65-0.75],
+    "annual_revenue": [CALCULATE: daily_rate * 365 * occupancy_rate],
+    "annual_profit": [revenue - all costs - 20% management]
   },
   "long_term_rental": {
-    "monthly_rent": [realistic market rent],
-    "annual_revenue": [monthly_rent * 12],
+    "monthly_rent": [ACTUAL FROM RESEARCH],
+    "annual_revenue": [monthly_rent * 12 * 0.95 (5% vacancy)],
     "annual_profit": [revenue - all costs]
   },
-  "recommendation": "[Detailed 2-3 sentence recommendation based on which strategy has higher ROI]",
-  "roi_percentage": [higher ROI as percentage, e.g., 6.5]
-}
-
-Fill with realistic values based on the research. If specific data wasn't found, use typical values for the area.`
+  "market_data": {
+    "comparable_sales": [array of recent sales if mentioned],
+    "days_on_market": [average if mentioned],
+    "appreciation_rate": [annual % if mentioned]
+  },
+  "data_sources": [
+    {"name": "source name", "url": "source url", "date": "access date"}
+  ],
+  "recommendation": "[Detailed recommendation based on calculations]",
+  "roi_percentage": [CALCULATE ACTUAL ROI]
+}`
           }
         ],
         temperature: 0.1,
@@ -175,6 +226,33 @@ Fill with realistic values based on the research. If specific data wasn't found,
     const openaiData = await openaiResponse.json();
     const structuredData = JSON.parse(openaiData.choices[0].message.content);
     console.log('Data structured successfully');
+
+    // Validate and ensure calculations are correct
+    if (structuredData.long_term_rental && structuredData.costs) {
+      const totalAnnualCosts = 
+        structuredData.costs.property_tax_annual +
+        structuredData.costs.insurance_annual +
+        structuredData.costs.maintenance_annual +
+        (structuredData.costs.hoa_monthly * 12) +
+        (structuredData.costs.utilities_monthly * 12);
+
+      // Recalculate profits to ensure accuracy
+      structuredData.long_term_rental.annual_profit = 
+        structuredData.long_term_rental.annual_revenue - totalAnnualCosts;
+
+      structuredData.short_term_rental.annual_profit = 
+        structuredData.short_term_rental.annual_revenue - 
+        totalAnnualCosts - 
+        (structuredData.short_term_rental.annual_revenue * 0.20); // 20% management
+
+      // Calculate accurate ROI
+      const bestProfit = Math.max(
+        structuredData.long_term_rental.annual_profit,
+        structuredData.short_term_rental.annual_profit
+      );
+      structuredData.roi_percentage = 
+        ((bestProfit / structuredData.property_details.estimated_value) * 100).toFixed(2);
+    }
 
     // Step 3: Save to Firebase
     const adminModule = await import('firebase-admin');
@@ -206,7 +284,8 @@ Fill with realistic values based on the research. If specific data wasn't found,
       lead_name: userName || 'User',
       lead_email: userEmail || 'user@example.com',
       analysis_timestamp: new Date().toISOString(),
-      property_address: propertyAddress
+      property_address: propertyAddress,
+      research_sources: citations.slice(0, 5) // Save top 5 sources
     };
 
     await db.collection('analyses').doc(analysisId).set(analysisData);
@@ -214,11 +293,15 @@ Fill with realistic values based on the research. If specific data wasn't found,
 
     // If authenticated user, update their analysis count
     if (userId && requestType === 'authenticated') {
-      const userRef = db.collection('users').doc(userId);
-      await userRef.update({
-        monthlyAnalysisCount: admin.firestore.FieldValue.increment(1),
-        lastAnalysisDate: admin.firestore.FieldValue.serverTimestamp()
-      });
+      try {
+        const userRef = db.collection('users').doc(userId);
+        await userRef.update({
+          monthlyAnalysisCount: admin.firestore.FieldValue.increment(1),
+          lastAnalysisDate: admin.firestore.FieldValue.serverTimestamp()
+        });
+      } catch (error) {
+        console.error('Failed to update analysis count:', error);
+      }
     }
 
     return res.status(200).json({
@@ -241,50 +324,61 @@ Fill with realistic values based on the research. If specific data wasn't found,
       success: true,
       analysisId: `demo_${Date.now()}`,
       data: demoData,
-      note: 'Using demo data due to API configuration'
+      note: 'Using demo data due to API error: ' + error.message
     });
   }
 }
 
-// Generate enhanced demo data based on address
+// Generate realistic demo data for Canadian properties
 function generateEnhancedDemoData(propertyAddress, userName, userEmail) {
   // Parse address to customize demo data
   const addressLower = propertyAddress.toLowerCase();
   
-  // Determine property value range based on keywords
-  let baseValue = 650000;
-  if (addressLower.includes('downtown') || addressLower.includes('central')) {
-    baseValue = 850000;
-  } else if (addressLower.includes('suburban') || addressLower.includes('suburb')) {
-    baseValue = 550000;
+  // More realistic Canadian property values
+  let baseValue = 850000; // Default for Ontario urban areas
+  
+  if (addressLower.includes('toronto')) {
+    baseValue = Math.floor(Math.random() * 400000) + 900000; // $900k-$1.3M
+  } else if (addressLower.includes('mississauga') || addressLower.includes('oakville')) {
+    baseValue = Math.floor(Math.random() * 300000) + 700000; // $700k-$1M
+  } else if (addressLower.includes('vancouver')) {
+    baseValue = Math.floor(Math.random() * 500000) + 1200000; // $1.2M-$1.7M
+  } else if (addressLower.includes('calgary') || addressLower.includes('edmonton')) {
+    baseValue = Math.floor(Math.random() * 200000) + 450000; // $450k-$650k
   }
   
-  // Add some randomization
-  const valueVariance = Math.floor(Math.random() * 100000) - 50000;
-  const propertyValue = baseValue + valueVariance;
+  // Determine property type
+  let propertyType = 'Single Family';
+  if (addressLower.includes('condo') || addressLower.includes('apt')) {
+    propertyType = 'Condo';
+    baseValue = Math.floor(baseValue * 0.7); // Condos typically cheaper
+  } else if (addressLower.includes('townhouse') || addressLower.includes('townhome')) {
+    propertyType = 'Townhouse';
+    baseValue = Math.floor(baseValue * 0.85);
+  }
   
-  // Calculate realistic costs
-  const propertyTax = Math.round(propertyValue * 0.012); // 1.2% property tax
-  const insurance = Math.round(propertyValue * 0.0035); // 0.35% insurance
-  const maintenance = Math.round(propertyValue * 0.015); // 1.5% maintenance
-  const hoaMonthly = addressLower.includes('condo') ? 350 : 0;
-  const utilities = addressLower.includes('condo') ? 0 : 200;
+  // Calculate realistic costs for Canadian properties
+  const propertyTax = Math.round(baseValue * 0.01); // ~1% in Ontario
+  const insurance = Math.round(baseValue * 0.0035); // 0.35% insurance
+  const maintenance = Math.round(baseValue * 0.015); // 1.5% maintenance
+  const hoaMonthly = propertyType === 'Condo' ? Math.round(baseValue * 0.0008) : 0; // ~$500-800 for condos
+  const utilities = propertyType === 'Condo' ? 0 : 250; // Condos often include utilities
   
-  // Calculate rental potential
-  const monthlyRent = Math.round(propertyValue * 0.005); // 0.5% rent-to-value
-  const dailyRate = Math.round(monthlyRent / 12); // Airbnb typically higher
-  const occupancyRate = 0.75;
+  // Calculate rental potential - Canadian rates
+  const monthlyRent = Math.round(baseValue * 0.004); // 0.4% rent-to-value ratio
+  const dailyRate = Math.round(monthlyRent / 10); // Airbnb typically 3x nightly
+  const occupancyRate = 0.70; // 70% occupancy for STR
   
   // Calculate revenues and profits
   const annualCosts = propertyTax + insurance + maintenance + (hoaMonthly * 12) + (utilities * 12);
   const strRevenue = Math.round(dailyRate * 365 * occupancyRate);
-  const strProfit = Math.round(strRevenue - annualCosts - (strRevenue * 0.15)); // 15% management
-  const ltrRevenue = monthlyRent * 12;
+  const strProfit = Math.round(strRevenue - annualCosts - (strRevenue * 0.20)); // 20% management
+  const ltrRevenue = Math.round(monthlyRent * 12 * 0.95); // 5% vacancy
   const ltrProfit = ltrRevenue - annualCosts;
   
   // Calculate ROI
-  const strROI = ((strProfit / propertyValue) * 100).toFixed(2);
-  const ltrROI = ((ltrProfit / propertyValue) * 100).toFixed(2);
+  const strROI = ((strProfit / baseValue) * 100).toFixed(2);
+  const ltrROI = ((ltrProfit / baseValue) * 100).toFixed(2);
   const bestROI = Math.max(parseFloat(strROI), parseFloat(ltrROI));
   
   return {
@@ -295,8 +389,11 @@ function generateEnhancedDemoData(propertyAddress, userName, userEmail) {
     analysis_timestamp: new Date().toISOString(),
     property_details: {
       address: propertyAddress,
-      estimated_value: propertyValue,
-      property_type: addressLower.includes('condo') ? 'Condo' : 'Single Family'
+      estimated_value: baseValue,
+      property_type: propertyType,
+      bedrooms: propertyType === 'Condo' ? 2 : 3,
+      bathrooms: propertyType === 'Condo' ? 2 : 3,
+      square_feet: propertyType === 'Condo' ? 850 : 1800
     },
     costs: {
       property_tax_annual: propertyTax,
@@ -316,43 +413,17 @@ function generateEnhancedDemoData(propertyAddress, userName, userEmail) {
       annual_revenue: ltrRevenue,
       annual_profit: ltrProfit
     },
+    market_data: {
+      comparable_sales: [],
+      days_on_market: 15,
+      appreciation_rate: 5.2
+    },
+    data_sources: [
+      {"name": "Demo Data", "url": "internal", "date": new Date().toISOString()}
+    ],
     recommendation: strROI > ltrROI 
-      ? `Short-term rental recommended. The property shows strong potential for Airbnb with ${(occupancyRate * 100).toFixed(0)}% occupancy rate and ${bestROI}% ROI, significantly higher than long-term rental at ${ltrROI}% ROI.`
-      : `Long-term rental recommended. This strategy offers ${bestROI}% ROI with stable monthly income of $${monthlyRent.toLocaleString()}, outperforming short-term rental which yields ${strROI}% ROI.`,
+      ? `Short-term rental recommended. The property shows strong potential for Airbnb with ${(occupancyRate * 100).toFixed(0)}% occupancy rate and ${bestROI}% ROI, significantly higher than long-term rental at ${ltrROI}% ROI. Consider local STR regulations.`
+      : `Long-term rental recommended. This strategy offers ${bestROI}% ROI with stable monthly income of $${monthlyRent.toLocaleString()}, outperforming short-term rental which yields ${strROI}% ROI. Lower management overhead and more predictable returns.`,
     roi_percentage: bestROI
   };
-}
-// api/analyze-property.js - Add rate limiting
-const rateLimit = new Map();
-
-export default async function handler(req, res) {
-  // Add rate limiting
-  const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-  const key = `${ip}-${req.body.userId || 'anonymous'}`;
-  const now = Date.now();
-  const windowMs = 60 * 1000; // 1 minute
-  const maxRequests = 5;
-  
-  if (rateLimit.has(key)) {
-    const userData = rateLimit.get(key);
-    if (now - userData.firstRequest < windowMs && userData.count >= maxRequests) {
-      return res.status(429).json({ error: 'Too many requests' });
-    }
-  }
-  
-  // Update rate limit
-  rateLimit.set(key, {
-    firstRequest: now,
-    count: (rateLimit.get(key)?.count || 0) + 1
-  });
-
-  // Also add input validation
-  const { propertyAddress } = req.body;
-  
-  // Sanitize address input
-  const sanitizedAddress = propertyAddress
-    .replace(/[<>]/g, '') // Remove potential XSS
-    .substring(0, 500); // Limit length
-  
-  // ... rest of your code
 }
