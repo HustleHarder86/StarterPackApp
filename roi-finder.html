@@ -8,6 +8,9 @@
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
   <style>
     /* Loading animation */
     @keyframes spin {
@@ -86,6 +89,25 @@
       box-shadow: 0 2px 10px rgba(0,0,0,0.1);
       text-align: center;
     }
+    
+    .metric-card {
+      background: linear-gradient(135deg, #f3f4f6, #ffffff);
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 24px;
+      text-align: center;
+    }
+    
+    /* Chart container */
+    .chart-container {
+      position: relative;
+      height: 300px;
+      margin: 20px 0;
+    }
+    
+    /* Colors */
+    .positive { color: #10b981; }
+    .negative { color: #ef4444; }
   </style>
 </head>
 <body class="bg-gray-50">
@@ -321,26 +343,56 @@
               <p class="font-semibold" id="result-date">-</p>
             </div>
           </div>
+          <div id="property-details-extra" class="mt-4 grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+            <!-- Extra property details will be added here -->
+          </div>
         </div>
       </div>
 
       <!-- Key Metrics -->
       <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-        <div class="stat-card">
-          <p class="text-sm text-gray-600">Estimated Value</p>
+        <div class="metric-card">
+          <p class="text-sm text-gray-600">Market Value</p>
           <p class="text-2xl font-bold text-gray-900" id="result-value">-</p>
+          <p class="text-xs text-gray-500 mt-1">Based on comparables</p>
         </div>
-        <div class="stat-card">
+        <div class="metric-card">
           <p class="text-sm text-gray-600">Monthly Rent</p>
-          <p class="text-2xl font-bold text-gray-900" id="result-rent">-</p>
+          <p class="text-2xl font-bold positive" id="result-rent">-</p>
+          <p class="text-xs text-gray-500 mt-1">Market rate</p>
         </div>
-        <div class="stat-card">
+        <div class="metric-card">
           <p class="text-sm text-gray-600">Cap Rate</p>
           <p class="text-2xl font-bold text-green-600" id="result-cap-rate">-</p>
+          <p class="text-xs text-gray-500 mt-1">Net operating income</p>
         </div>
-        <div class="stat-card">
+        <div class="metric-card">
           <p class="text-sm text-gray-600">ROI Score</p>
-          <p class="text-3xl font-bold" id="result-roi-score">-</p>
+          <p class="text-4xl font-bold" id="result-roi-score">-</p>
+          <div class="mt-2">
+            <div class="w-full bg-gray-200 rounded-full h-2">
+              <div id="roi-bar" class="h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Charts Section -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <!-- Cash Flow Chart -->
+        <div class="bg-white rounded-xl shadow-lg p-6">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">Monthly Cash Flow Analysis</h3>
+          <div class="chart-container">
+            <canvas id="cashFlowChart"></canvas>
+          </div>
+        </div>
+
+        <!-- ROI Comparison Chart -->
+        <div class="bg-white rounded-xl shadow-lg p-6">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">Investment Strategy Comparison</h3>
+          <div class="chart-container">
+            <canvas id="roiComparisonChart"></canvas>
+          </div>
         </div>
       </div>
 
@@ -349,39 +401,37 @@
         <!-- Financial Breakdown -->
         <div class="bg-white rounded-lg shadow">
           <div class="px-6 py-4 border-b border-gray-200">
-            <h3 class="text-lg font-semibold text-gray-900">Financial Breakdown</h3>
+            <h3 class="text-lg font-semibold text-gray-900">Income & Expenses Breakdown</h3>
           </div>
           <div class="p-6">
             <div class="space-y-4">
               <div class="flex justify-between">
-                <span class="text-gray-600">Estimated Property Value</span>
-                <span class="font-semibold" id="breakdown-value">-</span>
+                <span class="text-gray-600">Gross Rental Income</span>
+                <span class="font-semibold positive" id="breakdown-income">-</span>
               </div>
               <div class="flex justify-between">
-                <span class="text-gray-600">Monthly Rental Income</span>
-                <span class="font-semibold text-green-600" id="breakdown-income">-</span>
+                <span class="text-gray-600">Property Taxes</span>
+                <span class="font-semibold negative" id="breakdown-taxes">-</span>
               </div>
               <div class="flex justify-between">
-                <span class="text-gray-600">Annual Rental Income</span>
-                <span class="font-semibold text-green-600" id="breakdown-annual-income">-</span>
+                <span class="text-gray-600">Insurance</span>
+                <span class="font-semibold negative" id="breakdown-insurance">-</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-600">HOA/Condo Fees</span>
+                <span class="font-semibold negative" id="breakdown-hoa">-</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-600">Maintenance</span>
+                <span class="font-semibold negative" id="breakdown-maintenance">-</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-600">Property Management (8%)</span>
+                <span class="font-semibold negative" id="breakdown-management">-</span>
               </div>
               <div class="border-t pt-2">
                 <div class="flex justify-between">
-                  <span class="text-gray-600">Property Taxes (Est.)</span>
-                  <span class="font-semibold text-red-600" id="breakdown-taxes">-</span>
-                </div>
-                <div class="flex justify-between">
-                  <span class="text-gray-600">Insurance (Est.)</span>
-                  <span class="font-semibold text-red-600" id="breakdown-insurance">-</span>
-                </div>
-                <div class="flex justify-between">
-                  <span class="text-gray-600">Maintenance (Est.)</span>
-                  <span class="font-semibold text-red-600" id="breakdown-maintenance">-</span>
-                </div>
-              </div>
-              <div class="border-t pt-2">
-                <div class="flex justify-between">
-                  <span class="font-semibold text-gray-900">Net Annual Income</span>
+                  <span class="font-semibold text-gray-900">Net Operating Income</span>
                   <span class="font-bold text-green-600" id="breakdown-net-income">-</span>
                 </div>
               </div>
@@ -392,37 +442,95 @@
         <!-- Investment Analysis -->
         <div class="bg-white rounded-lg shadow">
           <div class="px-6 py-4 border-b border-gray-200">
-            <h3 class="text-lg font-semibold text-gray-900">Investment Analysis</h3>
+            <h3 class="text-lg font-semibold text-gray-900">Rental Strategy Analysis</h3>
           </div>
           <div class="p-6">
             <div class="space-y-4">
-              <div>
-                <div class="flex justify-between items-center mb-2">
-                  <span class="text-gray-600">Cap Rate</span>
-                  <span class="font-semibold" id="analysis-cap-rate">-</span>
-                </div>
-                <div class="w-full bg-gray-200 rounded-full h-2">
-                  <div class="bg-green-600 h-2 rounded-full" id="cap-rate-bar" style="width: 0%"></div>
+              <!-- Long-term Rental -->
+              <div class="border rounded-lg p-4">
+                <h4 class="font-medium text-gray-900 mb-2">Long-term Rental</h4>
+                <div class="grid grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <span class="text-gray-600">Monthly Rent:</span>
+                    <span class="font-semibold ml-2" id="ltr-rent">-</span>
+                  </div>
+                  <div>
+                    <span class="text-gray-600">Annual NOI:</span>
+                    <span class="font-semibold ml-2" id="ltr-noi">-</span>
+                  </div>
+                  <div>
+                    <span class="text-gray-600">Cap Rate:</span>
+                    <span class="font-semibold ml-2" id="ltr-cap">-</span>
+                  </div>
+                  <div>
+                    <span class="text-gray-600">ROI:</span>
+                    <span class="font-semibold ml-2" id="ltr-roi">-</span>
+                  </div>
                 </div>
               </div>
-              <div>
-                <div class="flex justify-between items-center mb-2">
-                  <span class="text-gray-600">Cash-on-Cash Return</span>
-                  <span class="font-semibold" id="analysis-cash-return">-</span>
-                </div>
-                <div class="w-full bg-gray-200 rounded-full h-2">
-                  <div class="bg-blue-600 h-2 rounded-full" id="cash-return-bar" style="width: 0%"></div>
-                </div>
-              </div>
-              <div class="border-t pt-4">
-                <div class="text-center">
-                  <div class="text-3xl font-bold mb-2" id="investment-grade">-</div>
-                  <p class="text-gray-600" id="investment-recommendation">-</p>
+
+              <!-- Short-term Rental -->
+              <div class="border rounded-lg p-4">
+                <h4 class="font-medium text-gray-900 mb-2">Short-term Rental (Airbnb)</h4>
+                <div class="grid grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <span class="text-gray-600">Daily Rate:</span>
+                    <span class="font-semibold ml-2" id="str-rate">-</span>
+                  </div>
+                  <div>
+                    <span class="text-gray-600">Occupancy:</span>
+                    <span class="font-semibold ml-2" id="str-occupancy">-</span>
+                  </div>
+                  <div>
+                    <span class="text-gray-600">Annual Revenue:</span>
+                    <span class="font-semibold ml-2" id="str-revenue">-</span>
+                  </div>
+                  <div>
+                    <span class="text-gray-600">ROI:</span>
+                    <span class="font-semibold ml-2" id="str-roi">-</span>
+                  </div>
                 </div>
               </div>
             </div>
+
+            <!-- Recommendation -->
+            <div class="mt-6 p-4 bg-blue-50 rounded-lg">
+              <h4 class="font-semibold text-blue-900 mb-1">Recommendation</h4>
+              <p class="text-sm text-blue-800" id="investment-recommendation">-</p>
+            </div>
           </div>
         </div>
+      </div>
+
+      <!-- Market Data (if available) -->
+      <div id="market-data-section" class="mt-8 bg-white rounded-lg shadow" style="display: none;">
+        <div class="px-6 py-4 border-b border-gray-200">
+          <h3 class="text-lg font-semibold text-gray-900">Market Analysis</h3>
+        </div>
+        <div class="p-6">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
+            <div>
+              <p class="text-gray-600">Average Days on Market</p>
+              <p class="font-semibold" id="days-on-market">-</p>
+            </div>
+            <div>
+              <p class="text-gray-600">Annual Appreciation</p>
+              <p class="font-semibold" id="appreciation-rate">-</p>
+            </div>
+            <div>
+              <p class="text-gray-600">Comparable Sales</p>
+              <p class="font-semibold" id="comparable-count">-</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Data Sources -->
+      <div class="mt-8 bg-gray-100 rounded-lg p-4 text-sm text-gray-600">
+        <p class="font-medium mb-2">Data Sources & Accuracy:</p>
+        <ul class="list-disc list-inside space-y-1" id="source-list">
+          <li>Analysis powered by AI with real-time market data</li>
+        </ul>
       </div>
 
       <!-- Actions -->
@@ -453,6 +561,7 @@
     let userProfile = null;
     let currentView = 'loading';
     let authMode = 'signin';
+    let charts = {};
 
     // Initialize app
     async function initApp() {
@@ -475,6 +584,7 @@
             currentUser = user;
             userProfile = await loadUserProfile(user.uid);
             showView('dashboard');
+            loadUserAnalyses();
           } else {
             currentUser = null;
             userProfile = null;
@@ -514,6 +624,63 @@
       } catch (error) {
         console.error('Profile load error:', error);
         return null;
+      }
+    }
+
+    // Load user analyses
+    async function loadUserAnalyses() {
+      try {
+        const db = firebase.firestore();
+        const snapshot = await db.collection('analyses')
+          .where('userId', '==', currentUser.uid)
+          .orderBy('createdAt', 'desc')
+          .limit(10)
+          .get();
+        
+        const analyses = [];
+        snapshot.forEach(doc => {
+          analyses.push({ id: doc.id, ...doc.data() });
+        });
+        
+        // Update dashboard
+        document.getElementById('total-analyses').textContent = analyses.length;
+        
+        // Display analyses list
+        const listEl = document.getElementById('analyses-list');
+        if (analyses.length > 0) {
+          listEl.innerHTML = analyses.map(analysis => `
+            <div class="px-6 py-4 hover:bg-gray-50 cursor-pointer" onclick="viewAnalysis('${analysis.id}')">
+              <div class="flex justify-between items-center">
+                <div>
+                  <p class="font-medium text-gray-900">${analysis.property_address || 'Unknown Address'}</p>
+                  <p class="text-sm text-gray-500">ROI: ${analysis.roi_percentage}% • ${new Date(analysis.analysis_timestamp || analysis.createdAt?.toDate()).toLocaleDateString()}</p>
+                </div>
+                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
+              </div>
+            </div>
+          `).join('');
+        }
+      } catch (error) {
+        console.error('Load analyses error:', error);
+      }
+    }
+
+    // View analysis
+    async function viewAnalysis(analysisId) {
+      try {
+        const db = firebase.firestore();
+        const doc = await db.collection('analyses').doc(analysisId).get();
+        
+        if (doc.exists) {
+          const analysis = doc.data();
+          displayResults(analysis);
+          showView('results');
+        }
+      } catch (error) {
+        console.error('View analysis error:', error);
+        alert('Failed to load analysis');
       }
     }
 
@@ -586,70 +753,36 @@
       try {
         console.log('Starting property analysis for:', address);
         
-        // Simulate API delay
-        await new Promise(resolve => setTimeout(resolve, 2000));
+        // Format address
+        const fullAddress = `${address.street}, ${address.city}, ${address.state}, ${address.country} ${address.postal}`.trim();
         
-        // Generate realistic property analysis data
-        const baseValue = Math.floor(Math.random() * 500000) + 200000; // $200k-$700k
-        const rentMultiplier = address.country.toLowerCase().includes('canada') ? 0.004 : 0.005;
-        const monthlyRent = Math.floor(baseValue * rentMultiplier);
-        const annualRent = monthlyRent * 12;
+        // Call API
+        const response = await fetch('/api/analyze-property', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            userId: currentUser.uid,
+            propertyAddress: fullAddress,
+            userEmail: currentUser.email,
+            userName: currentUser.displayName,
+            requestType: 'authenticated'
+          })
+        });
         
-        // Calculate expenses (typical percentages)
-        const propertyTaxes = Math.floor(baseValue * 0.012); // 1.2% annually
-        const insurance = Math.floor(baseValue * 0.003); // 0.3% annually
-        const maintenance = Math.floor(annualRent * 0.08); // 8% of rental income
-        
-        const totalExpenses = propertyTaxes + insurance + maintenance;
-        const netAnnualIncome = annualRent - totalExpenses;
-        
-        // Calculate key metrics
-        const capRate = ((netAnnualIncome / baseValue) * 100).toFixed(2);
-        const cashOnCashReturn = ((netAnnualIncome / (baseValue * 0.25)) * 100).toFixed(2); // Assuming 25% down
-        
-        // Determine investment grade
-        let grade, recommendation, scoreColor;
-        const capRateNum = parseFloat(capRate);
-        
-        if (capRateNum >= 8) {
-          grade = 'A+';
-          recommendation = 'Excellent investment opportunity';
-          scoreColor = 'text-green-600';
-        } else if (capRateNum >= 6) {
-          grade = 'A';
-          recommendation = 'Very good investment potential';
-          scoreColor = 'text-green-500';
-        } else if (capRateNum >= 4) {
-          grade = 'B';
-          recommendation = 'Good investment with moderate returns';
-          scoreColor = 'text-blue-600';
-        } else if (capRateNum >= 2) {
-          grade = 'C';
-          recommendation = 'Fair investment, consider other options';
-          scoreColor = 'text-yellow-600';
-        } else {
-          grade = 'D';
-          recommendation = 'Poor investment potential';
-          scoreColor = 'text-red-600';
+        if (!response.ok) {
+          throw new Error('Analysis API request failed');
         }
         
-        return {
-          address: `${address.street}, ${address.city}, ${address.state}, ${address.country} ${address.postal}`.trim(),
-          date: new Date().toLocaleDateString(),
-          value: baseValue,
-          monthlyRent,
-          annualRent,
-          propertyTaxes,
-          insurance,
-          maintenance,
-          totalExpenses,
-          netAnnualIncome,
-          capRate,
-          cashOnCashReturn,
-          grade,
-          recommendation,
-          scoreColor
-        };
+        const result = await response.json();
+        console.log('Analysis result:', result);
+        
+        if (result.success && result.data) {
+          return result.data;
+        } else {
+          throw new Error(result.error || 'Analysis failed');
+        }
         
       } catch (error) {
         console.error('Analysis error:', error);
@@ -657,41 +790,181 @@
       }
     }
 
-    // Display analysis results
+    // Display analysis results with charts
     function displayResults(analysis) {
       // Property info
-      document.getElementById('result-address').textContent = analysis.address;
-      document.getElementById('result-date').textContent = analysis.date;
+      document.getElementById('result-address').textContent = analysis.property_address || 'Unknown';
+      document.getElementById('result-date').textContent = new Date(analysis.analysis_timestamp || analysis.createdAt?.toDate()).toLocaleDateString();
+      
+      // Extra property details
+      const detailsEl = document.getElementById('property-details-extra');
+      if (analysis.property_details.bedrooms || analysis.property_details.square_feet) {
+        detailsEl.innerHTML = `
+          ${analysis.property_details.bedrooms ? `<div><span class="text-gray-600">Bedrooms:</span> <span class="font-semibold">${analysis.property_details.bedrooms}</span></div>` : ''}
+          ${analysis.property_details.bathrooms ? `<div><span class="text-gray-600">Bathrooms:</span> <span class="font-semibold">${analysis.property_details.bathrooms}</span></div>` : ''}
+          ${analysis.property_details.square_feet ? `<div><span class="text-gray-600">Square Feet:</span> <span class="font-semibold">${analysis.property_details.square_feet.toLocaleString()}</span></div>` : ''}
+          ${analysis.property_details.property_type ? `<div><span class="text-gray-600">Type:</span> <span class="font-semibold">${analysis.property_details.property_type}</span></div>` : ''}
+        `;
+      }
       
       // Key metrics
-      document.getElementById('result-value').textContent = '$' + analysis.value.toLocaleString();
-      document.getElementById('result-rent').textContent = '$' + analysis.monthlyRent.toLocaleString();
-      document.getElementById('result-cap-rate').textContent = analysis.capRate + '%';
-      document.getElementById('result-roi-score').textContent = analysis.grade;
-      document.getElementById('result-roi-score').className = 'text-3xl font-bold ' + analysis.scoreColor;
+      document.getElementById('result-value').textContent = '$' + (analysis.property_details?.estimated_value || 0).toLocaleString();
+      document.getElementById('result-rent').textContent = '$' + (analysis.long_term_rental?.monthly_rent || 0).toLocaleString();
+      document.getElementById('result-cap-rate').textContent = analysis.roi_percentage + '%';
+      
+      // ROI Grade with color
+      const roiGrade = document.getElementById('result-roi-score');
+      let grade, color, width;
+      const roi = parseFloat(analysis.roi_percentage);
+      
+      if (roi >= 8) {
+        grade = 'A+'; color = '#10b981'; width = '100%';
+      } else if (roi >= 6) {
+        grade = 'A'; color = '#22c55e'; width = '85%';
+      } else if (roi >= 4) {
+        grade = 'B'; color = '#3b82f6'; width = '70%';
+      } else if (roi >= 2) {
+        grade = 'C'; color = '#f59e0b'; width = '50%';
+      } else {
+        grade = 'D'; color = '#ef4444'; width = '30%';
+      }
+      
+      roiGrade.textContent = grade;
+      roiGrade.style.color = color;
+      const roiBar = document.getElementById('roi-bar');
+      roiBar.style.backgroundColor = color;
+      roiBar.style.width = width;
       
       // Financial breakdown
-      document.getElementById('breakdown-value').textContent = '$' + analysis.value.toLocaleString();
-      document.getElementById('breakdown-income').textContent = '$' + analysis.monthlyRent.toLocaleString();
-      document.getElementById('breakdown-annual-income').textContent = '$' + analysis.annualRent.toLocaleString();
-      document.getElementById('breakdown-taxes').textContent = '-$' + analysis.propertyTaxes.toLocaleString();
-      document.getElementById('breakdown-insurance').textContent = '-$' + analysis.insurance.toLocaleString();
-      document.getElementById('breakdown-maintenance').textContent = '-$' + analysis.maintenance.toLocaleString();
-      document.getElementById('breakdown-net-income').textContent = '$' + analysis.netAnnualIncome.toLocaleString();
+      document.getElementById('breakdown-income').textContent = '$' + (analysis.long_term_rental?.annual_revenue || 0).toLocaleString();
+      document.getElementById('breakdown-taxes').textContent = '-$' + (analysis.costs?.property_tax_annual || 0).toLocaleString();
+      document.getElementById('breakdown-insurance').textContent = '-$' + (analysis.costs?.insurance_annual || 0).toLocaleString();
+      document.getElementById('breakdown-hoa').textContent = '-$' + ((analysis.costs?.hoa_monthly || 0) * 12).toLocaleString();
+      document.getElementById('breakdown-maintenance').textContent = '-$' + (analysis.costs?.maintenance_annual || 0).toLocaleString();
       
-      // Investment analysis
-      document.getElementById('analysis-cap-rate').textContent = analysis.capRate + '%';
-      document.getElementById('analysis-cash-return').textContent = analysis.cashOnCashReturn + '%';
-      document.getElementById('investment-grade').textContent = analysis.grade;
-      document.getElementById('investment-grade').className = 'text-3xl font-bold mb-2 ' + analysis.scoreColor;
-      document.getElementById('investment-recommendation').textContent = analysis.recommendation;
+      const managementFee = Math.round((analysis.long_term_rental?.annual_revenue || 0) * 0.08);
+      document.getElementById('breakdown-management').textContent = '-$' + managementFee.toLocaleString();
+      document.getElementById('breakdown-net-income').textContent = '$' + (analysis.long_term_rental?.annual_profit || 0).toLocaleString();
       
-      // Progress bars
-      const capRatePercent = Math.min(parseFloat(analysis.capRate) * 10, 100);
-      const cashReturnPercent = Math.min(parseFloat(analysis.cashOnCashReturn) * 5, 100);
+      // Rental strategies
+      document.getElementById('ltr-rent').textContent = '$' + (analysis.long_term_rental?.monthly_rent || 0).toLocaleString();
+      document.getElementById('ltr-noi').textContent = '$' + (analysis.long_term_rental?.annual_profit || 0).toLocaleString();
+      const ltrCapRate = ((analysis.long_term_rental?.annual_profit || 0) / (analysis.property_details?.estimated_value || 1) * 100).toFixed(2);
+      document.getElementById('ltr-cap').textContent = ltrCapRate + '%';
+      document.getElementById('ltr-roi').textContent = ltrCapRate + '%';
       
-      document.getElementById('cap-rate-bar').style.width = capRatePercent + '%';
-      document.getElementById('cash-return-bar').style.width = cashReturnPercent + '%';
+      document.getElementById('str-rate').textContent = '$' + (analysis.short_term_rental?.daily_rate || 0);
+      document.getElementById('str-occupancy').textContent = (analysis.short_term_rental?.occupancy_rate || 0) + '%';
+      document.getElementById('str-revenue').textContent = '$' + (analysis.short_term_rental?.annual_revenue || 0).toLocaleString();
+      const strROI = ((analysis.short_term_rental?.annual_profit || 0) / (analysis.property_details?.estimated_value || 1) * 100).toFixed(2);
+      document.getElementById('str-roi').textContent = strROI + '%';
+      
+      document.getElementById('investment-recommendation').textContent = analysis.recommendation || 'No recommendation available';
+      
+      // Market data if available
+      if (analysis.market_data) {
+        document.getElementById('market-data-section').style.display = 'block';
+        document.getElementById('days-on-market').textContent = analysis.market_data.days_on_market || 'N/A';
+        document.getElementById('appreciation-rate').textContent = (analysis.market_data.appreciation_rate || 'N/A') + '%';
+        document.getElementById('comparable-count').textContent = (analysis.market_data.comparable_sales?.length || 0) + ' properties';
+      }
+      
+      // Data sources
+      if (analysis.data_sources || analysis.research_sources) {
+        const sources = analysis.data_sources || analysis.research_sources || [];
+        document.getElementById('source-list').innerHTML = sources.map(source => 
+          `<li>${source.name || 'Source'} - ${source.date || 'Recent'}</li>`
+        ).join('') || '<li>Analysis powered by AI with real-time market data</li>';
+      }
+      
+      // Create Charts
+      createCharts(analysis);
+    }
+
+    // Create charts
+    function createCharts(analysis) {
+      // Destroy existing charts
+      if (charts.cashFlow) charts.cashFlow.destroy();
+      if (charts.roiComparison) charts.roiComparison.destroy();
+      
+      // Cash Flow Chart
+      const cashFlowCtx = document.getElementById('cashFlowChart').getContext('2d');
+      charts.cashFlow = new Chart(cashFlowCtx, {
+        type: 'bar',
+        data: {
+          labels: ['Income', 'Taxes', 'Insurance', 'HOA', 'Maint.', 'Mgmt.', 'Net'],
+          datasets: [{
+            label: 'Annual Cash Flow',
+            data: [
+              analysis.long_term_rental?.annual_revenue || 0,
+              -(analysis.costs?.property_tax_annual || 0),
+              -(analysis.costs?.insurance_annual || 0),
+              -((analysis.costs?.hoa_monthly || 0) * 12),
+              -(analysis.costs?.maintenance_annual || 0),
+              -Math.round((analysis.long_term_rental?.annual_revenue || 0) * 0.08),
+              analysis.long_term_rental?.annual_profit || 0
+            ],
+            backgroundColor: function(context) {
+              const value = context.dataset.data[context.dataIndex];
+              return value >= 0 ? 'rgba(16, 185, 129, 0.8)' : 'rgba(239, 68, 68, 0.8)';
+            }
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                callback: function(value) {
+                  return '$' + (value/1000).toFixed(0) + 'k';
+                }
+              }
+            }
+          }
+        }
+      });
+      
+      // ROI Comparison Chart
+      const roiCtx = document.getElementById('roiComparisonChart').getContext('2d');
+      charts.roiComparison = new Chart(roiCtx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Long-term Rental', 'Short-term Rental (Airbnb)', 'Traditional Investment (4%)'],
+          datasets: [{
+            data: [
+              ((analysis.long_term_rental?.annual_profit || 0) / (analysis.property_details?.estimated_value || 1) * 100).toFixed(2),
+              ((analysis.short_term_rental?.annual_profit || 0) / (analysis.property_details?.estimated_value || 1) * 100).toFixed(2),
+              4
+            ],
+            backgroundColor: [
+              'rgba(59, 130, 246, 0.8)',
+              'rgba(16, 185, 129, 0.8)',
+              'rgba(156, 163, 175, 0.8)'
+            ]
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'bottom'
+            },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  return context.label + ': ' + context.parsed + '% ROI';
+                }
+              }
+            }
+          }
+        }
+      });
     }
 
     // Event Listeners
@@ -775,7 +1048,7 @@
           displayResults(analysis);
           showView('results');
           
-          // Update user profile (increment analysis count)
+          // Update user profile
           if (userProfile && currentUser) {
             try {
               const db = firebase.firestore();
@@ -783,10 +1056,14 @@
                 monthlyAnalysisCount: (userProfile.monthlyAnalysisCount || 0) + 1
               });
               userProfile.monthlyAnalysisCount = (userProfile.monthlyAnalysisCount || 0) + 1;
+              updateDashboard();
             } catch (error) {
               console.error('Failed to update analysis count:', error);
             }
           }
+          
+          // Reload analyses list
+          loadUserAnalyses();
           
         } catch (error) {
           console.error('Analysis failed:', error);
