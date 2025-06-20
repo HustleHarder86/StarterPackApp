@@ -649,16 +649,19 @@
         const listEl = document.getElementById('analyses-list');
         if (analyses.length > 0) {
           listEl.innerHTML = analyses.map(analysis => `
-            <div class="px-6 py-4 hover:bg-gray-50 cursor-pointer" onclick="viewAnalysis('${analysis.id}')">
-              <div class="flex justify-between items-center">
-                <div>
-                  <p class="font-medium text-gray-900">${analysis.property_address || 'Unknown Address'}</p>
-                  <p class="text-sm text-gray-500">ROI: ${analysis.roi_percentage}% • ${new Date(analysis.analysis_timestamp || analysis.createdAt?.toDate()).toLocaleDateString()}</p>
-                </div>
-                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                </svg>
+            <div class="flex justify-between items-center px-6 py-4 hover:bg-gray-50 group">
+              <div class="flex-1 cursor-pointer" onclick="viewAnalysis('${analysis.id}')">
+                <p class="font-medium text-gray-900">${analysis.property_address || 'Unknown Address'}</p>
+                <p class="text-sm text-gray-500">ROI: ${analysis.roi_percentage}% • ${new Date(analysis.analysis_timestamp || analysis.createdAt?.toDate()).toLocaleDateString()}</p>
               </div>
+              <button class="hidden group-hover:block text-red-600 hover:text-red-800 mr-2" onclick="deleteAnalysis(event, '${analysis.id}')">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+              <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+              </svg>
             </div>
           `).join('');
         }
@@ -668,10 +671,10 @@
     }
 
     // View analysis
-    async function viewAnalysis(analysisId) {
-      try {
-        const db = firebase.firestore();
-        const doc = await db.collection('analyses').doc(analysisId).get();
+      async function viewAnalysis(analysisId) {
+        try {
+          const db = firebase.firestore();
+          const doc = await db.collection('analyses').doc(analysisId).get();
         
         if (doc.exists) {
           const analysis = doc.data();
@@ -682,7 +685,21 @@
         console.error('View analysis error:', error);
         alert('Failed to load analysis');
       }
-    }
+      }
+
+      // Delete analysis
+      async function deleteAnalysis(event, analysisId) {
+        event.stopPropagation();
+        if (!confirm('Delete this analysis?')) return;
+        try {
+          const db = firebase.firestore();
+          await db.collection('analyses').doc(analysisId).delete();
+          loadUserAnalyses();
+        } catch (error) {
+          console.error('Delete analysis error:', error);
+          alert('Failed to delete analysis');
+        }
+      }
 
     // Show specific view
     function showView(viewName) {
