@@ -204,7 +204,12 @@
           </svg>
           New Property Analysis
         </button>
-        <p class="text-xs text-gray-500 mt-2" id="debug-text">Ready to analyze properties</p>
+        <p class="text-xs text-gray-500 mt-2" id="debug-text">Debug: showNewAnalysis = false</p>
+        
+        <!-- Test Button for Debugging -->
+        <button id="test-click-btn" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded mt-2" style="display: block; margin: 10px auto;">
+          Test Click (Remove this after testing)
+        </button>
       </div>
 
       <!-- Recent Analyses -->
@@ -364,7 +369,17 @@
 
     // Show specific view
     function showView(viewName) {
-      console.log('Showing view:', viewName);
+      console.log('showView called with:', viewName);
+      console.log('Previous view was:', currentView);
+      
+      // Check if elements exist
+      const screens = ['loading-screen', 'auth-screen', 'dashboard-screen', 'property-form-screen'];
+      screens.forEach(screenId => {
+        const element = document.getElementById(screenId);
+        if (!element) {
+          console.error('Screen element not found:', screenId);
+        }
+      });
       
       // Hide all screens
       document.getElementById('loading-screen').style.display = 'none';
@@ -375,21 +390,26 @@
       // Show target screen
       switch(viewName) {
         case 'auth':
+          console.log('Switching to auth screen');
           document.getElementById('auth-screen').style.display = 'flex';
           updateAuthMode();
           break;
         case 'dashboard':
+          console.log('Switching to dashboard screen');
           document.getElementById('dashboard-screen').style.display = 'block';
           updateDashboard();
           break;
         case 'property-form':
+          console.log('Switching to property-form screen');
           document.getElementById('property-form-screen').style.display = 'flex';
           break;
         default:
+          console.log('Switching to loading screen (default)');
           document.getElementById('loading-screen').style.display = 'flex';
       }
       
       currentView = viewName;
+      console.log('View switch complete. New view:', currentView);
     }
 
     // Update auth mode
@@ -425,6 +445,26 @@
     // Event Listeners
     document.addEventListener('DOMContentLoaded', function() {
       console.log('DOM loaded, setting up event listeners...');
+      
+      // Debug: Check if critical elements exist
+      const criticalElements = [
+        'new-analysis-btn',
+        'test-click-btn',
+        'debug-text',
+        'dashboard-screen',
+        'property-form-screen',
+        'auth-screen',
+        'loading-screen'
+      ];
+      
+      criticalElements.forEach(id => {
+        const element = document.getElementById(id);
+        if (element) {
+          console.log(`✓ Element found: ${id}`);
+        } else {
+          console.error(`✗ Element missing: ${id}`);
+        }
+      });
 
       // Auth form
       document.getElementById('auth-form').addEventListener('submit', async function(e) {
@@ -462,8 +502,31 @@
       // New analysis button
       document.getElementById('new-analysis-btn').addEventListener('click', function() {
         console.log('New analysis button clicked!');
-        document.getElementById('debug-text').textContent = 'Button clicked! Opening form...';
+        console.log('Current view:', currentView);
+        console.log('Current user:', currentUser);
+        document.getElementById('debug-text').textContent = 'Debug: showNewAnalysis = true (button clicked!)';
+        
+        // Add visual feedback
+        this.style.transform = 'scale(0.95)';
+        setTimeout(() => {
+          this.style.transform = 'scale(1)';
+        }, 100);
+        
         showView('property-form');
+      });
+
+      // Test button for debugging
+      document.getElementById('test-click-btn').addEventListener('click', function() {
+        console.log('Test button clicked!');
+        document.getElementById('debug-text').textContent = 'Debug: Test button works! Event listeners are active.';
+        alert('Test button clicked! This confirms JavaScript is working.');
+        
+        // Also test the showView function
+        setTimeout(() => {
+          if (confirm('Test the showView function by showing property form?')) {
+            showView('property-form');
+          }
+        }, 1000);
       });
 
       // Back to dashboard
