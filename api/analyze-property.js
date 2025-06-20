@@ -322,37 +322,3 @@ function generateEnhancedDemoData(propertyAddress, userName, userEmail) {
     roi_percentage: bestROI
   };
 }
-// api/analyze-property.js - Add rate limiting
-const rateLimit = new Map();
-
-export default async function handler(req, res) {
-  // Add rate limiting
-  const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-  const key = `${ip}-${req.body.userId || 'anonymous'}`;
-  const now = Date.now();
-  const windowMs = 60 * 1000; // 1 minute
-  const maxRequests = 5;
-  
-  if (rateLimit.has(key)) {
-    const userData = rateLimit.get(key);
-    if (now - userData.firstRequest < windowMs && userData.count >= maxRequests) {
-      return res.status(429).json({ error: 'Too many requests' });
-    }
-  }
-  
-  // Update rate limit
-  rateLimit.set(key, {
-    firstRequest: now,
-    count: (rateLimit.get(key)?.count || 0) + 1
-  });
-
-  // Also add input validation
-  const { propertyAddress } = req.body;
-  
-  // Sanitize address input
-  const sanitizedAddress = propertyAddress
-    .replace(/[<>]/g, '') // Remove potential XSS
-    .substring(0, 500); // Limit length
-  
-  // ... rest of your code
-}
