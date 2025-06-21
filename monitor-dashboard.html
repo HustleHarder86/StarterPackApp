@@ -29,7 +29,7 @@
     </div>
 
     <!-- Health Status -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+    <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-6 mb-8">
       <div class="bg-white rounded-lg shadow p-6">
         <h3 class="text-sm font-medium text-gray-500 mb-2">System Status</h3>
         <div id="system-status" class="text-2xl font-bold">
@@ -37,16 +37,61 @@
         </div>
       </div>
       <div class="bg-white rounded-lg shadow p-6">
-        <h3 class="text-sm font-medium text-gray-500 mb-2">Real-Time Data %</h3>
-        <div id="realtime-percentage" class="text-2xl font-bold">--</div>
-      </div>
-      <div class="bg-white rounded-lg shadow p-6">
         <h3 class="text-sm font-medium text-gray-500 mb-2">24h Analyses</h3>
         <div id="total-analyses" class="text-2xl font-bold">--</div>
       </div>
       <div class="bg-white rounded-lg shadow p-6">
+        <h3 class="text-sm font-medium text-gray-500 mb-2">Cost Per Report</h3>
+        <div id="avg-cost-per-report" class="text-2xl font-bold text-green-600">--</div>
+      </div>
+      <div class="bg-white rounded-lg shadow p-6">
+        <h3 class="text-sm font-medium text-gray-500 mb-2">24h Total Cost</h3>
+        <div id="total-cost-24h" class="text-2xl font-bold text-blue-600">--</div>
+      </div>
+      <div class="bg-white rounded-lg shadow p-6">
+        <h3 class="text-sm font-medium text-gray-500 mb-2">Real-Time Data %</h3>
+        <div id="realtime-percentage" class="text-2xl font-bold">--</div>
+      </div>
+      <div class="bg-white rounded-lg shadow p-6">
         <h3 class="text-sm font-medium text-gray-500 mb-2">Avg Response Time</h3>
         <div id="avg-response" class="text-2xl font-bold">--</div>
+      </div>
+    </div>
+
+    <!-- API Cost Breakdown -->
+    <div class="bg-white rounded-lg shadow mb-8">
+      <div class="px-6 py-4 border-b border-gray-200">
+        <h2 class="text-lg font-semibold">💰 API Cost Breakdown (Last 24 Hours)</h2>
+      </div>
+      <div class="p-6">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+          <div class="text-center">
+            <div class="text-3xl font-bold text-green-600" id="perplexity-cost">$0.00</div>
+            <div class="text-sm text-gray-500">Perplexity AI</div>
+            <div class="text-xs text-gray-400" id="perplexity-tokens">0 tokens</div>
+          </div>
+          <div class="text-center">
+            <div class="text-3xl font-bold text-blue-600" id="openai-cost">$0.00</div>
+            <div class="text-sm text-gray-500">OpenAI GPT-4</div>
+            <div class="text-xs text-gray-400" id="openai-tokens">0 tokens</div>
+          </div>
+          <div class="text-center">
+            <div class="text-3xl font-bold text-purple-600" id="total-api-cost">$0.00</div>
+            <div class="text-sm text-gray-500">Total API Cost</div>
+            <div class="text-xs text-gray-400" id="total-requests">0 requests</div>
+          </div>
+          <div class="text-center">
+            <div class="text-3xl font-bold text-orange-600" id="projected-monthly">$0.00</div>
+            <div class="text-sm text-gray-500">Monthly Projection</div>
+            <div class="text-xs text-gray-400">Based on 24h avg</div>
+          </div>
+        </div>
+        
+        <!-- Cost Chart -->
+        <div class="mt-6">
+          <h3 class="text-lg font-semibold mb-4">Cost Per Analysis Report</h3>
+          <canvas id="costChart" width="400" height="200"></canvas>
+        </div>
       </div>
     </div>
 
@@ -97,6 +142,7 @@
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Time</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Address</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Data Source</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">API Cost</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sources</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ROI</th>
             </tr>
@@ -159,6 +205,9 @@
       document.getElementById('total-analyses').textContent = data.stats.totalAnalyses24h;
       document.getElementById('avg-response').textContent = 
         data.stats.averageResponseTime !== 'N/A' ? data.stats.averageResponseTime + 's' : 'N/A';
+      
+      // Update cost metrics
+      updateCostMetrics(data);
       
       // Update API status
       updateAPIStatus('perplexity-status', 'Perplexity AI', data.apiStatus.perplexity);
@@ -271,7 +320,7 @@
       const tbody = document.getElementById('analyses-table');
       
       if (!analyses || analyses.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="5" class="px-6 py-4 text-center text-gray-500">No analyses in the last 24 hours</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="6" class="px-6 py-4 text-center text-gray-500">No analyses in the last 24 hours</td></tr>';
         return;
       }
       
@@ -290,6 +339,11 @@
               ${analysis.hasRealTimeData ? 'Real-Time' : 'Demo'}
             </span>
           </td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm font-medium ${
+            analysis.apiCost > 0.01 ? 'text-red-600' : 'text-green-600'
+          }">
+            $${(analysis.apiCost || 0).toFixed(4)}
+          </td>
           <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
             ${analysis.sourcesCount}
           </td>
@@ -300,6 +354,105 @@
           </td>
         </tr>
       `).join('');
+    }
+
+    function updateCostMetrics(data) {
+      // Calculate cost metrics from recent analyses
+      const analyses = data.recentAnalyses || [];
+      
+      let totalPerplexityCost = 0;
+      let totalOpenAICost = 0;
+      let totalCost = 0;
+      let totalTokens = 0;
+      let totalRequests = 0;
+      
+      analyses.forEach(analysis => {
+        if (analysis.apiCost) {
+          totalCost += analysis.apiCost;
+          totalRequests++;
+        }
+        
+        // If we have detailed cost breakdown (from api_usage_costs field)
+        if (analysis.perplexityCost) totalPerplexityCost += analysis.perplexityCost;
+        if (analysis.openaiCost) totalOpenAICost += analysis.openaiCost;
+        if (analysis.totalTokens) totalTokens += analysis.totalTokens;
+      });
+      
+      const avgCostPerReport = totalRequests > 0 ? totalCost / totalRequests : 0;
+      const monthlyProjection = totalCost * 30; // Project 24h data to 30 days
+      
+      // Update dashboard elements
+      document.getElementById('avg-cost-per-report').textContent = '$' + avgCostPerReport.toFixed(4);
+      document.getElementById('total-cost-24h').textContent = '$' + totalCost.toFixed(4);
+      document.getElementById('perplexity-cost').textContent = '$' + totalPerplexityCost.toFixed(4);
+      document.getElementById('openai-cost').textContent = '$' + totalOpenAICost.toFixed(4);
+      document.getElementById('total-api-cost').textContent = '$' + totalCost.toFixed(4);
+      document.getElementById('projected-monthly').textContent = '$' + monthlyProjection.toFixed(2);
+      
+      // Update token counts
+      document.getElementById('perplexity-tokens').textContent = Math.floor(totalTokens * 0.7).toLocaleString() + ' tokens';
+      document.getElementById('openai-tokens').textContent = Math.floor(totalTokens * 0.3).toLocaleString() + ' tokens';
+      document.getElementById('total-requests').textContent = totalRequests + ' requests';
+      
+      // Update cost chart
+      updateCostChart(analyses);
+    }
+
+    function updateCostChart(analyses) {
+      const ctx = document.getElementById('costChart').getContext('2d');
+      
+      if (charts.costChart) {
+        charts.costChart.destroy();
+      }
+      
+      // Group analyses by hour and calculate average cost
+      const hourlyData = {};
+      analyses.forEach(analysis => {
+        const hour = new Date(analysis.timestamp).getHours();
+        if (!hourlyData[hour]) {
+          hourlyData[hour] = { costs: [], count: 0 };
+        }
+        hourlyData[hour].costs.push(analysis.apiCost || 0);
+        hourlyData[hour].count++;
+      });
+      
+      const hours = Object.keys(hourlyData).sort((a, b) => a - b);
+      const costs = hours.map(hour => {
+        const hourData = hourlyData[hour];
+        return hourData.costs.reduce((sum, cost) => sum + cost, 0) / hourData.count;
+      });
+      
+      charts.costChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: hours.map(h => h + ':00'),
+          datasets: [{
+            label: 'Avg Cost per Report',
+            data: costs,
+            borderColor: '#10b981',
+            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+            tension: 0.4,
+            fill: true
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                callback: function(value) {
+                  return '$' + value.toFixed(4);
+                }
+              }
+            }
+          }
+        }
+      });
     }
 
     function showError(data) {
