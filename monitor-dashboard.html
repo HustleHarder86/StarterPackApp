@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>InvestorProps API Monitor Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    .status-good { color: #10b981; }
+    .status-warning { color: #f59e0b; }
+    .status-error { color: #ef4444; }
+    .pulse {
+      animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: .5; }
+    }
+  </style>
+</head>
+<body class="bg-gray-100">
+  <div class="max-w-7xl mx-auto p-6">
+    <div class="flex justify-between items-center mb-8">
+      <h1 class="text-3xl font-bold text-gray-900">API Monitor Dashboard</h1>
+      <button onclick="refreshData()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+        🔄 Refresh
+      </button>
+    </div>
+
+    <!-- Health Status -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+      <div class="bg-white rounded-lg shadow p-6">
+        <h3 class="text-sm font-medium text-gray-500 mb-2">System Status</h3>
+        <div id="system-status" class="text-2xl font-bold">
+          <span class="pulse">⏳</span> Loading...
+        </div>
+      </div>
+      <div class="bg-white rounded-lg shadow p-6">
+        <h3 class="text-sm font-medium text-gray-500 mb-2">Real-Time Data %</h3>
+        <div id="realtime-percentage" class="text-2xl font-bold">--</div>
+      </div>
+      <div class="bg-white rounded-lg shadow p-6">
+        <h3 class="text-sm font-medium text-gray-500 mb-2">24h Analyses</h3>
+        <div id="total-analyses" class="text-2xl font-bold">--</div>
+      </div>
+      <div class="bg-white rounded-lg shadow p-6">
+        <h3 class="text-sm font-medium text-gray-500 mb-2">Avg Response Time</h3>
+        <div id="avg-response" class="text-2xl font-bold">--</div>
+      </div>
+    </div>
+
+    <!-- API Configuration -->
+    <div class="bg-white rounded-lg shadow mb-8">
+      <div class="px-6 py-4 border-b border-gray-200">
+        <h2 class="text-lg font-semibold">API Configuration Status</h2>
+      </div>
+      <div class="p-6">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div id="perplexity-status" class="flex items-center justify-between p-4 bg-gray-50 rounded">
+            <span class="font-medium">Perplexity AI</span>
+            <span class="text-sm">Checking...</span>
+          </div>
+          <div id="openai-status" class="flex items-center justify-between p-4 bg-gray-50 rounded">
+            <span class="font-medium">OpenAI</span>
+            <span class="text-sm">Checking...</span>
+          </div>
+          <div id="firebase-status" class="flex items-center justify-between p-4 bg-gray-50 rounded">
+            <span class="font-medium">Firebase</span>
+            <span class="text-sm">Checking...</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Charts -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+      <div class="bg-white rounded-lg shadow p-6">
+        <h3 class="text-lg font-semibold mb-4">Data Source Distribution</h3>
+        <canvas id="dataSourceChart" width="400" height="200"></canvas>
+      </div>
+      <div class="bg-white rounded-lg shadow p-6">
+        <h3 class="text-lg font-semibold mb-4">Hourly Analysis Volume</h3>
+        <canvas id="hourlyChart" width="400" height="200"></canvas>
+      </div>
+    </div>
+
+    <!-- Recent Analyses -->
+    <div class="bg-white rounded-lg shadow">
+      <div class="px-6 py-4 border-b border-gray-200">
+        <h2 class="text-lg font-semibold">Recent Analyses</h2>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="min-w-full">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Time</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Address</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Data Source</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sources</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ROI</th>
+            </tr>
+          </thead>
+          <tbody id="analyses-table" class="bg-white divide-y divide-gray-200">
+            <tr>
+              <td colspan="5" class="px-6 py-4 text-center text-gray-500">Loading...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Recommendations -->
+    <div id="recommendations" class="mt-8 bg-blue-50 border-l-4 border-blue-400 p-4" style="display: none;">
+      <div class="flex">
+        <div class="flex-shrink-0">
+          <svg class="h-5 w-5 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+          </svg>
+        </div>
+        <div class="ml-3">
+          <p class="text-sm text-blue-700" id="recommendation-text"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let charts = {};
+
+    async function refreshData() {
+      try {
+        const response = await fetch('/api/monitor-usage');
+        const data = await response.json();
+        
+        if (data.success) {
+          updateDashboard(data);
+        } else {
+          showError(data);
+        }
+      } catch (error) {
+        console.error('Failed to fetch monitoring data:', error);
+        document.getElementById('system-status').innerHTML = 
+          '<span class="status-error">❌ Connection Error</span>';
+      }
+    }
+
+    function updateDashboard(data) {
+      // Update status cards
+      const statusEl = document.getElementById('system-status');
+      const isHealthy = data.stats.realTimePercentage > 50 && data.apiStatus.perplexity.configured;
+      statusEl.innerHTML = isHealthy 
+        ? '<span class="status-good">✅ Healthy</span>'
+        : '<span class="status-warning">⚠️ Issues Detected</span>';
+      
+      document.getElementById('realtime-percentage').innerHTML = 
+        `<span class="${data.stats.realTimePercentage > 50 ? 'status-good' : 'status-warning'}">${data.stats.realTimePercentage}%</span>`;
+      
+      document.getElementById('total-analyses').textContent = data.stats.totalAnalyses24h;
+      document.getElementById('avg-response').textContent = 
+        data.stats.averageResponseTime !== 'N/A' ? data.stats.averageResponseTime + 's' : 'N/A';
+      
+      // Update API status
+      updateAPIStatus('perplexity-status', 'Perplexity AI', data.apiStatus.perplexity);
+      updateAPIStatus('openai-status', 'OpenAI', data.apiStatus.openai);
+      updateAPIStatus('firebase-status', 'Firebase', data.apiStatus.firebase);
+      
+      // Update charts
+      updateDataSourceChart(data.stats);
+      updateHourlyChart(data.stats.hourlyCounts);
+      
+      // Update recent analyses table
+      updateAnalysesTable(data.recentAnalyses);
+      
+      // Show recommendations
+      if (data.healthCheck.recommendation && data.healthCheck.recommendation !== 'System operating normally') {
+        document.getElementById('recommendations').style.display = 'block';
+        document.getElementById('recommendation-text').textContent = data.healthCheck.recommendation;
+      } else {
+        document.getElementById('recommendations').style.display = 'none';
+      }
+    }
+
+    function updateAPIStatus(elementId, name, status) {
+      const element = document.getElementById(elementId);
+      const isConfigured = status.configured;
+      element.innerHTML = `
+        <span class="font-medium">${name}</span>
+        <span class="text-sm ${isConfigured ? 'status-good' : 'status-error'}">
+          ${isConfigured ? '✅ Configured' : '❌ Not Configured'}
+        </span>
+      `;
+      element.className = `flex items-center justify-between p-4 rounded ${
+        isConfigured ? 'bg-green-50' : 'bg-red-50'
+      }`;
+    }
+
+    function updateDataSourceChart(stats) {
+      const ctx = document.getElementById('dataSourceChart').getContext('2d');
+      
+      if (charts.dataSource) {
+        charts.dataSource.destroy();
+      }
+      
+      charts.dataSource = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Real-Time API', 'Demo Data', 'Unknown'],
+          datasets: [{
+            data: [
+              stats.realTimeAnalyses || 0,
+              stats.demoAnalyses || 0,
+              stats.unknownAnalyses || 0
+            ],
+            backgroundColor: ['#10b981', '#f59e0b', '#6b7280']
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'bottom'
+            }
+          }
+        }
+      });
+    }
+
+    function updateHourlyChart(hourlyCounts) {
+      const ctx = document.getElementById('hourlyChart').getContext('2d');
+      
+      if (charts.hourly) {
+        charts.hourly.destroy();
+      }
+      
+      const labels = hourlyCounts ? hourlyCounts.map(h => h.hour) : [];
+      const data = hourlyCounts ? hourlyCounts.map(h => h.count) : [];
+      
+      charts.hourly = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels.reverse(),
+          datasets: [{
+            label: 'Analyses',
+            data: data.reverse(),
+            backgroundColor: '#3b82f6'
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                stepSize: 1
+              }
+            }
+          },
+          plugins: {
+            legend: {
+              display: false
+            }
+          }
+        }
+      });
+    }
+
+    function updateAnalysesTable(analyses) {
+      const tbody = document.getElementById('analyses-table');
+      
+      if (!analyses || analyses.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" class="px-6 py-4 text-center text-gray-500">No analyses in the last 24 hours</td></tr>';
+        return;
+      }
+      
+      tbody.innerHTML = analyses.map(analysis => `
+        <tr>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+            ${new Date(analysis.timestamp).toLocaleString()}
+          </td>
+          <td class="px-6 py-4 text-sm text-gray-900">
+            ${analysis.address}
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+              analysis.hasRealTimeData ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+            }">
+              ${analysis.hasRealTimeData ? 'Real-Time' : 'Demo'}
+            </span>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+            ${analysis.sourcesCount}
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm font-medium ${
+            analysis.roi !== 'N/A' && parseFloat(analysis.roi) > 5 ? 'text-green-600' : 'text-gray-900'
+          }">
+            ${analysis.roi}${analysis.roi !== 'N/A' ? '%' : ''}
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function showError(data) {
+      document.getElementById('system-status').innerHTML = 
+        '<span class="status-error">❌ Error</span>';
+      
+      // Show error details
+      if (data.apiStatus) {
+        updateAPIStatus('perplexity-status', 'Perplexity AI', data.apiStatus.perplexity);
+        updateAPIStatus('openai-status', 'OpenAI', data.apiStatus.openai);
+        updateAPIStatus('firebase-status', 'Firebase', data.apiStatus.firebase);
+      }
+      
+      document.getElementById('recommendations').style.display = 'block';
+      document.getElementById('recommendation-text').textContent = 
+        data.healthCheck?.recommendation || 'Check your configuration and try again';
+    }
+
+    // Auto-refresh every 30 seconds
+    setInterval(refreshData, 30000);
+    
+    // Initial load
+    refreshData();
+  </script>
+</body>
+</html>
