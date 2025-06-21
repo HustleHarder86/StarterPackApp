@@ -1,11 +1,15 @@
 // api/monitor-usage.js
-// Monitor API usage and data freshness
+// Fixed API usage monitor with proper error handling
 
 export default async function handler(req, res) {
   // Set CORS headers
   res.setHeader('Access-Control-Allow-Credentials', true);
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS');
+  res.setHeader(
+    'Access-Control-Allow-Headers',
+    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
+  );
 
   if (req.method === 'OPTIONS') {
     res.status(200).end();
@@ -37,46 +41,81 @@ export default async function handler(req, res) {
     const yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
     
-    const analysesSnapshot = await db.collection('analyses')
-      .where('createdAt', '>=', yesterday)
-      .orderBy('createdAt', 'desc')
-      .limit(100)
-      .get();
+    // Query without orderBy if it causes issues
+    let analysesSnapshot;
+    try {
+      analysesSnapshot = await db.collection('analyses')
+        .where('createdAt', '>=', yesterday)
+        .orderBy('createdAt', 'desc')
+        .limit(100)
+        .get();
+    } catch (queryError) {
+      console.log('OrderBy query failed, trying simple query:', queryError.message);
+      // Fallback to simple query without orderBy
+      analysesSnapshot = await db.collection('analyses')
+        .limit(100)
+        .get();
+    }
     
     const analyses = [];
     let realTimeCount = 0;
     let demoCount = 0;
     let totalResponseTime = 0;
+    let validResponseTimes = 0;
     
     analysesSnapshot.forEach(doc => {
       const data = doc.data();
+      
+      // Handle different timestamp formats
+      let timestamp;
+      if (data.createdAt?.toDate) {
+        timestamp = data.createdAt.toDate();
+      } else if (data.analysis_timestamp) {
+        timestamp = new Date(data.analysis_timestamp);
+      } else {
+        timestamp = new Date();
+      }
+      
+      // Check if within 24 hours for fallback query
+      if (timestamp < yesterday) {
+        return; // Skip old entries
+      }
+      
       analyses.push({
         id: doc.id,
-        address: data.property_address,
-        timestamp: data.createdAt?.toDate?.() || new Date(data.analysis_timestamp),
+        address: data.property_address || data.propertyAddress || 'Unknown',
+        timestamp: timestamp,
         dataSource: data.dataSource || 'unknown',
-        hasRealTimeData: data.data_freshness?.data_recency === 'REAL_TIME',
+        hasRealTimeData: data.data_freshness?.data_recency === 'REAL_TIME' || data.dataSource === 'REAL_TIME_API_DATA',
         responseTime: data.responseTime || null,
-        sourcesCount: data.data_sources?.length || 0
+        sourcesCount: data.data_sources?.length || 0,
+        roi: data.roi_percentage || 'N/A'
       });
       
+      // Count data types
       if (data.data_freshness?.data_recency === 'REAL_TIME' || data.dataSource === 'REAL_TIME_API_DATA') {
         realTimeCount++;
       } else if (data.dataSource === 'DEMO_DATA' || data.data_freshness?.data_recency === 'DEMO_DATA') {
         demoCount++;
       }
       
-      if (data.responseTime) {
+      // Calculate average response time
+      if (data.responseTime && typeof data.responseTime === 'number') {
         totalResponseTime += data.responseTime;
+        validResponseTimes++;
       }
     });
+    
+    // Sort by timestamp (newest first) after collection
+    analyses.sort((a, b) => b.timestamp - a.timestamp);
     
     // Calculate statistics
     const stats = {
       totalAnalyses24h: analyses.length,
       realTimeAnalyses: realTimeCount,
       demoAnalyses: demoCount,
-      averageResponseTime: analyses.length > 0 ? (totalResponseTime / analyses.length / 1000).toFixed(2) : 0,
+      unknownAnalyses: analyses.length - realTimeCount - demoCount,
+      averageResponseTime: validResponseTimes > 0 ? (totalResponseTime / validResponseTimes / 1000).toFixed(2) : 'N/A',
       realTimePercentage: analyses.length > 0 ? ((realTimeCount / analyses.length) * 100).toFixed(1) : 0,
       lastAnalysis: analyses[0] || null,
       hourlyCounts: calculateHourlyCounts(analyses)
@@ -86,36 +125,76 @@ export default async function handler(req, res) {
     const apiStatus = {
       perplexity: {
         configured: !!process.env.PERPLEXITY_API_KEY && 
-                   process.env.PERPLEXITY_API_KEY.startsWith('pplx-'),
+                   process.env.PERPLEXITY_API_KEY.startsWith('pplx-') &&
+                   process.env.PERPLEXITY_API_KEY !== 'your_perplexity_api_key',
         keyPrefix: process.env.PERPLEXITY_API_KEY ? 
                    process.env.PERPLEXITY_API_KEY.substring(0, 7) + '...' : 'NOT SET'
       },
       openai: {
         configured: !!process.env.OPENAI_API_KEY && 
-                   process.env.OPENAI_API_KEY.startsWith('sk-'),
+                   process.env.OPENAI_API_KEY.startsWith('sk-') &&
+                   process.env.OPENAI_API_KEY !== 'your_openai_api_key',
         keyPrefix: process.env.OPENAI_API_KEY ? 
                    process.env.OPENAI_API_KEY.substring(0, 7) + '...' : 'NOT SET'
+      },
+      firebase: {
+        configured: !!process.env.FIREBASE_PROJECT_ID && !!process.env.FIREBASE_CLIENT_EMAIL,
+        projectId: process.env.FIREBASE_PROJECT_ID || 'NOT SET'
       }
     };
     
-    return res.status(200).json({
+    // Format response
+    const response = {
       success: true,
       timestamp: new Date().toISOString(),
       stats,
       apiStatus,
-      recentAnalyses: analyses.slice(0, 10),
+      recentAnalyses: analyses.slice(0, 10).map(a => ({
+        ...a,
+        timestamp: a.timestamp.toISOString()
+      })),
       healthCheck: {
         firebaseConnected: true,
-        apisConfigured: apiStatus.perplexity.configured,
-        dataFreshness: realTimePercentage > 50 ? 'GOOD' : 'NEEDS_ATTENTION'
+        perplexityConfigured: apiStatus.perplexity.configured,
+        openaiConfigured: apiStatus.openai.configured,
+        dataFreshness: stats.realTimePercentage > 50 ? 'GOOD' : 'NEEDS_ATTENTION',
+        recommendation: !apiStatus.perplexity.configured 
+          ? 'Configure Perplexity API key for real-time data'
+          : stats.realTimePercentage < 50 
+          ? 'Check API keys and credits'
+          : 'System operating normally'
       }
-    });
+    };
+    
+    return res.status(200).json(response);
     
   } catch (error) {
     console.error('Monitor error:', error);
-    return res.status(500).json({ 
-      error: 'Failed to get monitoring data', 
-      details: error.message 
+    
+    // Return a more informative error response
+    return res.status(200).json({ 
+      success: false,
+      error: 'Monitoring service error', 
+      details: error.message,
+      timestamp: new Date().toISOString(),
+      apiStatus: {
+        perplexity: {
+          configured: !!process.env.PERPLEXITY_API_KEY && process.env.PERPLEXITY_API_KEY.startsWith('pplx-'),
+          keyPrefix: process.env.PERPLEXITY_API_KEY ? process.env.PERPLEXITY_API_KEY.substring(0, 7) + '...' : 'NOT SET'
+        },
+        openai: {
+          configured: !!process.env.OPENAI_API_KEY && process.env.OPENAI_API_KEY.startsWith('sk-'),
+          keyPrefix: process.env.OPENAI_API_KEY ? process.env.OPENAI_API_KEY.substring(0, 7) + '...' : 'NOT SET'
+        },
+        firebase: {
+          configured: !!process.env.FIREBASE_PROJECT_ID,
+          error: error.message.includes('Firebase') ? error.message : null
+        }
+      },
+      healthCheck: {
+        firebaseConnected: false,
+        recommendation: 'Check Firebase configuration and Firestore indexes'
+      }
     });
   }
 }
@@ -134,11 +213,22 @@ function calculateHourlyCounts(analyses) {
   
   // Count analyses per hour
   analyses.forEach(analysis => {
-    const hour = analysis.timestamp.toISOString().substring(0, 13);
-    if (counts.hasOwnProperty(hour)) {
-      counts[hour]++;
+    if (analysis.timestamp instanceof Date) {
+      const hour = analysis.timestamp.toISOString().substring(0, 13);
+      if (counts.hasOwnProperty(hour)) {
+        counts[hour]++;
+      }
     }
   });
   
-  return counts;
+  // Convert to array for easier display
+  const hourlyArray = Object.entries(counts)
+    .sort((a, b) => b[0].localeCompare(a[0]))
+    .slice(0, 24)
+    .map(([hour, count]) => ({
+      hour: new Date(hour + ':00:00Z').toLocaleTimeString('en-US', { hour: 'numeric' }),
+      count
+    }));
+  
+  return hourlyArray;
 }
