@@ -140,6 +140,10 @@ FORMAT YOUR RESPONSE WITH CLEAR SECTIONS AND SPECIFIC NUMBERS.`
     const researchContent = perplexityData.choices[0].message.content;
     console.log('Fresh research completed, content sample:', researchContent.substring(0, 500));
 
+    // Calculate API costs from token usage
+    const apiCosts = calculateAPIUsageCost(perplexityData.usage || {});
+    console.log('API Usage Cost:', apiCosts);
+
     // Extract citations
     const citations = perplexityData.citations || [];
     
@@ -210,6 +214,15 @@ Extract into this JSON format:
 
         if (openaiResponse.ok) {
           const openaiData = await openaiResponse.json();
+          
+          // Calculate OpenAI API costs
+          const openaiCosts = calculateOpenAIUsageCost(openaiData.usage || {});
+          console.log('OpenAI Usage Cost:', openaiCosts);
+          
+          // Combine API costs
+          apiCosts.secondary_api_call = openaiCosts;
+          apiCosts.total_cost_usd = parseFloat((apiCosts.total_cost_usd + openaiCosts.total_cost_usd).toFixed(6));
+          
           const extracted = JSON.parse(openaiData.choices[0].message.content);
           console.log('Extraction successful, sample:', JSON.stringify(extracted.property_details));
           
@@ -262,6 +275,7 @@ Extract into this JSON format:
       analysis_timestamp: new Date().toISOString(),
       property_address: propertyAddress,
       research_sources: citations.slice(0, 5),
+      api_usage_costs: apiCosts,
       data_freshness_guarantee: {
         api_called_at: new Date().toISOString(),
         data_is_current_as_of: new Date().toISOString(),
@@ -645,5 +659,59 @@ function generateEnhancedDemoData(propertyAddress, userName, userEmail) {
       ? `Short-term rental recommended. The property shows strong potential for Airbnb with ${(occupancyRate * 100).toFixed(0)}% occupancy rate and ${bestROI}% ROI.`
       : `Long-term rental recommended. This strategy offers ${bestROI}% ROI with stable monthly income of $${monthlyRent.toLocaleString()}.`,
     roi_percentage: bestROI
+  };
+}
+
+// Calculate API usage costs based on Perplexity pricing
+function calculateAPIUsageCost(usage) {
+  // Perplexity pricing for llama-3.1-sonar-large-128k-online
+  // $1.00 per 1M input tokens, $1.00 per 1M output tokens
+  const INPUT_TOKEN_COST_PER_1M = 1.00;
+  const OUTPUT_TOKEN_COST_PER_1M = 1.00;
+  
+  const inputTokens = usage.prompt_tokens || 0;
+  const outputTokens = usage.completion_tokens || 0;
+  const totalTokens = usage.total_tokens || (inputTokens + outputTokens);
+  
+  const inputCost = (inputTokens / 1000000) * INPUT_TOKEN_COST_PER_1M;
+  const outputCost = (outputTokens / 1000000) * OUTPUT_TOKEN_COST_PER_1M;
+  const totalCost = inputCost + outputCost;
+  
+  return {
+    input_tokens: inputTokens,
+    output_tokens: outputTokens,
+    total_tokens: totalTokens,
+    input_cost_usd: parseFloat(inputCost.toFixed(6)),
+    output_cost_usd: parseFloat(outputCost.toFixed(6)),
+    total_cost_usd: parseFloat(totalCost.toFixed(6)),
+    model: 'llama-3.1-sonar-large-128k-online',
+    calculated_at: new Date().toISOString()
+  };
+}
+
+// Calculate OpenAI API usage costs
+function calculateOpenAIUsageCost(usage) {
+  // OpenAI pricing for gpt-4-turbo-preview
+  // $10.00 per 1M input tokens, $30.00 per 1M output tokens
+  const INPUT_TOKEN_COST_PER_1M = 10.00;
+  const OUTPUT_TOKEN_COST_PER_1M = 30.00;
+  
+  const inputTokens = usage.prompt_tokens || 0;
+  const outputTokens = usage.completion_tokens || 0;
+  const totalTokens = usage.total_tokens || (inputTokens + outputTokens);
+  
+  const inputCost = (inputTokens / 1000000) * INPUT_TOKEN_COST_PER_1M;
+  const outputCost = (outputTokens / 1000000) * OUTPUT_TOKEN_COST_PER_1M;
+  const totalCost = inputCost + outputCost;
+  
+  return {
+    input_tokens: inputTokens,
+    output_tokens: outputTokens,
+    total_tokens: totalTokens,
+    input_cost_usd: parseFloat(inputCost.toFixed(6)),
+    output_cost_usd: parseFloat(outputCost.toFixed(6)),
+    total_cost_usd: parseFloat(totalCost.toFixed(6)),
+    model: 'gpt-4-turbo-preview',
+    calculated_at: new Date().toISOString()
   };
 }

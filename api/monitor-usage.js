@@ -62,6 +62,10 @@ export default async function handler(req, res) {
     let demoCount = 0;
     let totalResponseTime = 0;
     let validResponseTimes = 0;
+    let totalCost = 0;
+    let totalPerplexityCost = 0;
+    let totalOpenAICost = 0;
+    let totalTokens = 0;
     
     analysesSnapshot.forEach(doc => {
       const data = doc.data();
@@ -81,6 +85,13 @@ export default async function handler(req, res) {
         return; // Skip old entries
       }
       
+      // Extract API cost information
+      const apiCosts = data.api_usage_costs || {};
+      const totalApiCost = apiCosts.total_cost_usd || 0;
+      const perplexityCost = apiCosts.input_cost_usd + apiCosts.output_cost_usd || 0;
+      const openaiCost = apiCosts.secondary_api_call?.total_cost_usd || 0;
+      const totalTokens = apiCosts.total_tokens || 0;
+      
       analyses.push({
         id: doc.id,
         address: data.property_address || data.propertyAddress || 'Unknown',
@@ -89,7 +100,11 @@ export default async function handler(req, res) {
         hasRealTimeData: data.data_freshness?.data_recency === 'REAL_TIME' || data.dataSource === 'REAL_TIME_API_DATA',
         responseTime: data.responseTime || null,
         sourcesCount: data.data_sources?.length || 0,
-        roi: data.roi_percentage || 'N/A'
+        roi: data.roi_percentage || 'N/A',
+        apiCost: totalApiCost,
+        perplexityCost: perplexityCost,
+        openaiCost: openaiCost,
+        totalTokens: totalTokens
       });
       
       // Count data types
@@ -104,6 +119,12 @@ export default async function handler(req, res) {
         totalResponseTime += data.responseTime;
         validResponseTimes++;
       }
+      
+      // Accumulate cost data
+      totalCost += totalApiCost;
+      totalPerplexityCost += perplexityCost;
+      totalOpenAICost += openaiCost;
+      totalTokens += (apiCosts.total_tokens || 0);
     });
     
     // Sort by timestamp (newest first) after collection
@@ -118,7 +139,14 @@ export default async function handler(req, res) {
       averageResponseTime: validResponseTimes > 0 ? (totalResponseTime / validResponseTimes / 1000).toFixed(2) : 'N/A',
       realTimePercentage: analyses.length > 0 ? ((realTimeCount / analyses.length) * 100).toFixed(1) : 0,
       lastAnalysis: analyses[0] || null,
-      hourlyCounts: calculateHourlyCounts(analyses)
+      hourlyCounts: calculateHourlyCounts(analyses),
+      // Cost statistics
+      totalCost24h: parseFloat(totalCost.toFixed(6)),
+      totalPerplexityCost: parseFloat(totalPerplexityCost.toFixed(6)),
+      totalOpenAICost: parseFloat(totalOpenAICost.toFixed(6)),
+      averageCostPerAnalysis: analyses.length > 0 ? parseFloat((totalCost / analyses.length).toFixed(6)) : 0,
+      totalTokens: totalTokens,
+      projectedMonthlyCost: parseFloat((totalCost * 30).toFixed(2))
     };
     
     // Check API key status
