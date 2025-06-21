@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fresh Data Verification - InvestorProps</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .timestamp { font-family: monospace; }
+    .fresh { color: #10b981; }
+    .stale { color: #ef4444; }
+    .demo { color: #f59e0b; }
+  </style>
+</head>
+<body class="bg-gray-50 p-8">
+  <div class="max-w-4xl mx-auto">
+    <h1 class="text-3xl font-bold text-gray-900 mb-8">🔍 Fresh Data Verification Tool</h1>
+    
+    <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+      <h2 class="text-xl font-semibold mb-4">Test Property Analysis Freshness</h2>
+      
+      <form id="test-form" class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Test Address</label>
+          <input 
+            type="text" 
+            id="test-address" 
+            value="123 King Street West, Toronto, ON, Canada, M5V 3A8"
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+        
+        <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">
+          Run Freshness Test
+        </button>
+      </form>
+    </div>
+
+    <div id="results" class="space-y-4"></div>
+  </div>
+
+  <script>
+    let testCount = 0;
+
+    document.getElementById('test-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const address = document.getElementById('test-address').value;
+      const resultsDiv = document.getElementById('results');
+      
+      testCount++;
+      const testId = `test-${testCount}`;
+      const startTime = new Date();
+      
+      // Create test result card
+      const testCard = document.createElement('div');
+      testCard.id = testId;
+      testCard.className = 'bg-white rounded-lg shadow p-6';
+      testCard.innerHTML = `
+        <div class="flex justify-between items-start mb-4">
+          <h3 class="text-lg font-semibold">Test #${testCount}: ${address}</h3>
+          <span class="timestamp text-sm text-gray-500">${startTime.toISOString()}</span>
+        </div>
+        <div class="space-y-2">
+          <div class="flex items-center">
+            <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mr-2"></div>
+            <span class="text-gray-600">Running analysis...</span>
+          </div>
+        </div>
+      `;
+      resultsDiv.insertBefore(testCard, resultsDiv.firstChild);
+      
+      try {
+        // Call the API
+        const response = await fetch('/api/analyze-property', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            propertyAddress: address,
+            userName: 'Test User',
+            userEmail: 'test@example.com',
+            requestType: 'test'
+          })
+        });
+        
+        const endTime = new Date();
+        const duration = ((endTime - startTime) / 1000).toFixed(2);
+        const data = await response.json();
+        
+        // Analyze freshness
+        const freshness = analyzeFreshness(data);
+        
+        // Update card with results
+        testCard.innerHTML = `
+          <div class="flex justify-between items-start mb-4">
+            <h3 class="text-lg font-semibold">Test #${testCount}: ${address}</h3>
+            <span class="timestamp text-sm text-gray-500">${startTime.toISOString()}</span>
+          </div>
+          
+          <div class="grid grid-cols-2 gap-4 mb-4">
+            <div>
+              <p class="text-sm text-gray-600">Duration</p>
+              <p class="font-semibold">${duration}s</p>
+            </div>
+            <div>
+              <p class="text-sm text-gray-600">Data Source</p>
+              <p class="font-semibold ${freshness.sourceClass}">${data.dataSource || 'Unknown'}</p>
+            </div>
+          </div>
+          
+          <div class="border rounded-lg p-4 ${freshness.bgClass}">
+            <h4 class="font-semibold mb-2 ${freshness.textClass}">Freshness Analysis</h4>
+            <ul class="space-y-1 text-sm">
+              ${freshness.checks.map(check => `
+                <li class="flex items-center">
+                  <span class="${check.passed ? 'text-green-600' : 'text-red-600'} mr-2">
+                    ${check.passed ? '✓' : '✗'}
+                  </span>
+                  ${check.label}: ${check.value}
+                </li>
+              `).join('')}
+            </ul>
+          </div>
+          
+          <div class="mt-4">
+            <h4 class="font-semibold mb-2">Data Points</h4>
+            <div class="grid grid-cols-3 gap-4 text-sm">
+              <div>
+                <p class="text-gray-600">Property Value</p>
+                <p class="font-semibold">$${(data.data?.property_details?.estimated_value || 0).toLocaleString()}</p>
+              </div>
+              <div>
+                <p class="text-gray-600">Monthly Rent</p>
+                <p class="font-semibold">$${(data.data?.long_term_rental?.monthly_rent || 0).toLocaleString()}</p>
+              </div>
+              <div>
+                <p class="text-gray-600">ROI</p>
+                <p class="font-semibold">${data.data?.roi_percentage || 0}%</p>
+              </div>
+            </div>
+          </div>
+          
+          ${data.data?.data_sources ? `
+            <div class="mt-4">
+              <h4 class="font-semibold mb-2">Sources (${data.data.data_sources.length})</h4>
+              <ul class="text-sm text-gray-600 space-y-1">
+                ${data.data.data_sources.slice(0, 3).map(source => `
+                  <li>• ${source.name} - ${source.access_date || source.date || 'No date'}</li>
+                `).join('')}
+              </ul>
+            </div>
+          ` : ''}
+          
+          <div class="mt-4 pt-4 border-t">
+            <details class="text-sm">
+              <summary class="cursor-pointer text-gray-600 hover:text-gray-900">View Raw Response</summary>
+              <pre class="mt-2 p-2 bg-gray-100 rounded overflow-x-auto text-xs">${JSON.stringify(data, null, 2)}</pre>
+            </details>
+          </div>
+        `;
+        
+      } catch (error) {
+        const endTime = new Date();
+        const duration = ((endTime - startTime) / 1000).toFixed(2);
+        
+        testCard.innerHTML = `
+          <div class="flex justify-between items-start mb-4">
+            <h3 class="text-lg font-semibold">Test #${testCount}: ${address}</h3>
+            <span class="timestamp text-sm text-gray-500">${startTime.toISOString()}</span>
+          </div>
+          <div class="bg-red-50 text-red-700 p-4 rounded">
+            <p class="font-semibold">Error after ${duration}s</p>
+            <p class="text-sm mt-1">${error.message}</p>
+          </div>
+        `;
+      }
+    });
+
+    function analyzeFreshness(response) {
+      const checks = [];
+      let isRealTime = false;
+      let sourceClass = 'demo';
+      let bgClass = 'bg-yellow-50';
+      let textClass = 'text-yellow-700';
+      
+      // Check data source
+      if (response.dataSource === 'REAL_TIME_API_DATA') {
+        isRealTime = true;
+        sourceClass = 'fresh';
+        bgClass = 'bg-green-50';
+        textClass = 'text-green-700';
+        checks.push({ label: 'Data Source', value: 'Real-time API', passed: true });
+      } else if (response.dataSource === 'DEMO_DATA' || response.dataFreshness === 'DEMO_FALLBACK') {
+        checks.push({ label: 'Data Source', value: 'Demo Data', passed: false });
+      } else {
+        checks.push({ label: 'Data Source', value: response.dataSource || 'Unknown', passed: false });
+      }
+      
+      // Check freshness metadata
+      if (response.freshness) {
+        checks.push({ 
+          label: 'Using Cache', 
+          value: response.freshness.using_cache ? 'Yes' : 'No', 
+          passed: !response.freshness.using_cache 
+        });
+        checks.push({ 
+          label: 'Real-time Search', 
+          value: response.freshness.real_time_search ? 'Yes' : 'No', 
+          passed: response.freshness.real_time_search 
+        });
+      }
+      
+      // Check data freshness
+      if (response.data?.data_freshness) {
+        const freshness = response.data.data_freshness;
+        const researchDate = new Date(freshness.research_date);
+        const now = new Date();
+        const ageMinutes = Math.floor((now - researchDate) / 60000);
+        
+        checks.push({ 
+          label: 'Data Age', 
+          value: `${ageMinutes} minutes`, 
+          passed: ageMinutes < 5 
+        });
+        
+        if (freshness.data_recency === 'REAL_TIME') {
+          checks.push({ label: 'Data Recency', value: 'Real-time', passed: true });
+        } else {
+          checks.push({ label: 'Data Recency', value: freshness.data_recency || 'Unknown', passed: false });
+        }
+      }
+      
+      // Check for API key configuration
+      if (response.note && response.note.includes('not configured')) {
+        checks.push({ label: 'API Keys', value: 'Not configured', passed: false });
+        bgClass = 'bg-yellow-50';
+        textClass = 'text-yellow-700';
+      }
+      
+      return {
+        isRealTime,
+        sourceClass,
+        bgClass,
+        textClass,
+        checks
+      };
+    }
+    
+    // Run initial test on load
+    window.addEventListener('load', () => {
+      document.getElementById('test-form').dispatchEvent(new Event('submit'));
+    });
+  </script>
+</body>
+</html>
