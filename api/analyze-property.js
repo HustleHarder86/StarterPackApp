@@ -1,9 +1,9 @@
 // api/analyze-property.js
 // Enhanced property analysis with improved data extraction and fallback logic
 
-import { calculateAccurateExpenses, getPropertyTaxRate, estimateRentalRate } from './property-calculations.js';
+const { calculateAccurateExpenses, getPropertyTaxRate, estimateRentalRate } = require('./property-calculations.js');
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   // Set CORS headers
   res.setHeader('Access-Control-Allow-Credentials', true);
   res.setHeader('Access-Control-Allow-Origin', '*');

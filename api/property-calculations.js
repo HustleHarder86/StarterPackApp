@@ -164,7 +164,7 @@ function calculateHOAFees(propertyType, propertyValue, hasAmenities = false) {
 }
 
 // Rental rate estimation based on location and property type
-export function estimateRentalRate(propertyValue, city, propertyType) {
+function estimateRentalRate(propertyValue, city, propertyType) {
   // Base rental yield rates by city (monthly rent as % of property value)
   const rentalYields = {
     // Ontario - generally 0.3-0.4% monthly
@@ -203,7 +203,7 @@ export function estimateRentalRate(propertyValue, city, propertyType) {
 }
 
 // Main calculation function
-export function calculateAccurateExpenses(propertyData) {
+function calculateAccurateExpenses(propertyData) {
   const {
     propertyValue,
     city,
@@ -263,8 +263,9 @@ export function calculateAccurateExpenses(propertyData) {
   };
 }
 
-// Export individual functions for flexibility
-export {
+// Export functions using CommonJS
+module.exports = {
+  calculateAccurateExpenses,
   getPropertyTaxRate,
   calculateInsurance,
   calculateMaintenance,
