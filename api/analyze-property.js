@@ -368,11 +368,15 @@ Extract into this JSON format:
     }
 
     // Ensure all calculations are done
-    structuredData = ensureCalculations(structuredData);
+    try {
+      structuredData = ensureCalculations(structuredData);
+    } catch (calcError) {
+      console.error('Error in ensureCalculations:', calcError);
+      // Continue with existing data if calculations fail
+    }
 
     // Step 3: Save to Firebase with freshness metadata
-    const adminModule = await import('firebase-admin');
-    const admin = adminModule.default;
+    const admin = require('firebase-admin');
     
     if (!admin.apps.length) {
       admin.initializeApp({
@@ -471,6 +475,7 @@ function buildStructuredData(extracted, propertyAddress, researchContent, citati
   });
   
   const data = {
+    property_address: propertyAddress, // Add this for ensureCalculations to access
     data_freshness: {
       research_date: new Date().toISOString(),
       data_recency: "REAL_TIME",
@@ -571,6 +576,7 @@ function fallbackDataExtraction(researchContent, propertyAddress, address, citat
   }
   
   return {
+    property_address: propertyAddress, // Add this for ensureCalculations to access
     data_freshness: {
       research_date: new Date().toISOString(),
       data_recency: "REAL_TIME",
@@ -659,10 +665,21 @@ function ensureCalculations(data) {
   if (propertyTaxAnnual > currentPropertyValue * 0.015) {
     // This is likely a monthly amount mislabeled as annual
     // Use accurate location-based calculation
-    const taxRate = getPropertyTaxRate(
-      data.property_address?.split(',')[1]?.trim() || 'Toronto',
-      data.property_address?.split(',')[2]?.trim() || 'Ontario'
-    );
+    let city = 'Toronto';
+    let province = 'Ontario';
+    
+    // Try to extract city and province from property address or use property details
+    if (data.property_address) {
+      const addressParts = data.property_address.split(',').map(p => p.trim());
+      city = addressParts[1] || city;
+      province = addressParts[2] || province;
+    } else if (data.property_details?.address) {
+      const addressParts = data.property_details.address.split(',').map(p => p.trim());
+      city = addressParts[1] || city;
+      province = addressParts[2] || province;
+    }
+    
+    const taxRate = getPropertyTaxRate(city, province);
     data.costs.property_tax_annual = Math.round(currentPropertyValue * taxRate);
     console.log('Corrected unrealistic property tax from', propertyTaxAnnual, 'to', data.costs.property_tax_annual, 'using rate', taxRate);
   }
