@@ -4,20 +4,28 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## ⚠️ IMPORTANT: Branch Workflow
 
-**ALWAYS use the `Claude-Changes` branch for all code changes:**
+**ALWAYS create a unique branch for each set of changes:**
 
-1. **Before making any changes**: Switch to or create the `Claude-Changes` branch:
+1. **Before making any changes**: Create a new branch with a descriptive name:
    ```bash
-   git checkout Claude-Changes
-   # or if it doesn't exist:
-   git checkout -b Claude-Changes
+   # Use format: claude/description-YYYYMMDD_HHMMSS
+   # Example:
+   git checkout -b claude/add-feature-20250623_143022
+   git checkout -b claude/fix-bug-20250623_143022  
+   git checkout -b claude/update-docs-20250623_143022
    ```
 
-2. **Make all changes on this branch** - Never commit directly to `main`
+2. **Make all changes on this unique branch** - Never commit directly to `main`
 
-3. **After completing changes**: The user will manually review and create a pull request to merge `Claude-Changes` → `main`
+3. **After completing changes**: The user will manually review and create a pull request to merge the feature branch → `main`
 
-This workflow ensures all AI-generated changes go through proper human review before being merged into the main branch.
+4. **Branch naming convention**: Use `claude/[description]-[timestamp]` format to ensure uniqueness and easy identification
+
+This workflow ensures:
+- Each set of changes gets its own isolated branch
+- Easy identification and review of individual changes  
+- No confusion between different change sets
+- All AI-generated changes go through proper human review before being merged
 
 ## Project Overview
 
