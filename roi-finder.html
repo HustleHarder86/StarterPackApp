@@ -1119,14 +1119,23 @@
     // Initialize Edit Mode
     function initializeEditMode() {
       editMode = false;
-      document.getElementById('reset-financials-btn').style.display = 'none';
+      
+      // Check if elements exist before trying to manipulate them
+      const resetBtn = document.getElementById('reset-financials-btn');
+      if (resetBtn) {
+        resetBtn.style.display = 'none';
+      }
       
       // Hide all edit inputs
       const editInputs = document.querySelectorAll('[id^="edit-"]');
       const displayElements = document.querySelectorAll('#breakdown-income, #breakdown-mortgage, #breakdown-taxes, #edit-insurance-display, #breakdown-hoa, #breakdown-maintenance, #breakdown-management');
       
-      editInputs.forEach(input => input.classList.add('hidden'));
-      displayElements.forEach(el => el.classList.remove('hidden'));
+      editInputs.forEach(input => {
+        if (input) input.classList.add('hidden');
+      });
+      displayElements.forEach(el => {
+        if (el) el.classList.remove('hidden');
+      });
     }
 
     // Toggle Edit Mode
@@ -1577,15 +1586,27 @@
         showView('dashboard');
       });
 
-      // Edit financials button
-      document.getElementById('edit-financials-btn').addEventListener('click', function() {
-        toggleEditMode();
-      });
+      // Edit financials button - with error checking
+      const editBtn = document.getElementById('edit-financials-btn');
+      if (editBtn) {
+        console.log('Edit button found and adding listener');
+        editBtn.addEventListener('click', function() {
+          toggleEditMode();
+        });
+      } else {
+        console.error('Edit button NOT found in DOM!');
+      }
 
-      // Reset financials button
-      document.getElementById('reset-financials-btn').addEventListener('click', function() {
-        resetToOriginal();
-      });
+      // Reset financials button - with error checking
+      const resetBtn = document.getElementById('reset-financials-btn');
+      if (resetBtn) {
+        console.log('Reset button found and adding listener');
+        resetBtn.addEventListener('click', function() {
+          resetToOriginal();
+        });
+      } else {
+        console.error('Reset button NOT found in DOM!');
+      }
 
       // Initialize the app
       initApp();
