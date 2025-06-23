@@ -380,16 +380,18 @@
       <!-- Charts Section -->
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         <!-- Cash Flow Chart -->
-        <div class="bg-white rounded-xl shadow-lg p-6">
-          <h3 class="text-lg font-semibold text-gray-900 mb-4">Monthly Cash Flow Analysis</h3>
+        <div class="bg-white rounded-xl shadow-lg p-6 cursor-pointer hover:shadow-xl transition-shadow" onclick="openChartDetails('cashFlow')">
+          <h3 class="text-lg font-semibold text-gray-900 mb-2">Monthly Cash Flow Analysis</h3>
+          <p class="text-sm text-gray-600 mb-4">Click for detailed breakdown</p>
           <div class="chart-container">
             <canvas id="cashFlowChart"></canvas>
           </div>
         </div>
 
         <!-- ROI Comparison Chart -->
-        <div class="bg-white rounded-xl shadow-lg p-6">
-          <h3 class="text-lg font-semibold text-gray-900 mb-4">Investment Strategy Comparison</h3>
+        <div class="bg-white rounded-xl shadow-lg p-6 cursor-pointer hover:shadow-xl transition-shadow" onclick="openChartDetails('roiComparison')">
+          <h3 class="text-lg font-semibold text-gray-900 mb-2">Investment Strategy Comparison</h3>
+          <p class="text-sm text-gray-600 mb-4">Click for detailed breakdown</p>
           <div class="chart-container">
             <canvas id="roiComparisonChart"></canvas>
           </div>
@@ -400,38 +402,71 @@
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <!-- Financial Breakdown -->
         <div class="bg-white rounded-lg shadow">
-          <div class="px-6 py-4 border-b border-gray-200">
+          <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
             <h3 class="text-lg font-semibold text-gray-900">Income & Expenses Breakdown</h3>
+            <div class="flex gap-2">
+              <button id="edit-financials-btn" class="px-3 py-1 text-sm bg-blue-100 text-blue-700 rounded-md hover:bg-blue-200 transition-colors">
+                Edit Values
+              </button>
+              <button id="reset-financials-btn" class="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors" style="display: none;">
+                Reset to Original
+              </button>
+            </div>
           </div>
           <div class="p-6">
             <div class="space-y-4">
-              <div class="flex justify-between">
-                <span class="text-gray-600">Gross Rental Income</span>
-                <span class="font-semibold positive" id="breakdown-income">-</span>
+              <div class="flex justify-between items-center">
+                <span class="text-gray-600">Gross Rental Income (Monthly)</span>
+                <div>
+                  <span class="font-semibold positive" id="breakdown-income">-</span>
+                  <input type="number" id="edit-income" class="hidden w-24 text-right px-2 py-1 border rounded text-sm font-semibold" step="100" min="0">
+                </div>
               </div>
-              <div class="flex justify-between">
-                <span class="text-gray-600">Property Taxes</span>
-                <span class="font-semibold negative" id="breakdown-taxes">-</span>
+              <div class="flex justify-between items-center">
+                <span class="text-gray-600">Mortgage Payment (Monthly)</span>
+                <div>
+                  <span class="font-semibold negative" id="breakdown-mortgage">$0</span>
+                  <input type="number" id="edit-mortgage" class="hidden w-24 text-right px-2 py-1 border rounded text-sm font-semibold" step="100" min="0" value="0">
+                </div>
               </div>
-              <div class="flex justify-between">
-                <span class="text-gray-600">Insurance</span>
-                <span class="font-semibold negative" id="breakdown-insurance">-</span>
+              <div class="flex justify-between items-center">
+                <span class="text-gray-600">Property Taxes (Annual)</span>
+                <div>
+                  <span class="font-semibold negative" id="breakdown-taxes">-</span>
+                  <input type="number" id="edit-taxes" class="hidden w-24 text-right px-2 py-1 border rounded text-sm font-semibold" step="100" min="0">
+                </div>
               </div>
-              <div class="flex justify-between">
-                <span class="text-gray-600">HOA/Condo Fees</span>
-                <span class="font-semibold negative" id="breakdown-hoa">-</span>
+              <div class="flex justify-between items-center">
+                <span class="text-gray-600">Insurance (Annual)</span>
+                <div>
+                  <span class="font-semibold negative" id="edit-insurance-display">-</span>
+                  <input type="number" id="edit-insurance" class="hidden w-24 text-right px-2 py-1 border rounded text-sm font-semibold" step="100" min="0">
+                </div>
               </div>
-              <div class="flex justify-between">
-                <span class="text-gray-600">Maintenance</span>
-                <span class="font-semibold negative" id="breakdown-maintenance">-</span>
+              <div class="flex justify-between items-center">
+                <span class="text-gray-600">HOA/Condo Fees (Monthly)</span>
+                <div>
+                  <span class="font-semibold negative" id="breakdown-hoa">-</span>
+                  <input type="number" id="edit-hoa" class="hidden w-24 text-right px-2 py-1 border rounded text-sm font-semibold" step="50" min="0">
+                </div>
               </div>
-              <div class="flex justify-between">
+              <div class="flex justify-between items-center">
+                <span class="text-gray-600">Maintenance (Annual)</span>
+                <div>
+                  <span class="font-semibold negative" id="breakdown-maintenance">-</span>
+                  <input type="number" id="edit-maintenance" class="hidden w-24 text-right px-2 py-1 border rounded text-sm font-semibold" step="100" min="0">
+                </div>
+              </div>
+              <div class="flex justify-between items-center">
                 <span class="text-gray-600">Property Management (8%)</span>
-                <span class="font-semibold negative" id="breakdown-management">-</span>
+                <div>
+                  <span class="font-semibold negative" id="breakdown-management">-</span>
+                  <input type="number" id="edit-management" class="hidden w-24 text-right px-2 py-1 border rounded text-sm font-semibold" step="0.5" min="0" max="20">
+                </div>
               </div>
               <div class="border-t pt-2">
                 <div class="flex justify-between">
-                  <span class="font-semibold text-gray-900">Net Operating Income</span>
+                  <span class="font-semibold text-gray-900">Net Operating Income (Monthly)</span>
                   <span class="font-bold text-green-600" id="breakdown-net-income">-</span>
                 </div>
               </div>
@@ -526,11 +561,25 @@
       </div>
 
       <!-- Data Sources -->
-      <div class="mt-8 bg-gray-100 rounded-lg p-4 text-sm text-gray-600">
-        <p class="font-medium mb-2">Data Sources & Accuracy:</p>
-        <ul class="list-disc list-inside space-y-1" id="source-list">
-          <li>Analysis powered by AI with real-time market data</li>
-        </ul>
+      <div class="mt-8 bg-white rounded-lg border border-gray-200 shadow-sm">
+        <div class="px-6 py-4 border-b border-gray-200 bg-gray-50 rounded-t-lg">
+          <h3 class="text-lg font-semibold text-gray-900 flex items-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+            </svg>
+            Data Sources & Research
+          </h3>
+        </div>
+        <div class="p-6">
+          <div class="space-y-3">
+            <div id="sources-container" class="space-y-2">
+              <!-- Sources will be populated dynamically -->
+            </div>
+            <div class="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+              <p class="text-sm text-blue-800"><strong>Note:</strong> All data is researched in real-time using AI-powered market analysis and publicly available sources.</p>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- Actions -->
@@ -544,6 +593,29 @@
         <button id="save-analysis" class="btn-secondary">
           Save Analysis
         </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chart Details Modal -->
+  <div id="chart-details-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 z-50 hidden">
+    <div class="flex items-center justify-center min-h-screen px-4">
+      <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-screen overflow-y-auto">
+        <div class="px-6 py-4 border-b border-gray-200">
+          <div class="flex justify-between items-center">
+            <h3 id="modal-title" class="text-lg font-semibold text-gray-900">Chart Details</h3>
+            <button onclick="closeChartDetails()" class="text-gray-400 hover:text-gray-600">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+        <div class="p-6">
+          <div id="modal-content">
+            <!-- Content will be populated dynamically -->
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -562,6 +634,9 @@
     let currentView = 'loading';
     let authMode = 'signin';
     let charts = {};
+    let currentAnalysis = null;
+    let originalAnalysis = null;
+    let editMode = false;
 
     // Initialize app
     async function initApp() {
@@ -792,6 +867,10 @@
 
     // Display analysis results with charts
     function displayResults(analysis) {
+      // Store analysis data
+      currentAnalysis = JSON.parse(JSON.stringify(analysis)); // Deep copy
+      originalAnalysis = JSON.parse(JSON.stringify(analysis)); // Store original for reset
+      
       // Property info
       document.getElementById('result-address').textContent = analysis.property_address || 'Unknown';
       document.getElementById('result-date').textContent = new Date(analysis.analysis_timestamp || analysis.createdAt?.toDate()).toLocaleDateString();
@@ -836,15 +915,33 @@
       roiBar.style.width = width;
       
       // Financial breakdown
-      document.getElementById('breakdown-income').textContent = '$' + (analysis.long_term_rental?.annual_revenue || 0).toLocaleString();
-      document.getElementById('breakdown-taxes').textContent = '-$' + (analysis.costs?.property_tax_annual || 0).toLocaleString();
-      document.getElementById('breakdown-insurance').textContent = '-$' + (analysis.costs?.insurance_annual || 0).toLocaleString();
-      document.getElementById('breakdown-hoa').textContent = '-$' + ((analysis.costs?.hoa_monthly || 0) * 12).toLocaleString();
-      document.getElementById('breakdown-maintenance').textContent = '-$' + (analysis.costs?.maintenance_annual || 0).toLocaleString();
+      const monthlyRent = analysis.long_term_rental?.monthly_rent || 0;
+      const mortgagePayment = analysis.costs?.mortgage_monthly || 0;
       
-      const managementFee = Math.round((analysis.long_term_rental?.annual_revenue || 0) * 0.08);
+      document.getElementById('breakdown-income').textContent = '$' + monthlyRent.toLocaleString();
+      document.getElementById('breakdown-mortgage').textContent = mortgagePayment > 0 ? '-$' + mortgagePayment.toLocaleString() : '$0';
+      document.getElementById('breakdown-taxes').textContent = '-$' + Math.round((analysis.costs?.property_tax_annual || 0) / 12).toLocaleString();
+      document.getElementById('edit-insurance-display').textContent = '-$' + Math.round((analysis.costs?.insurance_annual || 0) / 12).toLocaleString();
+      document.getElementById('breakdown-hoa').textContent = '-$' + (analysis.costs?.hoa_monthly || 0).toLocaleString();
+      document.getElementById('breakdown-maintenance').textContent = '-$' + Math.round((analysis.costs?.maintenance_annual || 0) / 12).toLocaleString();
+      
+      const managementFee = Math.round(monthlyRent * 0.08);
       document.getElementById('breakdown-management').textContent = '-$' + managementFee.toLocaleString();
-      document.getElementById('breakdown-net-income').textContent = '$' + (analysis.long_term_rental?.annual_profit || 0).toLocaleString();
+      
+      // Calculate net income (monthly)
+      const netIncome = monthlyRent - mortgagePayment - Math.round((analysis.costs?.property_tax_annual || 0) / 12) - 
+                       Math.round((analysis.costs?.insurance_annual || 0) / 12) - (analysis.costs?.hoa_monthly || 0) - 
+                       Math.round((analysis.costs?.maintenance_annual || 0) / 12) - managementFee;
+      document.getElementById('breakdown-net-income').textContent = '$' + netIncome.toLocaleString();
+      
+      // Initialize edit fields with current values
+      document.getElementById('edit-income').value = monthlyRent;
+      document.getElementById('edit-mortgage').value = mortgagePayment;
+      document.getElementById('edit-taxes').value = analysis.costs?.property_tax_annual || 0;
+      document.getElementById('edit-insurance').value = analysis.costs?.insurance_annual || 0;
+      document.getElementById('edit-hoa').value = analysis.costs?.hoa_monthly || 0;
+      document.getElementById('edit-maintenance').value = analysis.costs?.maintenance_annual || 0;
+      document.getElementById('edit-management').value = 8;
       
       // Rental strategies
       document.getElementById('ltr-rent').textContent = '$' + (analysis.long_term_rental?.monthly_rent || 0).toLocaleString();
@@ -869,13 +966,11 @@
         document.getElementById('comparable-count').textContent = (analysis.market_data.comparable_sales?.length || 0) + ' properties';
       }
       
-      // Data sources
-      if (analysis.data_sources || analysis.research_sources) {
-        const sources = analysis.data_sources || analysis.research_sources || [];
-        document.getElementById('source-list').innerHTML = sources.map(source => 
-          `<li>${source.name || 'Source'} - ${source.date || 'Recent'}</li>`
-        ).join('') || '<li>Analysis powered by AI with real-time market data</li>';
-      }
+      // Enhanced Data sources display
+      displayDataSources(analysis);
+      
+      // Initialize edit mode
+      initializeEditMode();
       
       // Create Charts
       createCharts(analysis);
@@ -889,21 +984,37 @@
       
       // Cash Flow Chart
       const cashFlowCtx = document.getElementById('cashFlowChart').getContext('2d');
+      
+      // Prepare chart data including mortgage if present
+      const monthlyIncome = analysis.long_term_rental?.monthly_rent || 0;
+      const mortgagePayment = analysis.costs?.mortgage_monthly || 0;
+      const chartLabels = ['Income'];
+      const chartData = [monthlyIncome];
+      
+      if (mortgagePayment > 0) {
+        chartLabels.push('Mortgage');
+        chartData.push(-mortgagePayment);
+      }
+      
+      chartLabels.push('Taxes', 'Insurance', 'HOA', 'Maint.', 'Mgmt.', 'Net');
+      chartData.push(
+        -Math.round((analysis.costs?.property_tax_annual || 0) / 12),
+        -Math.round((analysis.costs?.insurance_annual || 0) / 12),
+        -(analysis.costs?.hoa_monthly || 0),
+        -Math.round((analysis.costs?.maintenance_annual || 0) / 12),
+        -Math.round(monthlyIncome * 0.08),
+        monthlyIncome - mortgagePayment - Math.round((analysis.costs?.property_tax_annual || 0) / 12) - 
+        Math.round((analysis.costs?.insurance_annual || 0) / 12) - (analysis.costs?.hoa_monthly || 0) - 
+        Math.round((analysis.costs?.maintenance_annual || 0) / 12) - Math.round(monthlyIncome * 0.08)
+      );
+      
       charts.cashFlow = new Chart(cashFlowCtx, {
         type: 'bar',
         data: {
-          labels: ['Income', 'Taxes', 'Insurance', 'HOA', 'Maint.', 'Mgmt.', 'Net'],
+          labels: chartLabels,
           datasets: [{
-            label: 'Annual Cash Flow',
-            data: [
-              analysis.long_term_rental?.annual_revenue || 0,
-              -(analysis.costs?.property_tax_annual || 0),
-              -(analysis.costs?.insurance_annual || 0),
-              -((analysis.costs?.hoa_monthly || 0) * 12),
-              -(analysis.costs?.maintenance_annual || 0),
-              -Math.round((analysis.long_term_rental?.annual_revenue || 0) * 0.08),
-              analysis.long_term_rental?.annual_profit || 0
-            ],
+            label: 'Monthly Cash Flow',
+            data: chartData,
             backgroundColor: function(context) {
               const value = context.dataset.data[context.dataIndex];
               return value >= 0 ? 'rgba(16, 185, 129, 0.8)' : 'rgba(239, 68, 68, 0.8)';
@@ -965,6 +1076,377 @@
           }
         }
       });
+    }
+
+    // Enhanced Data Sources Display
+    function displayDataSources(analysis) {
+      const sourcesContainer = document.getElementById('sources-container');
+      const sources = analysis.data_sources || analysis.research_sources || [];
+      
+      if (sources.length > 0) {
+        sourcesContainer.innerHTML = sources.map((source, index) => `
+          <div class="flex items-center justify-between p-3 bg-white border border-gray-200 rounded-lg">
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                </svg>
+              </div>
+              <div>
+                <p class="font-medium text-gray-900">${source.name || `Data Source ${index + 1}`}</p>
+                <p class="text-sm text-gray-600">${source.date || 'Recently accessed'}</p>
+              </div>
+            </div>
+            ${source.url ? `
+              <a href="${source.url}" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                View Source →
+              </a>
+            ` : ''}
+          </div>
+        `).join('');
+      } else {
+        sourcesContainer.innerHTML = `
+          <div class="p-4 bg-gray-50 border border-gray-200 rounded-lg text-center">
+            <svg class="w-8 h-8 text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <p class="text-sm text-gray-600">Analysis powered by AI with real-time market research</p>
+          </div>
+        `;
+      }
+    }
+
+    // Initialize Edit Mode
+    function initializeEditMode() {
+      editMode = false;
+      document.getElementById('reset-financials-btn').style.display = 'none';
+      
+      // Hide all edit inputs
+      const editInputs = document.querySelectorAll('[id^="edit-"]');
+      const displayElements = document.querySelectorAll('#breakdown-income, #breakdown-mortgage, #breakdown-taxes, #edit-insurance-display, #breakdown-hoa, #breakdown-maintenance, #breakdown-management');
+      
+      editInputs.forEach(input => input.classList.add('hidden'));
+      displayElements.forEach(el => el.classList.remove('hidden'));
+    }
+
+    // Toggle Edit Mode
+    function toggleEditMode() {
+      editMode = !editMode;
+      const editBtn = document.getElementById('edit-financials-btn');
+      const resetBtn = document.getElementById('reset-financials-btn');
+      
+      const editInputs = document.querySelectorAll('[id^="edit-"]');
+      const displayElements = document.querySelectorAll('#breakdown-income, #breakdown-mortgage, #breakdown-taxes, #edit-insurance-display, #breakdown-hoa, #breakdown-maintenance, #breakdown-management');
+      
+      if (editMode) {
+        editBtn.textContent = 'Save Changes';
+        editBtn.className = 'px-3 py-1 text-sm bg-green-100 text-green-700 rounded-md hover:bg-green-200 transition-colors';
+        resetBtn.style.display = 'inline-block';
+        
+        editInputs.forEach(input => input.classList.remove('hidden'));
+        displayElements.forEach(el => el.classList.add('hidden'));
+        
+        // Add event listeners for real-time updates
+        editInputs.forEach(input => {
+          input.addEventListener('input', updateCalculations);
+        });
+      } else {
+        editBtn.textContent = 'Edit Values';
+        editBtn.className = 'px-3 py-1 text-sm bg-blue-100 text-blue-700 rounded-md hover:bg-blue-200 transition-colors';
+        
+        editInputs.forEach(input => input.classList.add('hidden'));
+        displayElements.forEach(el => el.classList.remove('hidden'));
+        
+        // Update the current analysis with new values
+        updateAnalysisData();
+      }
+    }
+
+    // Update Calculations
+    function updateCalculations() {
+      const income = parseFloat(document.getElementById('edit-income').value) || 0;
+      const mortgage = parseFloat(document.getElementById('edit-mortgage').value) || 0;
+      const taxes = parseFloat(document.getElementById('edit-taxes').value) || 0;
+      const insurance = parseFloat(document.getElementById('edit-insurance').value) || 0;
+      const hoa = parseFloat(document.getElementById('edit-hoa').value) || 0;
+      const maintenance = parseFloat(document.getElementById('edit-maintenance').value) || 0;
+      const managementRate = parseFloat(document.getElementById('edit-management').value) || 8;
+      
+      const managementFee = Math.round(income * (managementRate / 100));
+      const netIncome = income - mortgage - Math.round(taxes / 12) - Math.round(insurance / 12) - hoa - Math.round(maintenance / 12) - managementFee;
+      
+      // Update the management display
+      document.getElementById('breakdown-management').textContent = `-$${managementFee.toLocaleString()}`;
+      
+      // Update net income
+      document.getElementById('breakdown-net-income').textContent = `$${netIncome.toLocaleString()}`;
+      
+      // Update charts with new data
+      if (currentAnalysis) {
+        const updatedAnalysis = { ...currentAnalysis };
+        updatedAnalysis.long_term_rental.monthly_rent = income;
+        updatedAnalysis.costs.mortgage_monthly = mortgage;
+        updatedAnalysis.costs.property_tax_annual = taxes;
+        updatedAnalysis.costs.insurance_annual = insurance;
+        updatedAnalysis.costs.hoa_monthly = hoa;
+        updatedAnalysis.costs.maintenance_annual = maintenance;
+        
+        createCharts(updatedAnalysis);
+      }
+    }
+
+    // Update Analysis Data
+    function updateAnalysisData() {
+      if (!currentAnalysis) return;
+      
+      currentAnalysis.long_term_rental.monthly_rent = parseFloat(document.getElementById('edit-income').value) || 0;
+      currentAnalysis.costs.mortgage_monthly = parseFloat(document.getElementById('edit-mortgage').value) || 0;
+      currentAnalysis.costs.property_tax_annual = parseFloat(document.getElementById('edit-taxes').value) || 0;
+      currentAnalysis.costs.insurance_annual = parseFloat(document.getElementById('edit-insurance').value) || 0;
+      currentAnalysis.costs.hoa_monthly = parseFloat(document.getElementById('edit-hoa').value) || 0;
+      currentAnalysis.costs.maintenance_annual = parseFloat(document.getElementById('edit-maintenance').value) || 0;
+      
+      // Recalculate derived values
+      const income = currentAnalysis.long_term_rental.monthly_rent;
+      const mortgage = currentAnalysis.costs.mortgage_monthly;
+      const annualRevenue = income * 12;
+      const annualMortgage = mortgage * 12;
+      const totalAnnualExpenses = currentAnalysis.costs.property_tax_annual + 
+                                  currentAnalysis.costs.insurance_annual + 
+                                  (currentAnalysis.costs.hoa_monthly * 12) + 
+                                  currentAnalysis.costs.maintenance_annual + 
+                                  (annualRevenue * 0.08) + annualMortgage;
+      
+      currentAnalysis.long_term_rental.annual_revenue = annualRevenue;
+      currentAnalysis.long_term_rental.annual_profit = annualRevenue - totalAnnualExpenses;
+      
+      // Update the display
+      displayResults(currentAnalysis);
+    }
+
+    // Reset to Original Values
+    function resetToOriginal() {
+      if (!originalAnalysis) return;
+      
+      currentAnalysis = JSON.parse(JSON.stringify(originalAnalysis));
+      displayResults(currentAnalysis);
+      
+      // Exit edit mode
+      if (editMode) {
+        toggleEditMode();
+      }
+    }
+
+    // Open Chart Details Modal
+    function openChartDetails(chartType) {
+      if (!currentAnalysis) return;
+      
+      const modal = document.getElementById('chart-details-modal');
+      const modalTitle = document.getElementById('modal-title');
+      const modalContent = document.getElementById('modal-content');
+      
+      if (chartType === 'cashFlow') {
+        modalTitle.textContent = 'Cash Flow Analysis - Detailed Breakdown';
+        modalContent.innerHTML = generateCashFlowDetails(currentAnalysis);
+      } else if (chartType === 'roiComparison') {
+        modalTitle.textContent = 'ROI Comparison - Detailed Analysis';
+        modalContent.innerHTML = generateROIComparisonDetails(currentAnalysis);
+      }
+      
+      modal.classList.remove('hidden');
+    }
+
+    // Close Chart Details Modal
+    function closeChartDetails() {
+      document.getElementById('chart-details-modal').classList.add('hidden');
+    }
+
+    // Generate Cash Flow Details
+    function generateCashFlowDetails(analysis) {
+      const income = analysis.long_term_rental?.monthly_rent || 0;
+      const mortgage = analysis.costs?.mortgage_monthly || 0;
+      const taxes = Math.round((analysis.costs?.property_tax_annual || 0) / 12);
+      const insurance = Math.round((analysis.costs?.insurance_annual || 0) / 12);
+      const hoa = analysis.costs?.hoa_monthly || 0;
+      const maintenance = Math.round((analysis.costs?.maintenance_annual || 0) / 12);
+      const management = Math.round(income * 0.08);
+      const net = income - mortgage - taxes - insurance - hoa - maintenance - management;
+      
+      return `
+        <div class="space-y-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-green-50 p-4 rounded-lg border border-green-200">
+              <h4 class="font-semibold text-green-800 mb-3">Monthly Income</h4>
+              <div class="space-y-2">
+                <div class="flex justify-between">
+                  <span class="text-green-700">Rental Income:</span>
+                  <span class="font-semibold text-green-800">$${income.toLocaleString()}</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-green-700">Percentage:</span>
+                  <span class="font-semibold text-green-800">100%</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="bg-red-50 p-4 rounded-lg border border-red-200">
+              <h4 class="font-semibold text-red-800 mb-3">Monthly Expenses</h4>
+              <div class="space-y-2 text-sm">
+                ${mortgage > 0 ? `
+                <div class="flex justify-between">
+                  <span class="text-red-700">Mortgage Payment:</span>
+                  <span class="font-semibold">$${mortgage.toLocaleString()} (${((mortgage/income)*100).toFixed(1)}%)</span>
+                </div>` : ''}
+                <div class="flex justify-between">
+                  <span class="text-red-700">Property Taxes:</span>
+                  <span class="font-semibold">$${taxes.toLocaleString()} (${((taxes/income)*100).toFixed(1)}%)</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-red-700">Insurance:</span>
+                  <span class="font-semibold">$${insurance.toLocaleString()} (${((insurance/income)*100).toFixed(1)}%)</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-red-700">HOA/Condo Fees:</span>
+                  <span class="font-semibold">$${hoa.toLocaleString()} (${((hoa/income)*100).toFixed(1)}%)</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-red-700">Maintenance:</span>
+                  <span class="font-semibold">$${maintenance.toLocaleString()} (${((maintenance/income)*100).toFixed(1)}%)</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-red-700">Property Management:</span>
+                  <span class="font-semibold">$${management.toLocaleString()} (${((management/income)*100).toFixed(1)}%)</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="bg-blue-50 p-4 rounded-lg border border-blue-200">
+            <h4 class="font-semibold text-blue-800 mb-3">Net Operating Income</h4>
+            <div class="flex justify-between items-center">
+              <span class="text-blue-700">Monthly Net Income:</span>
+              <span class="text-2xl font-bold ${net >= 0 ? 'text-green-600' : 'text-red-600'}">
+                $${net.toLocaleString()}
+              </span>
+            </div>
+            <div class="flex justify-between items-center mt-2">
+              <span class="text-blue-700">Annual Net Income:</span>
+              <span class="text-xl font-semibold ${net >= 0 ? 'text-green-600' : 'text-red-600'}">
+                $${(net * 12).toLocaleString()}
+              </span>
+            </div>
+            <div class="mt-3 text-sm text-blue-700">
+              <p><strong>Cash-on-Cash ROI:</strong> ${((net * 12) / (analysis.property_details?.estimated_value || 1) * 100).toFixed(2)}%</p>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // Generate ROI Comparison Details
+    function generateROIComparisonDetails(analysis) {
+      const propertyValue = analysis.property_details?.estimated_value || 1;
+      const ltrProfit = analysis.long_term_rental?.annual_profit || 0;
+      const strProfit = analysis.short_term_rental?.annual_profit || 0;
+      const ltrROI = (ltrProfit / propertyValue * 100);
+      const strROI = (strProfit / propertyValue * 100);
+      const traditionalROI = 4;
+      
+      return `
+        <div class="space-y-6">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="bg-blue-50 p-4 rounded-lg border border-blue-200">
+              <h4 class="font-semibold text-blue-800 mb-3">Long-term Rental</h4>
+              <div class="space-y-2 text-sm">
+                <div class="flex justify-between">
+                  <span>Monthly Rent:</span>
+                  <span class="font-semibold">$${(analysis.long_term_rental?.monthly_rent || 0).toLocaleString()}</span>
+                </div>
+                <div class="flex justify-between">
+                  <span>Annual Revenue:</span>
+                  <span class="font-semibold">$${(analysis.long_term_rental?.annual_revenue || 0).toLocaleString()}</span>
+                </div>
+                <div class="flex justify-between">
+                  <span>Annual Profit:</span>
+                  <span class="font-semibold">$${ltrProfit.toLocaleString()}</span>
+                </div>
+                <div class="flex justify-between border-t pt-2">
+                  <span class="font-semibold">ROI:</span>
+                  <span class="font-bold text-blue-600">${ltrROI.toFixed(2)}%</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="bg-green-50 p-4 rounded-lg border border-green-200">
+              <h4 class="font-semibold text-green-800 mb-3">Short-term Rental</h4>
+              <div class="space-y-2 text-sm">
+                <div class="flex justify-between">
+                  <span>Daily Rate:</span>
+                  <span class="font-semibold">$${analysis.short_term_rental?.daily_rate || 0}</span>
+                </div>
+                <div class="flex justify-between">
+                  <span>Occupancy Rate:</span>
+                  <span class="font-semibold">${analysis.short_term_rental?.occupancy_rate || 0}%</span>
+                </div>
+                <div class="flex justify-between">
+                  <span>Annual Revenue:</span>
+                  <span class="font-semibold">$${(analysis.short_term_rental?.annual_revenue || 0).toLocaleString()}</span>
+                </div>
+                <div class="flex justify-between">
+                  <span>Annual Profit:</span>
+                  <span class="font-semibold">$${strProfit.toLocaleString()}</span>
+                </div>
+                <div class="flex justify-between border-t pt-2">
+                  <span class="font-semibold">ROI:</span>
+                  <span class="font-bold text-green-600">${strROI.toFixed(2)}%</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+              <h4 class="font-semibold text-gray-800 mb-3">Traditional Investment</h4>
+              <div class="space-y-2 text-sm">
+                <div class="flex justify-between">
+                  <span>Investment Amount:</span>
+                  <span class="font-semibold">$${propertyValue.toLocaleString()}</span>
+                </div>
+                <div class="flex justify-between">
+                  <span>Annual Return:</span>
+                  <span class="font-semibold">$${(propertyValue * 0.04).toLocaleString()}</span>
+                </div>
+                <div class="flex justify-between border-t pt-2">
+                  <span class="font-semibold">ROI:</span>
+                  <span class="font-bold text-gray-600">4.0%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+            <h4 class="font-semibold text-yellow-800 mb-2">Investment Comparison Summary</h4>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+              <div class="text-center">
+                <p class="font-semibold">Best ROI Strategy</p>
+                <p class="text-lg font-bold ${strROI > ltrROI ? 'text-green-600' : 'text-blue-600'}">
+                  ${strROI > ltrROI ? 'Short-term Rental' : 'Long-term Rental'}
+                </p>
+              </div>
+              <div class="text-center">
+                <p class="font-semibold">vs Traditional Investment</p>
+                <p class="text-lg font-bold text-green-600">
+                  +${Math.max(ltrROI, strROI, traditionalROI) - traditionalROI > 0 ? (Math.max(ltrROI, strROI) - traditionalROI).toFixed(1) : '0'}% better
+                </p>
+              </div>
+              <div class="text-center">
+                <p class="font-semibold">Annual Difference</p>
+                <p class="text-lg font-bold text-green-600">
+                  $${(Math.max(ltrProfit, strProfit) - (propertyValue * 0.04)).toLocaleString()}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
     }
 
     // Event Listeners
@@ -1093,6 +1575,16 @@
       document.getElementById('save-analysis').addEventListener('click', function() {
         alert('Analysis saved to your dashboard!');
         showView('dashboard');
+      });
+
+      // Edit financials button
+      document.getElementById('edit-financials-btn').addEventListener('click', function() {
+        toggleEditMode();
+      });
+
+      // Reset financials button
+      document.getElementById('reset-financials-btn').addEventListener('click', function() {
+        resetToOriginal();
       });
 
       // Initialize the app
