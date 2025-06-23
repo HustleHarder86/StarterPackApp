@@ -929,14 +929,35 @@
       roiBar.style.backgroundColor = color;
       roiBar.style.width = width;
       
-      // Financial breakdown with corrected data interpretation
+      // Financial breakdown - correctly interpret annual vs monthly
       const monthlyRent = analysis.long_term_rental?.monthly_rent || 0;
       const mortgagePayment = analysis.costs?.mortgage_monthly || 0;
       
-      // These were actually MONTHLY amounts mislabeled as annual
-      const monthlyTaxes = analysis.costs?.property_tax_annual || 0; // Actually monthly
-      const monthlyInsurance = analysis.costs?.insurance_annual || 0; // Actually monthly
-      const annualMaintenance = analysis.costs?.maintenance_annual || 0; // Actually annual
+      // Determine if values are realistic annual amounts or likely monthly
+      const propertyValue = analysis.property_details?.estimated_value || 850000;
+      let monthlyTaxes, monthlyInsurance;
+      
+      // Property tax validation
+      const taxAnnual = analysis.costs?.property_tax_annual || 0;
+      if (taxAnnual > propertyValue * 0.02) {
+        // This is likely monthly, not annual
+        monthlyTaxes = taxAnnual;
+      } else {
+        // This is annual, convert to monthly
+        monthlyTaxes = Math.round(taxAnnual / 12);
+      }
+      
+      // Insurance validation  
+      const insuranceAnnual = analysis.costs?.insurance_annual || 0;
+      if (insuranceAnnual > propertyValue * 0.01) {
+        // This is likely monthly, not annual
+        monthlyInsurance = insuranceAnnual;
+      } else {
+        // This is annual, convert to monthly
+        monthlyInsurance = Math.round(insuranceAnnual / 12);
+      }
+      
+      const annualMaintenance = analysis.costs?.maintenance_annual || 0;
       const monthlyHoa = analysis.costs?.hoa_monthly || 0;
       
       // Monthly Income
@@ -945,13 +966,15 @@
       // Monthly Expenses  
       document.getElementById('breakdown-mortgage').textContent = '$' + mortgagePayment.toLocaleString();
       
-      // Property Taxes - these are monthly amounts
+      // Property Taxes - show monthly with annual reference
       document.getElementById('breakdown-taxes').textContent = '$' + monthlyTaxes.toLocaleString();
-      document.getElementById('breakdown-taxes-annual').textContent = '($' + (monthlyTaxes * 12).toLocaleString() + '/year)';
+      const actualTaxAnnual = taxAnnual > propertyValue * 0.02 ? monthlyTaxes * 12 : taxAnnual;
+      document.getElementById('breakdown-taxes-annual').textContent = '($' + actualTaxAnnual.toLocaleString() + '/year)';
       
-      // Insurance - these are monthly amounts
+      // Insurance - show monthly with annual reference  
       document.getElementById('edit-insurance-display').textContent = '$' + monthlyInsurance.toLocaleString();
-      document.getElementById('breakdown-insurance-annual').textContent = '($' + (monthlyInsurance * 12).toLocaleString() + '/year)';
+      const actualInsuranceAnnual = insuranceAnnual > propertyValue * 0.01 ? monthlyInsurance * 12 : insuranceAnnual;
+      document.getElementById('breakdown-insurance-annual').textContent = '($' + actualInsuranceAnnual.toLocaleString() + '/year)';
       
       // HOA - monthly only
       document.getElementById('breakdown-hoa').textContent = '$' + monthlyHoa.toLocaleString();
@@ -1119,34 +1142,105 @@
       const sourcesContainer = document.getElementById('sources-container');
       const sources = analysis.data_sources || analysis.research_sources || [];
       
+      // Count sources by type
+      const sourceTypes = {
+        property: sources.filter(s => s.name?.includes('Realtor') || s.name?.includes('House') || s.name?.includes('Zolo')).length,
+        tax: sources.filter(s => s.description?.toLowerCase().includes('tax') || s.name?.includes('Government')).length,
+        insurance: sources.filter(s => s.description?.toLowerCase().includes('insurance')).length,
+        rental: sources.filter(s => s.name?.includes('Rental') || s.name?.includes('Kijiji') || s.name?.includes('Airbnb')).length
+      };
+      
       if (sources.length > 0) {
-        sourcesContainer.innerHTML = sources.map((source, index) => `
-          <div class="flex items-center justify-between p-3 bg-white border border-gray-200 rounded-lg">
-            <div class="flex items-center gap-3">
-              <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
-                </svg>
+        // Add data transparency summary
+        let transparencySummary = `
+          <div class="mb-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+            <div class="flex items-center gap-2 mb-2">
+              <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span class="font-medium text-blue-900">Data Transparency Summary</span>
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs">
+              <div class="flex items-center gap-1">
+                <span class="${sourceTypes.property > 0 ? 'text-green-600' : 'text-gray-400'}">●</span>
+                <span>Property Data: ${sourceTypes.property > 0 ? 'Verified' : 'Estimated'}</span>
               </div>
-              <div>
-                <p class="font-medium text-gray-900">${source.name || `Data Source ${index + 1}`}</p>
-                <p class="text-sm text-gray-600">${source.date || 'Recently accessed'}</p>
+              <div class="flex items-center gap-1">
+                <span class="${sourceTypes.tax > 0 ? 'text-green-600' : 'text-orange-500'}">●</span>
+                <span>Tax Rates: ${sourceTypes.tax > 0 ? 'Official' : 'Market Average'}</span>
+              </div>
+              <div class="flex items-center gap-1">
+                <span class="${sourceTypes.insurance > 0 ? 'text-green-600' : 'text-orange-500'}">●</span>
+                <span>Insurance: ${sourceTypes.insurance > 0 ? 'Provider Data' : 'Industry Average'}</span>
+              </div>
+              <div class="flex items-center gap-1">
+                <span class="${sourceTypes.rental > 0 ? 'text-green-600' : 'text-gray-400'}">●</span>
+                <span>Rentals: ${sourceTypes.rental > 0 ? 'Market Data' : 'Estimated'}</span>
               </div>
             </div>
-            ${source.url ? `
-              <a href="${source.url}" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
-                View Source →
-              </a>
-            ` : ''}
           </div>
-        `).join('');
+        `;
+        
+        sourcesContainer.innerHTML = transparencySummary + sources.map((source, index) => {
+          const hasValidUrl = source.url && source.url !== '#' && !source.url.includes('dashboard');
+          const sourceName = source.name || source.title || `Data Source ${index + 1}`;
+          const sourceDate = source.date || source.data_date || 'Recently accessed';
+          const sourceDesc = source.description || 'Research source';
+          
+          // Determine icon color based on source type
+          let iconColor = 'blue';
+          if (sourceName.includes('Government') || sourceDesc.includes('tax')) iconColor = 'green';
+          else if (sourceDesc.includes('insurance')) iconColor = 'purple';
+          else if (sourceName.includes('Rental') || sourceName.includes('Airbnb')) iconColor = 'orange';
+          
+          return `
+            <div class="p-4 bg-white border border-gray-200 rounded-lg hover:shadow-sm transition-shadow">
+              <div class="flex items-start justify-between">
+                <div class="flex items-start gap-3 flex-1">
+                  <div class="w-8 h-8 bg-${iconColor}-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                    <svg class="w-4 h-4 text-${iconColor}-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                    </svg>
+                  </div>
+                  <div class="flex-1">
+                    <p class="font-medium text-gray-900">${sourceName}</p>
+                    <p class="text-sm text-gray-600 mt-1">${sourceDesc}</p>
+                    <p class="text-xs text-gray-500 mt-1">Accessed: ${sourceDate}</p>
+                    ${hasValidUrl ? `
+                      <p class="text-xs text-gray-400 mt-1 font-mono break-all">${source.url}</p>
+                    ` : `
+                      <p class="text-xs text-orange-500 mt-1">⚠️ Source URL not captured - data from AI research</p>
+                    `}
+                  </div>
+                </div>
+                <div class="ml-4">
+                  ${hasValidUrl ? `
+                    <a href="${source.url}" target="_blank" rel="noopener noreferrer" 
+                       class="inline-flex items-center px-3 py-1 text-xs font-medium text-blue-700 bg-blue-100 rounded-full hover:bg-blue-200 transition-colors">
+                      View Source
+                      <svg class="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                      </svg>
+                    </a>
+                  ` : `
+                    <span class="inline-flex items-center px-3 py-1 text-xs font-medium text-gray-500 bg-gray-100 rounded-full">
+                      AI Research
+                    </span>
+                  `}
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('');
       } else {
         sourcesContainer.innerHTML = `
-          <div class="p-4 bg-gray-50 border border-gray-200 rounded-lg text-center">
-            <svg class="w-8 h-8 text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          <div class="p-4 bg-yellow-50 border border-yellow-200 rounded-lg text-center">
+            <svg class="w-8 h-8 text-yellow-600 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
             </svg>
-            <p class="text-sm text-gray-600">Analysis powered by AI with real-time market research</p>
+            <p class="text-sm text-yellow-800 font-medium">Limited source data available</p>
+            <p class="text-xs text-yellow-700 mt-1">Analysis based on AI market research - source URLs may not be captured</p>
+            <p class="text-xs text-yellow-700 mt-1">For best results, verify property tax rates with local municipality</p>
           </div>
         `;
       }

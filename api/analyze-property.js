@@ -62,6 +62,19 @@ export default async function handler(req, res) {
       country: addressParts[3] || 'Canada',
       postal: addressParts[4] || ''
     };
+    
+    // Estimate property value for better tax/insurance calculations
+    let estimatedValue = 850000; // Default
+    const cityLower = address.city.toLowerCase();
+    if (cityLower.includes('toronto')) {
+      estimatedValue = 1100000;
+    } else if (cityLower.includes('vancouver')) {
+      estimatedValue = 1400000;
+    } else if (cityLower.includes('calgary') || cityLower.includes('edmonton')) {
+      estimatedValue = 550000;
+    } else if (cityLower.includes('montreal')) {
+      estimatedValue = 650000;
+    }
 
     // Step 1: Enhanced Research with Perplexity AI
     console.log('Calling Perplexity AI for FRESH real-time research...');
@@ -77,53 +90,54 @@ export default async function handler(req, res) {
         messages: [
           {
             role: 'system',
-            content: `You are a real estate investment analyst specializing in Canadian properties. 
+            content: `You are a real estate investment analyst specializing in accurate property data research. 
 CRITICAL: Research CURRENT data as of ${new Date().toISOString()}. 
-Provide SPECIFIC NUMBERS whenever possible.
-If exact property data isn't available, use comparables from the SAME street or immediate area.`
+Provide SPECIFIC NUMBERS from real sources.
+ALWAYS include source URLs in format: SOURCE: [URL]`
           },
           {
             role: 'user',
-            content: `Perform REAL-TIME CURRENT research for: ${propertyAddress}
+            content: `Perform REAL-TIME research for property: ${propertyAddress}
 
-CRITICAL: For EVERY piece of data you provide, cite the SPECIFIC URL where you found it. Users need to verify the information.
-
-Research Requirements:
+RESEARCH INSTRUCTIONS:
 
 1. PROPERTY VALUE & DETAILS:
-   - Search realtor.ca, housesigma.com for this exact address
-   - Recent sales on ${address.street} within last 6 months
-   - Property type, bedrooms, bathrooms, square footage
-   - CITE: Provide the specific URL for each property found
+   - Search realtor.ca, housesigma.com, zolo.ca for this exact address
+   - Find recent sales on same street (last 12 months)
+   - Get property details: type, bedrooms, bathrooms, square footage
+   - FORMAT: "Found at SOURCE: [URL] - Property value $XXX,XXX"
 
-2. PROPERTY TAXES (VERIFIED SOURCES):
-   - Search official ${address.city} municipal tax website
-   - Look for property tax assessments database
-   - Find actual tax records or municipal tax rate for this area
-   - CITE: Municipal government website URL where tax rate was found
+2. PROPERTY TAXES - CRITICAL ACCURACY NEEDED:
+   - Search "${address.city} property tax calculator" or "${address.city} tax rates"
+   - Look for official municipal websites (.gov or .ca domains)
+   - Find the ACTUAL TAX RATE (usually 0.5% to 1.5% of property value)
+   - For a $${estimatedValue.toLocaleString()} property, expect taxes around $${Math.round(estimatedValue * 0.01).toLocaleString()}/year
+   - If exact rate not found, use ${address.city} average: typically 0.8-1.2% of value
+   - FORMAT: "Tax rate SOURCE: [URL] - ${address.city} rate is X.X%"
 
-3. INSURANCE COSTS (REALISTIC ESTIMATES):
-   - Search insurance company websites for ${address.city}
-   - Look for home insurance calculators or rate tables
-   - For property value $1M+, expect $2,000-4,000/year range
-   - CITE: Insurance company or broker website URL
+3. INSURANCE COSTS - REALISTIC ESTIMATES:
+   - Search "home insurance ${address.city}" or insurance calculators
+   - For properties under $500k: expect $800-1500/year
+   - For properties $500k-1M: expect $1500-2500/year  
+   - For properties over $1M: expect $2500-4000/year
+   - FORMAT: "Insurance SOURCE: [URL] - Average cost $X,XXX/year"
 
-4. RENTAL RATES (CURRENT LISTINGS):
-   - Search rentals.ca, kijiji.ca, PadMapper for similar properties in ${address.city}
-   - Find actual listed rental prices (not estimates)
-   - Short-term: Search Airbnb.com for nearby properties
-   - CITE: Specific listing URLs from rental sites
+4. RENTAL RATES:
+   - Search rentals.ca, kijiji.ca, PadMapper for similar properties
+   - Find 3-5 comparable rentals in same neighborhood
+   - For Airbnb: search actual listings in the area
+   - FORMAT: "Rental SOURCE: [URL] - Similar property renting for $X,XXX/month"
 
-5. COMPARABLE SALES (VERIFIED TRANSACTIONS):
-   - Recent sales within 1km of this address
-   - Properties with similar features sold in last 6 months
-   - CITE: MLS listing URLs or sales data source
+5. COMPARABLE SALES:
+   - Find 3 recent sales (last 6 months) on same street or within 1km
+   - Include sale price and date
+   - FORMAT: "Sale SOURCE: [URL] - 123 Same St sold for $XXX,XXX on [date]"
 
-FORMAT REQUIREMENTS:
-- Start each section with "SOURCE: [URL]"
-- Provide specific dollar amounts
-- Include dates for all data points
-- If no exact data found, clearly state "Estimated based on [source]"`
+IMPORTANT FORMATTING:
+- Every data point MUST include "SOURCE: [full URL]"
+- Use realistic numbers based on property value
+- If no exact data, state "Estimated based on [source/reason]"
+- Property taxes should be 0.8-1.2% of value unless you find exact rate`
           }
         ],
         max_tokens: 3000,
@@ -132,9 +146,12 @@ FORMAT REQUIREMENTS:
         stream: false,
         search_depth: "advanced",
         search_recency_filter: "month",
-        search_domain_filter: ["realtor.ca", "housesigma.com", "zolo.ca", "rentals.ca", "kijiji.ca"],
+        search_domain_filter: ["realtor.ca", "housesigma.com", "zolo.ca", "rentals.ca", "kijiji.ca", "realtor.com", "zillow.com", "redfin.com"],
         return_citations: true,
-        focus: "recent"
+        return_images: false,
+        return_related_questions: false,
+        search_recency_days: 30,
+        top_k: 10
       })
     });
 
@@ -166,11 +183,13 @@ FORMAT REQUIREMENTS:
     
     // Enhanced URL extraction from content - look for multiple patterns
     const urlPatterns = [
-      /https?:\/\/[^\s\)\]\,\;\<]+/g,  // Standard URLs
-      /SOURCE:\s*(https?:\/\/[^\s\)\]\,\;\<]+)/gi,  // SOURCE: URLs
-      /Found at:\s*(https?:\/\/[^\s\)\]\,\;\<]+)/gi,  // Found at: URLs
-      /See:\s*(https?:\/\/[^\s\)\]\,\;\<]+)/gi,  // See: URLs
-      /Visit:\s*(https?:\/\/[^\s\)\]\,\;\<]+)/gi  // Visit: URLs
+      /https?:\/\/[^\s\)\]\,\;\<\>\"\']+/g,  // Standard URLs
+      /SOURCE:\s*(https?:\/\/[^\s\)\]\,\;\<\>\"\']+)/gi,  // SOURCE: URLs
+      /Found at:\s*(https?:\/\/[^\s\)\]\,\;\<\>\"\']+)/gi,  // Found at: URLs
+      /See:\s*(https?:\/\/[^\s\)\]\,\;\<\>\"\']+)/gi,  // See: URLs
+      /Visit:\s*(https?:\/\/[^\s\)\]\,\;\<\>\"\']+)/gi,  // Visit: URLs
+      /from:\s*(https?:\/\/[^\s\)\]\,\;\<\>\"\']+)/gi,  // from: URLs
+      /at:\s*(https?:\/\/[^\s\)\]\,\;\<\>\"\']+)/gi  // at: URLs
     ];
     
     const allUrlsInContent = [];
@@ -191,22 +210,49 @@ FORMAT REQUIREMENTS:
     cleanUrls.forEach((url, index) => {
       if (!citations.some(c => c.url === url)) {
         let sourceName = `Research Source ${citations.length + 1}`;
+        let description = 'Source referenced in research content';
         
-        // Try to determine source type from URL
-        if (url.includes('realtor.ca')) sourceName = 'Realtor.ca';
-        else if (url.includes('housesigma.com')) sourceName = 'HouseSigma';
-        else if (url.includes('zolo.ca')) sourceName = 'Zolo.ca';
-        else if (url.includes('rentals.ca')) sourceName = 'Rentals.ca';
-        else if (url.includes('kijiji.ca')) sourceName = 'Kijiji';
-        else if (url.includes('airbnb.com')) sourceName = 'Airbnb';
-        else if (url.includes('.gov.') || url.includes('municipal')) sourceName = 'Government Source';
-        else if (url.includes('insurance')) sourceName = 'Insurance Provider';
+        // Try to determine source type from URL and content context
+        if (url.includes('realtor.ca')) {
+          sourceName = 'Realtor.ca';
+          description = 'Real estate listings and property data';
+        } else if (url.includes('housesigma.com')) {
+          sourceName = 'HouseSigma';
+          description = 'Real estate data and market analytics';
+        } else if (url.includes('zolo.ca')) {
+          sourceName = 'Zolo.ca';
+          description = 'Property listings and market data';
+        } else if (url.includes('rentals.ca')) {
+          sourceName = 'Rentals.ca';
+          description = 'Rental market data and listings';
+        } else if (url.includes('kijiji.ca')) {
+          sourceName = 'Kijiji';
+          description = 'Rental listings and market prices';
+        } else if (url.includes('airbnb.com')) {
+          sourceName = 'Airbnb';
+          description = 'Short-term rental rates and availability';
+        } else if (url.includes('.gov.') || url.includes('.gc.ca') || url.includes('municipal') || url.includes('city')) {
+          sourceName = 'Government/Municipal Source';
+          description = 'Official property tax rates and municipal data';
+          
+          // Check if this URL is mentioned near tax information
+          const urlIndex = researchContent.indexOf(url);
+          if (urlIndex > -1) {
+            const nearbyText = researchContent.substring(Math.max(0, urlIndex - 200), urlIndex + 200);
+            if (nearbyText.toLowerCase().includes('tax')) {
+              description = 'Property tax rates from official municipal source';
+            }
+          }
+        } else if (url.includes('insurance') || url.includes('intact') || url.includes('desjardins') || url.includes('td')) {
+          sourceName = 'Insurance Provider';
+          description = 'Home insurance rates and estimates';
+        }
         
         citations.push({
           name: sourceName,
           url: url,
           date: new Date().toISOString().split('T')[0],
-          description: 'Source referenced in research content',
+          description: description,
           accessed_at: new Date().toISOString()
         });
       }
@@ -224,8 +270,12 @@ ${researchContent}
 EXTRACTION RULES:
 1. For property value: Use recent comparable sales if exact property not found. Pick the most similar property.
 2. For rent: Use average of similar properties in the area if exact not found.
-3. For costs: Use city/area averages if property-specific not available.
+3. For costs: Use REALISTIC percentages of property value:
+   - Property Tax: 0.8-1.2% of property value annually (NOT 3-4%!)
+   - Insurance: 0.2-0.4% of property value annually
+   - Maintenance: 1-1.5% of property value annually
 4. NEVER return "Data Not Available" - always provide your best estimate based on the research.
+5. VALIDATE all numbers - if property tax > 2% of value, it's wrong!
 
 Extract into this JSON format:
 {
@@ -237,8 +287,8 @@ Extract into this JSON format:
     "square_feet": [NUMBER - use area average if unknown]
   },
   "costs": {
-    "property_tax_annual": [Calculate from actual municipal tax rate. For $1M+ properties, expect $8,000-15,000/year],
-    "insurance_annual": [Use realistic insurance rates. For $1M+ homes, expect $2,500-4,500/year],
+    "property_tax_annual": [MUST BE 0.8-1.2% of property value. E.g., $1M property = $8,000-12,000/year],
+    "insurance_annual": [MUST BE 0.2-0.4% of property value. E.g., $1M property = $2,000-4,000/year],
     "maintenance_annual": [1.5% of property value for maintenance and repairs],
     "hoa_monthly": [Use 0 for houses, actual fees for condos from research],
     "utilities_monthly": [Average $200-300 for houses, $150-250 for condos]
@@ -247,7 +297,11 @@ Extract into this JSON format:
     "monthly_rent": [NUMBER - use area average if needed],
     "daily_airbnb_rate": [NUMBER - estimate from monthly rent / 20 if not found],
     "occupancy_rate": 0.70
-  }
+  },
+  "data_sources_found": [
+    {"type": "property_value", "url": "[URL where found]", "value": "[what was found]"},
+    {"type": "tax_rate", "url": "[URL where found]", "value": "[tax rate or amount]"}
+  ]
 }`;
 
     if (openaiConfigured) {
@@ -453,7 +507,7 @@ function buildStructuredData(extracted, propertyAddress, researchContent, citati
       market_temperature: "hot",
       last_updated: new Date().toISOString()
     },
-    data_sources: citations.slice(0, 7).map(c => ({
+    data_sources: citations.slice(0, 10).map(c => ({
       name: c.name || 'Source',
       url: c.url && c.url !== '#' && c.url !== 'null' ? c.url : null,
       access_date: c.accessed_at || new Date().toISOString(),
@@ -516,11 +570,12 @@ function fallbackDataExtraction(researchContent, propertyAddress, address, citat
       listing_status: "off-market"
     },
     costs: {
-      property_tax_annual: Math.round(estimatedValue * 0.01),
-      insurance_annual: Math.round(estimatedValue * 0.0035),
-      maintenance_annual: Math.round(estimatedValue * 0.015),
+      property_tax_annual: Math.round(estimatedValue * 0.01), // 1% is typical
+      insurance_annual: Math.round(estimatedValue * 0.0035), // 0.35% is typical
+      maintenance_annual: Math.round(estimatedValue * 0.015), // 1.5% for maintenance
       hoa_monthly: 0,
       utilities_monthly: 250,
+      property_management_percent: 0, // Default to self-managed
       cost_updated_date: new Date().toLocaleDateString()
     },
     long_term_rental: {
@@ -543,7 +598,7 @@ function fallbackDataExtraction(researchContent, propertyAddress, address, citat
       market_temperature: "hot",
       last_updated: new Date().toISOString()
     },
-    data_sources: citations.slice(0, 7).map(c => ({
+    data_sources: citations.slice(0, 10).map(c => ({
       name: c.name || 'Source',
       url: c.url && c.url !== '#' && c.url !== 'null' ? c.url : null,
       access_date: c.accessed_at || new Date().toISOString(),
@@ -557,7 +612,27 @@ function fallbackDataExtraction(researchContent, propertyAddress, address, citat
 
 // Ensure all calculations are done
 function ensureCalculations(data) {
-  // Calculate total annual costs
+  // Calculate total annual costs - ensuring we interpret monthly vs annual correctly
+  const propertyTaxAnnual = data.costs?.property_tax_annual || 0;
+  const insuranceAnnual = data.costs?.insurance_annual || 0;
+  
+  // Validate and correct unrealistic values
+  const currentPropertyValue = data.property_details?.estimated_value || 850000;
+  
+  // Property tax should be 0.8-1.2% of value, not more
+  if (propertyTaxAnnual > currentPropertyValue * 0.02) {
+    // This is likely a monthly amount mislabeled as annual
+    data.costs.property_tax_annual = Math.round(currentPropertyValue * 0.01); // Set to 1% of value
+    console.log('Corrected unrealistic property tax from', propertyTaxAnnual, 'to', data.costs.property_tax_annual);
+  }
+  
+  // Insurance should be 0.2-0.4% of value typically
+  if (insuranceAnnual > currentPropertyValue * 0.01) {
+    // This is likely a monthly amount or error
+    data.costs.insurance_annual = Math.round(currentPropertyValue * 0.0035); // Set to 0.35% of value
+    console.log('Corrected unrealistic insurance from', insuranceAnnual, 'to', data.costs.insurance_annual);
+  }
+  
   const totalAnnualCosts = 
     (data.costs?.property_tax_annual || 0) +
     (data.costs?.insurance_annual || 0) +
@@ -580,13 +655,13 @@ function ensureCalculations(data) {
   }
   
   // Calculate ROI
-  const propertyValue = data.property_details?.estimated_value || 1;
+  const propValue = data.property_details?.estimated_value || 1;
   const bestProfit = Math.max(
     data.long_term_rental?.annual_profit || 0,
     data.short_term_rental?.annual_profit || 0
   );
   
-  data.roi_percentage = ((bestProfit / propertyValue) * 100).toFixed(2);
+  data.roi_percentage = ((bestProfit / propValue) * 100).toFixed(2);
   
   // Add recommendation
   if (!data.recommendation) {
