@@ -415,53 +415,68 @@
           </div>
           <div class="p-6">
             <div class="space-y-4">
-              <div class="flex justify-between items-center">
-                <span class="text-gray-600">Gross Rental Income (Monthly)</span>
-                <div>
-                  <span class="font-semibold positive" id="breakdown-income">-</span>
-                  <input type="number" id="edit-income" class="hidden w-24 text-right px-2 py-1 border rounded text-sm font-semibold" step="100" min="0">
+              <!-- Monthly Income -->
+              <div class="bg-green-50 p-3 rounded-lg border border-green-200 mb-4">
+                <h4 class="text-sm font-semibold text-green-800 mb-2">Monthly Income</h4>
+                <div class="flex justify-between items-center">
+                  <span class="text-gray-700">Gross Rental Income</span>
+                  <div>
+                    <span class="font-semibold text-green-700" id="breakdown-income">-</span>
+                    <input type="number" id="edit-income" class="hidden w-24 text-right px-2 py-1 border rounded text-sm font-semibold" step="100" min="0">
+                  </div>
                 </div>
               </div>
-              <div class="flex justify-between items-center">
-                <span class="text-gray-600">Mortgage Payment (Monthly)</span>
-                <div>
-                  <span class="font-semibold negative" id="breakdown-mortgage">$0</span>
-                  <input type="number" id="edit-mortgage" class="hidden w-24 text-right px-2 py-1 border rounded text-sm font-semibold" step="100" min="0" value="0">
-                </div>
-              </div>
-              <div class="flex justify-between items-center">
-                <span class="text-gray-600">Property Taxes (Annual)</span>
-                <div>
-                  <span class="font-semibold negative" id="breakdown-taxes">-</span>
-                  <input type="number" id="edit-taxes" class="hidden w-24 text-right px-2 py-1 border rounded text-sm font-semibold" step="100" min="0">
-                </div>
-              </div>
-              <div class="flex justify-between items-center">
-                <span class="text-gray-600">Insurance (Annual)</span>
-                <div>
-                  <span class="font-semibold negative" id="edit-insurance-display">-</span>
-                  <input type="number" id="edit-insurance" class="hidden w-24 text-right px-2 py-1 border rounded text-sm font-semibold" step="100" min="0">
-                </div>
-              </div>
-              <div class="flex justify-between items-center">
-                <span class="text-gray-600">HOA/Condo Fees (Monthly)</span>
-                <div>
-                  <span class="font-semibold negative" id="breakdown-hoa">-</span>
-                  <input type="number" id="edit-hoa" class="hidden w-24 text-right px-2 py-1 border rounded text-sm font-semibold" step="50" min="0">
-                </div>
-              </div>
-              <div class="flex justify-between items-center">
-                <span class="text-gray-600">Maintenance (Annual)</span>
-                <div>
-                  <span class="font-semibold negative" id="breakdown-maintenance">-</span>
-                  <input type="number" id="edit-maintenance" class="hidden w-24 text-right px-2 py-1 border rounded text-sm font-semibold" step="100" min="0">
-                </div>
-              </div>
-              <div class="flex justify-between items-center">
-                <span class="text-gray-600">Property Management (8%)</span>
-                <div>
-                  <span class="font-semibold negative" id="breakdown-management">-</span>
-                  <input type="number" id="edit-management" class="hidden w-24 text-right px-2 py-1 border rounded text-sm font-semibold" step="0.5" min="0" max="20">
+
+              <!-- Monthly Expenses -->
+              <div class="bg-red-50 p-3 rounded-lg border border-red-200 mb-4">
+                <h4 class="text-sm font-semibold text-red-800 mb-3">Monthly Expenses</h4>
+                <div class="space-y-2">
+                  <div class="flex justify-between items-center">
+                    <span class="text-gray-700">Mortgage Payment</span>
+                    <div>
+                      <span class="font-semibold text-red-700" id="breakdown-mortgage">$0</span>
+                      <input type="number" id="edit-mortgage" class="hidden w-24 text-right px-2 py-1 border rounded text-sm font-semibold" step="100" min="0" value="0">
+                    </div>
+                  </div>
+                  <div class="flex justify-between items-center">
+                    <span class="text-gray-700">Property Taxes</span>
+                    <div class="flex flex-col items-end">
+                      <span class="font-semibold text-red-700" id="breakdown-taxes">-</span>
+                      <span class="text-xs text-gray-500" id="breakdown-taxes-annual">($0/year)</span>
+                      <input type="number" id="edit-taxes" class="hidden w-24 text-right px-2 py-1 border rounded text-sm font-semibold" step="100" min="0" placeholder="Annual amount">
+                    </div>
+                  </div>
+                  <div class="flex justify-between items-center">
+                    <span class="text-gray-700">Insurance</span>
+                    <div class="flex flex-col items-end">
+                      <span class="font-semibold text-red-700" id="edit-insurance-display">-</span>
+                      <span class="text-xs text-gray-500" id="breakdown-insurance-annual">($0/year)</span>
+                      <input type="number" id="edit-insurance" class="hidden w-24 text-right px-2 py-1 border rounded text-sm font-semibold" step="100" min="0" placeholder="Annual amount">
+                    </div>
+                  </div>
+                  <div class="flex justify-between items-center">
+                    <span class="text-gray-700">HOA/Condo Fees</span>
+                    <div>
+                      <span class="font-semibold text-red-700" id="breakdown-hoa">-</span>
+                      <input type="number" id="edit-hoa" class="hidden w-24 text-right px-2 py-1 border rounded text-sm font-semibold" step="50" min="0">
+                    </div>
+                  </div>
+                  <div class="flex justify-between items-center">
+                    <span class="text-gray-700">Maintenance</span>
+                    <div class="flex flex-col items-end">
+                      <span class="font-semibold text-red-700" id="breakdown-maintenance">-</span>
+                      <span class="text-xs text-gray-500" id="breakdown-maintenance-annual">($0/year)</span>
+                      <input type="number" id="edit-maintenance" class="hidden w-24 text-right px-2 py-1 border rounded text-sm font-semibold" step="100" min="0" placeholder="Annual amount">
+                    </div>
+                  </div>
+                  <div class="flex justify-between items-center">
+                    <span class="text-gray-700">Property Management</span>
+                    <div class="flex flex-col items-end">
+                      <span class="font-semibold text-red-700" id="breakdown-management">-</span>
+                      <span class="text-xs text-gray-500" id="breakdown-management-rate">(8% of rent)</span>
+                      <input type="number" id="edit-management" class="hidden w-24 text-right px-2 py-1 border rounded text-sm font-semibold" step="0.5" min="0" max="20" placeholder="Percentage">
+                    </div>
+                  </div>
                 </div>
               </div>
               <div class="border-t pt-2">
@@ -914,19 +929,42 @@
       roiBar.style.backgroundColor = color;
       roiBar.style.width = width;
       
-      // Financial breakdown
+      // Financial breakdown with clear monthly/annual distinctions
       const monthlyRent = analysis.long_term_rental?.monthly_rent || 0;
       const mortgagePayment = analysis.costs?.mortgage_monthly || 0;
+      const annualTaxes = analysis.costs?.property_tax_annual || 0;
+      const annualInsurance = analysis.costs?.insurance_annual || 0;
+      const annualMaintenance = analysis.costs?.maintenance_annual || 0;
+      const monthlyHoa = analysis.costs?.hoa_monthly || 0;
       
+      // Monthly Income
       document.getElementById('breakdown-income').textContent = '$' + monthlyRent.toLocaleString();
-      document.getElementById('breakdown-mortgage').textContent = mortgagePayment > 0 ? '-$' + mortgagePayment.toLocaleString() : '$0';
-      document.getElementById('breakdown-taxes').textContent = '-$' + Math.round((analysis.costs?.property_tax_annual || 0) / 12).toLocaleString();
-      document.getElementById('edit-insurance-display').textContent = '-$' + Math.round((analysis.costs?.insurance_annual || 0) / 12).toLocaleString();
-      document.getElementById('breakdown-hoa').textContent = '-$' + (analysis.costs?.hoa_monthly || 0).toLocaleString();
-      document.getElementById('breakdown-maintenance').textContent = '-$' + Math.round((analysis.costs?.maintenance_annual || 0) / 12).toLocaleString();
       
+      // Monthly Expenses  
+      document.getElementById('breakdown-mortgage').textContent = '$' + mortgagePayment.toLocaleString();
+      
+      // Property Taxes - show monthly with annual in parentheses
+      const monthlyTaxes = Math.round(annualTaxes / 12);
+      document.getElementById('breakdown-taxes').textContent = '$' + monthlyTaxes.toLocaleString();
+      document.getElementById('breakdown-taxes-annual').textContent = '($' + annualTaxes.toLocaleString() + '/year)';
+      
+      // Insurance - show monthly with annual in parentheses  
+      const monthlyInsurance = Math.round(annualInsurance / 12);
+      document.getElementById('edit-insurance-display').textContent = '$' + monthlyInsurance.toLocaleString();
+      document.getElementById('breakdown-insurance-annual').textContent = '($' + annualInsurance.toLocaleString() + '/year)';
+      
+      // HOA - monthly only
+      document.getElementById('breakdown-hoa').textContent = '$' + monthlyHoa.toLocaleString();
+      
+      // Maintenance - show monthly with annual in parentheses
+      const monthlyMaintenance = Math.round(annualMaintenance / 12);
+      document.getElementById('breakdown-maintenance').textContent = '$' + monthlyMaintenance.toLocaleString();
+      document.getElementById('breakdown-maintenance-annual').textContent = '($' + annualMaintenance.toLocaleString() + '/year)';
+      
+      // Property Management - show monthly with percentage
       const managementFee = Math.round(monthlyRent * 0.08);
-      document.getElementById('breakdown-management').textContent = '-$' + managementFee.toLocaleString();
+      document.getElementById('breakdown-management').textContent = '$' + managementFee.toLocaleString();
+      document.getElementById('breakdown-management-rate').textContent = '(8% of rent)';
       
       // Calculate net income (monthly)
       const netIncome = monthlyRent - mortgagePayment - Math.round((analysis.costs?.property_tax_annual || 0) / 12) - 
@@ -937,10 +975,10 @@
       // Initialize edit fields with current values
       document.getElementById('edit-income').value = monthlyRent;
       document.getElementById('edit-mortgage').value = mortgagePayment;
-      document.getElementById('edit-taxes').value = analysis.costs?.property_tax_annual || 0;
-      document.getElementById('edit-insurance').value = analysis.costs?.insurance_annual || 0;
-      document.getElementById('edit-hoa').value = analysis.costs?.hoa_monthly || 0;
-      document.getElementById('edit-maintenance').value = analysis.costs?.maintenance_annual || 0;
+      document.getElementById('edit-taxes').value = annualTaxes;
+      document.getElementById('edit-insurance').value = annualInsurance;
+      document.getElementById('edit-hoa').value = monthlyHoa;
+      document.getElementById('edit-maintenance').value = annualMaintenance;
       document.getElementById('edit-management').value = 8;
       
       // Rental strategies
@@ -1175,19 +1213,32 @@
     function updateCalculations() {
       const income = parseFloat(document.getElementById('edit-income').value) || 0;
       const mortgage = parseFloat(document.getElementById('edit-mortgage').value) || 0;
-      const taxes = parseFloat(document.getElementById('edit-taxes').value) || 0;
-      const insurance = parseFloat(document.getElementById('edit-insurance').value) || 0;
+      const annualTaxes = parseFloat(document.getElementById('edit-taxes').value) || 0;
+      const annualInsurance = parseFloat(document.getElementById('edit-insurance').value) || 0;
       const hoa = parseFloat(document.getElementById('edit-hoa').value) || 0;
-      const maintenance = parseFloat(document.getElementById('edit-maintenance').value) || 0;
+      const annualMaintenance = parseFloat(document.getElementById('edit-maintenance').value) || 0;
       const managementRate = parseFloat(document.getElementById('edit-management').value) || 8;
       
+      // Calculate monthly amounts
+      const monthlyTaxes = Math.round(annualTaxes / 12);
+      const monthlyInsurance = Math.round(annualInsurance / 12);
+      const monthlyMaintenance = Math.round(annualMaintenance / 12);
       const managementFee = Math.round(income * (managementRate / 100));
-      const netIncome = income - mortgage - Math.round(taxes / 12) - Math.round(insurance / 12) - hoa - Math.round(maintenance / 12) - managementFee;
       
-      // Update the management display
-      document.getElementById('breakdown-management').textContent = `-$${managementFee.toLocaleString()}`;
+      const netIncome = income - mortgage - monthlyTaxes - monthlyInsurance - hoa - monthlyMaintenance - managementFee;
       
-      // Update net income
+      // Update all monthly displays
+      document.getElementById('breakdown-income').textContent = `$${income.toLocaleString()}`;
+      document.getElementById('breakdown-mortgage').textContent = `$${mortgage.toLocaleString()}`;
+      document.getElementById('breakdown-taxes').textContent = `$${monthlyTaxes.toLocaleString()}`;
+      document.getElementById('breakdown-taxes-annual').textContent = `($${annualTaxes.toLocaleString()}/year)`;
+      document.getElementById('edit-insurance-display').textContent = `$${monthlyInsurance.toLocaleString()}`;
+      document.getElementById('breakdown-insurance-annual').textContent = `($${annualInsurance.toLocaleString()}/year)`;
+      document.getElementById('breakdown-hoa').textContent = `$${hoa.toLocaleString()}`;
+      document.getElementById('breakdown-maintenance').textContent = `$${monthlyMaintenance.toLocaleString()}`;
+      document.getElementById('breakdown-maintenance-annual').textContent = `($${annualMaintenance.toLocaleString()}/year)`;
+      document.getElementById('breakdown-management').textContent = `$${managementFee.toLocaleString()}`;
+      document.getElementById('breakdown-management-rate').textContent = `(${managementRate}% of rent)`;
       document.getElementById('breakdown-net-income').textContent = `$${netIncome.toLocaleString()}`;
       
       // Update charts with new data
@@ -1195,10 +1246,10 @@
         const updatedAnalysis = { ...currentAnalysis };
         updatedAnalysis.long_term_rental.monthly_rent = income;
         updatedAnalysis.costs.mortgage_monthly = mortgage;
-        updatedAnalysis.costs.property_tax_annual = taxes;
-        updatedAnalysis.costs.insurance_annual = insurance;
+        updatedAnalysis.costs.property_tax_annual = annualTaxes;
+        updatedAnalysis.costs.insurance_annual = annualInsurance;
         updatedAnalysis.costs.hoa_monthly = hoa;
-        updatedAnalysis.costs.maintenance_annual = maintenance;
+        updatedAnalysis.costs.maintenance_annual = annualMaintenance;
         
         createCharts(updatedAnalysis);
       }
