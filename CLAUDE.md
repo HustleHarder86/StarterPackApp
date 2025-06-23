@@ -2,7 +2,7 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## ⚠️ IMPORTANT: Branch Workflow
+## ⚠️ IMPORTANT: Branch Workflow & Cleanup Policy
 
 **ALWAYS create a unique branch for each set of changes:**
 
@@ -21,11 +21,31 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 4. **Branch naming convention**: Use `claude/[description]-[timestamp]` format to ensure uniqueness and easy identification
 
+5. **AUTOMATIC BRANCH CLEANUP**: After merging a PR to main, ALWAYS immediately delete the feature branch:
+   ```bash
+   # After PR is merged, Claude should automatically run:
+   git checkout main
+   git pull origin main
+   git branch -d claude/feature-branch-name  # Delete local branch
+   git push origin --delete claude/feature-branch-name  # Delete remote branch
+   ```
+
 This workflow ensures:
 - Each set of changes gets its own isolated branch
 - Easy identification and review of individual changes  
 - No confusion between different change sets
 - All AI-generated changes go through proper human review before being merged
+- **Repository stays clean with only active branches**
+
+## Branch Management Best Practices
+
+1. **One Branch Per Task**: Each task/feature/fix gets its own branch
+2. **Delete After Merge**: Branches MUST be deleted immediately after merging
+3. **Never Reuse Branches**: Always create a new branch for new work
+4. **Keep main Clean**: The main branch should always be deployable
+5. **Branch Cleanup is Mandatory**: Claude will automatically clean up branches after merge
+
+**Note**: We do NOT commit directly to main. All changes go through feature branches and pull requests for proper review and testing.
 
 ## Project Overview
 
@@ -415,4 +435,3 @@ vercel --help  # See all available commands
 
 *This configuration file should be updated as the project evolves. When adding new patterns or changing conventions, update this file accordingly.*
 
-This is a test update.
