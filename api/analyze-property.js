@@ -182,7 +182,7 @@ IMPORTANT FORMATTING:
     
     const citations = rawCitations.map((citation, index) => ({
       name: citation.title || citation.name || `Source ${index + 1}`,
-      url: citation.url || citation.link || citation.href || null,
+      url: citation.url || citation.href || null,
       date: citation.date || new Date().toISOString().split('T')[0],
       description: citation.description || citation.snippet || citation.text || 'Research source',
       accessed_at: new Date().toISOString()
@@ -406,7 +406,13 @@ Extract into this JSON format:
       lead_email: userEmail || 'user@example.com',
       analysis_timestamp: new Date().toISOString(),
       property_address: propertyAddress,
-      research_sources: citations.slice(0, 5),
+      research_sources: citations.slice(0, 5).map(c => ({
+        name: String(c.name || 'Source'),
+        url: c.url ? String(c.url) : null,
+        date: String(c.date || new Date().toISOString().split('T')[0]),
+        description: String(c.description || 'Research source'),
+        accessed_at: String(c.accessed_at || new Date().toISOString())
+      })),
       api_usage_costs: apiCosts,
       data_freshness_guarantee: {
         api_called_at: new Date().toISOString(),
