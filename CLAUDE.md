@@ -2,6 +2,23 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## ⚠️ IMPORTANT: Branch Workflow
+
+**ALWAYS use the `Claude-Changes` branch for all code changes:**
+
+1. **Before making any changes**: Switch to or create the `Claude-Changes` branch:
+   ```bash
+   git checkout Claude-Changes
+   # or if it doesn't exist:
+   git checkout -b Claude-Changes
+   ```
+
+2. **Make all changes on this branch** - Never commit directly to `main`
+
+3. **After completing changes**: The user will manually review and create a pull request to merge `Claude-Changes` → `main`
+
+This workflow ensures all AI-generated changes go through proper human review before being merged into the main branch.
+
 ## Project Overview
 
 **StarterPackApp** is a real estate investment analysis platform that helps users analyze properties for ROI potential. The application integrates with Perplexity AI for market research and provides comprehensive financial analysis tools.
@@ -389,3 +406,5 @@ vercel --help  # See all available commands
 ---
 
 *This configuration file should be updated as the project evolves. When adding new patterns or changing conventions, update this file accordingly.*
+
+This is a test update.
