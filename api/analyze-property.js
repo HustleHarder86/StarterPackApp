@@ -1,6 +1,8 @@
 // api/analyze-property.js
 // Enhanced property analysis with improved data extraction and fallback logic
 
+import { calculateAccurateExpenses, getPropertyTaxRate, estimateRentalRate } from './property-calculations.js';
+
 export default async function handler(req, res) {
   // Set CORS headers
   res.setHeader('Access-Control-Allow-Credentials', true);
@@ -43,13 +45,11 @@ export default async function handler(req, res) {
     });
 
     if (!perplexityConfigured) {
-      console.warn('Perplexity API key not properly configured, returning demo data');
-      return res.status(200).json({
-        success: true,
-        analysisId: `demo_${Date.now()}`,
-        data: generateEnhancedDemoData(propertyAddress, userName, userEmail),
-        note: 'Using demo data - Perplexity API key not configured',
-        dataFreshness: 'DEMO_DATA'
+      console.error('Perplexity API key not properly configured');
+      return res.status(500).json({
+        success: false,
+        error: 'API configuration error - Perplexity API key required',
+        message: 'Please configure your Perplexity API key to use this service'
       });
     }
 
@@ -104,8 +104,14 @@ RESEARCH INSTRUCTIONS:
 1. PROPERTY VALUE & DETAILS:
    - Search realtor.ca, housesigma.com, zolo.ca for this exact address
    - Find recent sales on same street (last 12 months)
-   - Get property details: type, bedrooms, bathrooms, square footage
-   - FORMAT: "Found at SOURCE: [URL] - Property value $XXX,XXX"
+   - Get CRITICAL details: 
+     * Property type (Single Family, Condo, Townhouse)
+     * Square footage (VERY IMPORTANT for calculations)
+     * Year built
+     * Bedrooms and bathrooms
+     * Is this a condo? (affects all expense calculations)
+   - Look for past sale history and price trends
+   - FORMAT: "Found at SOURCE: [URL] - Property value $XXX,XXX, Type: [type], Size: [sq ft], Built: [year]"
 
 2. PROPERTY TAXES - CRITICAL ACCURACY NEEDED:
    - Search "${address.city} property tax calculator" or "${address.city} tax rates"
@@ -281,10 +287,12 @@ Extract into this JSON format:
 {
   "property_details": {
     "estimated_value": [NUMBER - use comparable if needed],
-    "property_type": "[Best guess based on area]",
+    "property_type": "[MUST BE: Single Family, Condo, Townhouse, or Detached]",
     "bedrooms": [NUMBER - use area average if unknown],
     "bathrooms": [NUMBER - use area average if unknown],
-    "square_feet": [NUMBER - use area average if unknown]
+    "square_feet": [NUMBER - CRITICAL for calculations, estimate if needed],
+    "year_built": [YEAR - estimate based on neighborhood if unknown],
+    "is_condo": [true/false - CRITICAL for expense calculations]
   },
   "costs": {
     "property_tax_annual": [MUST BE 0.8-1.2% of property value. E.g., $1M property = $8,000-12,000/year],
@@ -346,7 +354,7 @@ Extract into this JSON format:
           console.log('Extraction successful, sample:', JSON.stringify(extracted.property_details));
           
           // Build structured data from extraction
-          structuredData = buildStructuredData(extracted, propertyAddress, researchContent, citations);
+          structuredData = buildStructuredData(extracted, propertyAddress, researchContent, citations, address);
         } else {
           throw new Error('OpenAI extraction failed');
         }
@@ -439,25 +447,29 @@ Extract into this JSON format:
   } catch (error) {
     console.error('Analysis error:', error);
     
-    // Return enhanced demo data as fallback
-    const demoData = generateEnhancedDemoData(
-      req.body.propertyAddress || '123 Demo Street, City, State, Country',
-      req.body.userName || 'User',
-      req.body.userEmail || 'user@example.com'
-    );
-    
-    return res.status(200).json({
-      success: true,
-      analysisId: `demo_${Date.now()}`,
-      data: demoData,
-      note: 'Using demo data due to API error: ' + error.message,
-      dataFreshness: 'DEMO_FALLBACK'
+    return res.status(500).json({
+      success: false,
+      error: 'Analysis failed',
+      message: error.message || 'An error occurred during property analysis',
+      details: 'Please try again or contact support if the issue persists'
     });
   }
 }
 
 // Helper function to build structured data
-function buildStructuredData(extracted, propertyAddress, researchContent, citations) {
+function buildStructuredData(extracted, propertyAddress, researchContent, citations, address) {
+  // Use accurate expense calculations
+  const propertyValue = extracted.property_details?.estimated_value || 850000;
+  const accurateExpenses = calculateAccurateExpenses({
+    propertyValue: propertyValue,
+    city: address.city,
+    province: address.state,
+    propertyType: extracted.property_details?.property_type || 'Single Family',
+    squareFeet: extracted.property_details?.square_feet || null,
+    yearBuilt: extracted.property_details?.year_built || null,
+    hasAmenities: false // Could be enhanced with amenity detection
+  });
+  
   const data = {
     data_freshness: {
       research_date: new Date().toISOString(),
@@ -478,19 +490,28 @@ function buildStructuredData(extracted, propertyAddress, researchContent, citati
       listing_status: "off-market",
       days_on_market: 0
     },
-    costs: extracted.costs || {
-      property_tax_annual: 8000,
-      insurance_annual: 2500,
-      maintenance_annual: 10000,
-      hoa_monthly: 0,
-      utilities_monthly: 250
+    costs: {
+      property_tax_annual: accurateExpenses.property_tax_annual,
+      property_tax_rate: accurateExpenses.property_tax_rate,
+      insurance_annual: accurateExpenses.insurance_annual,
+      maintenance_annual: accurateExpenses.maintenance_annual,
+      hoa_monthly: accurateExpenses.hoa_monthly,
+      utilities_monthly: accurateExpenses.utilities_monthly,
+      total_monthly_expenses: accurateExpenses.total_monthly_expenses,
+      total_annual_expenses: accurateExpenses.total_annual_expenses,
+      calculation_method: 'location_based_accurate'
     },
     long_term_rental: {
-      monthly_rent: extracted.rental_data?.monthly_rent || 3000,
+      monthly_rent: extracted.rental_data?.monthly_rent || estimateRentalRate(
+        propertyValue,
+        address.city,
+        extracted.property_details?.property_type || 'Single Family'
+      ),
       annual_revenue: 0, // Will be calculated
       annual_profit: 0, // Will be calculated
       rental_demand: "high",
-      last_rent_check: new Date().toLocaleDateString()
+      last_rent_check: new Date().toLocaleDateString(),
+      estimation_method: extracted.rental_data?.monthly_rent ? 'market_data' : 'location_based_estimate'
     },
     short_term_rental: {
       daily_rate: extracted.rental_data?.daily_airbnb_rate || 200,
@@ -522,7 +543,7 @@ function buildStructuredData(extracted, propertyAddress, researchContent, citati
 
 // Fallback extraction when APIs fail
 function fallbackDataExtraction(researchContent, propertyAddress, address, citations) {
-  console.log('Using fallback data extraction...');
+  console.log('Using fallback data extraction with accurate calculations...');
   
   // Try to extract numbers from research content
   const priceMatches = researchContent.match(/\$[\d,]+,\d{3}/g) || [];
@@ -542,8 +563,8 @@ function fallbackDataExtraction(researchContent, propertyAddress, address, citat
     estimatedValue = Math.max(estimatedValue, 1200000);
   }
   
-  // Best guess at rent
-  let monthlyRent = Math.round(estimatedValue * 0.004); // 0.4% rule
+  // Best guess at rent using location-based calculation
+  let monthlyRent = estimateRentalRate(estimatedValue, address.city, 'Single Family');
   if (rentMatches.length > 0) {
     const rents = rentMatches.map(r => parseInt(r.match(/\d+,?\d+/)[0].replace(',', '')));
     monthlyRent = Math.round(rents.reduce((a, b) => a + b, 0) / rents.length);
@@ -569,15 +590,30 @@ function fallbackDataExtraction(researchContent, propertyAddress, address, citat
       square_feet: 1800,
       listing_status: "off-market"
     },
-    costs: {
-      property_tax_annual: Math.round(estimatedValue * 0.01), // 1% is typical
-      insurance_annual: Math.round(estimatedValue * 0.0035), // 0.35% is typical
-      maintenance_annual: Math.round(estimatedValue * 0.015), // 1.5% for maintenance
-      hoa_monthly: 0,
-      utilities_monthly: 250,
-      property_management_percent: 0, // Default to self-managed
-      cost_updated_date: new Date().toLocaleDateString()
-    },
+    costs: (() => {
+      // Use accurate expense calculations
+      const expenses = calculateAccurateExpenses({
+        propertyValue: estimatedValue,
+        city: address.city,
+        province: address.state,
+        propertyType: 'Single Family', // Default assumption
+        squareFeet: 1800, // Default assumption
+        yearBuilt: 2000, // Default assumption
+        hasAmenities: false
+      });
+      
+      return {
+        property_tax_annual: expenses.property_tax_annual,
+        property_tax_rate: expenses.property_tax_rate,
+        insurance_annual: expenses.insurance_annual,
+        maintenance_annual: expenses.maintenance_annual,
+        hoa_monthly: expenses.hoa_monthly,
+        utilities_monthly: expenses.utilities_monthly,
+        property_management_percent: 0, // Default to self-managed
+        cost_updated_date: new Date().toLocaleDateString(),
+        calculation_method: 'location_based_fallback'
+      };
+    })(),
     long_term_rental: {
       monthly_rent: monthlyRent,
       annual_revenue: monthlyRent * 12 * 0.95,
@@ -619,11 +655,16 @@ function ensureCalculations(data) {
   // Validate and correct unrealistic values
   const currentPropertyValue = data.property_details?.estimated_value || 850000;
   
-  // Property tax should be 0.8-1.2% of value, not more
-  if (propertyTaxAnnual > currentPropertyValue * 0.02) {
+  // Property tax should be 0.5-1.5% of value typically
+  if (propertyTaxAnnual > currentPropertyValue * 0.015) {
     // This is likely a monthly amount mislabeled as annual
-    data.costs.property_tax_annual = Math.round(currentPropertyValue * 0.01); // Set to 1% of value
-    console.log('Corrected unrealistic property tax from', propertyTaxAnnual, 'to', data.costs.property_tax_annual);
+    // Use accurate location-based calculation
+    const taxRate = getPropertyTaxRate(
+      data.property_address?.split(',')[1]?.trim() || 'Toronto',
+      data.property_address?.split(',')[2]?.trim() || 'Ontario'
+    );
+    data.costs.property_tax_annual = Math.round(currentPropertyValue * taxRate);
+    console.log('Corrected unrealistic property tax from', propertyTaxAnnual, 'to', data.costs.property_tax_annual, 'using rate', taxRate);
   }
   
   // Insurance should be 0.2-0.4% of value typically
@@ -703,108 +744,7 @@ function extractComparables(content) {
   return comparables;
 }
 
-// Enhanced demo data generator (same as before)
-function generateEnhancedDemoData(propertyAddress, userName, userEmail) {
-  const addressLower = propertyAddress.toLowerCase();
-  
-  let baseValue = 850000;
-  
-  if (addressLower.includes('toronto')) {
-    baseValue = Math.floor(Math.random() * 400000) + 900000;
-  } else if (addressLower.includes('mississauga') || addressLower.includes('oakville')) {
-    baseValue = Math.floor(Math.random() * 300000) + 700000;
-  } else if (addressLower.includes('vancouver')) {
-    baseValue = Math.floor(Math.random() * 500000) + 1200000;
-  } else if (addressLower.includes('calgary') || addressLower.includes('edmonton')) {
-    baseValue = Math.floor(Math.random() * 200000) + 450000;
-  }
-  
-  let propertyType = 'Single Family';
-  if (addressLower.includes('condo') || addressLower.includes('apt')) {
-    propertyType = 'Condo';
-    baseValue = Math.floor(baseValue * 0.7);
-  } else if (addressLower.includes('townhouse') || addressLower.includes('townhome')) {
-    propertyType = 'Townhouse';
-    baseValue = Math.floor(baseValue * 0.85);
-  }
-  
-  const propertyTax = Math.round(baseValue * 0.01);
-  const insurance = Math.round(baseValue * 0.0035);
-  const maintenance = Math.round(baseValue * 0.015);
-  const hoaMonthly = propertyType === 'Condo' ? Math.round(baseValue * 0.0008) : 0;
-  const utilities = propertyType === 'Condo' ? 0 : 250;
-  
-  const monthlyRent = Math.round(baseValue * 0.004);
-  const dailyRate = Math.round(monthlyRent / 10);
-  const occupancyRate = 0.70;
-  
-  const annualCosts = propertyTax + insurance + maintenance + (hoaMonthly * 12) + (utilities * 12);
-  const strRevenue = Math.round(dailyRate * 365 * occupancyRate);
-  const strProfit = Math.round(strRevenue - annualCosts - (strRevenue * 0.20));
-  const ltrRevenue = Math.round(monthlyRent * 12 * 0.95);
-  const ltrProfit = ltrRevenue - annualCosts;
-  
-  const strROI = ((strProfit / baseValue) * 100).toFixed(2);
-  const ltrROI = ((ltrProfit / baseValue) * 100).toFixed(2);
-  const bestROI = Math.max(parseFloat(strROI), parseFloat(ltrROI));
-  
-  return {
-    lead_id: `demo_${Date.now()}`,
-    lead_name: userName,
-    lead_email: userEmail,
-    property_address: propertyAddress,
-    analysis_timestamp: new Date().toISOString(),
-    data_freshness: {
-      research_date: new Date().toISOString(),
-      data_recency: "DEMO_DATA",
-      note: "This is demo data - configure API keys for real-time data"
-    },
-    property_details: {
-      address: propertyAddress,
-      estimated_value: baseValue,
-      property_type: propertyType,
-      bedrooms: propertyType === 'Condo' ? 2 : 3,
-      bathrooms: propertyType === 'Condo' ? 2 : 3,
-      square_feet: propertyType === 'Condo' ? 850 : 1800
-    },
-    costs: {
-      property_tax_annual: propertyTax,
-      hoa_monthly: hoaMonthly,
-      utilities_monthly: utilities,
-      insurance_annual: insurance,
-      maintenance_annual: maintenance
-    },
-    short_term_rental: {
-      daily_rate: dailyRate,
-      occupancy_rate: occupancyRate * 100,
-      annual_revenue: strRevenue,
-      annual_profit: strProfit
-    },
-    long_term_rental: {
-      monthly_rent: monthlyRent,
-      annual_revenue: ltrRevenue,
-      annual_profit: ltrProfit
-    },
-    market_data: {
-      comparable_sales: [
-        {
-          address: "Similar property nearby",
-          sold_price: `$${baseValue.toLocaleString()}`,
-          sold_date: new Date().toLocaleDateString()
-        }
-      ],
-      days_on_market: 15,
-      appreciation_rate: 5.2
-    },
-    data_sources: [
-      {"name": "Demo Data", "url": "internal", "date": new Date().toISOString()}
-    ],
-    recommendation: strROI > ltrROI 
-      ? `Short-term rental recommended. The property shows strong potential for Airbnb with ${(occupancyRate * 100).toFixed(0)}% occupancy rate and ${bestROI}% ROI.`
-      : `Long-term rental recommended. This strategy offers ${bestROI}% ROI with stable monthly income of $${monthlyRent.toLocaleString()}.`,
-    roi_percentage: bestROI
-  };
-}
+// Removed demo data generator - only using real data
 
 // Calculate API usage costs based on Perplexity pricing
 function calculateAPIUsageCost(usage) {
