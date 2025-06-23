@@ -86,36 +86,44 @@ If exact property data isn't available, use comparables from the SAME street or 
             role: 'user',
             content: `Perform REAL-TIME CURRENT research for: ${propertyAddress}
 
-IMPORTANT: Provide SPECIFIC NUMBERS, not "varies" or "depends". If exact data isn't available, use nearby comparables.
+CRITICAL: For EVERY piece of data you provide, cite the SPECIFIC URL where you found it. Users need to verify the information.
 
 Research Requirements:
 
-1. PROPERTY VALUE ESTIMATE:
-   - If exact address not found, use recent sales on ${address.street}
-   - Look at properties sold in last 90 days in ${address.city}
-   - MUST provide a specific dollar amount estimate
+1. PROPERTY VALUE & DETAILS:
+   - Search realtor.ca, housesigma.com for this exact address
+   - Recent sales on ${address.street} within last 6 months
+   - Property type, bedrooms, bathrooms, square footage
+   - CITE: Provide the specific URL for each property found
 
-2. PROPERTY DETAILS:
-   - Property type (Single Family/Condo/Townhouse)
-   - Typical bedrooms/bathrooms for this street
-   - Average square footage for similar properties
+2. PROPERTY TAXES (VERIFIED SOURCES):
+   - Search official ${address.city} municipal tax website
+   - Look for property tax assessments database
+   - Find actual tax records or municipal tax rate for this area
+   - CITE: Municipal government website URL where tax rate was found
 
-3. RENTAL RATES in ${address.city}:
-   - Current long-term rental rates for similar properties
-   - Provide SPECIFIC monthly rent amount
-   - Short-term (Airbnb) daily rates in this area
+3. INSURANCE COSTS (REALISTIC ESTIMATES):
+   - Search insurance company websites for ${address.city}
+   - Look for home insurance calculators or rate tables
+   - For property value $1M+, expect $2,000-4,000/year range
+   - CITE: Insurance company or broker website URL
 
-4. EXACT COSTS:
-   - Property tax rate for ${address.city} (as percentage)
-   - Typical insurance cost (annual dollar amount)
-   - Condo fees if applicable (monthly dollar amount)
+4. RENTAL RATES (CURRENT LISTINGS):
+   - Search rentals.ca, kijiji.ca, PadMapper for similar properties in ${address.city}
+   - Find actual listed rental prices (not estimates)
+   - Short-term: Search Airbnb.com for nearby properties
+   - CITE: Specific listing URLs from rental sites
 
-5. MARKET CONDITIONS:
-   - Recent comparable sales with prices and dates
-   - Average days on market
-   - Market trend (appreciating/stable/declining)
+5. COMPARABLE SALES (VERIFIED TRANSACTIONS):
+   - Recent sales within 1km of this address
+   - Properties with similar features sold in last 6 months
+   - CITE: MLS listing URLs or sales data source
 
-FORMAT YOUR RESPONSE WITH CLEAR SECTIONS AND SPECIFIC NUMBERS.`
+FORMAT REQUIREMENTS:
+- Start each section with "SOURCE: [URL]"
+- Provide specific dollar amounts
+- Include dates for all data points
+- If no exact data found, clearly state "Estimated based on [source]"`
           }
         ],
         max_tokens: 3000,
@@ -144,8 +152,65 @@ FORMAT YOUR RESPONSE WITH CLEAR SECTIONS AND SPECIFIC NUMBERS.`
     const apiCosts = calculateAPIUsageCost(perplexityData.usage || {});
     console.log('API Usage Cost:', apiCosts);
 
-    // Extract citations
-    const citations = perplexityData.citations || [];
+    // Extract and format citations with URLs
+    const rawCitations = perplexityData.citations || [];
+    console.log('Raw citations from Perplexity:', JSON.stringify(rawCitations, null, 2));
+    
+    const citations = rawCitations.map((citation, index) => ({
+      name: citation.title || citation.name || `Source ${index + 1}`,
+      url: citation.url || citation.link || citation.href || null,
+      date: citation.date || new Date().toISOString().split('T')[0],
+      description: citation.description || citation.snippet || citation.text || 'Research source',
+      accessed_at: new Date().toISOString()
+    }));
+    
+    // Enhanced URL extraction from content - look for multiple patterns
+    const urlPatterns = [
+      /https?:\/\/[^\s\)\]\,\;\<]+/g,  // Standard URLs
+      /SOURCE:\s*(https?:\/\/[^\s\)\]\,\;\<]+)/gi,  // SOURCE: URLs
+      /Found at:\s*(https?:\/\/[^\s\)\]\,\;\<]+)/gi,  // Found at: URLs
+      /See:\s*(https?:\/\/[^\s\)\]\,\;\<]+)/gi,  // See: URLs
+      /Visit:\s*(https?:\/\/[^\s\)\]\,\;\<]+)/gi  // Visit: URLs
+    ];
+    
+    const allUrlsInContent = [];
+    urlPatterns.forEach(pattern => {
+      const matches = researchContent.match(pattern) || [];
+      allUrlsInContent.push(...matches);
+    });
+    
+    // Clean and deduplicate URLs
+    const cleanUrls = [...new Set(allUrlsInContent.map(url => {
+      // Remove trailing punctuation and clean up
+      return url.replace(/^(SOURCE:|Found at:|See:|Visit:)\s*/i, '').replace(/[.,;)}\]]*$/, '').trim();
+    }))];
+    
+    console.log('URLs found in content:', cleanUrls);
+    
+    // Add URLs found in content as additional sources with better naming
+    cleanUrls.forEach((url, index) => {
+      if (!citations.some(c => c.url === url)) {
+        let sourceName = `Research Source ${citations.length + 1}`;
+        
+        // Try to determine source type from URL
+        if (url.includes('realtor.ca')) sourceName = 'Realtor.ca';
+        else if (url.includes('housesigma.com')) sourceName = 'HouseSigma';
+        else if (url.includes('zolo.ca')) sourceName = 'Zolo.ca';
+        else if (url.includes('rentals.ca')) sourceName = 'Rentals.ca';
+        else if (url.includes('kijiji.ca')) sourceName = 'Kijiji';
+        else if (url.includes('airbnb.com')) sourceName = 'Airbnb';
+        else if (url.includes('.gov.') || url.includes('municipal')) sourceName = 'Government Source';
+        else if (url.includes('insurance')) sourceName = 'Insurance Provider';
+        
+        citations.push({
+          name: sourceName,
+          url: url,
+          date: new Date().toISOString().split('T')[0],
+          description: 'Source referenced in research content',
+          accessed_at: new Date().toISOString()
+        });
+      }
+    });
     
     // Step 2: Improved Data Extraction
     let structuredData;
@@ -172,11 +237,11 @@ Extract into this JSON format:
     "square_feet": [NUMBER - use area average if unknown]
   },
   "costs": {
-    "property_tax_annual": [Calculate from percentage or use $${Math.round(address.city.toLowerCase().includes('toronto') ? 8500 : 6500)}],
-    "insurance_annual": [Use area average or $${Math.round(address.city.toLowerCase().includes('toronto') ? 2800 : 2200)}],
-    "maintenance_annual": [1.5% of property value],
-    "hoa_monthly": [Use 0 for houses, area average for condos],
-    "utilities_monthly": [Use area average or 250]
+    "property_tax_annual": [Calculate from actual municipal tax rate. For $1M+ properties, expect $8,000-15,000/year],
+    "insurance_annual": [Use realistic insurance rates. For $1M+ homes, expect $2,500-4,500/year],
+    "maintenance_annual": [1.5% of property value for maintenance and repairs],
+    "hoa_monthly": [Use 0 for houses, actual fees for condos from research],
+    "utilities_monthly": [Average $200-300 for houses, $150-250 for condos]
   },
   "rental_data": {
     "monthly_rent": [NUMBER - use area average if needed],
@@ -389,10 +454,12 @@ function buildStructuredData(extracted, propertyAddress, researchContent, citati
       last_updated: new Date().toISOString()
     },
     data_sources: citations.slice(0, 7).map(c => ({
-      name: c.title || 'Source',
-      url: c.url || '#',
-      access_date: new Date().toISOString(),
-      data_date: new Date().toLocaleDateString()
+      name: c.name || 'Source',
+      url: c.url && c.url !== '#' && c.url !== 'null' ? c.url : null,
+      access_date: c.accessed_at || new Date().toISOString(),
+      data_date: c.date || new Date().toLocaleDateString(),
+      description: c.description || 'Research source',
+      is_verified: !!(c.url && c.url.startsWith('http'))
     }))
   };
   
@@ -477,10 +544,12 @@ function fallbackDataExtraction(researchContent, propertyAddress, address, citat
       last_updated: new Date().toISOString()
     },
     data_sources: citations.slice(0, 7).map(c => ({
-      name: c.title || 'Source',
-      url: c.url || '#',
-      access_date: new Date().toISOString(),
-      data_date: new Date().toLocaleDateString()
+      name: c.name || 'Source',
+      url: c.url && c.url !== '#' && c.url !== 'null' ? c.url : null,
+      access_date: c.accessed_at || new Date().toISOString(),
+      data_date: c.date || new Date().toLocaleDateString(),
+      description: c.description || 'Research source',
+      is_verified: !!(c.url && c.url.startsWith('http'))
     })),
     recommendation: "Investment analysis based on market averages and comparable properties."
   };
