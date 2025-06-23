@@ -1,7 +1,7 @@
 // api/analyze-property.js
 // Enhanced property analysis with improved data extraction and fallback logic
 
-const { calculateAccurateExpenses, getPropertyTaxRate, estimateRentalRate } = require('./property-calculations.js');
+const { calculateAccurateExpenses, getPropertyTaxRate, estimateRentalRate, calculateInsurance } = require('./property-calculations.js');
 
 module.exports = async function handler(req, res) {
   // Set CORS headers
@@ -117,8 +117,9 @@ RESEARCH INSTRUCTIONS:
    - Search "${address.city} property tax calculator" or "${address.city} tax rates"
    - Look for official municipal websites (.gov or .ca domains)
    - Find the ACTUAL TAX RATE (usually 0.5% to 1.5% of property value)
-   - For a $${estimatedValue.toLocaleString()} property, expect taxes around $${Math.round(estimatedValue * 0.01).toLocaleString()}/year
-   - If exact rate not found, use ${address.city} average: typically 0.8-1.2% of value
+   - IMPORTANT: Property tax in ${address.city} should be approximately ${getPropertyTaxRate(address.city, address.state) * 100}% of property value
+   - For a $${estimatedValue.toLocaleString()} property in ${address.city}, expect taxes around $${Math.round(estimatedValue * getPropertyTaxRate(address.city, address.state)).toLocaleString()}/year
+   - NEVER return values like $815/year for an $800k property - that's only 0.1%!
    - FORMAT: "Tax rate SOURCE: [URL] - ${address.city} rate is X.X%"
 
 3. INSURANCE COSTS - REALISTIC ESTIMATES:
@@ -295,10 +296,10 @@ Extract into this JSON format:
     "is_condo": [true/false - CRITICAL for expense calculations]
   },
   "costs": {
-    "property_tax_annual": [MUST BE 0.8-1.2% of property value. E.g., $1M property = $8,000-12,000/year],
-    "insurance_annual": [MUST BE 0.2-0.4% of property value. E.g., $1M property = $2,000-4,000/year],
-    "maintenance_annual": [1.5% of property value for maintenance and repairs],
-    "hoa_monthly": [Use 0 for houses, actual fees for condos from research],
+    "property_tax_annual": [MUST BE 0.8-1.2% of property value. NEVER less than 0.5%. For $815k = $6,500-9,800/year],
+    "insurance_annual": [MUST BE 0.2-0.4% of property value. NEVER less than $1000. For $815k = $2,000-3,500/year],
+    "maintenance_annual": [1-1.5% of property value for maintenance and repairs. For $815k = $8,150-12,225/year],
+    "hoa_monthly": [Use 0 for houses, $400-800 for condos based on value],
     "utilities_monthly": [Average $200-300 for houses, $150-250 for condos]
   },
   "rental_data": {
@@ -662,8 +663,9 @@ function ensureCalculations(data) {
   const currentPropertyValue = data.property_details?.estimated_value || 850000;
   
   // Property tax should be 0.5-1.5% of value typically
-  if (propertyTaxAnnual > currentPropertyValue * 0.015) {
-    // This is likely a monthly amount mislabeled as annual
+  // Check if it's too high OR too low
+  if (propertyTaxAnnual > currentPropertyValue * 0.015 || propertyTaxAnnual < currentPropertyValue * 0.005) {
+    // This is likely incorrect - either monthly amount or just wrong
     // Use accurate location-based calculation
     let city = 'Toronto';
     let province = 'Ontario';
@@ -680,15 +682,18 @@ function ensureCalculations(data) {
     }
     
     const taxRate = getPropertyTaxRate(city, province);
-    data.costs.property_tax_annual = Math.round(currentPropertyValue * taxRate);
-    console.log('Corrected unrealistic property tax from', propertyTaxAnnual, 'to', data.costs.property_tax_annual, 'using rate', taxRate);
+    const correctTax = Math.round(currentPropertyValue * taxRate);
+    console.log(`Corrected unrealistic property tax from $${propertyTaxAnnual} to $${correctTax} (${(taxRate * 100).toFixed(2)}% rate for ${city})`);
+    data.costs.property_tax_annual = correctTax;
   }
   
   // Insurance should be 0.2-0.4% of value typically
-  if (insuranceAnnual > currentPropertyValue * 0.01) {
-    // This is likely a monthly amount or error
-    data.costs.insurance_annual = Math.round(currentPropertyValue * 0.0035); // Set to 0.35% of value
-    console.log('Corrected unrealistic insurance from', insuranceAnnual, 'to', data.costs.insurance_annual);
+  if (insuranceAnnual > currentPropertyValue * 0.01 || insuranceAnnual < currentPropertyValue * 0.002) {
+    // This is likely incorrect
+    const propertyType = data.property_details?.property_type || 'Single Family';
+    const insuranceCalc = calculateInsurance(currentPropertyValue, city, propertyType);
+    console.log(`Corrected unrealistic insurance from $${insuranceAnnual} to $${insuranceCalc} for ${propertyType} in ${city}`);
+    data.costs.insurance_annual = insuranceCalc;
   }
   
   const totalAnnualCosts = 
