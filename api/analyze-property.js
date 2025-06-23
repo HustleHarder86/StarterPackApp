@@ -103,15 +103,17 @@ RESEARCH INSTRUCTIONS:
 
 1. PROPERTY VALUE & DETAILS:
    - Search realtor.ca, housesigma.com, zolo.ca for this exact address
-   - Find recent sales on same street (last 12 months)
+   - CRITICAL: Find the CURRENT ESTIMATED VALUE or ASSESSMENT VALUE
+   - If exact address not found, search for recent sales on same street
    - Get CRITICAL details: 
+     * Current property value estimate (MOST IMPORTANT)
      * Property type (Single Family, Condo, Townhouse)
      * Square footage (VERY IMPORTANT for calculations)
      * Year built
      * Bedrooms and bathrooms
      * Is this a condo? (affects all expense calculations)
    - Look for past sale history and price trends
-   - FORMAT: "Found at SOURCE: [URL] - Property value $XXX,XXX, Type: [type], Size: [sq ft], Built: [year]"
+   - FORMAT: "Property value: $X,XXX,XXX (SOURCE: [URL])" - BE EXPLICIT ABOUT THE VALUE
 
 2. PROPERTY TAXES - CRITICAL ACCURACY NEEDED:
    - Search "${address.city} property tax calculator" or "${address.city} tax rates"
@@ -275,7 +277,11 @@ Research content:
 ${researchContent}
 
 EXTRACTION RULES:
-1. For property value: Use recent comparable sales if exact property not found. Pick the most similar property.
+1. For property value: 
+   - FIRST look for explicit property value statements like "Property value: $X,XXX,XXX"
+   - If not found, look for assessment values or recent sale prices
+   - Use the HIGHEST reasonable value found (properties are often worth more than older assessments)
+   - If multiple values found, prefer recent sales or current estimates over old data
 2. For rent: Use average of similar properties in the area if exact not found.
 3. For costs: Use REALISTIC percentages of property value:
    - Property Tax: 0.8-1.2% of property value annually (NOT 3-4%!)
@@ -745,11 +751,45 @@ function ensureCalculations(data) {
 
 // Helper to estimate value from research
 function estimateValueFromResearch(content) {
+  // Look for specific property value patterns first
+  const propertyValuePatterns = [
+    /property value[:\s]+\$?([\d,]+)/i,
+    /estimated value[:\s]+\$?([\d,]+)/i,
+    /assessed at[:\s]+\$?([\d,]+)/i,
+    /valued at[:\s]+\$?([\d,]+)/i,
+    /worth[:\s]+\$?([\d,]+)/i,
+    /price[:\s]+\$?([\d,]+)/i,
+    /listed for[:\s]+\$?([\d,]+)/i,
+    /sold for[:\s]+\$?([\d,]+)/i,
+    /asking[:\s]+\$?([\d,]+)/i
+  ];
+  
+  for (const pattern of propertyValuePatterns) {
+    const match = content.match(pattern);
+    if (match && match[1]) {
+      const value = parseInt(match[1].replace(/,/g, ''));
+      if (value > 100000 && value < 10000000) { // Reasonable property value range
+        console.log('Found property value using pattern:', pattern, 'Value:', value);
+        return value;
+      }
+    }
+  }
+  
+  // Fallback to general price matching, but filter for reasonable property values
   const priceMatches = content.match(/\$[\d,]+,\d{3}/g) || [];
   if (priceMatches.length > 0) {
-    const prices = priceMatches.map(p => parseInt(p.replace(/[$,]/g, '')));
-    return Math.round(prices.reduce((a, b) => a + b, 0) / prices.length);
+    const prices = priceMatches.map(p => parseInt(p.replace(/[$,]/g, '')))
+      .filter(price => price > 100000 && price < 10000000); // Filter reasonable property values
+    
+    if (prices.length > 0) {
+      // Return the highest value found, as it's more likely to be the property value
+      const maxPrice = Math.max(...prices);
+      console.log('Using highest price found as property value:', maxPrice);
+      return maxPrice;
+    }
   }
+  
+  console.log('No property value found in research, using default');
   return 850000; // Default
 }
 
