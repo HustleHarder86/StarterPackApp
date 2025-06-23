@@ -540,7 +540,7 @@ function buildStructuredData(extracted, propertyAddress, researchContent, citati
       access_date: c.accessed_at || new Date().toISOString(),
       data_date: c.date || new Date().toLocaleDateString(),
       description: c.description || 'Research source',
-      is_verified: !!(c.url && c.url.startsWith('http'))
+      is_verified: !!(c.url && typeof c.url === 'string' && c.url.startsWith('http'))
     }))
   };
   
@@ -647,7 +647,7 @@ function fallbackDataExtraction(researchContent, propertyAddress, address, citat
       access_date: c.accessed_at || new Date().toISOString(),
       data_date: c.date || new Date().toLocaleDateString(),
       description: c.description || 'Research source',
-      is_verified: !!(c.url && c.url.startsWith('http'))
+      is_verified: !!(c.url && typeof c.url === 'string' && c.url.startsWith('http'))
     })),
     recommendation: "Investment analysis based on market averages and comparable properties."
   };
