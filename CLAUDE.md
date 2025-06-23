@@ -1,4 +1,6 @@
-# CLAUDE.md - Project Configuration & Guidelines
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Project Overview
 
@@ -131,22 +133,56 @@
    };
    ```
 
-## File Organization
+## Architecture & File Organization
+
+### Key Architecture Patterns
+
+**Hybrid Static/Dynamic Architecture:**
+- Static HTML files with progressive enhancement
+- React components loaded via CDN (not bundled)
+- Vercel serverless functions for API layer
+- Firebase for authentication and data persistence
+
+**AI Integration Pattern:**
+- Perplexity AI (primary) → Market research and real-time data
+- OpenAI GPT-4 (secondary) → Data structuring and formatting
+- Fallback mechanisms for API failures
+- Usage tracking and rate limiting built-in
+
+**Authentication Flow:**
+- Firebase Auth for user management
+- JWT tokens for API authorization
+- User session validation in serverless functions
+- Client-side auth state management
 
 ### Directory Structure
 ```
 /
-├── api/                    # Vercel API routes
-├── components/             # Reusable JSX components
-├── utils/                  # Utility functions
-├── assets/                 # Static assets (images, icons)
-├── data/                   # Static data files
-├── i18n/                   # Internationalization
-├── tests/                  # Test files
-├── *.html                  # Page templates
-├── *.js                    # Core application files
-└── styles.css              # Global styles
+├── api/                    # Vercel serverless functions
+│   ├── analyze-property.js # Main analysis endpoint
+│   ├── config.js          # Public app configuration
+│   ├── user-management.js # User profile operations
+│   └── stripe-*.js        # Payment processing (optional)
+├── components/             # React JSX components (CDN-loaded)  
+│   ├── PropertyAnalysisForm.jsx
+│   └── ComparisonView.jsx
+├── utils/                  # Client-side utilities
+│   ├── analytics.js       # Usage tracking
+│   ├── error-handler.js   # Error handling
+│   └── pdf-generator.js   # Report generation
+├── assets/                # Static assets
+├── tests/                 # Basic API tests
+├── *.html                 # Application pages
+├── styles.css             # Custom CSS
+├── manifest.json          # PWA configuration
+└── vercel.json            # Deployment configuration
 ```
+
+### Application Pages Architecture
+- `index.html` → Landing page with lead capture
+- `roi-finder.html` → Main authenticated application
+- `admin-dashboard.html` → Admin interface for user management
+- `debug-test.html` → Development diagnostics tool
 
 ### Naming Conventions
 - **Files**: kebab-case for HTML/CSS, camelCase for JS
@@ -252,28 +288,64 @@
 ## Deployment & Environment
 
 ### Environment Variables Required
+
+**Client-side (VITE_ prefix for public variables):**
 ```bash
-# Firebase
-FIREBASE_API_KEY=
-FIREBASE_AUTH_DOMAIN=
-FIREBASE_PROJECT_ID=
-FIREBASE_STORAGE_BUCKET=
-FIREBASE_MESSAGING_SENDER_ID=
-FIREBASE_APP_ID=
+# Firebase client configuration
+VITE_FIREBASE_API_KEY=
+VITE_FIREBASE_AUTH_DOMAIN=your-project.firebaseapp.com
+VITE_FIREBASE_PROJECT_ID=your-project-id
+VITE_FIREBASE_STORAGE_BUCKET=your-project.appspot.com
+VITE_FIREBASE_MESSAGING_SENDER_ID=
+VITE_FIREBASE_APP_ID=
 
-# External APIs
-PERPLEXITY_API_KEY=pplx-*
-OPENAI_API_KEY=sk-* (optional)
-
-# Stripe (for payments)
-STRIPE_SECRET_KEY=
-STRIPE_WEBHOOK_SECRET=
+# Stripe public key (optional)
+VITE_STRIPE_PUBLISHABLE_KEY=pk_test_*
 ```
 
-### Build & Deploy
-- **Development**: `npm run dev` (Vercel dev server)
-- **Production**: `npm run deploy` (Vercel production)
-- **Testing**: Currently no automated tests configured
+**Server-side (API functions only):**
+```bash
+# Firebase Admin SDK
+FIREBASE_PROJECT_ID=your-project-id
+FIREBASE_CLIENT_EMAIL=firebase-adminsdk@your-project.iam.gserviceaccount.com
+FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nYour private key\n-----END PRIVATE KEY-----\n"
+
+# AI APIs
+PERPLEXITY_API_KEY=pplx-*
+OPENAI_API_KEY=sk-* (optional but recommended)
+
+# Stripe secret keys (optional)
+STRIPE_SECRET_KEY=sk_test_*
+STRIPE_WEBHOOK_SECRET=whsec_*
+```
+
+### Development Commands
+```bash
+# Development server (Vercel dev environment)
+npm run dev
+vercel dev
+
+# Deploy to production
+npm run deploy
+vercel --prod
+
+# No build step needed (static files)
+npm run build  # Just echoes "No build step required"
+
+# Testing
+npm run test   # Currently echoes "No tests configured"
+
+# Useful Vercel commands
+vercel logs    # View function logs
+vercel env     # Manage environment variables
+vercel --help  # See all available commands
+```
+
+### Testing & Quality Assurance
+- **Manual Testing**: Use `/debug-test.html` for API diagnostics
+- **Environment Check**: Verify all required environment variables are set
+- **Firebase Testing**: Test authentication and Firestore operations
+- **API Testing**: Test all endpoints individually through browser or Postman
 
 ## Common Tasks & Patterns
 
