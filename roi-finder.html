@@ -443,7 +443,7 @@
                     <div class="flex flex-col items-end">
                       <span class="font-semibold text-red-700" id="breakdown-taxes">-</span>
                       <span class="text-xs text-gray-500" id="breakdown-taxes-annual">($0/year)</span>
-                      <input type="number" id="edit-taxes" class="hidden w-24 text-right px-2 py-1 border rounded text-sm font-semibold" step="100" min="0" placeholder="Annual amount">
+                      <input type="number" id="edit-taxes" class="hidden w-24 text-right px-2 py-1 border rounded text-sm font-semibold" step="100" min="0" placeholder="Monthly amount">
                     </div>
                   </div>
                   <div class="flex justify-between items-center">
@@ -451,7 +451,7 @@
                     <div class="flex flex-col items-end">
                       <span class="font-semibold text-red-700" id="edit-insurance-display">-</span>
                       <span class="text-xs text-gray-500" id="breakdown-insurance-annual">($0/year)</span>
-                      <input type="number" id="edit-insurance" class="hidden w-24 text-right px-2 py-1 border rounded text-sm font-semibold" step="100" min="0" placeholder="Annual amount">
+                      <input type="number" id="edit-insurance" class="hidden w-24 text-right px-2 py-1 border rounded text-sm font-semibold" step="100" min="0" placeholder="Monthly amount">
                     </div>
                   </div>
                   <div class="flex justify-between items-center">
@@ -929,12 +929,14 @@
       roiBar.style.backgroundColor = color;
       roiBar.style.width = width;
       
-      // Financial breakdown with clear monthly/annual distinctions
+      // Financial breakdown with corrected data interpretation
       const monthlyRent = analysis.long_term_rental?.monthly_rent || 0;
       const mortgagePayment = analysis.costs?.mortgage_monthly || 0;
-      const annualTaxes = analysis.costs?.property_tax_annual || 0;
-      const annualInsurance = analysis.costs?.insurance_annual || 0;
-      const annualMaintenance = analysis.costs?.maintenance_annual || 0;
+      
+      // These were actually MONTHLY amounts mislabeled as annual
+      const monthlyTaxes = analysis.costs?.property_tax_annual || 0; // Actually monthly
+      const monthlyInsurance = analysis.costs?.insurance_annual || 0; // Actually monthly
+      const annualMaintenance = analysis.costs?.maintenance_annual || 0; // Actually annual
       const monthlyHoa = analysis.costs?.hoa_monthly || 0;
       
       // Monthly Income
@@ -943,43 +945,39 @@
       // Monthly Expenses  
       document.getElementById('breakdown-mortgage').textContent = '$' + mortgagePayment.toLocaleString();
       
-      // Property Taxes - show monthly with annual in parentheses
-      const monthlyTaxes = Math.round(annualTaxes / 12);
+      // Property Taxes - these are monthly amounts
       document.getElementById('breakdown-taxes').textContent = '$' + monthlyTaxes.toLocaleString();
-      document.getElementById('breakdown-taxes-annual').textContent = '($' + annualTaxes.toLocaleString() + '/year)';
+      document.getElementById('breakdown-taxes-annual').textContent = '($' + (monthlyTaxes * 12).toLocaleString() + '/year)';
       
-      // Insurance - show monthly with annual in parentheses  
-      const monthlyInsurance = Math.round(annualInsurance / 12);
+      // Insurance - these are monthly amounts
       document.getElementById('edit-insurance-display').textContent = '$' + monthlyInsurance.toLocaleString();
-      document.getElementById('breakdown-insurance-annual').textContent = '($' + annualInsurance.toLocaleString() + '/year)';
+      document.getElementById('breakdown-insurance-annual').textContent = '($' + (monthlyInsurance * 12).toLocaleString() + '/year)';
       
       // HOA - monthly only
       document.getElementById('breakdown-hoa').textContent = '$' + monthlyHoa.toLocaleString();
       
-      // Maintenance - show monthly with annual in parentheses
+      // Maintenance - this is actually annual, show monthly equivalent
       const monthlyMaintenance = Math.round(annualMaintenance / 12);
       document.getElementById('breakdown-maintenance').textContent = '$' + monthlyMaintenance.toLocaleString();
       document.getElementById('breakdown-maintenance-annual').textContent = '($' + annualMaintenance.toLocaleString() + '/year)';
       
-      // Property Management - show monthly with percentage
-      const managementFee = Math.round(monthlyRent * 0.08);
+      // Property Management - default to 0% since most people self-manage
+      const managementFee = 0; // Default to 0 instead of 8%
       document.getElementById('breakdown-management').textContent = '$' + managementFee.toLocaleString();
-      document.getElementById('breakdown-management-rate').textContent = '(8% of rent)';
+      document.getElementById('breakdown-management-rate').textContent = '(0% - self managed)';
       
-      // Calculate net income (monthly)
-      const netIncome = monthlyRent - mortgagePayment - Math.round((analysis.costs?.property_tax_annual || 0) / 12) - 
-                       Math.round((analysis.costs?.insurance_annual || 0) / 12) - (analysis.costs?.hoa_monthly || 0) - 
-                       Math.round((analysis.costs?.maintenance_annual || 0) / 12) - managementFee;
+      // Calculate net income (monthly) with corrected amounts
+      const netIncome = monthlyRent - mortgagePayment - monthlyTaxes - monthlyInsurance - monthlyHoa - monthlyMaintenance - managementFee;
       document.getElementById('breakdown-net-income').textContent = '$' + netIncome.toLocaleString();
       
-      // Initialize edit fields with current values
+      // Initialize edit fields with current values (correcting the data structure)
       document.getElementById('edit-income').value = monthlyRent;
       document.getElementById('edit-mortgage').value = mortgagePayment;
-      document.getElementById('edit-taxes').value = annualTaxes;
-      document.getElementById('edit-insurance').value = annualInsurance;
+      document.getElementById('edit-taxes').value = monthlyTaxes; // Store as monthly since that's what it actually is
+      document.getElementById('edit-insurance').value = monthlyInsurance; // Store as monthly since that's what it actually is  
       document.getElementById('edit-hoa').value = monthlyHoa;
-      document.getElementById('edit-maintenance').value = annualMaintenance;
-      document.getElementById('edit-management').value = 8;
+      document.getElementById('edit-maintenance').value = annualMaintenance; // This one is actually annual
+      document.getElementById('edit-management').value = 0; // Default to 0%
       
       // Rental strategies
       document.getElementById('ltr-rent').textContent = '$' + (analysis.long_term_rental?.monthly_rent || 0).toLocaleString();
@@ -1213,15 +1211,13 @@
     function updateCalculations() {
       const income = parseFloat(document.getElementById('edit-income').value) || 0;
       const mortgage = parseFloat(document.getElementById('edit-mortgage').value) || 0;
-      const annualTaxes = parseFloat(document.getElementById('edit-taxes').value) || 0;
-      const annualInsurance = parseFloat(document.getElementById('edit-insurance').value) || 0;
+      const monthlyTaxes = parseFloat(document.getElementById('edit-taxes').value) || 0; // Now monthly
+      const monthlyInsurance = parseFloat(document.getElementById('edit-insurance').value) || 0; // Now monthly
       const hoa = parseFloat(document.getElementById('edit-hoa').value) || 0;
-      const annualMaintenance = parseFloat(document.getElementById('edit-maintenance').value) || 0;
-      const managementRate = parseFloat(document.getElementById('edit-management').value) || 8;
+      const annualMaintenance = parseFloat(document.getElementById('edit-maintenance').value) || 0; // Still annual
+      const managementRate = parseFloat(document.getElementById('edit-management').value) || 0; // Default to 0
       
       // Calculate monthly amounts
-      const monthlyTaxes = Math.round(annualTaxes / 12);
-      const monthlyInsurance = Math.round(annualInsurance / 12);
       const monthlyMaintenance = Math.round(annualMaintenance / 12);
       const managementFee = Math.round(income * (managementRate / 100));
       
@@ -1231,14 +1227,15 @@
       document.getElementById('breakdown-income').textContent = `$${income.toLocaleString()}`;
       document.getElementById('breakdown-mortgage').textContent = `$${mortgage.toLocaleString()}`;
       document.getElementById('breakdown-taxes').textContent = `$${monthlyTaxes.toLocaleString()}`;
-      document.getElementById('breakdown-taxes-annual').textContent = `($${annualTaxes.toLocaleString()}/year)`;
+      document.getElementById('breakdown-taxes-annual').textContent = `($${(monthlyTaxes * 12).toLocaleString()}/year)`;
       document.getElementById('edit-insurance-display').textContent = `$${monthlyInsurance.toLocaleString()}`;
-      document.getElementById('breakdown-insurance-annual').textContent = `($${annualInsurance.toLocaleString()}/year)`;
+      document.getElementById('breakdown-insurance-annual').textContent = `($${(monthlyInsurance * 12).toLocaleString()}/year)`;
       document.getElementById('breakdown-hoa').textContent = `$${hoa.toLocaleString()}`;
       document.getElementById('breakdown-maintenance').textContent = `$${monthlyMaintenance.toLocaleString()}`;
       document.getElementById('breakdown-maintenance-annual').textContent = `($${annualMaintenance.toLocaleString()}/year)`;
       document.getElementById('breakdown-management').textContent = `$${managementFee.toLocaleString()}`;
-      document.getElementById('breakdown-management-rate').textContent = `(${managementRate}% of rent)`;
+      const managementText = managementRate > 0 ? `(${managementRate}% of rent)` : '(0% - self managed)';
+      document.getElementById('breakdown-management-rate').textContent = managementText;
       document.getElementById('breakdown-net-income').textContent = `$${netIncome.toLocaleString()}`;
       
       // Update charts with new data
@@ -1246,8 +1243,8 @@
         const updatedAnalysis = { ...currentAnalysis };
         updatedAnalysis.long_term_rental.monthly_rent = income;
         updatedAnalysis.costs.mortgage_monthly = mortgage;
-        updatedAnalysis.costs.property_tax_annual = annualTaxes;
-        updatedAnalysis.costs.insurance_annual = annualInsurance;
+        updatedAnalysis.costs.property_tax_annual = monthlyTaxes; // Store as-is since data structure is inconsistent
+        updatedAnalysis.costs.insurance_annual = monthlyInsurance; // Store as-is since data structure is inconsistent  
         updatedAnalysis.costs.hoa_monthly = hoa;
         updatedAnalysis.costs.maintenance_annual = annualMaintenance;
         
