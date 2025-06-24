@@ -177,7 +177,9 @@ IMPORTANT FORMATTING:
 
     const perplexityData = await perplexityResponse.json();
     const researchContent = perplexityData.choices[0].message.content;
-    console.log('Fresh research completed, content sample:', researchContent.substring(0, 500));
+    console.log('========== PERPLEXITY RAW RESPONSE ==========');
+    console.log('Full research content:', researchContent);
+    console.log('========== END PERPLEXITY RESPONSE ==========');
 
     // Calculate API costs from token usage
     const apiCosts = calculateAPIUsageCost(perplexityData.usage || {});
@@ -185,7 +187,10 @@ IMPORTANT FORMATTING:
 
     // Extract and format citations with URLs
     const rawCitations = perplexityData.citations || [];
+    console.log('========== PERPLEXITY CITATIONS ==========');
     console.log('Raw citations from Perplexity:', JSON.stringify(rawCitations, null, 2));
+    console.log('Number of citations:', rawCitations.length);
+    console.log('========== END CITATIONS ==========');
     
     const citations = rawCitations.map((citation, index) => ({
       name: citation.title || citation.name || `Source ${index + 1}`,
@@ -363,7 +368,12 @@ Extract into this JSON format:
           apiCosts.total_cost_usd = parseFloat((apiCosts.total_cost_usd + openaiCosts.total_cost_usd).toFixed(6));
           
           const extracted = JSON.parse(openaiData.choices[0].message.content);
-          console.log('Extraction successful, sample:', JSON.stringify(extracted.property_details));
+          console.log('========== EXTRACTED DATA FROM OPENAI ==========');
+          console.log('Full extracted data:', JSON.stringify(extracted, null, 2));
+          console.log('Property Value Found:', extracted.property_details?.estimated_value);
+          console.log('Property Tax Found:', extracted.costs?.property_tax_annual);
+          console.log('Data sources found:', extracted.data_sources_found);
+          console.log('========== END EXTRACTED DATA ==========');
           
           // Build structured data from extraction
           structuredData = buildStructuredData(extracted, propertyAddress, researchContent, citations, address);
@@ -449,10 +459,15 @@ Extract into this JSON format:
       }
     }
 
+    console.log('========== FINAL ANALYSIS DATA ==========');
     console.log('✅ ANALYSIS COMPLETED');
     console.log('Property Value:', analysisData.property_details?.estimated_value);
     console.log('Monthly Rent:', analysisData.long_term_rental?.monthly_rent);
+    console.log('Property Tax Annual:', analysisData.costs?.property_tax_annual);
     console.log('ROI:', analysisData.roi_percentage);
+    console.log('Data Sources:', analysisData.data_sources?.length || 0);
+    console.log('Research Sources:', analysisData.research_sources?.length || 0);
+    console.log('========== END FINAL DATA ==========');
 
     return res.status(200).json({
       success: true,
@@ -498,6 +513,7 @@ function buildStructuredData(extracted, propertyAddress, researchContent, citati
   
   // If we found comparable tax data, use it instead of calculated
   if (comparableTax) {
+    console.log('========== COMPARABLE TAX DATA FOUND ==========');
     console.log(`Using comparable tax data: $${comparableTax}/year instead of calculated $${accurateExpenses.property_tax_annual}/year`);
     accurateExpenses.property_tax_annual = comparableTax;
     accurateExpenses.property_tax_rate = comparableTax / propertyValue;
