@@ -137,10 +137,13 @@ RESEARCH INSTRUCTIONS:
    - For Airbnb: search actual listings in the area
    - FORMAT: "Rental SOURCE: [URL] - Similar property renting for $X,XXX/month"
 
-5. COMPARABLE SALES:
-   - Find 3 recent sales (last 6 months) on same street or within 1km
-   - Include sale price and date
-   - FORMAT: "Sale SOURCE: [URL] - 123 Same St sold for $XXX,XXX on [date]"
+5. COMPARABLE SALES & TAX DATA:
+   - Find 3 recent sales/listings on same street or within 1km
+   - CRITICAL: Extract ACTUAL PROPERTY TAX AMOUNTS from listings
+   - Look for "Property Tax:", "Taxes:", "Tax:" in listing details
+   - Include sale price, date, AND property tax if available
+   - FORMAT: "SOURCE: [URL] - 123 Same St sold for $XXX,XXX, Property Tax: $X,XXX/year"
+   - If tax not shown, note it: "tax not disclosed in listing"
 
 IMPORTANT FORMATTING:
 - Every data point MUST include "SOURCE: [full URL]"
@@ -302,7 +305,7 @@ Extract into this JSON format:
     "is_condo": [true/false - CRITICAL for expense calculations]
   },
   "costs": {
-    "property_tax_annual": [MUST BE 0.8-1.2% of property value. NEVER less than 0.5%. For $815k = $6,500-9,800/year],
+    "property_tax_annual": [FIRST check if actual tax amounts found in listings, use those. Otherwise 0.8-1.2% of property value],
     "insurance_annual": [MUST BE 0.2-0.4% of property value. NEVER less than $1000. For $815k = $2,000-3,500/year],
     "maintenance_annual": [1-1.5% of property value for maintenance and repairs. For $815k = $8,150-12,225/year],
     "hoa_monthly": [Use 0 for houses, $400-800 for condos based on value],
@@ -477,6 +480,10 @@ Extract into this JSON format:
 function buildStructuredData(extracted, propertyAddress, researchContent, citations, address) {
   // Use accurate expense calculations
   const propertyValue = extracted.property_details?.estimated_value || 850000;
+  
+  // First, try to extract property tax from comparables
+  const comparableTax = extractPropertyTaxFromComparables(researchContent, propertyValue);
+  
   const accurateExpenses = calculateAccurateExpenses({
     propertyValue: propertyValue,
     city: address.city,
@@ -486,6 +493,22 @@ function buildStructuredData(extracted, propertyAddress, researchContent, citati
     yearBuilt: extracted.property_details?.year_built || null,
     hasAmenities: false // Could be enhanced with amenity detection
   });
+  
+  // If we found comparable tax data, use it instead of calculated
+  if (comparableTax) {
+    console.log(`Using comparable tax data: $${comparableTax}/year instead of calculated $${accurateExpenses.property_tax_annual}/year`);
+    accurateExpenses.property_tax_annual = comparableTax;
+    accurateExpenses.property_tax_rate = comparableTax / propertyValue;
+    // Recalculate totals
+    accurateExpenses.total_annual_expenses = Math.round(
+      comparableTax +
+      accurateExpenses.insurance_annual +
+      accurateExpenses.maintenance_annual +
+      (accurateExpenses.hoa_monthly * 12) +
+      (accurateExpenses.utilities_monthly * 12)
+    );
+    accurateExpenses.total_monthly_expenses = Math.round(accurateExpenses.total_annual_expenses / 12);
+  }
   
   const data = {
     property_address: propertyAddress, // Add this for ensureCalculations to access
@@ -793,23 +816,84 @@ function estimateValueFromResearch(content) {
   return 850000; // Default
 }
 
-// Helper to extract comparables
+// Helper to extract comparables with tax data
 function extractComparables(content) {
   const comparables = [];
-  const soldMatches = content.match(/(\d+ \w+ (?:Street|St|Avenue|Ave|Road|Rd|Gate|Drive|Dr)).*?sold.*?\$[\d,]+/gi) || [];
   
-  soldMatches.slice(0, 3).forEach(match => {
-    const priceMatch = match.match(/\$[\d,]+/);
-    if (priceMatch) {
-      comparables.push({
-        address: match.split('sold')[0].trim(),
-        sold_price: priceMatch[0],
-        sold_date: new Date().toLocaleDateString()
-      });
+  // Look for patterns that include both price and tax
+  const patterns = [
+    /(\d+ \w+ (?:Street|St|Avenue|Ave|Road|Rd|Gate|Drive|Dr|Lane|Ln|Court|Ct|Place|Pl)).*?(?:sold|listed).*?\$[\d,]+.*?(?:property tax|taxes?|tax):\s*\$[\d,]+/gi,
+    /(\d+ \w+ (?:Street|St|Avenue|Ave|Road|Rd|Gate|Drive|Dr|Lane|Ln|Court|Ct|Place|Pl)).*?\$[\d,]+.*?(?:property tax|taxes?|tax):\s*\$[\d,]+/gi
+  ];
+  
+  patterns.forEach(pattern => {
+    const matches = content.match(pattern) || [];
+    matches.forEach(match => {
+      const priceMatch = match.match(/\$[\d,]+/g);
+      const taxMatch = match.match(/(?:property tax|taxes?|tax):\s*\$([\d,]+)/i);
+      
+      if (priceMatch && priceMatch.length > 0) {
+        const addressMatch = match.match(/(\d+ \w+ (?:Street|St|Avenue|Ave|Road|Rd|Gate|Drive|Dr|Lane|Ln|Court|Ct|Place|Pl))/i);
+        comparables.push({
+          address: addressMatch ? addressMatch[0].trim() : 'Comparable property',
+          sold_price: priceMatch[0],
+          property_tax_annual: taxMatch ? parseInt(taxMatch[1].replace(/,/g, '')) : null,
+          sold_date: new Date().toLocaleDateString()
+        });
+      }
+    });
+  });
+  
+  // If no tax data found, try regular price-only pattern
+  if (comparables.length === 0) {
+    const soldMatches = content.match(/(\d+ \w+ (?:Street|St|Avenue|Ave|Road|Rd|Gate|Drive|Dr)).*?sold.*?\$[\d,]+/gi) || [];
+    
+    soldMatches.slice(0, 3).forEach(match => {
+      const priceMatch = match.match(/\$[\d,]+/);
+      if (priceMatch) {
+        comparables.push({
+          address: match.split('sold')[0].trim(),
+          sold_price: priceMatch[0],
+          property_tax_annual: null,
+          sold_date: new Date().toLocaleDateString()
+        });
+      }
+    });
+  }
+  
+  return comparables.slice(0, 3); // Return max 3 comparables
+}
+
+// Helper to extract property tax from comparables
+function extractPropertyTaxFromComparables(content, propertyValue) {
+  // Look for tax amounts in the content
+  const taxPatterns = [
+    /property tax(?:es)?:\s*\$([\d,]+)(?:\/year)?/gi,
+    /taxes?:\s*\$([\d,]+)(?:\/year)?/gi,
+    /annual tax(?:es)?:\s*\$([\d,]+)/gi,
+    /tax(?:es)? \$([\d,]+)\/year/gi
+  ];
+  
+  const taxAmounts = [];
+  taxPatterns.forEach(pattern => {
+    const matches = content.matchAll(pattern);
+    for (const match of matches) {
+      const amount = parseInt(match[1].replace(/,/g, ''));
+      // Validate it's a reasonable annual amount (not monthly)
+      if (amount > 1000 && amount < 50000) {
+        taxAmounts.push(amount);
+      }
     }
   });
   
-  return comparables;
+  if (taxAmounts.length > 0) {
+    // Average the tax amounts found
+    const avgTax = Math.round(taxAmounts.reduce((a, b) => a + b, 0) / taxAmounts.length);
+    console.log(`Found ${taxAmounts.length} property tax amounts in comparables, average: $${avgTax}`);
+    return avgTax;
+  }
+  
+  return null;
 }
 
 // Removed demo data generator - only using real data
