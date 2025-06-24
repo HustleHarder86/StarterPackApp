@@ -104,7 +104,7 @@ RESEARCH INSTRUCTIONS:
 1. PROPERTY VALUE & DETAILS:
    - Search realtor.ca, housesigma.com, zolo.ca for this exact address
    - CRITICAL: Find the CURRENT ESTIMATED VALUE or ASSESSMENT VALUE
-   - If exact address not found, search for recent sales on same street
+   - If exact address not found, search for sales from PAST 12 MONTHS on same street
    - Get CRITICAL details: 
      * Current property value estimate (MOST IMPORTANT)
      * Property type (Single Family, Condo, Townhouse)
@@ -114,6 +114,7 @@ RESEARCH INSTRUCTIONS:
      * Is this a condo? (affects all expense calculations)
    - Look for past sale history and price trends
    - FORMAT: "Property value: $X,XXX,XXX (SOURCE: [URL])" - BE EXPLICIT ABOUT THE VALUE
+   - IMPORTANT: Prioritize recent data (past 12 months) for accuracy
 
 2. PROPERTY TAXES - CRITICAL ACCURACY NEEDED:
    - Search "${address.city} property tax calculator" or "${address.city} tax rates"
@@ -138,12 +139,13 @@ RESEARCH INSTRUCTIONS:
    - FORMAT: "Rental SOURCE: [URL] - Similar property renting for $X,XXX/month"
 
 5. COMPARABLE SALES & TAX DATA:
-   - Find 3 recent sales/listings on same street or within 1km
+   - Find 3 sales/listings from PAST 12 MONTHS on same street or within 1km
    - CRITICAL: Extract ACTUAL PROPERTY TAX AMOUNTS from listings
    - Look for "Property Tax:", "Taxes:", "Tax:" in listing details
    - Include sale price, date, AND property tax if available
    - FORMAT: "SOURCE: [URL] - 123 Same St sold for $XXX,XXX, Property Tax: $X,XXX/year"
    - If tax not shown, note it: "tax not disclosed in listing"
+   - IMPORTANT: Use sales from past year for accurate, current tax data
 
 IMPORTANT FORMATTING:
 - Every data point MUST include "SOURCE: [full URL]"
@@ -157,12 +159,12 @@ IMPORTANT FORMATTING:
         top_p: 0.9,
         stream: false,
         search_depth: "advanced",
-        search_recency_filter: "month",
+        search_recency_filter: "year",
         search_domain_filter: ["realtor.ca", "housesigma.com", "zolo.ca", "rentals.ca", "kijiji.ca", "realtor.com", "zillow.com", "redfin.com"],
         return_citations: true,
         return_images: false,
         return_related_questions: false,
-        search_recency_days: 30,
+        search_recency_days: 365,
         top_k: 10
       })
     });
@@ -832,13 +834,18 @@ function extractComparables(content) {
       const priceMatch = match.match(/\$[\d,]+/g);
       const taxMatch = match.match(/(?:property tax|taxes?|tax):\s*\$([\d,]+)/i);
       
+      // Try to extract date
+      const dateMatch = match.match(/(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]* \d{1,2},? \d{4}|\d{1,2}\/\d{1,2}\/\d{2,4}|\d{4}-\d{2}-\d{2}/i);
+      const saleDate = dateMatch ? new Date(dateMatch[0]) : new Date();
+      
       if (priceMatch && priceMatch.length > 0) {
         const addressMatch = match.match(/(\d+ \w+ (?:Street|St|Avenue|Ave|Road|Rd|Gate|Drive|Dr|Lane|Ln|Court|Ct|Place|Pl))/i);
         comparables.push({
           address: addressMatch ? addressMatch[0].trim() : 'Comparable property',
           sold_price: priceMatch[0],
           property_tax_annual: taxMatch ? parseInt(taxMatch[1].replace(/,/g, '')) : null,
-          sold_date: new Date().toLocaleDateString()
+          sold_date: saleDate.toLocaleDateString(),
+          is_recent: (new Date() - saleDate) / (1000 * 60 * 60 * 24) < 365 // Within past year
         });
       }
     });
@@ -850,16 +857,27 @@ function extractComparables(content) {
     
     soldMatches.slice(0, 3).forEach(match => {
       const priceMatch = match.match(/\$[\d,]+/);
+      const dateMatch = match.match(/(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]* \d{1,2},? \d{4}|\d{1,2}\/\d{1,2}\/\d{2,4}|\d{4}-\d{2}-\d{2}/i);
+      const saleDate = dateMatch ? new Date(dateMatch[0]) : new Date();
+      
       if (priceMatch) {
         comparables.push({
           address: match.split('sold')[0].trim(),
           sold_price: priceMatch[0],
           property_tax_annual: null,
-          sold_date: new Date().toLocaleDateString()
+          sold_date: saleDate.toLocaleDateString(),
+          is_recent: (new Date() - saleDate) / (1000 * 60 * 60 * 24) < 365 // Within past year
         });
       }
     });
   }
+  
+  // Prioritize recent sales (within past year)
+  comparables.sort((a, b) => {
+    if (a.is_recent && !b.is_recent) return -1;
+    if (!a.is_recent && b.is_recent) return 1;
+    return 0;
+  });
   
   return comparables.slice(0, 3); // Return max 3 comparables
 }
