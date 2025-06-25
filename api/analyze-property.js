@@ -41,6 +41,8 @@ module.exports = async function handler(req, res) {
     
     console.log('API Keys Status:', {
       perplexity: perplexityConfigured ? 'CONFIGURED' : 'MISSING',
+      perplexityKeyLength: perplexityApiKey ? perplexityApiKey.length : 0,
+      perplexityKeyPrefix: perplexityApiKey ? perplexityApiKey.substring(0, 10) : 'N/A',
       openai: openaiConfigured ? 'CONFIGURED' : 'MISSING'
     });
 
@@ -78,8 +80,15 @@ module.exports = async function handler(req, res) {
 
     // Step 1: Enhanced Research with Perplexity AI
     console.log('Calling Perplexity AI for FRESH real-time research...');
+    console.log('Request details:', {
+      address: propertyAddress,
+      city: address.city,
+      estimatedValue: estimatedValue
+    });
     
-    const perplexityResponse = await fetch('https://api.perplexity.ai/chat/completions', {
+    let perplexityResponse;
+    try {
+      perplexityResponse = await fetch('https://api.perplexity.ai/chat/completions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${perplexityApiKey}`,
@@ -168,16 +177,40 @@ IMPORTANT FORMATTING:
         top_k: 10
       })
     });
+    } catch (fetchError) {
+      console.error('========== FETCH ERROR ==========');
+      console.error('Error fetching from Perplexity:', fetchError.message);
+      console.error('Error type:', fetchError.name);
+      console.error('========== END FETCH ERROR ==========');
+      throw new Error(`Failed to connect to Perplexity API: ${fetchError.message}`);
+    }
 
     if (!perplexityResponse.ok) {
       const errorData = await perplexityResponse.text();
-      console.error('Perplexity API error:', errorData);
-      throw new Error('Perplexity API request failed');
+      console.error('========== PERPLEXITY API ERROR ==========');
+      console.error('Status:', perplexityResponse.status);
+      console.error('Status Text:', perplexityResponse.statusText);
+      console.error('Error Response:', errorData);
+      console.error('API Key:', perplexityApiKey ? `${perplexityApiKey.substring(0, 10)}...` : 'MISSING');
+      console.error('========== END ERROR ==========');
+      
+      // Return more specific error messages
+      if (perplexityResponse.status === 401) {
+        throw new Error('Invalid Perplexity API key. Please check your API key configuration.');
+      } else if (perplexityResponse.status === 429) {
+        throw new Error('Perplexity API rate limit exceeded. Please try again later.');
+      } else if (perplexityResponse.status === 400) {
+        throw new Error('Invalid request to Perplexity API. Check the request format.');
+      } else {
+        throw new Error(`Perplexity API request failed: ${perplexityResponse.status} ${perplexityResponse.statusText}`);
+      }
     }
 
     const perplexityData = await perplexityResponse.json();
     const researchContent = perplexityData.choices[0].message.content;
-    console.log('Fresh research completed, content sample:', researchContent.substring(0, 500));
+    console.log('========== PERPLEXITY RAW RESPONSE ==========');
+    console.log('Full research content:', researchContent);
+    console.log('========== END PERPLEXITY RESPONSE ==========');
 
     // Calculate API costs from token usage
     const apiCosts = calculateAPIUsageCost(perplexityData.usage || {});
@@ -185,7 +218,10 @@ IMPORTANT FORMATTING:
 
     // Extract and format citations with URLs
     const rawCitations = perplexityData.citations || [];
+    console.log('========== PERPLEXITY CITATIONS ==========');
     console.log('Raw citations from Perplexity:', JSON.stringify(rawCitations, null, 2));
+    console.log('Number of citations:', rawCitations.length);
+    console.log('========== END CITATIONS ==========');
     
     const citations = rawCitations.map((citation, index) => ({
       name: citation.title || citation.name || `Source ${index + 1}`,
@@ -363,7 +399,12 @@ Extract into this JSON format:
           apiCosts.total_cost_usd = parseFloat((apiCosts.total_cost_usd + openaiCosts.total_cost_usd).toFixed(6));
           
           const extracted = JSON.parse(openaiData.choices[0].message.content);
-          console.log('Extraction successful, sample:', JSON.stringify(extracted.property_details));
+          console.log('========== EXTRACTED DATA FROM OPENAI ==========');
+          console.log('Full extracted data:', JSON.stringify(extracted, null, 2));
+          console.log('Property Value Found:', extracted.property_details?.estimated_value);
+          console.log('Property Tax Found:', extracted.costs?.property_tax_annual);
+          console.log('Data sources found:', extracted.data_sources_found);
+          console.log('========== END EXTRACTED DATA ==========');
           
           // Build structured data from extraction
           structuredData = buildStructuredData(extracted, propertyAddress, researchContent, citations, address);
@@ -449,10 +490,15 @@ Extract into this JSON format:
       }
     }
 
+    console.log('========== FINAL ANALYSIS DATA ==========');
     console.log('✅ ANALYSIS COMPLETED');
     console.log('Property Value:', analysisData.property_details?.estimated_value);
     console.log('Monthly Rent:', analysisData.long_term_rental?.monthly_rent);
+    console.log('Property Tax Annual:', analysisData.costs?.property_tax_annual);
     console.log('ROI:', analysisData.roi_percentage);
+    console.log('Data Sources:', analysisData.data_sources?.length || 0);
+    console.log('Research Sources:', analysisData.research_sources?.length || 0);
+    console.log('========== END FINAL DATA ==========');
 
     return res.status(200).json({
       success: true,
@@ -498,6 +544,7 @@ function buildStructuredData(extracted, propertyAddress, researchContent, citati
   
   // If we found comparable tax data, use it instead of calculated
   if (comparableTax) {
+    console.log('========== COMPARABLE TAX DATA FOUND ==========');
     console.log(`Using comparable tax data: $${comparableTax}/year instead of calculated $${accurateExpenses.property_tax_annual}/year`);
     accurateExpenses.property_tax_annual = comparableTax;
     accurateExpenses.property_tax_rate = comparableTax / propertyValue;
