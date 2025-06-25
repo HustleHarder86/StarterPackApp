@@ -41,6 +41,8 @@ module.exports = async function handler(req, res) {
     
     console.log('API Keys Status:', {
       perplexity: perplexityConfigured ? 'CONFIGURED' : 'MISSING',
+      perplexityKeyLength: perplexityApiKey ? perplexityApiKey.length : 0,
+      perplexityKeyPrefix: perplexityApiKey ? perplexityApiKey.substring(0, 10) : 'N/A',
       openai: openaiConfigured ? 'CONFIGURED' : 'MISSING'
     });
 
@@ -78,8 +80,15 @@ module.exports = async function handler(req, res) {
 
     // Step 1: Enhanced Research with Perplexity AI
     console.log('Calling Perplexity AI for FRESH real-time research...');
+    console.log('Request details:', {
+      address: propertyAddress,
+      city: address.city,
+      estimatedValue: estimatedValue
+    });
     
-    const perplexityResponse = await fetch('https://api.perplexity.ai/chat/completions', {
+    let perplexityResponse;
+    try {
+      perplexityResponse = await fetch('https://api.perplexity.ai/chat/completions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${perplexityApiKey}`,
@@ -168,11 +177,33 @@ IMPORTANT FORMATTING:
         top_k: 10
       })
     });
+    } catch (fetchError) {
+      console.error('========== FETCH ERROR ==========');
+      console.error('Error fetching from Perplexity:', fetchError.message);
+      console.error('Error type:', fetchError.name);
+      console.error('========== END FETCH ERROR ==========');
+      throw new Error(`Failed to connect to Perplexity API: ${fetchError.message}`);
+    }
 
     if (!perplexityResponse.ok) {
       const errorData = await perplexityResponse.text();
-      console.error('Perplexity API error:', errorData);
-      throw new Error('Perplexity API request failed');
+      console.error('========== PERPLEXITY API ERROR ==========');
+      console.error('Status:', perplexityResponse.status);
+      console.error('Status Text:', perplexityResponse.statusText);
+      console.error('Error Response:', errorData);
+      console.error('API Key:', perplexityApiKey ? `${perplexityApiKey.substring(0, 10)}...` : 'MISSING');
+      console.error('========== END ERROR ==========');
+      
+      // Return more specific error messages
+      if (perplexityResponse.status === 401) {
+        throw new Error('Invalid Perplexity API key. Please check your API key configuration.');
+      } else if (perplexityResponse.status === 429) {
+        throw new Error('Perplexity API rate limit exceeded. Please try again later.');
+      } else if (perplexityResponse.status === 400) {
+        throw new Error('Invalid request to Perplexity API. Check the request format.');
+      } else {
+        throw new Error(`Perplexity API request failed: ${perplexityResponse.status} ${perplexityResponse.statusText}`);
+      }
     }
 
     const perplexityData = await perplexityResponse.json();
