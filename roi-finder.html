@@ -11,6 +11,11 @@
   <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   
+  <!-- React for components -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  
   <style>
     /* Loading animation */
     @keyframes spin {
@@ -286,6 +291,19 @@
               </div>
             </div>
 
+            <div class="bg-blue-50 rounded-lg p-4">
+              <label class="flex items-center gap-3 cursor-pointer">
+                <input type="checkbox" id="include-str-analysis" class="w-5 h-5 text-blue-600 rounded focus:ring-blue-500" checked />
+                <span class="text-sm text-gray-700">
+                  <strong>Include Short-Term Rental (Airbnb) Analysis</strong>
+                  <span class="text-xs text-gray-500 block">Compare traditional rental vs Airbnb income potential</span>
+                </span>
+              </label>
+              <p class="text-xs text-gray-500 mt-2" id="str-trial-info">
+                <!-- Trial info will be populated here -->
+              </p>
+            </div>
+
             <button type="submit" class="btn-primary w-full">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
@@ -375,6 +393,11 @@
             </div>
           </div>
         </div>
+      </div>
+
+      <!-- STR Comparison Section -->
+      <div id="str-comparison-container" class="mb-8" style="display: none;">
+        <!-- RentalComparisonView component will be mounted here -->
       </div>
 
       <!-- Charts Section -->
@@ -797,6 +820,7 @@
           break;
         case 'property-form':
           document.getElementById('property-form-screen').style.display = 'flex';
+          updateStrTrialInfo();
           break;
         case 'results':
           document.getElementById('results-screen').style.display = 'block';
@@ -838,6 +862,27 @@
       }
     }
 
+    // Update STR trial info
+    function updateStrTrialInfo() {
+      const infoEl = document.getElementById('str-trial-info');
+      if (!userProfile) return;
+      
+      if (userProfile.subscriptionTier === 'pro' || userProfile.subscriptionTier === 'enterprise') {
+        infoEl.innerHTML = '<span class="text-green-600">✓ STR analysis included with your Pro subscription</span>';
+      } else {
+        const trialsUsed = userProfile.strTrialUsed || 0;
+        const trialsRemaining = Math.max(0, 5 - trialsUsed);
+        
+        if (trialsRemaining > 0) {
+          infoEl.innerHTML = `<span class="text-blue-600">Free trial: ${trialsRemaining} STR analyses remaining</span>`;
+        } else {
+          infoEl.innerHTML = '<span class="text-gray-600">Free STR trial expired. <a href="#" class="text-blue-600 underline">Upgrade to Pro</a> for unlimited STR analysis</span>';
+          document.getElementById('include-str-analysis').checked = false;
+          document.getElementById('include-str-analysis').disabled = true;
+        }
+      }
+    }
+
     // Property analysis function
     async function analyzeProperty(address) {
       try {
@@ -846,8 +891,8 @@
         // Format address
         const fullAddress = `${address.street}, ${address.city}, ${address.state}, ${address.country} ${address.postal}`.trim();
         
-        // Call API
-        const response = await fetch('/api/analyze-property', {
+        // Call enhanced API with STR analysis
+        const response = await fetch('/api/analyze-property-enhanced', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -857,7 +902,8 @@
             propertyAddress: fullAddress,
             userEmail: currentUser.email,
             userName: currentUser.displayName,
-            requestType: 'authenticated'
+            requestType: 'authenticated',
+            includeStrAnalysis: document.getElementById('include-str-analysis').checked
           })
         });
         
@@ -1033,6 +1079,9 @@
       
       // Create Charts
       createCharts(analysis);
+      
+      // Mount STR comparison view if data exists
+      mountRentalComparisonView(analysis);
     }
 
     // Create charts
@@ -1755,6 +1804,36 @@
     });
 
     console.log('Script setup complete');
+    // Load and mount RentalComparisonView component
+    function mountRentalComparisonView(analysisData) {
+      const container = document.getElementById('str-comparison-container');
+      if (!container) return;
+      
+      // Show container if STR data exists
+      if (analysisData.strAnalysis) {
+        container.style.display = 'block';
+        
+        // Load component script
+        const script = document.createElement('script');
+        script.type = 'text/babel';
+        script.src = '/components/RentalComparisonView.jsx';
+        script.onload = () => {
+          // Mount component after loading
+          const { RentalComparisonView } = window;
+          if (RentalComparisonView) {
+            ReactDOM.render(
+              React.createElement(RentalComparisonView, { 
+                analysisData: analysisData 
+              }),
+              container
+            );
+          }
+        };
+        document.body.appendChild(script);
+      } else {
+        container.style.display = 'none';
+      }
+    }
   </script>
 </body>
 </html>
