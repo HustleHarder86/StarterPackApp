@@ -483,3 +483,8 @@ const RentalComparisonView = ({ analysis, propertyAddress }) => {
     </div>
   );
 };
+
+// Export to window for CDN usage
+if (typeof window !== 'undefined') {
+  window.RentalComparisonView = RentalComparisonView;
+}
