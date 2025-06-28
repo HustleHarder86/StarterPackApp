@@ -49,18 +49,37 @@ This workflow ensures:
 
 ## Project Overview
 
-**StarterPackApp** is a real estate investment analysis platform that helps users analyze properties for ROI potential. The application integrates with Perplexity AI for market research and provides comprehensive financial analysis tools.
+**StarterPackApp** is an advanced real estate investment analysis SaaS platform that helps investors make data-driven decisions. The platform combines traditional rental analysis with short-term rental (Airbnb) projections, automated property data extraction via browser extension, and professional reporting capabilities.
+
+### Key Platform Features
+- **Browser Extension Integration**: One-click property analysis from Realtor.ca listings
+- **Dual Analysis Modes**: Traditional long-term rental AND short-term rental (STR) analysis
+- **AI-Powered Insights**: Market research via Perplexity AI with intelligent recommendations
+- **Professional Reports**: PDF generation with comprehensive investment metrics
+- **Subscription Tiers**: Free tier for basic analysis, Pro tier for STR analysis and advanced features
 
 ## Tech Stack
 
-- **Frontend**: HTML5, CSS3, JavaScript (ES6+), JSX Components
-- **Backend**: Node.js with Vercel API Routes
+### Core Stack (Existing)
+- **Frontend**: HTML5, CSS3, JavaScript (ES6+), React Components (CDN)
+- **Backend**: Node.js with Vercel Serverless Functions
 - **Database**: Firebase Firestore
 - **Authentication**: Firebase Auth
 - **Styling**: Tailwind CSS + Custom CSS
-- **Charts**: Chart.js
-- **External APIs**: Perplexity AI, OpenAI (optional)
+- **Charts**: Chart.js + D3.js (for advanced visualizations)
 - **Deployment**: Vercel
+
+### External Services
+- **Perplexity AI**: Market research and property insights (required)
+- **OpenAI GPT-4**: Data structuring fallback (optional)
+- **Airbnb Scraper API**: STR comparable data ($0.05/100 results)
+- **Stripe**: Subscription management
+- **SendGrid/Vercel Email**: Transactional emails
+
+### Browser Extension
+- **Platform**: Chrome/Edge WebExtensions API
+- **Target**: Realtor.ca property listings
+- **Build**: Webpack for extension bundling
 
 ## Code Style Guidelines
 
@@ -203,29 +222,49 @@ This workflow ensures:
 ### Directory Structure
 ```
 /
-├── api/                    # Vercel serverless functions
-│   ├── analyze-property.js # Main analysis endpoint
-│   ├── config.js          # Public app configuration
-│   ├── user-management.js # User profile operations
-│   └── stripe-*.js        # Payment processing (optional)
-├── components/             # React JSX components (CDN-loaded)  
+├── api/                          # Vercel serverless functions
+│   ├── analyze-property.js       # Main analysis endpoint
+│   ├── properties/              # Property management endpoints
+│   │   ├── ingest.js           # Browser extension data receiver
+│   │   └── list.js             # User properties listing
+│   ├── str-analysis/            # STR analysis endpoints
+│   │   ├── analyze.js          # Airbnb analysis
+│   │   └── comparables.js      # Get comparable properties
+│   ├── reports/                 # Report generation
+│   │   ├── generate.js         # PDF generation
+│   │   └── download.js         # Report retrieval
+│   ├── user-management.js       # User profile operations
+│   └── stripe-*.js             # Payment processing
+├── components/                   # React JSX components (CDN-loaded)
 │   ├── PropertyAnalysisForm.jsx
+│   ├── STRAnalysis.jsx         # New STR analysis component
+│   ├── ComparablesList.jsx     # Display Airbnb comparables
+│   ├── ReportPreview.jsx       # PDF preview component
 │   └── ComparisonView.jsx
-├── utils/                  # Client-side utilities
-│   ├── analytics.js       # Usage tracking
-│   ├── error-handler.js   # Error handling
-│   └── pdf-generator.js   # Report generation
-├── assets/                # Static assets
-├── tests/                 # Basic API tests
-├── *.html                 # Application pages
-├── styles.css             # Custom CSS
-├── manifest.json          # PWA configuration
-└── vercel.json            # Deployment configuration
+├── extension/                    # Browser extension
+│   ├── manifest.json           # Extension configuration
+│   ├── content.js              # Realtor.ca scraper
+│   ├── popup.html/js           # Extension UI
+│   └── background.js           # API communication
+├── utils/                       # Utilities
+│   ├── analytics.js            # Usage tracking
+│   ├── calculators/            # Financial calculations
+│   │   ├── traditional.js      # Traditional rental calc
+│   │   └── str.js             # STR revenue calc
+│   ├── comparable-matcher.js   # Matching algorithm
+│   └── pdf-generator.js        # Report generation
+├── assets/                      # Static assets
+├── tests/                       # Test files
+├── *.html                       # Application pages
+├── styles.css                   # Custom CSS
+└── vercel.json                  # Deployment configuration
 ```
 
 ### Application Pages Architecture
 - `index.html` → Landing page with lead capture
-- `roi-finder.html` → Main authenticated application
+- `roi-finder.html` → Main authenticated application (enhanced with STR analysis)
+- `portfolio.html` → Portfolio overview and management (new)
+- `reports.html` → Report history and downloads (new)
 - `admin-dashboard.html` → Admin interface for user management
 - `debug-test.html` → Development diagnostics tool
 
@@ -240,16 +279,82 @@ This workflow ensures:
 ### Perplexity AI Guidelines
 
 1. **Model Selection**: Use `llama-3.1-sonar-large-128k-online` for best results
-2. **Token Optimization**: 
+2. **Use Cases**:
+   - **Long-Term Rental Rates**: Search for current rental rates in the area
+   - **Market Research**: Neighborhood data, trends, demographics
+   - **Property Comparables**: Find similar properties for rent
+3. **Token Optimization**: 
    - Limit property comparables to maximum 3 per request
    - Structure prompts efficiently to minimize tokens
-3. **Error Handling**: Always provide fallback data for API failures
+4. **Error Handling**: Always provide fallback data for API failures
+
+#### Long-Term Rental Rate Discovery Prompt Template:
+```javascript
+const prompt = `
+Find current long-term rental rates for properties similar to:
+- Address: ${property.address}
+- Type: ${property.propertyType}
+- Bedrooms: ${property.bedrooms}
+- Bathrooms: ${property.bathrooms}
+- Size: ${property.sqft} sq ft
+
+Provide:
+1. Average monthly rent for similar properties
+2. Rent range (low to high)
+3. 3 specific comparable rental listings with addresses and prices
+4. Vacancy rate in the area
+`;
+```
+
+### Airbnb Scraper API Integration
+
+1. **Endpoint**: Configure via `AIRBNB_SCRAPER_API_URL`
+2. **Authentication**: API key in headers
+3. **Rate Limiting**: 
+   - Max 1000 requests/hour
+   - Implement queue-based throttling
+   - Cache results for 24 hours
+4. **Cost Management**: 
+   - $0.05 per 100 results
+   - Track usage per user
+   - Pro tier only feature
+
+### Comparable Matching Algorithm
+
+```javascript
+// Matching criteria (weighted)
+{
+  location: 0.4,        // Same neighborhood/area
+  bedrooms: 0.2,        // Similar bedroom count (±1)
+  propertyType: 0.2,    // Same property type
+  size: 0.1,           // Similar square footage (±20%)
+  amenities: 0.1       // Pool, parking, etc.
+}
+```
 
 ### Rate Limiting & Usage Tracking
 
-1. **Implementation**: Track API usage in Firebase
-2. **Limits**: Respect user subscription tiers
-3. **Monitoring**: Log all API calls with timestamps and usage metrics
+1. **Implementation**: Track all API usage in Firebase
+2. **Limits by Tier**:
+   - Free: 5 analyses/month + 5 STR trial analyses (lifetime)
+   - Pro: 100 analyses/month, unlimited STR
+   - Enterprise: Unlimited everything
+3. **STR Trial Logic**:
+   ```javascript
+   // Check if user can use STR
+   const canUseSTR = (user) => {
+     if (user.subscriptionTier === 'pro' || user.subscriptionTier === 'enterprise') {
+       return true;
+     }
+     return user.strTrialUsed < 5;
+   };
+   
+   // After STR analysis
+   if (user.subscriptionTier === 'free' && user.strTrialUsed < 5) {
+     await updateUser(userId, { strTrialUsed: user.strTrialUsed + 1 });
+   }
+   ```
+4. **Monitoring**: Real-time usage dashboard with trial tracking
 
 ## Database Patterns (Firebase)
 
@@ -259,19 +364,81 @@ This workflow ensures:
 {
   email: string,
   displayName: string,
-  subscriptionStatus: 'trial' | 'active' | 'cancelled',
+  subscriptionTier: 'free' | 'pro' | 'enterprise',
+  subscriptionStatus: 'active' | 'cancelled' | 'past_due',
   monthlyAnalysisCount: number,
-  monthlyAnalysisLimit: number
+  monthlyAnalysisLimit: number,
+  strAnalysisEnabled: boolean,
+  strTrialUsed: number,         // Track free STR analyses (max 5)
+  strTrialExpiry: timestamp,    // Optional: expire trial after 30 days
+  createdAt: timestamp
+}
+
+// properties/{propertyId}
+{
+  userId: string,
+  externalId: string,          // Realtor.ca MLS number
+  address: {
+    street: string,
+    city: string,
+    province: string,
+    postalCode: string
+  },
+  listingData: object,         // Full Realtor.ca JSON
+  price: number,
+  bedrooms: number,
+  bathrooms: number,
+  sqft: number,
+  propertyType: string,
+  createdAt: timestamp,
+  lastAnalyzed: timestamp
 }
 
 // analyses/{analysisId}
 {
   userId: string,
-  propertyAddress: string,
+  propertyId: string,
+  analysisType: 'traditional' | 'str' | 'combined',
+  longTermRental: {
+    monthlyRent: number,        // AI-discovered from Perplexity
+    rentRange: {
+      low: number,
+      high: number
+    },
+    comparables: array,         // 3 similar rental properties
+    vacancyRate: number,
+    cashFlow: number,
+    capRate: number,
+    roi: number,
+    expenses: object
+  },
+  strAnalysis: {              // Pro feature only
+    avgNightlyRate: number,
+    occupancyRate: number,
+    monthlyRevenue: number,
+    annualRevenue: number,
+    comparables: array
+  },
+  comparison: {               // LTR vs STR comparison
+    monthlyIncomeDiff: number,
+    annualIncomeDiff: number,
+    betterStrategy: 'ltr' | 'str',
+    breakEvenOccupancy: number,  // STR occupancy needed to match LTR
+    riskAssessment: string
+  },
+  recommendations: array,
+  overallScore: number,       // 0-10 investment score
+  createdAt: timestamp
+}
+
+// reports/{reportId}
+{
+  userId: string,
+  analysisId: string,
+  reportType: 'summary' | 'detailed' | 'comparison',
+  fileUrl: string,            // Firebase Storage URL
   createdAt: timestamp,
-  propertyValue: number,
-  roi: number,
-  recommendations: object
+  expiresAt: timestamp        // 30 days
 }
 ```
 
@@ -348,7 +515,7 @@ VITE_FIREBASE_APP_ID=
 VITE_STRIPE_PUBLISHABLE_KEY=pk_test_*
 ```
 
-**Server-side (API functions only):**
+**Server-side (Set in Vercel Environment Variables):**
 ```bash
 # Firebase Admin SDK
 FIREBASE_PROJECT_ID=your-project-id
@@ -356,13 +523,24 @@ FIREBASE_CLIENT_EMAIL=firebase-adminsdk@your-project.iam.gserviceaccount.com
 FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nYour private key\n-----END PRIVATE KEY-----\n"
 
 # AI APIs
-PERPLEXITY_API_KEY=pplx-*
-OPENAI_API_KEY=sk-* (optional but recommended)
+PERPLEXITY_API_KEY=pplx-*              # Required
+OPENAI_API_KEY=sk-*                   # Optional but recommended
 
-# Stripe secret keys (optional)
+# Airbnb Scraper API (Required for STR analysis)
+AIRBNB_SCRAPER_API_KEY=your-key
+AIRBNB_SCRAPER_API_URL=https://api.example.com/v1
+
+# Stripe (Required for subscriptions)
 STRIPE_SECRET_KEY=sk_test_*
 STRIPE_WEBHOOK_SECRET=whsec_*
+STRIPE_PRICE_ID_PRO=price_xxxxx       # Pro tier price ID
+
+# Email Service (Optional)
+SENDGRID_API_KEY=SG.xxxxx
+FROM_EMAIL=noreply@starterpackapp.com
 ```
+
+**Note**: All API keys should be configured in Vercel's environment variables dashboard, NOT in local .env files for security.
 
 ### Development Commands
 ```bash
@@ -395,11 +573,12 @@ vercel --help  # See all available commands
 ## Common Tasks & Patterns
 
 ### Adding a New API Endpoint
-1. Create file in `/api/` directory
+1. Create file in `/api/` directory (or subdirectory)
 2. Follow standard handler structure with CORS
 3. Implement proper validation and error handling
-4. Add logging for debugging
-5. Test with various inputs
+4. Add subscription tier checks if needed
+5. Add logging for debugging
+6. Test with various inputs
 
 ### Creating a New Component
 1. Create JSX file in `/components/` directory
@@ -412,16 +591,64 @@ vercel --help  # See all available commands
 1. Add API key to environment variables
 2. Implement proper error handling and fallbacks
 3. Add usage tracking to Firebase
-4. Respect rate limits and best practices
-5. Log API calls for monitoring
+4. Implement caching strategy (24hr for Airbnb data)
+5. Respect rate limits and best practices
+6. Log API calls for monitoring
+
+### Browser Extension Development
+1. Update manifest.json with proper permissions
+2. Content script extracts Realtor.ca data
+3. Background script handles API communication
+4. Popup provides user feedback
+5. Test on multiple property listing types
+
+### Implementing STR Analysis
+1. Check user subscription tier (Pro required)
+2. Extract property location and details
+3. Query Airbnb Scraper API with location
+4. Run comparable matching algorithm
+5. Calculate revenue projections
+6. Cache results for 24 hours
+7. Display comparables with source links
 
 ## Project-Specific Rules
 
 1. **Real Estate Focus**: All features should relate to property investment analysis
-2. **User Experience**: Prioritize speed and simplicity in the interface
-3. **Data Accuracy**: When using AI APIs, always validate and cross-reference data
-4. **Cost Efficiency**: Monitor API usage to control costs
-5. **Mobile First**: Ensure all features work well on mobile devices
+2. **Canadian Market Priority**: Optimize for Canadian real estate (taxes, regulations, currency)
+3. **User Experience**: Prioritize speed and simplicity in the interface
+4. **Data Accuracy**: When using AI APIs, always validate and cross-reference data
+5. **Cost Efficiency**: Monitor API usage to control costs (especially Airbnb API)
+6. **Mobile First**: Ensure all features work well on mobile devices
+7. **Subscription Enforcement**: Enforce tier limits (STR trial for free users, unlimited for Pro)
+8. **Privacy Compliance**: Follow Canadian privacy laws (PIPEDA)
+9. **Trial Experience**: Give free users 5 STR analyses to experience full value before upgrading
+
+## Implementation Phases
+
+### Phase 1: Foundation Enhancement (Current Priority)
+- [ ] Create browser extension for Realtor.ca
+- [ ] Add property ingestion endpoint
+- [ ] Implement AI-powered long-term rental rate discovery
+- [ ] Update UI for dual analysis modes (LTR vs STR)
+
+### Phase 2: STR Integration
+- [ ] Integrate Airbnb Scraper API
+- [ ] Implement comparable matching algorithm
+- [ ] Build STR revenue projections
+- [ ] Create LTR vs STR comparison engine
+- [ ] Design comparison visualizations (charts, tables)
+
+### Phase 3: Professional Features
+- [ ] PDF report generation
+- [ ] Portfolio tracking
+- [ ] Saved searches with alerts
+- [ ] Email notifications
+
+### Phase 4: Launch Preparation
+- [ ] Subscription tier implementation
+- [ ] Performance optimization
+- [ ] Security audit
+- [ ] Beta testing program
 
 ## Troubleshooting Common Issues
 

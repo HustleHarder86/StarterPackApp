@@ -1,35 +1,69 @@
-# InvestorProps - AI-Powered Real Estate Investment Analysis Platform
+# StarterPackApp - Advanced Real Estate Investment Analysis Platform
 
-A comprehensive real estate investment analysis platform that provides AI-powered property analysis with authentication, user dashboard, and worldwide property support.
+A sophisticated real estate investment analysis SaaS platform that combines AI-powered property analysis with automated data extraction from property listings. Features both traditional rental and short-term rental (Airbnb) analysis with professional reporting.
 
 ## 🚀 Key Features
 
-- 🔐 **User Authentication** - Sign up/sign in with email and password
-- 📊 **User Dashboard** - View all your property analyses in one place
-- 🌍 **International Support** - Analyze properties anywhere in the world
-- 🤖 **AI-Powered Analysis** - Uses Perplexity AI and OpenAI GPT-4 for accurate market research
-- 💰 **ROI Calculations** - Compare short-term (Airbnb) vs long-term rental potential
-- 📈 **Visual Analytics** - Charts and graphs for easy decision making
-- 🔄 **Real-time Data** - Current market values, rental rates, and costs
-- 💳 **Subscription Management** - Stripe integration for paid plans (optional)
+### Core Features
+- 🔐 **User Authentication** - Firebase Auth with subscription tiers
+- 📊 **Comprehensive Dashboard** - Track all property analyses and portfolio performance
+- 🌍 **Canadian Market Focus** - Optimized for Canadian real estate with international support
+- 🤖 **AI-Powered Analysis** - Perplexity AI for market research + intelligent recommendations
+- 🏠 **Browser Extension** - One-click analysis from Realtor.ca listings
+
+### Analysis Capabilities
+- 💰 **AI-Powered Rental Discovery** - Uses Perplexity AI to find current long-term rental rates
+- 🏨 **Short-Term Rental Analysis** - Airbnb revenue projections with comparable matching
+- 🔊 **STR vs LTR Comparison** - Side-by-side comparison of both rental strategies
+- 📈 **Visual Analytics** - Interactive charts comparing rental income potential
+- 🔄 **Real-time Data** - Current market values, rental rates, and neighborhood trends
+- 📑 **Professional Reports** - Export detailed PDF reports with both rental strategies
+
+### Platform Features
+- 💳 **Subscription Tiers** - Free tier + Pro tier with STR analysis
+- 🎯 **Smart Comparable Matching** - Intelligent algorithm for finding similar properties
+- 📱 **Mobile Responsive** - Full functionality on all devices
+- 🔍 **Saved Searches** - Monitor markets with custom alerts
+- 📊 **Portfolio Tracking** - Analyze multiple properties and track performance
 
 ## 🛠️ Tech Stack
 
-- **Frontend**: HTML, CSS, JavaScript, React (CDN)
-- **Backend**: Vercel Functions (Node.js)
+### Current Stack (Production)
+- **Frontend**: HTML5, CSS3, JavaScript (ES6+), React (CDN), Tailwind CSS
+- **Backend**: Vercel Serverless Functions (Node.js)
 - **Database**: Firebase Firestore
 - **Authentication**: Firebase Auth
-- **AI APIs**: Perplexity AI (research) + OpenAI GPT-4 (data structuring)
-- **Payments**: Stripe (optional)
+- **Caching**: Vercel Edge Cache + Firebase
+- **File Storage**: Firebase Storage (reports)
+
+### External Services
+- **AI APIs**: 
+  - Perplexity AI - Market research and real-time data
+  - OpenAI GPT-4 - Data structuring (optional fallback)
+  - Airbnb Scraper API - STR comparable data ($0.05/100 results)
+- **Payments**: Stripe (subscription management)
+- **Email**: Vercel Email API / SendGrid
 - **Deployment**: Vercel
+
+### Browser Extension
+- **Platform**: Chrome/Edge WebExtensions API
+- **Target**: Realtor.ca property listings
+- **Communication**: REST API to backend
 
 ## 📋 Prerequisites
 
-- Node.js 16+ installed
+### Required
+- Node.js 18+ installed
 - Vercel account (free tier works)
-- Firebase project
-- API keys for Perplexity AI and OpenAI
-- Stripe account (optional, for payments)
+- Firebase project (Auth + Firestore)
+- Perplexity AI API key
+- Chrome or Edge browser (for extension development)
+
+### Optional but Recommended
+- OpenAI API key (fallback for data structuring)
+- Airbnb Scraper API account (for STR analysis)
+- Stripe account (for paid subscriptions)
+- SendGrid account (for transactional emails)
 
 ## 🚀 Quick Start
 
@@ -67,14 +101,22 @@ FIREBASE_PROJECT_ID=your-project-id
 FIREBASE_CLIENT_EMAIL=firebase-adminsdk@your-project.iam.gserviceaccount.com
 FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nYour private key\n-----END PRIVATE KEY-----\n"
 
-# AI APIs (REQUIRED)
-PERPLEXITY_API_KEY=pplx-your-api-key
-OPENAI_API_KEY=sk-your-openai-key
+# AI APIs
+PERPLEXITY_API_KEY=pplx-your-api-key  # REQUIRED
+OPENAI_API_KEY=sk-your-openai-key     # OPTIONAL (recommended)
 
-# Stripe (OPTIONAL - app works without these)
+# Airbnb Scraper API (OPTIONAL - for STR analysis)
+AIRBNB_SCRAPER_API_KEY=your-scraper-api-key
+AIRBNB_SCRAPER_API_URL=https://api.scrapingservice.com/v1
+
+# Stripe (OPTIONAL - for paid subscriptions)
 VITE_STRIPE_PUBLISHABLE_KEY=pk_test_your_key
 STRIPE_SECRET_KEY=sk_test_your_key
 STRIPE_WEBHOOK_SECRET=whsec_your_secret
+
+# Email Service (OPTIONAL)
+SENDGRID_API_KEY=SG.your-api-key
+FROM_EMAIL=noreply@starterpackapp.com
 ```
 
 ### 4. Run Development Server
@@ -139,38 +181,76 @@ service cloud.firestore {
 
 ### User Flow
 
-1. **Sign Up/Sign In**
-   - Users create account with email/password
-   - 7-day free trial with 3 analyses
-   - Profile stored in Firestore
+1. **Property Discovery**
+   - Browse properties on Realtor.ca
+   - Click browser extension button to analyze
+   - OR manually enter property details in app
 
-2. **Property Analysis**
-   - Enter property address (broken down by street, city, state/province, country)
-   - AI researches property using Perplexity (market data, comparables, rental rates)
-   - OpenAI structures the data into investment metrics
-   - Results saved to user's account
+2. **Analysis Process**
+   - **Long-Term Rental**: AI discovers current rental rates for similar properties
+   - **STR Analysis** (Pro): Fetches Airbnb comparables for revenue projections
+   - **Comparison Engine**: Calculates ROI for both strategies side-by-side
+   - AI generates insights on which strategy yields better returns
+   - Results saved to user's portfolio with both rental scenarios
 
-3. **View Results**
-   - Comprehensive dashboard with property value, costs, ROI
-   - Visual charts comparing rental strategies
-   - Investment recommendations
-   - Access previous analyses from dashboard
+3. **Investment Decision**
+   - View comprehensive analysis dashboard
+   - Compare traditional vs STR potential
+   - See which strategy yields higher returns
+   - Generate professional PDF reports
+   - Track multiple properties in portfolio
 
-### Data Processing
+### Trial Experience
+- Free users get **5 lifetime STR analyses** to experience the full platform
+- After 5 uses, upgrade to Pro for unlimited STR analyses
+- Trial includes full comparison features and recommendations
 
-1. **Address Input** → Structured fields for international support
-2. **AI Research** → Perplexity searches real-time market data
-3. **Data Structuring** → OpenAI formats research into JSON
-4. **Calculations** → ROI, profits, and recommendations
-5. **Storage** → Firebase Firestore with user association
+### Technical Flow
+
+1. **Data Ingestion**
+   - Browser extension extracts Realtor.ca listing data
+   - POST to `/api/properties/ingest` endpoint
+   - Property data validated and stored
+
+2. **Analysis Engine**
+   - **LTR Discovery**: Perplexity AI searches for long-term rental rates
+   - **Financial Calculations**: Mortgage, expenses, cash flow for both strategies
+   - **STR Analysis**: Queries Airbnb API for comparable properties
+   - **Comparison Algorithm**: Calculates net returns for LTR vs STR
+   - **AI Recommendations**: Suggests optimal rental strategy based on data
+
+3. **Report Generation**
+   - Compile analysis data and visualizations
+   - Generate PDF using templates
+   - Store in Firebase Storage
+   - Email delivery option
 
 ## 📊 API Endpoints
 
-- `POST /api/analyze-property` - Main analysis endpoint
+### Core Endpoints
+- `POST /api/analyze-property` - Run property analysis
+- `POST /api/properties/ingest` - Receive data from browser extension
+- `GET /api/properties` - List user's properties
+- `GET /api/analyses` - Get user's analysis history
+
+### User Management
+- `GET/POST /api/user-management` - Profile management
+- `GET /api/subscription` - Subscription status
+- `POST /api/subscription/upgrade` - Upgrade to pro
+
+### STR Analysis (Pro Feature)
+- `POST /api/str-analysis` - Run Airbnb comparable analysis
+- `GET /api/str-comparables/:id` - Get comparable properties
+
+### Reporting
+- `POST /api/reports/generate` - Create PDF report
+- `GET /api/reports/:id` - Download report
+
+### Admin & Support
 - `GET /api/config` - Public configuration
 - `POST /api/submit-lead` - Lead capture
-- `POST /api/stripe-operations` - Payment operations (if configured)
-- `GET/POST /api/user-management` - User profile management
+- `POST /api/stripe-webhook` - Stripe events
+- `GET /api/monitor-usage` - Usage analytics
 
 ## 🐛 Troubleshooting
 
@@ -204,10 +284,29 @@ Visit `/debug-test.html` to run diagnostics:
 
 ## 💰 Subscription Tiers
 
-- **Free Trial**: 7 days, 3 analyses
-- **Starter**: $49/month, 100 analyses
-- **Pro**: $99/month, 250 analyses  
-- **Enterprise**: Custom pricing, unlimited
+### Free Tier
+- 5 property analyses/month
+- AI-powered long-term rental discovery
+- **5 FREE STR analyses** (trial experience)
+- Side-by-side LTR vs STR comparison
+- Basic reports (JSON/CSV export)
+- Email support
+
+### Pro Tier ($29/month)
+- 100 property analyses/month
+- Unlimited STR analyses
+- Full Airbnb comparable data
+- Professional PDF reports
+- Saved searches & alerts
+- Portfolio tracking
+- Priority support
+
+### Enterprise (Custom Pricing)
+- Unlimited analyses
+- API access
+- White-label options
+- Custom integrations
+- Dedicated support
 
 ## 🔒 Security
 
@@ -217,15 +316,40 @@ Visit `/debug-test.html` to run diagnostics:
 - HTTPS enforced on Vercel
 - Input validation and sanitization
 
+## 🏗️ Implementation Roadmap
+
+### Phase 1: Foundation Enhancement (Week 1-2)
+- [x] Existing authentication & dashboard
+- [ ] Browser extension MVP for Realtor.ca
+- [ ] Property ingestion endpoint
+- [ ] Enhanced traditional rental calculations
+
+### Phase 2: STR Integration (Week 3-4)
+- [ ] Airbnb Scraper API integration
+- [ ] Comparable matching algorithm
+- [ ] STR revenue projections
+- [ ] Comparison visualizations
+
+### Phase 3: Professional Features (Week 5-6)
+- [ ] PDF report generation
+- [ ] Saved searches functionality
+- [ ] Email notifications
+- [ ] Portfolio tracking
+
+### Phase 4: Launch Preparation (Week 7-8)
+- [ ] Subscription tier implementation
+- [ ] Performance optimization
+- [ ] Security audit
+- [ ] Beta testing program
+
 ## 📈 Future Enhancements
 
 - [ ] Mobile app (React Native)
-- [ ] Mortgage calculator integration
-- [ ] Market trend predictions
-- [ ] Portfolio management
-- [ ] Email notifications
-- [ ] PDF report generation
-- [ ] Multi-language support
+- [ ] MLS integration for multiple regions
+- [ ] AI-powered market predictions
+- [ ] Mortgage pre-qualification
+- [ ] Property management tools
+- [ ] Multi-language support (French priority)
 
 ## 🤝 Contributing
 
@@ -252,6 +376,20 @@ MIT License - see LICENSE file for details
 - Issues: GitHub Issues
 - Email: support@investorprops.com
 
+## 🧩 Browser Extension Setup
+
+### Installation (Development)
+1. Navigate to `extension/` directory
+2. Run `npm install` and `npm run build`
+3. Open Chrome/Edge → Extensions → Developer mode ON
+4. Click "Load unpacked" → Select `extension/dist` folder
+
+### Usage
+1. Navigate to any Realtor.ca property listing
+2. Click the StarterPackApp extension icon
+3. Review extracted data
+4. Click "Analyze Property" to send to app
+
 ---
 
-**Note**: This app can operate without Stripe configuration. Payment features will be disabled but all analysis functionality remains available.
+**Note**: The platform operates with a generous free tier. STR analysis and professional reports require a Pro subscription, but core ROI calculations are always available.
