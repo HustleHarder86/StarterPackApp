@@ -246,6 +246,8 @@
     let currentUser = null;
     let properties = [];
     let filteredProperties = [];
+    let propertyTypeChart = null;
+    let roiDistributionChart = null;
 
     // Check authentication
     auth.onAuthStateChanged(async (user) => {
@@ -288,15 +290,20 @@
 
         // Load analyses for these properties
         if (propertyIds.length > 0) {
-          const analysesSnapshot = await db.collection('analyses')
-            .where('propertyId', 'in', propertyIds)
-            .get();
-
           const analysesByProperty = {};
-          analysesSnapshot.forEach(doc => {
-            const analysis = doc.data();
-            analysesByProperty[analysis.propertyId] = analysis;
-          });
+          
+          // Split into chunks of 10 for Firestore 'in' query limitation
+          for (let i = 0; i < propertyIds.length; i += 10) {
+            const chunk = propertyIds.slice(i, i + 10);
+            const analysesSnapshot = await db.collection('analyses')
+              .where('propertyId', 'in', chunk)
+              .get();
+            
+            analysesSnapshot.forEach(doc => {
+              const analysis = doc.data();
+              analysesByProperty[analysis.propertyId] = analysis;
+            });
+          }
 
           // Merge analysis data with properties
           properties = properties.map(property => ({
@@ -354,6 +361,16 @@
 
     // Create portfolio charts
     function createCharts() {
+      // Destroy existing charts to prevent memory leaks
+      if (propertyTypeChart) {
+        propertyTypeChart.destroy();
+        propertyTypeChart = null;
+      }
+      if (roiDistributionChart) {
+        roiDistributionChart.destroy();
+        roiDistributionChart = null;
+      }
+      
       // Property Type Distribution
       const propertyTypes = {};
       properties.forEach(property => {
@@ -362,7 +379,7 @@
       });
 
       const typeCtx = document.getElementById('property-type-chart').getContext('2d');
-      new Chart(typeCtx, {
+      propertyTypeChart = new Chart(typeCtx, {
         type: 'doughnut',
         data: {
           labels: Object.keys(propertyTypes),
@@ -409,7 +426,7 @@
       });
 
       const roiCtx = document.getElementById('roi-distribution-chart').getContext('2d');
-      new Chart(roiCtx, {
+      roiDistributionChart = new Chart(roiCtx, {
         type: 'bar',
         data: {
           labels: Object.keys(roiRanges),
@@ -490,7 +507,7 @@
             </div>
             <div>
               <p class="text-gray-600">Analyzed</p>
-              <p class="font-semibold">${property.lastAnalyzed ? new Date(property.lastAnalyzed.toDate()).toLocaleDateString() : 'N/A'}</p>
+              <p class="font-semibold">${property.lastAnalyzed?.toDate ? new Date(property.lastAnalyzed.toDate()).toLocaleDateString() : 'N/A'}</p>
             </div>
           </div>
           
@@ -723,24 +740,35 @@
     document.getElementById('export-portfolio').addEventListener('click', exportPortfolio);
 
     function exportPortfolio() {
+      // Helper function to escape CSV fields
+      const escapeCSV = (field) => {
+        if (field == null) return '';
+        const str = String(field);
+        // If field contains comma, quotes, or newlines, wrap in quotes and escape quotes
+        if (str.includes(',') || str.includes('"') || str.includes('\n')) {
+          return '"' + str.replace(/"/g, '""') + '"';
+        }
+        return str;
+      };
+      
       const csv = [
         ['Address', 'City', 'Province', 'Type', 'Bedrooms', 'Bathrooms', 'Sqft', 'Price', 'Monthly Rent', 'Cap Rate', 'Cash Flow', 'Analyzed Date']
       ];
 
       properties.forEach(property => {
         csv.push([
-          property.address?.street || '',
-          property.address?.city || '',
-          property.address?.province || '',
-          property.propertyType || '',
-          property.bedrooms || '',
-          property.bathrooms || '',
-          property.sqft || '',
-          property.price || '',
-          property.analysis?.long_term_rental?.monthly_rent || '',
-          property.analysis?.roi_percentage || '',
-          property.analysis?.long_term_rental?.monthly_cash_flow || '',
-          property.lastAnalyzed ? new Date(property.lastAnalyzed.toDate()).toLocaleDateString() : ''
+          escapeCSV(property.address?.street || ''),
+          escapeCSV(property.address?.city || ''),
+          escapeCSV(property.address?.province || ''),
+          escapeCSV(property.propertyType || ''),
+          escapeCSV(property.bedrooms || ''),
+          escapeCSV(property.bathrooms || ''),
+          escapeCSV(property.sqft || ''),
+          escapeCSV(property.price || ''),
+          escapeCSV(property.analysis?.long_term_rental?.monthly_rent || ''),
+          escapeCSV(property.analysis?.roi_percentage || ''),
+          escapeCSV(property.analysis?.long_term_rental?.monthly_cash_flow || ''),
+          escapeCSV(property.lastAnalyzed?.toDate ? new Date(property.lastAnalyzed.toDate()).toLocaleDateString() : '')
         ]);
       });
 

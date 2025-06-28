@@ -482,7 +482,7 @@
                   <div class="flex justify-between items-center">
                     <span class="text-gray-700">Insurance</span>
                     <div class="flex flex-col items-end">
-                      <span class="font-semibold text-red-700" id="edit-insurance-display">-</span>
+                      <span class="font-semibold text-red-700" id="breakdown-insurance">-</span>
                       <span class="text-xs text-gray-500" id="breakdown-insurance-annual">($0/year)</span>
                       <input type="number" id="edit-insurance" class="hidden w-24 text-right px-2 py-1 border rounded text-sm font-semibold" step="100" min="0" placeholder="Monthly amount">
                     </div>
@@ -1063,7 +1063,7 @@
       document.getElementById('breakdown-taxes-annual').textContent = '($' + actualTaxAnnual.toLocaleString() + '/year)';
       
       // Insurance - show monthly with annual reference  
-      document.getElementById('edit-insurance-display').textContent = '$' + monthlyInsurance.toLocaleString();
+      document.getElementById('breakdown-insurance').textContent = '$' + monthlyInsurance.toLocaleString();
       const actualInsuranceAnnual = insuranceAnnual > propertyValue * 0.01 ? monthlyInsurance * 12 : insuranceAnnual;
       document.getElementById('breakdown-insurance-annual').textContent = '($' + actualInsuranceAnnual.toLocaleString() + '/year)';
       
@@ -1352,7 +1352,7 @@
       
       // Hide all edit inputs
       const editInputs = document.querySelectorAll('[id^="edit-"]');
-      const displayElements = document.querySelectorAll('#breakdown-income, #breakdown-mortgage, #breakdown-taxes, #edit-insurance-display, #breakdown-hoa, #breakdown-maintenance, #breakdown-management');
+      const displayElements = document.querySelectorAll('#breakdown-income, #breakdown-mortgage, #breakdown-taxes, #breakdown-insurance, #breakdown-hoa, #breakdown-maintenance, #breakdown-management');
       
       editInputs.forEach(input => {
         if (input) input.classList.add('hidden');
@@ -1369,7 +1369,7 @@
       const resetBtn = document.getElementById('reset-financials-btn');
       
       const editInputs = document.querySelectorAll('[id^="edit-"]');
-      const displayElements = document.querySelectorAll('#breakdown-income, #breakdown-mortgage, #breakdown-taxes, #edit-insurance-display, #breakdown-hoa, #breakdown-maintenance, #breakdown-management');
+      const displayElements = document.querySelectorAll('#breakdown-income, #breakdown-mortgage, #breakdown-taxes, #breakdown-insurance, #breakdown-hoa, #breakdown-maintenance, #breakdown-management');
       
       if (editMode) {
         editBtn.textContent = 'Save Changes';
@@ -1397,13 +1397,14 @@
 
     // Update Calculations
     function updateCalculations() {
-      const income = parseFloat(document.getElementById('edit-income').value) || 0;
-      const mortgage = parseFloat(document.getElementById('edit-mortgage').value) || 0;
-      const monthlyTaxes = parseFloat(document.getElementById('edit-taxes').value) || 0; // Now monthly
-      const monthlyInsurance = parseFloat(document.getElementById('edit-insurance').value) || 0; // Now monthly
-      const hoa = parseFloat(document.getElementById('edit-hoa').value) || 0;
-      const annualMaintenance = parseFloat(document.getElementById('edit-maintenance').value) || 0; // Still annual
-      const managementRate = parseFloat(document.getElementById('edit-management').value) || 0; // Default to 0
+      // Parse and validate inputs (ensure non-negative values)
+      const income = Math.max(0, parseFloat(document.getElementById('edit-income').value) || 0);
+      const mortgage = Math.max(0, parseFloat(document.getElementById('edit-mortgage').value) || 0);
+      const monthlyTaxes = Math.max(0, parseFloat(document.getElementById('edit-taxes').value) || 0); // Now monthly
+      const monthlyInsurance = Math.max(0, parseFloat(document.getElementById('edit-insurance').value) || 0); // Now monthly
+      const hoa = Math.max(0, parseFloat(document.getElementById('edit-hoa').value) || 0);
+      const annualMaintenance = Math.max(0, parseFloat(document.getElementById('edit-maintenance').value) || 0); // Still annual
+      const managementRate = Math.max(0, Math.min(100, parseFloat(document.getElementById('edit-management').value) || 0)); // 0-100%
       
       // Calculate monthly amounts
       const monthlyMaintenance = Math.round(annualMaintenance / 12);
@@ -1416,7 +1417,7 @@
       document.getElementById('breakdown-mortgage').textContent = `$${mortgage.toLocaleString()}`;
       document.getElementById('breakdown-taxes').textContent = `$${monthlyTaxes.toLocaleString()}`;
       document.getElementById('breakdown-taxes-annual').textContent = `($${(monthlyTaxes * 12).toLocaleString()}/year)`;
-      document.getElementById('edit-insurance-display').textContent = `$${monthlyInsurance.toLocaleString()}`;
+      document.getElementById('breakdown-insurance').textContent = `$${monthlyInsurance.toLocaleString()}`;
       document.getElementById('breakdown-insurance-annual').textContent = `($${(monthlyInsurance * 12).toLocaleString()}/year)`;
       document.getElementById('breakdown-hoa').textContent = `$${hoa.toLocaleString()}`;
       document.getElementById('breakdown-maintenance').textContent = `$${monthlyMaintenance.toLocaleString()}`;

@@ -275,19 +275,21 @@
       if (user) {
         currentUser = user;
         document.getElementById('user-email').textContent = user.email;
-        await loadReports();
-        await loadProperties();
+        
+        // Load data in parallel
+        await Promise.all([
+          loadReports(),
+          loadProperties()
+        ]);
+        
         showApp();
         
-        // Check if we should open generate modal
+        // Check if we should open generate modal after everything is loaded
         const urlParams = new URLSearchParams(window.location.search);
         const generatePropertyId = urlParams.get('generate');
-        if (generatePropertyId) {
-          // Wait for properties to load then open modal
-          setTimeout(() => {
-            document.getElementById('property-select').value = generatePropertyId;
-            document.getElementById('generate-modal').style.display = 'block';
-          }, 500);
+        if (generatePropertyId && properties.some(p => p.id === generatePropertyId)) {
+          document.getElementById('property-select').value = generatePropertyId;
+          document.getElementById('generate-modal').style.display = 'block';
         }
       } else {
         window.location.href = '/roi-finder.html';
