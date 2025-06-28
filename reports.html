@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Reports - InvestorProps</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+  
+  <style>
+    /* Loading animation */
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    .animate-spin {
+      animation: spin 1s linear infinite;
+    }
+    
+    /* Report card hover effects */
+    .report-card {
+      transition: all 0.3s ease;
+    }
+    
+    .report-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* Status badges */
+    .status-badge {
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    
+    .status-ready {
+      background-color: #10b981;
+      color: white;
+    }
+    
+    .status-generating {
+      background-color: #3b82f6;
+      color: white;
+    }
+    
+    .status-failed {
+      background-color: #ef4444;
+      color: white;
+    }
+    
+    .status-expired {
+      background-color: #6b7280;
+      color: white;
+    }
+  </style>
+</head>
+<body class="bg-gray-50">
+  <!-- Loading Screen -->
+  <div id="loading-screen" class="fixed inset-0 bg-white z-50 flex items-center justify-center">
+    <div class="text-center">
+      <div class="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto"></div>
+      <p class="mt-4 text-gray-600">Loading your reports...</p>
+    </div>
+  </div>
+
+  <!-- Main App Container -->
+  <div id="app" style="display: none;">
+    <!-- Navigation Header -->
+    <header class="bg-white shadow-sm">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center py-4">
+          <div class="flex items-center gap-8">
+            <h1 class="text-2xl font-bold text-gray-900">Reports</h1>
+            <nav class="hidden md:flex gap-6">
+              <a href="/roi-finder.html" class="text-gray-600 hover:text-gray-900">Dashboard</a>
+              <a href="/portfolio.html" class="text-gray-600 hover:text-gray-900">Portfolio</a>
+              <a href="/reports.html" class="text-blue-600 font-medium">Reports</a>
+            </nav>
+          </div>
+          <div class="flex items-center gap-4">
+            <span class="text-sm text-gray-600" id="user-email">-</span>
+            <button id="logout-btn" class="text-sm text-gray-600 hover:text-gray-900">
+              Logout
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Reports Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <!-- Reports Overview -->
+      <div class="bg-white rounded-lg shadow mb-6 p-6">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+          <div>
+            <h2 class="text-xl font-semibold text-gray-900">Your Reports</h2>
+            <p class="text-sm text-gray-600 mt-1">Download and manage your property analysis reports</p>
+          </div>
+          <div class="flex items-center gap-4">
+            <select 
+              id="filter-status" 
+              class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="">All Reports</option>
+              <option value="ready">Ready</option>
+              <option value="generating">Generating</option>
+              <option value="failed">Failed</option>
+              <option value="expired">Expired</option>
+            </select>
+            <button 
+              id="generate-new-report" 
+              class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              Generate New Report
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Reports List -->
+      <div id="reports-list" class="space-y-4">
+        <!-- Report cards will be dynamically inserted here -->
+      </div>
+
+      <!-- Empty State -->
+      <div id="empty-state" class="text-center py-12" style="display: none;">
+        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
+        <h3 class="mt-2 text-sm font-medium text-gray-900">No reports yet</h3>
+        <p class="mt-1 text-sm text-gray-500">Generate your first report from a property analysis.</p>
+        <div class="mt-6">
+          <button 
+            onclick="window.location.href='/portfolio.html'" 
+            class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+          >
+            View Portfolio
+          </button>
+        </div>
+      </div>
+
+      <!-- Pagination -->
+      <div id="pagination" class="flex justify-center mt-8" style="display: none;">
+        <nav class="flex items-center gap-2">
+          <button 
+            id="prev-page" 
+            class="px-3 py-1 text-sm text-gray-600 hover:text-gray-900 disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled
+          >
+            Previous
+          </button>
+          <span class="px-4 py-1 text-sm text-gray-700">
+            Page <span id="current-page">1</span> of <span id="total-pages">1</span>
+          </span>
+          <button 
+            id="next-page" 
+            class="px-3 py-1 text-sm text-gray-600 hover:text-gray-900 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Next
+          </button>
+        </nav>
+      </div>
+    </div>
+  </div>
+
+  <!-- Generate Report Modal -->
+  <div id="generate-modal" class="fixed inset-0 bg-gray-500 bg-opacity-75 z-50" style="display: none;">
+    <div class="flex items-center justify-center min-h-screen p-4">
+      <div class="bg-white rounded-lg max-w-md w-full">
+        <div class="px-6 py-4 border-b border-gray-200">
+          <h2 class="text-xl font-semibold text-gray-900">Generate Report</h2>
+        </div>
+        <div class="p-6">
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Select Property</label>
+              <select 
+                id="property-select" 
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              >
+                <option value="">Choose a property...</option>
+              </select>
+            </div>
+            
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Report Type</label>
+              <select 
+                id="report-type" 
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              >
+                <option value="summary">Summary Report</option>
+                <option value="detailed">Detailed Analysis</option>
+                <option value="comparison">LTR vs STR Comparison</option>
+              </select>
+            </div>
+            
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Include Sections</label>
+              <div class="space-y-2">
+                <label class="flex items-center">
+                  <input type="checkbox" id="include-financials" class="mr-2" checked>
+                  <span class="text-sm text-gray-700">Financial Analysis</span>
+                </label>
+                <label class="flex items-center">
+                  <input type="checkbox" id="include-market" class="mr-2" checked>
+                  <span class="text-sm text-gray-700">Market Insights</span>
+                </label>
+                <label class="flex items-center">
+                  <input type="checkbox" id="include-comparables" class="mr-2" checked>
+                  <span class="text-sm text-gray-700">Comparable Properties</span>
+                </label>
+                <label class="flex items-center">
+                  <input type="checkbox" id="include-charts" class="mr-2" checked>
+                  <span class="text-sm text-gray-700">Charts & Graphs</span>
+                </label>
+              </div>
+            </div>
+          </div>
+          
+          <div class="flex gap-3 mt-6">
+            <button 
+              onclick="closeGenerateModal()" 
+              class="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+            >
+              Cancel
+            </button>
+            <button 
+              onclick="generateReport()" 
+              class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            >
+              Generate Report
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyBvVaw35Gzl98MOrclJaCCC0jcHzJLqkwc",
+      authDomain: "rental-roi-calculator-ddce2.firebaseapp.com",
+      projectId: "rental-roi-calculator-ddce2",
+      storageBucket: "rental-roi-calculator-ddce2.appspot.com",
+      messagingSenderId: "1034879055851",
+      appId: "1:1034879055851:web:2dd56a7e05a3154dcbac88"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+    const storage = firebase.storage();
+
+    // Global variables
+    let currentUser = null;
+    let reports = [];
+    let filteredReports = [];
+    let properties = [];
+    let currentPage = 1;
+    const reportsPerPage = 10;
+
+    // Check authentication
+    auth.onAuthStateChanged(async (user) => {
+      if (user) {
+        currentUser = user;
+        document.getElementById('user-email').textContent = user.email;
+        await loadReports();
+        await loadProperties();
+        showApp();
+        
+        // Check if we should open generate modal
+        const urlParams = new URLSearchParams(window.location.search);
+        const generatePropertyId = urlParams.get('generate');
+        if (generatePropertyId) {
+          // Wait for properties to load then open modal
+          setTimeout(() => {
+            document.getElementById('property-select').value = generatePropertyId;
+            document.getElementById('generate-modal').style.display = 'block';
+          }, 500);
+        }
+      } else {
+        window.location.href = '/roi-finder.html';
+      }
+    });
+
+    // Show app after loading
+    function showApp() {
+      document.getElementById('loading-screen').style.display = 'none';
+      document.getElementById('app').style.display = 'block';
+    }
+
+    // Load reports
+    async function loadReports() {
+      try {
+        const snapshot = await db.collection('reports')
+          .where('userId', '==', currentUser.uid)
+          .orderBy('createdAt', 'desc')
+          .get();
+
+        reports = [];
+        snapshot.forEach(doc => {
+          reports.push({
+            id: doc.id,
+            ...doc.data()
+          });
+        });
+
+        filteredReports = [...reports];
+        renderReports();
+        
+        // Show/hide empty state
+        document.getElementById('empty-state').style.display = 
+          reports.length === 0 ? 'block' : 'none';
+          
+      } catch (error) {
+        console.error('Error loading reports:', error);
+      }
+    }
+
+    // Load properties for report generation
+    async function loadProperties() {
+      try {
+        const snapshot = await db.collection('properties')
+          .where('userId', '==', currentUser.uid)
+          .orderBy('createdAt', 'desc')
+          .get();
+
+        properties = [];
+        snapshot.forEach(doc => {
+          properties.push({
+            id: doc.id,
+            ...doc.data()
+          });
+        });
+
+        // Populate property select
+        const select = document.getElementById('property-select');
+        select.innerHTML = '<option value="">Choose a property...</option>';
+        properties.forEach(property => {
+          const option = document.createElement('option');
+          option.value = property.id;
+          option.textContent = `${property.address?.street || 'Unknown'}, ${property.address?.city || ''}`;
+          select.appendChild(option);
+        });
+        
+      } catch (error) {
+        console.error('Error loading properties:', error);
+      }
+    }
+
+    // Render reports
+    function renderReports() {
+      const container = document.getElementById('reports-list');
+      container.innerHTML = '';
+
+      // Calculate pagination
+      const totalPages = Math.ceil(filteredReports.length / reportsPerPage);
+      const startIndex = (currentPage - 1) * reportsPerPage;
+      const endIndex = startIndex + reportsPerPage;
+      const pageReports = filteredReports.slice(startIndex, endIndex);
+
+      pageReports.forEach(report => {
+        const card = createReportCard(report);
+        container.appendChild(card);
+      });
+
+      // Update pagination
+      updatePagination(totalPages);
+    }
+
+    // Create report card
+    function createReportCard(report) {
+      const card = document.createElement('div');
+      card.className = 'report-card bg-white rounded-lg shadow p-6';
+
+      const statusClass = `status-${report.status || 'ready'}`;
+      const statusText = (report.status || 'ready').charAt(0).toUpperCase() + (report.status || 'ready').slice(1);
+
+      card.innerHTML = `
+        <div class="flex justify-between items-start">
+          <div class="flex-1">
+            <div class="flex items-center gap-3 mb-2">
+              <h3 class="text-lg font-semibold text-gray-900">
+                ${report.propertyAddress || 'Property Report'}
+              </h3>
+              <span class="status-badge ${statusClass}">${statusText}</span>
+            </div>
+            <div class="text-sm text-gray-600 space-y-1">
+              <p>Type: ${report.reportType === 'detailed' ? 'Detailed Analysis' : report.reportType === 'comparison' ? 'LTR vs STR' : 'Summary'}</p>
+              <p>Generated: ${report.createdAt ? new Date(report.createdAt.toDate()).toLocaleDateString() : 'N/A'}</p>
+              ${report.expiresAt ? `<p>Expires: ${new Date(report.expiresAt.toDate()).toLocaleDateString()}</p>` : ''}
+            </div>
+          </div>
+          <div class="flex flex-col gap-2">
+            ${report.status === 'ready' && report.fileUrl ? `
+              <button 
+                onclick="downloadReport('${report.id}', '${report.fileUrl}')" 
+                class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm"
+              >
+                Download PDF
+              </button>
+            ` : ''}
+            ${report.status === 'generating' ? `
+              <div class="px-4 py-2 bg-gray-100 rounded-lg text-center">
+                <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mx-auto"></div>
+                <p class="text-xs text-gray-600 mt-1">Generating...</p>
+              </div>
+            ` : ''}
+            ${report.status === 'failed' ? `
+              <button 
+                onclick="retryReport('${report.id}')" 
+                class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 text-sm"
+              >
+                Retry
+              </button>
+            ` : ''}
+            <button 
+              onclick="deleteReport('${report.id}')" 
+              class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 text-sm"
+            >
+              Delete
+            </button>
+          </div>
+        </div>
+      `;
+
+      return card;
+    }
+
+    // Update pagination
+    function updatePagination(totalPages) {
+      const paginationEl = document.getElementById('pagination');
+      if (totalPages <= 1) {
+        paginationEl.style.display = 'none';
+        return;
+      }
+
+      paginationEl.style.display = 'flex';
+      document.getElementById('current-page').textContent = currentPage;
+      document.getElementById('total-pages').textContent = totalPages;
+
+      const prevBtn = document.getElementById('prev-page');
+      const nextBtn = document.getElementById('next-page');
+
+      prevBtn.disabled = currentPage === 1;
+      nextBtn.disabled = currentPage === totalPages;
+    }
+
+    // Download report
+    async function downloadReport(reportId, fileUrl) {
+      try {
+        // Open file URL in new tab
+        window.open(fileUrl, '_blank');
+        
+        // Update last downloaded timestamp
+        await db.collection('reports').doc(reportId).update({
+          lastDownloaded: firebase.firestore.FieldValue.serverTimestamp()
+        });
+      } catch (error) {
+        console.error('Error downloading report:', error);
+        alert('Failed to download report');
+      }
+    }
+
+    // Delete report
+    async function deleteReport(reportId) {
+      if (confirm('Are you sure you want to delete this report?')) {
+        try {
+          const report = reports.find(r => r.id === reportId);
+          
+          // Delete from Firestore
+          await db.collection('reports').doc(reportId).delete();
+          
+          // Delete from Storage if file exists
+          if (report?.fileUrl) {
+            try {
+              const storageRef = storage.refFromURL(report.fileUrl);
+              await storageRef.delete();
+            } catch (error) {
+              console.log('File already deleted or not found');
+            }
+          }
+          
+          // Reload reports
+          await loadReports();
+        } catch (error) {
+          console.error('Error deleting report:', error);
+          alert('Failed to delete report');
+        }
+      }
+    }
+
+    // Generate report
+    async function generateReport() {
+      const propertyId = document.getElementById('property-select').value;
+      const reportType = document.getElementById('report-type').value;
+      
+      if (!propertyId) {
+        alert('Please select a property');
+        return;
+      }
+
+      const options = {
+        includeFinancials: document.getElementById('include-financials').checked,
+        includeMarket: document.getElementById('include-market').checked,
+        includeComparables: document.getElementById('include-comparables').checked,
+        includeCharts: document.getElementById('include-charts').checked
+      };
+
+      try {
+        // Call report generation API
+        const response = await fetch('/api/reports/generate', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            userId: currentUser.uid,
+            propertyId,
+            reportType,
+            options
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to generate report');
+        }
+
+        const result = await response.json();
+        
+        closeGenerateModal();
+        await loadReports();
+        
+        alert('Report generation started! It will appear in your list when ready.');
+        
+      } catch (error) {
+        console.error('Error generating report:', error);
+        alert('Failed to generate report. Please try again.');
+      }
+    }
+
+    // Retry failed report
+    async function retryReport(reportId) {
+      alert('Report retry functionality will be implemented with the PDF generation feature');
+    }
+
+    // Filter reports
+    document.getElementById('filter-status').addEventListener('change', (e) => {
+      const status = e.target.value;
+      if (!status) {
+        filteredReports = [...reports];
+      } else {
+        filteredReports = reports.filter(report => report.status === status);
+      }
+      currentPage = 1;
+      renderReports();
+    });
+
+    // Pagination controls
+    document.getElementById('prev-page').addEventListener('click', () => {
+      if (currentPage > 1) {
+        currentPage--;
+        renderReports();
+      }
+    });
+
+    document.getElementById('next-page').addEventListener('click', () => {
+      const totalPages = Math.ceil(filteredReports.length / reportsPerPage);
+      if (currentPage < totalPages) {
+        currentPage++;
+        renderReports();
+      }
+    });
+
+    // Modal controls
+    document.getElementById('generate-new-report').addEventListener('click', () => {
+      document.getElementById('generate-modal').style.display = 'block';
+    });
+
+    function closeGenerateModal() {
+      document.getElementById('generate-modal').style.display = 'none';
+    }
+
+    // Close modal on click outside
+    document.getElementById('generate-modal').addEventListener('click', (e) => {
+      if (e.target.id === 'generate-modal') {
+        closeGenerateModal();
+      }
+    });
+
+    // Logout
+    document.getElementById('logout-btn').addEventListener('click', () => {
+      auth.signOut();
+    });
+  </script>
+</body>
+</html>

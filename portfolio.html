@@ -666,9 +666,10 @@
       document.getElementById('property-modal').style.display = 'none';
     }
 
-    // Generate report (placeholder for now)
+    // Generate report
     function generateReport(propertyId) {
-      alert('Report generation will be implemented in the next phase');
+      // Redirect to reports page with property pre-selected
+      window.location.href = `/reports.html?generate=${propertyId}`;
     }
 
     // Search and filter functionality
