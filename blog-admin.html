@@ -361,11 +361,27 @@
     // Initialize
     async function init() {
       try {
-        const response = await fetch('/api/config');
-        const config = await response.json();
+        // Try to load config from API
+        let firebaseConfig = null;
+        try {
+          const response = await fetch('/api/config');
+          if (response.ok) {
+            const config = await response.json();
+            firebaseConfig = config.firebase;
+          }
+        } catch (error) {
+          console.error('Failed to load config from API:', error);
+        }
+        
+        // If API config failed, show error
+        if (!firebaseConfig || !firebaseConfig.apiKey) {
+          showError('Firebase configuration not available. Please check your deployment.');
+          showAuthScreen();
+          return;
+        }
         
         if (!firebase.apps.length) {
-          firebase.initializeApp(config.firebase);
+          firebase.initializeApp(firebaseConfig);
         }
         
         firebase.auth().onAuthStateChanged(async (user) => {
