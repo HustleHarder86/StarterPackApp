@@ -65,6 +65,46 @@ export default async function handler(req, res) {
         const expiryDate = new Date();
         expiryDate.setDate(expiryDate.getDate() + expiryDays);
 
+        // Fetch realtor branding if not provided
+        let finalRealtorBranding = realtorBranding;
+        
+        if (!finalRealtorBranding) {
+          // Try to fetch from database
+          const brandingDoc = await firestore
+            .collection('realtorBranding')
+            .doc(req.user.uid)
+            .get();
+          
+          if (brandingDoc.exists) {
+            const brandingData = brandingDoc.data();
+            finalRealtorBranding = {
+              name: brandingData.name,
+              email: brandingData.email,
+              phone: brandingData.phone,
+              title: brandingData.title,
+              brokerage: brandingData.brokerage,
+              license: brandingData.license,
+              logo: brandingData.logo,
+              headshot: brandingData.headshot,
+              colors: brandingData.colors,
+              options: brandingData.options
+            };
+          } else {
+            // Fallback to user profile
+            finalRealtorBranding = {
+              name: req.user.displayName || 'Your Realtor',
+              email: req.user.email,
+              phone: req.user.phoneNumber || null,
+              logo: req.user.photoURL || null,
+              brokerage: null,
+              colors: {
+                primary: '#667eea',
+                secondary: '#764ba2'
+              }
+            };
+          }
+        }
+
         // Create the presentation document
         const presentationData = {
           shareToken,
@@ -72,13 +112,7 @@ export default async function handler(req, res) {
           createdBy: req.user.uid,
           clientName: clientName || 'Valued Client',
           clientEmail: clientEmail || null,
-          realtorInfo: realtorBranding || {
-            name: req.user.displayName || 'Your Realtor',
-            email: req.user.email,
-            phone: req.user.phoneNumber || null,
-            logo: req.user.photoURL || null,
-            brokerage: null
-          },
+          realtorInfo: finalRealtorBranding,
           settings: {
             allowDownload,
             includeComparables,
