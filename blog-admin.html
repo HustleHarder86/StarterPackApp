@@ -365,7 +365,7 @@
         const config = await response.json();
         
         if (!firebase.apps.length) {
-          firebase.initializeApp(config);
+          firebase.initializeApp(config.firebase);
         }
         
         firebase.auth().onAuthStateChanged(async (user) => {
