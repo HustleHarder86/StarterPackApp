@@ -1,0 +1,62 @@
+{
+  "file": "portfolio.html",
+  "inputs": [
+    {
+      "id": "search-properties",
+      "type": "text",
+      "placeholder": "Search properties..."
+    }
+  ],
+  "buttons": [
+    {
+      "id": "logout-btn",
+      "text": "Logout"
+    },
+    {
+      "id": "export-portfolio",
+      "text": "Export CSV"
+    },
+    {
+      "text": "+ Add Property"
+    },
+    {
+      "text": "Analyze Property"
+    },
+    {
+      "text": ""
+    },
+    {
+      "text": "View Analysis"
+    },
+    {
+      "text": "Remove"
+    },
+    {
+      "text": "View Full Analysis"
+    },
+    {
+      "text": "Generate Report"
+    }
+  ],
+  "allIds": [
+    "loading-screen",
+    "app",
+    "user-email",
+    "logout-btn",
+    "total-properties",
+    "total-value",
+    "monthly-income",
+    "avg-cap-rate",
+    "property-type-chart",
+    "roi-distribution-chart",
+    "search-properties",
+    "filter-type",
+    "sort-by",
+    "export-portfolio",
+    "properties-grid",
+    "empty-state",
+    "property-modal",
+    "modal-property-address",
+    "modal-content"
+  ]
+}

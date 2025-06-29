@@ -16,6 +16,10 @@
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script crossorigin src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   
+  <!-- Load React Components -->
+  <script type="text/babel" src="/components/RentalComparisonView.jsx"></script>
+  <script type="text/babel" src="/components/ClientPresentationView.jsx"></script>
+  
   <style>
     /* Loading animation */
     @keyframes spin {
@@ -1127,6 +1131,9 @@
       
       // Mount STR comparison view if data exists
       mountRentalComparisonView(analysis);
+      
+      // Store analysis ID if available
+      currentAnalysisId = analysis.id || analysis._id || null;
     }
 
     // Create charts
@@ -1852,32 +1859,233 @@
     console.log('Script setup complete');
     // Load and mount RentalComparisonView component
     function mountRentalComparisonView(analysisData) {
+      console.log('Mounting RentalComparisonView with data:', analysisData);
       const container = document.getElementById('str-comparison-container');
-      if (!container) return;
+      if (!container) {
+        console.error('str-comparison-container not found');
+        return;
+      }
       
-      // Show container if STR data exists
-      if (analysisData.strAnalysis) {
+      // Check if STR data exists - handle both API response formats
+      const hasSTR = analysisData.strAnalysis || analysisData.short_term_rental;
+      console.log('Has STR data:', hasSTR);
+      
+      if (hasSTR) {
         container.style.display = 'block';
         
-        // Load component script
-        const script = document.createElement('script');
-        script.type = 'text/babel';
-        script.src = '/components/RentalComparisonView.jsx';
-        script.onload = () => {
-          // Mount component after loading
-          const { RentalComparisonView } = window;
-          if (RentalComparisonView) {
+        // Transform data to match component expectations
+        const transformedData = {
+          longTermRental: analysisData.long_term_rental || analysisData.longTermRental,
+          strAnalysis: analysisData.strAnalysis || analysisData.short_term_rental,
+          comparison: analysisData.comparison,
+          propertyDetails: analysisData.property_details || analysisData.propertyDetails
+        };
+        
+        console.log('Transformed data:', transformedData);
+        
+        // Check if React and ReactDOM are loaded
+        if (!window.React || !window.ReactDOM) {
+          console.error('React or ReactDOM not loaded');
+          return;
+        }
+        
+        // Check if component is already loaded
+        if (window.RentalComparisonView) {
+          console.log('Component already loaded, mounting...');
+          try {
+            // Component already loaded, just mount it
             ReactDOM.render(
-              React.createElement(RentalComparisonView, { 
-                analysisData: analysisData 
+              React.createElement(window.RentalComparisonView, { 
+                analysis: transformedData,
+                propertyAddress: analysisData.property_address || 'Property Analysis'
               }),
               container
             );
+            console.log('Component mounted successfully');
+          } catch (error) {
+            console.error('Error mounting component:', error);
           }
-        };
-        document.body.appendChild(script);
+        } else {
+          console.log('Component not loaded, loading script...');
+          // Wait for Babel to be ready
+          const checkBabelAndLoad = () => {
+            if (window.Babel) {
+              console.log('Babel is ready, loading component...');
+              // Load component script first
+              const script = document.createElement('script');
+              script.type = 'text/babel';
+              script.src = '/components/RentalComparisonView.jsx';
+              script.onload = () => {
+                console.log('Component script loaded');
+                // Give Babel time to transform the JSX
+                setTimeout(() => {
+                  if (window.RentalComparisonView) {
+                    console.log('Component available, mounting...');
+                    try {
+                      ReactDOM.render(
+                        React.createElement(window.RentalComparisonView, { 
+                          analysis: transformedData,
+                          propertyAddress: analysisData.property_address || 'Property Analysis'
+                        }),
+                        container
+                      );
+                      console.log('Component mounted successfully');
+                    } catch (error) {
+                      console.error('Error mounting component:', error);
+                    }
+                  } else {
+                    console.error('Component not available after loading script');
+                  }
+                }, 1000);
+              };
+              script.onerror = (error) => {
+                console.error('Error loading component script:', error);
+              };
+              document.body.appendChild(script);
+            } else {
+              console.log('Babel not ready, retrying...');
+              setTimeout(checkBabelAndLoad, 100);
+            }
+          };
+          checkBabelAndLoad();
+        }
       } else {
         container.style.display = 'none';
+        console.log('No STR data, hiding container');
+      }
+    }
+    
+    // Presentation Mode Functions
+    let isPresentationMode = false;
+    let currentAnalysisId = null;
+    
+    function togglePresentationMode() {
+      isPresentationMode = document.getElementById('presentation-mode-toggle').checked;
+      
+      if (isPresentationMode) {
+        // Show presentation view
+        document.getElementById('share-client-btn').style.display = 'flex';
+        document.getElementById('realtor-branding').style.display = 'block';
+        
+        // Set realtor info
+        if (currentUser) {
+          document.getElementById('realtor-name').textContent = currentUser.displayName || 'Your Realtor';
+          document.getElementById('realtor-contact').textContent = currentUser.email || '';
+        }
+        
+        // Mount presentation component if we have analysis data
+        if (currentAnalysis) {
+          mountClientPresentation(currentAnalysis);
+        }
+      } else {
+        // Hide presentation view
+        document.getElementById('share-client-btn').style.display = 'none';
+        document.getElementById('realtor-branding').style.display = 'none';
+        document.getElementById('client-presentation-container').style.display = 'none';
+        
+        // Show normal views
+        if (currentAnalysis) {
+          displayResults(currentAnalysis);
+        }
+      }
+    }
+    
+    function mountClientPresentation(analysisData) {
+      const container = document.getElementById('client-presentation-container');
+      if (!container) return;
+      
+      // Hide other views
+      document.getElementById('str-comparison-container').style.display = 'none';
+      document.querySelectorAll('.card').forEach(card => card.style.display = 'none');
+      
+      // Show presentation container
+      container.style.display = 'block';
+      
+      // Check if component is loaded
+      if (window.ClientPresentationView) {
+        const realtorInfo = {
+          name: currentUser?.displayName || 'Your Realtor',
+          email: currentUser?.email || '',
+          phone: currentUser?.phoneNumber || '',
+          logo: currentUser?.photoURL || null
+        };
+        
+        ReactDOM.render(
+          React.createElement(window.ClientPresentationView, {
+            analysis: analysisData,
+            propertyAddress: analysisData.property_address || 'Investment Property',
+            realtorInfo: realtorInfo,
+            clientName: null,
+            presentationMode: true
+          }),
+          container
+        );
+      } else {
+        // Load component if not already loaded
+        const script = document.createElement('script');
+        script.type = 'text/babel';
+        script.src = '/components/ClientPresentationView.jsx';
+        script.onload = () => {
+          setTimeout(() => {
+            if (window.ClientPresentationView) {
+              mountClientPresentation(analysisData);
+            }
+          }, 1000);
+        };
+        document.body.appendChild(script);
+      }
+    }
+    
+    async function shareWithClient() {
+      if (!currentAnalysisId) {
+        alert('Please run an analysis first');
+        return;
+      }
+      
+      // Prompt for client info
+      const clientName = prompt('Client name (optional):');
+      const clientEmail = prompt('Client email (optional):');
+      
+      try {
+        const response = await fetch('/api/reports/client-presentation', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${await currentUser.getIdToken()}`
+          },
+          body: JSON.stringify({
+            analysisId: currentAnalysisId,
+            clientName: clientName || null,
+            clientEmail: clientEmail || null,
+            realtorBranding: {
+              name: currentUser.displayName || 'Your Realtor',
+              email: currentUser.email,
+              phone: currentUser.phoneNumber || null,
+              logo: currentUser.photoURL || null
+            },
+            expiryDays: 7
+          })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+          // Show share modal
+          const shareUrl = result.shareUrl;
+          const modal = confirm(`Client presentation created!\n\nShare URL: ${shareUrl}\n\nCopy this link?`);
+          
+          if (modal) {
+            // Copy to clipboard
+            navigator.clipboard.writeText(shareUrl).then(() => {
+              alert('Link copied to clipboard!');
+            });
+          }
+        } else {
+          alert('Failed to create presentation: ' + result.error);
+        }
+      } catch (error) {
+        console.error('Share error:', error);
+        alert('Failed to create shareable link');
       }
     }
   </script>

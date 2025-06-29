@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "StarterPackApp Property Analyzer",
+  "name": "InvestorProps Property Analyzer",
   "version": "1.0.0",
   "description": "Analyze real estate investments with one click from Realtor.ca",
   "permissions": [
@@ -10,7 +10,7 @@
   "host_permissions": [
     "https://*.realtor.ca/*",
     "http://localhost:3000/*",
-    "https://starterpackapp.vercel.app/*"
+    "https://investorprops.vercel.app/*"
   ],
   "background": {
     "service_worker": "src/background.js"

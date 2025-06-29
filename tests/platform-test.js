@@ -1,5 +1,5 @@
 /**
- * Comprehensive test suite for StarterPackApp STR Platform Enhancement
+ * Comprehensive test suite for InvestorProps STR Platform Enhancement
  * Run with: node tests/platform-test.js
  */
 
@@ -333,7 +333,7 @@ function testAPIResponses() {
 
 // Run all tests
 async function runTests() {
-  log('🧪 StarterPackApp STR Platform Enhancement Test Suite', 'blue');
+  log('🧪 InvestorProps STR Platform Enhancement Test Suite', 'blue');
   log('================================================\n', 'blue');
   
   testFileStructure();

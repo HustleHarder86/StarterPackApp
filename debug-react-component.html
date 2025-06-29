@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Debug React Component Loading</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- React with development builds for better error messages -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script crossorigin src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body class="bg-gray-100 p-8">
+  <h1 class="text-2xl font-bold mb-4">React Component Debug</h1>
+  
+  <div class="grid grid-cols-2 gap-4 mb-8">
+    <div>
+      <h2 class="text-lg font-semibold mb-2">Test Component</h2>
+      <div id="test-container" class="bg-white p-4 rounded shadow"></div>
+    </div>
+    <div>
+      <h2 class="text-lg font-semibold mb-2">RentalComparisonView</h2>
+      <div id="rental-container" class="bg-white p-4 rounded shadow"></div>
+    </div>
+  </div>
+  
+  <button onclick="testComponents()" class="bg-blue-500 text-white px-4 py-2 rounded mr-2">
+    Test Components
+  </button>
+  
+  <button onclick="checkEnvironment()" class="bg-green-500 text-white px-4 py-2 rounded">
+    Check Environment
+  </button>
+  
+  <div id="log" class="mt-4 p-4 bg-gray-800 text-green-400 rounded font-mono text-sm"></div>
+
+  <script>
+    const log = (message, type = 'info') => {
+      const logEl = document.getElementById('log');
+      const time = new Date().toLocaleTimeString();
+      const color = type === 'error' ? 'text-red-400' : type === 'success' ? 'text-green-400' : 'text-yellow-400';
+      logEl.innerHTML += `<div class="${color}">[${time}] ${message}</div>`;
+      logEl.scrollTop = logEl.scrollHeight;
+    };
+
+    const checkEnvironment = () => {
+      log('=== Environment Check ===');
+      log(`React: ${window.React ? 'Loaded (v' + React.version + ')' : 'NOT LOADED'}`, window.React ? 'success' : 'error');
+      log(`ReactDOM: ${window.ReactDOM ? 'Loaded' : 'NOT LOADED'}`, window.ReactDOM ? 'success' : 'error');
+      log(`Babel: ${window.Babel ? 'Loaded' : 'NOT LOADED'}`, window.Babel ? 'success' : 'error');
+      
+      if (window.React) {
+        log('React methods available: ' + Object.keys(React).slice(0, 10).join(', ') + '...');
+      }
+    };
+
+    const loadComponent = (path, callback) => {
+      log(`Loading component from ${path}`);
+      
+      const script = document.createElement('script');
+      script.type = 'text/babel';
+      script.src = path;
+      
+      script.onload = () => {
+        log(`Script loaded: ${path}`, 'success');
+        // Wait for Babel transformation
+        setTimeout(() => {
+          callback();
+        }, 1000);
+      };
+      
+      script.onerror = (e) => {
+        log(`Failed to load script: ${path}`, 'error');
+        console.error(e);
+      };
+      
+      document.body.appendChild(script);
+    };
+
+    const testComponents = () => {
+      checkEnvironment();
+      
+      // Test simple component first
+      loadComponent('/components/TestComponent.jsx', () => {
+        if (window.TestComponent) {
+          log('TestComponent available', 'success');
+          try {
+            ReactDOM.render(
+              React.createElement(window.TestComponent, { message: 'Hello from Test Component!' }),
+              document.getElementById('test-container')
+            );
+            log('TestComponent rendered successfully', 'success');
+          } catch (e) {
+            log(`TestComponent render error: ${e.message}`, 'error');
+            console.error(e);
+          }
+        } else {
+          log('TestComponent not found on window', 'error');
+        }
+      });
+      
+      // Test RentalComparisonView
+      loadComponent('/components/RentalComparisonView.jsx', () => {
+        if (window.RentalComparisonView) {
+          log('RentalComparisonView available', 'success');
+          
+          // Minimal test data
+          const testData = {
+            longTermRental: {
+              monthlyRent: 3000,
+              annualRevenue: 36000,
+              annualExpenses: 10000,
+              annualProfit: 26000,
+              cashFlow: 2166,
+              capRate: 3.1
+            }
+          };
+          
+          try {
+            ReactDOM.render(
+              React.createElement(window.RentalComparisonView, {
+                analysis: testData,
+                propertyAddress: 'Test Property'
+              }),
+              document.getElementById('rental-container')
+            );
+            log('RentalComparisonView rendered successfully', 'success');
+          } catch (e) {
+            log(`RentalComparisonView render error: ${e.message}`, 'error');
+            console.error(e);
+          }
+        } else {
+          log('RentalComparisonView not found on window', 'error');
+          
+          // Try to find what's on window
+          const rentalKeys = Object.keys(window).filter(k => k.toLowerCase().includes('rental'));
+          if (rentalKeys.length > 0) {
+            log('Found related keys on window: ' + rentalKeys.join(', '));
+          }
+        }
+      });
+    };
+
+    // Run environment check on load
+    window.onload = () => {
+      checkEnvironment();
+    };
+  </script>
+</body>
+</html>

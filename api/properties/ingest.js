@@ -160,10 +160,11 @@ export default async function handler(req, res) {
       }
     });
 
-    // Return success response
+    // Return success response with analysisId for backward compatibility
     return res.status(200).json({
       success: true,
       propertyId,
+      analysisId: propertyId, // For backward compatibility with extension
       isUpdate,
       message: isUpdate ? 'Property updated successfully' : 'Property created successfully',
       nextStep: `/roi-finder.html?propertyId=${propertyId}`

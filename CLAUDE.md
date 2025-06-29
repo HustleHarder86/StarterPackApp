@@ -449,17 +449,94 @@ Provide:
 
 ## Testing Guidelines
 
+### Self-Debugging Test System
+
+**IMPORTANT**: This codebase includes an advanced self-debugging test system that allows Claude to:
+1. Take screenshots during test execution
+2. Analyze those screenshots to understand failures
+3. Automatically fix common issues
+4. Generate reports on test failures
+
+#### Using Self-Debugging Tests
+
+```javascript
+// Example: Self-healing test that tries multiple selectors
+const { VisualDebugger } = require('./tests/e2e/helpers/visual-debugger');
+
+test('self-healing example', async ({ page }, testInfo) => {
+  const debugger = new VisualDebugger(page, testInfo);
+  await debugger.init();
+  
+  // Take screenshot before action
+  await debugger.captureState('before-click');
+  
+  // Try to click with self-healing - will try multiple selectors
+  await debugger.clickWithHeal('#analyze-btn');
+  
+  // Take screenshot after action
+  await debugger.captureState('after-click');
+});
+```
+
+#### Analyzing Test Failures
+
+```bash
+# After tests fail, analyze the screenshots:
+node tests/e2e/screenshot-analyzer.js report
+
+# Find patterns in failures:
+node tests/e2e/screenshot-analyzer.js patterns
+
+# Screenshots are saved in:
+# - tests/e2e/screenshots/ (images + state JSON)
+# - tests/e2e/debug/ (analysis results)
+# - tests/e2e/analysis/ (reports)
+```
+
+#### Self-Healing Features
+
+1. **Automatic Selector Alternatives**: If a selector fails, tests try:
+   - ID variations (`#id`, `[id="..."]`)
+   - Class variations (`.class`, `[class*="..."]`)
+   - Text content (`button:has-text("...")`)
+   - Placeholder/name attributes
+   - Data attributes (`[data-testid="..."]`)
+
+2. **Page State Capture**: Every screenshot includes:
+   - All clickable elements (buttons, links)
+   - All form fields (inputs, selects)
+   - Visible text content
+   - Error messages
+   - Console logs
+   - Current URL and title
+
+3. **Failure Analysis**: When tests fail, the system:
+   - Takes a failure screenshot
+   - Analyzes what elements are present
+   - Suggests alternative selectors
+   - Identifies common issues (timeouts, missing elements)
+   - Generates fix recommendations
+
+#### Key Files for Self-Debugging
+
+- `tests/e2e/helpers/visual-debugger.js` - Core debugging functionality
+- `tests/e2e/screenshot-analyzer.js` - Analyzes captured screenshots
+- `tests/e2e/self-healing-example.spec.js` - Example self-healing tests
+
 ### API Testing
 - Test all endpoint methods (GET, POST, OPTIONS)
 - Validate input sanitization
 - Test authentication/authorization
 - Mock external API calls
+- Use CommonJS exports for Jest compatibility
 
 ### Frontend Testing
 - Test component rendering
 - Validate form submissions
 - Test user interactions
 - Ensure responsive behavior
+- Capture screenshots at key points
+- Use self-healing selectors
 
 ## Security Best Practices
 
@@ -556,7 +633,10 @@ vercel --prod
 npm run build  # Just echoes "No build step required"
 
 # Testing
-npm run test   # Currently echoes "No tests configured"
+npm run test              # Run unit tests
+npm run test:e2e         # Run E2E tests with screenshots
+npm run test:all         # Run all tests
+node scripts/run-tests.js # Run tests with auto-fix capabilities
 
 # Useful Vercel commands
 vercel logs    # View function logs
@@ -569,6 +649,35 @@ vercel --help  # See all available commands
 - **Environment Check**: Verify all required environment variables are set
 - **Firebase Testing**: Test authentication and Firestore operations
 - **API Testing**: Test all endpoints individually through browser or Postman
+- **Automated Testing**: Use Jest for unit tests and Playwright for E2E tests
+- **Self-Debugging Tests**: Tests can take screenshots and self-heal (see below)
+
+### Running Tests with Self-Debugging
+
+When tests fail, Claude should:
+
+1. **Run the screenshot analyzer**:
+   ```bash
+   node tests/e2e/screenshot-analyzer.js report
+   ```
+
+2. **Read the generated report** to understand:
+   - What elements were found on the page
+   - What selectors might work instead
+   - Common failure patterns
+
+3. **Update tests with working selectors** based on the analysis
+
+4. **Use self-healing patterns** in new tests:
+   ```javascript
+   // Instead of:
+   await page.click('#button');
+   
+   // Use:
+   await debugger.clickWithHeal('#button');
+   ```
+
+This allows Claude to debug visual UI issues without human intervention!
 
 ## Common Tasks & Patterns
 
@@ -657,6 +766,49 @@ vercel --help  # See all available commands
 3. **CORS Issues**: Ensure proper headers are set in API routes
 4. **Styling Problems**: Check Tailwind classes and custom CSS conflicts
 5. **Performance Issues**: Review network requests and optimize images
+
+### Using Self-Debugging for Troubleshooting
+
+When encountering UI issues or test failures, Claude should:
+
+1. **Create a debugging test**:
+   ```javascript
+   test('debug issue', async ({ page }) => {
+     const debugger = new VisualDebugger(page, testInfo);
+     await debugger.init();
+     
+     // Navigate to problematic page
+     await page.goto('/problem-page.html');
+     await debugger.captureState('initial-state');
+     
+     // Try the failing action
+     try {
+       await page.click('#missing-button');
+     } catch (error) {
+       await debugger.analyzeFailure(error);
+     }
+   });
+   ```
+
+2. **Run the test and analyze**:
+   ```bash
+   npm run test:e2e -- debug-issue.spec.js
+   node tests/e2e/screenshot-analyzer.js report
+   ```
+
+3. **Read the screenshots** using the Read tool:
+   ```bash
+   # Screenshots are saved as PNG files in tests/e2e/screenshots/
+   # Each screenshot has a corresponding .json file with page state
+   ```
+
+4. **Fix based on visual analysis**:
+   - See what's actually on the page
+   - Find the correct selectors
+   - Understand why elements are missing
+   - Identify loading/timing issues
+
+This visual debugging approach allows Claude to "see" the application state and fix issues independently!
 
 ---
 

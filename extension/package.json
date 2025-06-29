@@ -1,10 +1,10 @@
 {
-  "name": "starterpackapp-extension",
+  "name": "investorprops-extension",
   "version": "1.0.0",
-  "description": "Browser extension for StarterPackApp - Analyze real estate investments from Realtor.ca",
+  "description": "Browser extension for InvestorProps - Analyze real estate investments from Realtor.ca",
   "scripts": {
     "build": "echo 'No build step required for manifest v3'",
-    "package": "zip -r starterpackapp-extension.zip manifest.json src/ icons/ -x '*.DS_Store' -x 'icons/generate-icons.html'"
+    "package": "zip -r investorprops-extension.zip manifest.json src/ icons/ -x '*.DS_Store' -x 'icons/generate-icons.html'"
   },
   "keywords": [
     "real estate",
@@ -13,6 +13,6 @@
     "realtor.ca",
     "browser extension"
   ],
-  "author": "StarterPackApp",
+  "author": "InvestorProps",
   "license": "MIT"
 }

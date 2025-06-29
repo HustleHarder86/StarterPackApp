@@ -1,6 +1,9 @@
 import { initializeApp, cert } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 import { getAuth } from 'firebase-admin/auth';
+import { cacheable, cacheKeys } from '../../utils/cache-manager.js';
+import { loggers } from '../../utils/logger.js';
+import { Timer } from '../../utils/performance-monitor.js';
 
 // Initialize Firebase Admin if not already initialized
 let db;
@@ -19,6 +22,8 @@ try {
 }
 
 export default async function handler(req, res) {
+  const timer = new Timer('api.properties.list');
+  const logger = loggers.api.child('properties-list');
   // Set CORS headers
   res.setHeader('Access-Control-Allow-Credentials', true);
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -53,11 +58,12 @@ export default async function handler(req, res) {
     try {
       decodedToken = await getAuth().verifyIdToken(token);
     } catch (error) {
-      console.error('Token verification error:', error);
+      logger.error('Token verification failed', { error });
       return res.status(401).json({ error: 'Invalid authentication token' });
     }
 
     const userId = decodedToken.uid;
+    logger.info('Fetching properties', { userId });
 
     // Get query parameters
     const { 
@@ -85,76 +91,122 @@ export default async function handler(req, res) {
     // Apply pagination
     query = query.limit(parseInt(limit)).offset(parseInt(offset));
 
-    // Execute query
-    const snapshot = await query.get();
+    // Create cache key including query params
+    const cacheKey = `${cacheKeys.userProperties(userId)}:${sortBy}:${sortOrder}:${filter}:${limit}:${offset}`;
     
-    // Format properties
-    const properties = [];
-    snapshot.forEach(doc => {
-      const data = doc.data();
-      properties.push({
-        id: doc.id,
-        mlsNumber: data.mlsNumber,
-        address: data.address,
-        price: data.price,
-        bedrooms: data.bedrooms,
-        bathrooms: data.bathrooms,
-        sqft: data.sqft,
-        propertyType: data.propertyType,
-        createdAt: data.createdAt,
-        lastAnalyzed: data.lastAnalyzed,
-        analysisCount: data.analysisCount || 0,
-        thumbnail: data.thumbnail || null
-      });
-    });
-
-    // Get total count for pagination
-    const countSnapshot = await db.collection('properties')
-      .where('userId', '==', userId)
-      .count()
-      .get();
-    
-    const totalCount = countSnapshot.data().count;
-
-    // Get user's recent analyses for these properties
-    const propertyIds = properties.map(p => p.id);
-    let recentAnalyses = [];
-    
-    if (propertyIds.length > 0) {
-      const analysesSnapshot = await db.collection('analyses')
-        .where('userId', '==', userId)
-        .where('propertyId', 'in', propertyIds)
-        .orderBy('createdAt', 'desc')
-        .limit(10)
-        .get();
+    // Try to get from cache
+    const result = await cacheable(cacheKey, async () => {
+      // Execute query
+      const snapshot = await query.get();
       
-      analysesSnapshot.forEach(doc => {
+      // Format properties
+      const properties = [];
+      snapshot.forEach(doc => {
         const data = doc.data();
-        recentAnalyses.push({
+        properties.push({
           id: doc.id,
-          propertyId: data.propertyId,
-          analysisType: data.analysisType,
-          overallScore: data.overallScore,
-          createdAt: data.createdAt
+          mlsNumber: data.mlsNumber,
+          address: data.address,
+          price: data.price,
+          bedrooms: data.bedrooms,
+          bathrooms: data.bathrooms,
+          sqft: data.sqft,
+          propertyType: data.propertyType,
+          createdAt: data.createdAt,
+          lastAnalyzed: data.lastAnalyzed,
+          analysisCount: data.analysisCount || 0,
+          thumbnail: data.thumbnail || null
         });
       });
-    }
+
+      // Get total count for pagination
+      const countSnapshot = await db.collection('properties')
+        .where('userId', '==', userId)
+        .count()
+        .get();
+      
+      const totalCount = countSnapshot.data().count;
+
+      // Get user's recent analyses for these properties
+      const propertyIds = properties.map(p => p.id);
+      let recentAnalyses = [];
+      
+      if (propertyIds.length > 0) {
+        // Handle Firestore 'in' query limitation (max 10)
+        const chunks = [];
+        for (let i = 0; i < propertyIds.length; i += 10) {
+          chunks.push(propertyIds.slice(i, i + 10));
+        }
+        
+        const analysesPromises = chunks.map(chunk => 
+          db.collection('analyses')
+            .where('userId', '==', userId)
+            .where('propertyId', 'in', chunk)
+            .orderBy('createdAt', 'desc')
+            .limit(10)
+            .get()
+        );
+        
+        const analysesSnapshots = await Promise.all(analysesPromises);
+        
+        analysesSnapshots.forEach(snapshot => {
+          snapshot.forEach(doc => {
+            const data = doc.data();
+            recentAnalyses.push({
+              id: doc.id,
+              propertyId: data.propertyId,
+              analysisType: data.analysisType,
+              overallScore: data.overallScore,
+              createdAt: data.createdAt
+            });
+          });
+        });
+        
+        // Sort and limit after combining
+        recentAnalyses = recentAnalyses
+          .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+          .slice(0, 10);
+      }
+      
+      return {
+        properties,
+        recentAnalyses,
+        totalCount
+      };
+    }, 300); // Cache for 5 minutes
+
+    timer.end({ 
+      success: true, 
+      count: result.properties.length,
+      cached: !!result._cached 
+    });
+    
+    logger.info('Properties returned', {
+      userId,
+      count: result.properties.length,
+      cached: !!result._cached
+    });
 
     // Return response
     return res.status(200).json({
       success: true,
-      properties,
-      recentAnalyses,
+      properties: result.properties,
+      recentAnalyses: result.recentAnalyses,
       pagination: {
-        total: totalCount,
+        total: result.totalCount,
         limit: parseInt(limit),
         offset: parseInt(offset),
-        hasMore: parseInt(offset) + properties.length < totalCount
+        hasMore: parseInt(offset) + result.properties.length < result.totalCount
       }
     });
 
   } catch (error) {
-    console.error('Properties list error:', error);
+    timer.end({ success: false, error: error.name });
+    logger.error('Failed to fetch properties', { 
+      error,
+      userId: req.headers.authorization ? 'present' : 'missing'
+    });
+    
     return res.status(500).json({ 
       error: 'Failed to fetch properties',
       details: error.message 

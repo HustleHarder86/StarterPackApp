@@ -1,313 +1,174 @@
-/**
- * Input validation utilities for API endpoints
- */
+// utils/validators.js
+// Input validation and sanitization utilities
 
 /**
- * Validate and sanitize user ID
- */
-export function validateUserId(userId) {
-  if (!userId || typeof userId !== 'string') {
-    throw new Error('Invalid user ID: must be a string');
-  }
-  
-  // Firebase UIDs are typically 28 characters
-  if (userId.length < 20 || userId.length > 128) {
-    throw new Error('Invalid user ID: incorrect length');
-  }
-  
-  // Only allow alphanumeric characters
-  if (!/^[a-zA-Z0-9]+$/.test(userId)) {
-    throw new Error('Invalid user ID: contains invalid characters');
-  }
-  
-  return userId;
-}
-
-/**
- * Validate and sanitize property ID
- */
-export function validatePropertyId(propertyId) {
-  if (!propertyId || typeof propertyId !== 'string') {
-    throw new Error('Invalid property ID: must be a string');
-  }
-  
-  // Firestore document IDs
-  if (propertyId.length < 1 || propertyId.length > 1500) {
-    throw new Error('Invalid property ID: incorrect length');
-  }
-  
-  // Allow alphanumeric, hyphens, and underscores
-  if (!/^[a-zA-Z0-9_-]+$/.test(propertyId)) {
-    throw new Error('Invalid property ID: contains invalid characters');
-  }
-  
-  return propertyId;
-}
-
-/**
- * Validate and sanitize property address
+ * Validate property address
+ * @param {string} address - Property address to validate
+ * @throws {Error} If address is invalid
  */
 export function validateAddress(address) {
   if (!address || typeof address !== 'string') {
-    throw new Error('Invalid address: must be a string');
+    throw new Error('Address must be a non-empty string');
   }
   
-  // Reasonable address length
-  if (address.length < 5 || address.length > 500) {
-    throw new Error('Invalid address: must be between 5 and 500 characters');
+  if (address.length < 10) {
+    throw new Error('Address is too short');
   }
   
-  // Allow letters, numbers, spaces, and common address characters
-  if (!/^[a-zA-Z0-9\s,.\-#/()]+$/.test(address)) {
-    throw new Error('Invalid address: contains invalid characters');
+  // Basic check for address structure (should have commas for city, province)
+  if (!address.includes(',')) {
+    throw new Error('Address must include city and province');
   }
   
-  // Remove multiple spaces and trim
-  return address.replace(/\s+/g, ' ').trim();
+  return true;
 }
 
 /**
- * Validate email address
+ * Validate property data
+ * @param {Object} data - Property data to validate
+ * @throws {Error} If data is invalid
  */
-export function validateEmail(email) {
-  if (!email || typeof email !== 'string') {
-    throw new Error('Invalid email: must be a string');
-  }
-  
-  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-  if (!emailRegex.test(email)) {
-    throw new Error('Invalid email format');
-  }
-  
-  return email.toLowerCase().trim();
-}
-
-/**
- * Validate MLS number
- */
-export function validateMlsNumber(mlsNumber) {
-  if (!mlsNumber || typeof mlsNumber !== 'string') {
-    throw new Error('Invalid MLS number: must be a string');
-  }
-  
-  // MLS numbers are typically alphanumeric
-  if (!/^[A-Z0-9]{5,20}$/.test(mlsNumber.toUpperCase())) {
-    throw new Error('Invalid MLS number format');
-  }
-  
-  return mlsNumber.toUpperCase();
-}
-
-/**
- * Validate numeric values
- */
-export function validateNumber(value, options = {}) {
-  const {
-    min = 0,
-    max = Number.MAX_SAFE_INTEGER,
-    allowFloat = true,
-    fieldName = 'value'
-  } = options;
-  
-  const num = allowFloat ? parseFloat(value) : parseInt(value);
-  
-  if (isNaN(num)) {
-    throw new Error(`Invalid ${fieldName}: must be a number`);
-  }
-  
-  if (num < min || num > max) {
-    throw new Error(`Invalid ${fieldName}: must be between ${min} and ${max}`);
-  }
-  
-  return num;
-}
-
-/**
- * Validate property details object
- */
-export function validatePropertyDetails(details) {
-  if (!details || typeof details !== 'object') {
-    throw new Error('Invalid property details: must be an object');
-  }
-  
-  const validated = {};
-  
-  // Validate bedrooms
-  if (details.bedrooms !== undefined) {
-    validated.bedrooms = validateNumber(details.bedrooms, {
-      min: 0,
-      max: 20,
-      allowFloat: false,
-      fieldName: 'bedrooms'
-    });
-  }
-  
-  // Validate bathrooms
-  if (details.bathrooms !== undefined) {
-    validated.bathrooms = validateNumber(details.bathrooms, {
-      min: 0,
-      max: 20,
-      allowFloat: true,
-      fieldName: 'bathrooms'
-    });
-  }
-  
-  // Validate square feet
-  if (details.sqft !== undefined) {
-    validated.sqft = validateNumber(details.sqft, {
-      min: 100,
-      max: 100000,
-      allowFloat: false,
-      fieldName: 'square feet'
-    });
+export function validatePropertyData(data) {
+  if (!data || typeof data !== 'object') {
+    throw new Error('Property data must be an object');
   }
   
   // Validate price
-  if (details.price !== undefined) {
-    validated.price = validateNumber(details.price, {
-      min: 1000,
-      max: 100000000,
-      allowFloat: false,
-      fieldName: 'price'
-    });
-  }
-  
-  // Validate property type
-  if (details.propertyType) {
-    const allowedTypes = ['House', 'Condo', 'Townhouse', 'Multi-family', 'Land', 'Commercial'];
-    if (!allowedTypes.includes(details.propertyType)) {
-      throw new Error(`Invalid property type: must be one of ${allowedTypes.join(', ')}`);
+  if (data.price !== undefined) {
+    if (typeof data.price !== 'number' || data.price <= 0) {
+      throw new Error('Price must be a positive number');
     }
-    validated.propertyType = details.propertyType;
+    if (data.price > 100000000) {
+      throw new Error('Price seems unrealistically high');
+    }
   }
   
-  return validated;
+  // Validate bedrooms
+  if (data.bedrooms !== undefined) {
+    if (typeof data.bedrooms !== 'number' || data.bedrooms < 0) {
+      throw new Error('Bedrooms must be a non-negative number');
+    }
+    if (data.bedrooms > 50) {
+      throw new Error('Bedrooms count seems unrealistic');
+    }
+  }
+  
+  // Validate bathrooms
+  if (data.bathrooms !== undefined) {
+    if (typeof data.bathrooms !== 'number' || data.bathrooms < 0) {
+      throw new Error('Bathrooms must be a non-negative number');
+    }
+    if (data.bathrooms > 50) {
+      throw new Error('Bathrooms count seems unrealistic');
+    }
+  }
+  
+  // Validate square footage
+  if (data.sqft !== undefined) {
+    if (typeof data.sqft !== 'number' || data.sqft <= 0) {
+      throw new Error('Square footage must be a positive number');
+    }
+    if (data.sqft > 100000) {
+      throw new Error('Square footage seems unrealistic');
+    }
+  }
+  
+  return true;
 }
 
 /**
- * Validate report type
+ * Validate financial data
+ * @param {Object} data - Financial data to validate
+ * @throws {Error} If data is invalid
  */
-export function validateReportType(reportType) {
-  const allowedTypes = ['summary', 'detailed', 'comparison'];
-  
-  if (!reportType || !allowedTypes.includes(reportType)) {
-    throw new Error(`Invalid report type: must be one of ${allowedTypes.join(', ')}`);
+export function validateFinancialData(data) {
+  if (!data || typeof data !== 'object') {
+    throw new Error('Financial data must be an object');
   }
   
-  return reportType;
+  // Validate down payment percentage
+  if (data.downPayment !== undefined) {
+    if (typeof data.downPayment !== 'number' || data.downPayment < 0 || data.downPayment > 100) {
+      throw new Error('Down payment must be between 0 and 100 percent');
+    }
+  }
+  
+  // Validate interest rate
+  if (data.interestRate !== undefined) {
+    if (typeof data.interestRate !== 'number' || data.interestRate < 0) {
+      throw new Error('Interest rate must be a positive number');
+    }
+    if (data.interestRate > 30) {
+      throw new Error('Interest rate seems unrealistically high');
+    }
+  }
+  
+  // Validate loan term
+  if (data.loanTerm !== undefined) {
+    if (typeof data.loanTerm !== 'number' || data.loanTerm <= 0) {
+      throw new Error('Loan term must be a positive number');
+    }
+    if (data.loanTerm > 50) {
+      throw new Error('Loan term seems unrealistically long');
+    }
+  }
+  
+  // Validate monthly rent
+  if (data.monthlyRent !== undefined) {
+    if (typeof data.monthlyRent !== 'number' || data.monthlyRent < 0) {
+      throw new Error('Monthly rent must be a non-negative number');
+    }
+  }
+  
+  return true;
 }
 
 /**
- * Validate pagination parameters
+ * Sanitize user input to prevent XSS
+ * @param {string} input - Input to sanitize
+ * @returns {string} Sanitized input
  */
-export function validatePagination(params) {
-  const validated = {};
-  
-  if (params.limit !== undefined) {
-    validated.limit = validateNumber(params.limit, {
-      min: 1,
-      max: 100,
-      allowFloat: false,
-      fieldName: 'limit'
-    });
-  } else {
-    validated.limit = 20; // Default
-  }
-  
-  if (params.offset !== undefined) {
-    validated.offset = validateNumber(params.offset, {
-      min: 0,
-      max: 10000,
-      allowFloat: false,
-      fieldName: 'offset'
-    });
-  } else {
-    validated.offset = 0; // Default
-  }
-  
-  return validated;
-}
-
-/**
- * Sanitize string to prevent XSS
- */
-export function sanitizeString(str) {
-  if (!str || typeof str !== 'string') {
+export function sanitizeInput(input) {
+  if (input == null) {
     return '';
   }
   
-  // Remove any HTML tags and script content
-  return str
-    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
-    .replace(/<[^>]+>/g, '')
-    .replace(/[<>\"']/g, '') // Remove potential HTML characters
-    .trim();
-}
-
-/**
- * Validate API action parameter
- */
-export function validateAction(action, allowedActions) {
-  if (!action || !allowedActions.includes(action)) {
-    throw new Error(`Invalid action: must be one of ${allowedActions.join(', ')}`);
-  }
+  // Convert to string
+  const str = String(input);
   
-  return action;
+  // Remove script tags
+  let sanitized = str.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
+  
+  // Escape HTML entities
+  sanitized = sanitized
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;')
+    .replace(/\//g, '&#x2F;');
+  
+  return sanitized;
 }
 
 /**
- * Create a validation middleware
+ * Validation error class
  */
-export function validateRequest(validationRules) {
-  return (req, res, next) => {
-    try {
-      const validated = {};
-      
-      for (const [field, validator] of Object.entries(validationRules)) {
-        const value = req.body[field] || req.query[field] || req.params[field];
-        
-        if (validator.required && value === undefined) {
-          return res.status(400).json({
-            error: 'Validation error',
-            message: `Missing required field: ${field}`
-          });
-        }
-        
-        if (value !== undefined && validator.validate) {
-          try {
-            validated[field] = validator.validate(value);
-          } catch (error) {
-            return res.status(400).json({
-              error: 'Validation error',
-              message: `Invalid ${field}: ${error.message}`
-            });
-          }
-        }
-      }
-      
-      // Add validated data to request
-      req.validated = validated;
-      next();
-    } catch (error) {
-      return res.status(400).json({
-        error: 'Validation error',
-        message: error.message
-      });
-    }
+export class ValidationError extends Error {
+  constructor(message, field) {
+    super(message);
+    this.name = 'ValidationError';
+    this.field = field;
+  }
+}
+
+// CommonJS export for Jest compatibility
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {
+    validateAddress,
+    validatePropertyData,
+    validateFinancialData,
+    sanitizeInput,
+    ValidationError
   };
 }
-
-export default {
-  validateUserId,
-  validatePropertyId,
-  validateAddress,
-  validateEmail,
-  validateMlsNumber,
-  validateNumber,
-  validatePropertyDetails,
-  validateReportType,
-  validatePagination,
-  sanitizeString,
-  validateAction,
-  validateRequest
-};

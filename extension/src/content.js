@@ -1,12 +1,13 @@
 // Content script for Realtor.ca property extraction
-console.log('StarterPackApp extension loaded on Realtor.ca');
+console.log('InvestorProps extension loaded on Realtor.ca');
 
 // Function to extract property data from Realtor.ca listing page
 function extractPropertyData() {
   try {
     // Check if we're on a property details page
+    // Updated to handle all property types (house, condo, townhouse, etc.)
     const isPropertyPage = window.location.pathname.includes('/real-estate/') && 
-                          window.location.pathname.includes('/house');
+                          window.location.pathname.match(//(house|condo|townhouse|apartment|property|mls-[a-zA-Z0-9]+)($|\?|#)/);
     
     if (!isPropertyPage) {
       return null;
@@ -18,9 +19,11 @@ function extractPropertyData() {
       url: window.location.href,
       extractedAt: new Date().toISOString(),
       
-      // MLS Number
+      // MLS Number - try multiple selectors
       mlsNumber: document.querySelector('[data-testid="listingIDValue"]')?.textContent?.trim() || 
-                 document.querySelector('.listingIdValue')?.textContent?.trim(),
+                 document.querySelector('.listingIdValue')?.textContent?.trim() ||
+                 document.querySelector('[class*="listingId"]')?.textContent?.trim() ||
+                 extractMLSFromURL(),
       
       // Price
       price: extractPrice(),
@@ -52,6 +55,12 @@ function extractPropertyData() {
     console.error('Error extracting property data:', error);
     return null;
   }
+}
+
+// Helper function to extract MLS from URL
+function extractMLSFromURL() {
+  const match = window.location.pathname.match(/mls-([a-zA-Z0-9]+)/);
+  return match ? match[1] : null;
 }
 
 // Helper functions for data extraction
@@ -198,12 +207,12 @@ function addAnalyzeButton() {
   if (priceContainer) {
     const analyzeButton = document.createElement('button');
     analyzeButton.id = 'starterpack-analyze-btn';
-    analyzeButton.className = 'starterpack-analyze-button';
+    analyzeButton.className = 'investorprops-analyze-button';
     analyzeButton.innerHTML = `
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
         <path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
       </svg>
-      Analyze with StarterPackApp
+      Analyze with InvestorProps
     `;
     
     analyzeButton.addEventListener('click', handleAnalyzeClick);
@@ -236,7 +245,7 @@ async function handleAnalyzeClick() {
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
               <path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
             </svg>
-            Analyze with StarterPackApp
+            Analyze with InvestorProps
           `;
           button.disabled = false;
         }, 3000);

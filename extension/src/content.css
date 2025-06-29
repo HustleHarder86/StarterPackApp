@@ -1,6 +1,6 @@
-/* StarterPackApp Extension Styles */
+/* InvestorProps Extension Styles */
 
-.starterpack-analyze-button {
+.investorprops-analyze-button {
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -17,27 +17,27 @@
   box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
 }
 
-.starterpack-analyze-button:hover:not(:disabled) {
+.investorprops-analyze-button:hover:not(:disabled) {
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
 }
 
-.starterpack-analyze-button:active:not(:disabled) {
+.investorprops-analyze-button:active:not(:disabled) {
   transform: translateY(0);
 }
 
-.starterpack-analyze-button:disabled {
+.investorprops-analyze-button:disabled {
   opacity: 0.7;
   cursor: not-allowed;
 }
 
-.starterpack-analyze-button svg {
+.investorprops-analyze-button svg {
   width: 20px;
   height: 20px;
 }
 
 /* Popup notification styles */
-.starterpack-notification {
+.investorprops-notification {
   position: fixed;
   top: 20px;
   right: 20px;
@@ -49,11 +49,11 @@
   animation: slideIn 0.3s ease;
 }
 
-.starterpack-notification.success {
+.investorprops-notification.success {
   border-left: 4px solid #10b981;
 }
 
-.starterpack-notification.error {
+.investorprops-notification.error {
   border-left: 4px solid #ef4444;
 }
 

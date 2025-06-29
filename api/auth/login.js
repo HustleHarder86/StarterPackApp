@@ -54,7 +54,7 @@ export default async function handler(req, res) {
     return res.status(400).json({ 
       error: 'Please use the web app to login first',
       message: 'Browser extension authentication requires logging in through the main application',
-      loginUrl: 'https://starterpackapp.vercel.app/roi-finder.html'
+      loginUrl: 'https://investorprops.vercel.app/roi-finder.html'
     });
 
   } catch (error) {

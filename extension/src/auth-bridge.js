@@ -4,7 +4,7 @@
 // Listen for messages from the main app
 window.addEventListener('message', async (event) => {
   // Verify origin
-  if (event.origin !== 'https://starterpackapp.vercel.app' && 
+  if (event.origin !== 'https://investorprops.vercel.app' && 
       event.origin !== 'http://localhost:3000') {
     return;
   }
@@ -32,14 +32,14 @@ window.addEventListener('message', async (event) => {
 function requestAuthState() {
   // Try both production and development origins
   const origins = [
-    'https://starterpackapp.vercel.app',
+    'https://investorprops.vercel.app',
     'http://localhost:3000'
   ];
   
   origins.forEach(origin => {
     window.postMessage({
       type: 'REQUEST_AUTH_STATE',
-      source: 'starterpack-extension'
+      source: 'investorprops-extension'
     }, origin);
   });
 }

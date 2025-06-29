@@ -1,7 +1,7 @@
-// Popup script for StarterPackApp extension
+// Popup script for InvestorProps extension
 
-const API_BASE = 'https://starterpackapp.vercel.app/api';
-const APP_BASE = 'https://starterpackapp.vercel.app';
+const API_BASE = 'https://investorprops.vercel.app/api';
+const APP_BASE = 'https://investorprops.vercel.app';
 
 // State management
 let currentUser = null;
@@ -80,7 +80,7 @@ loginForm.addEventListener('submit', async (e) => {
   
   // For now, redirect to web app for login
   // In a future update, we could implement Firebase Auth directly in the extension
-  showError('Please login through the StarterPackApp website first');
+  showError('Please login through the InvestorProps website first');
   
   // Open login page
   chrome.tabs.create({
@@ -136,8 +136,16 @@ function showError(message) {
   showState('error');
 }
 
-// Note: For development, you might want to use localhost
-if (window.location.hostname === 'localhost') {
-  API_BASE = 'http://localhost:3000/api';
-  APP_BASE = 'http://localhost:3000';
-}
+// Note: For development, override the API URLs
+// Since these were declared as const, we need a different approach
+const getApiBase = () => {
+  return window.location.hostname === 'localhost' 
+    ? 'http://localhost:3000/api' 
+    : API_BASE;
+};
+
+const getAppBase = () => {
+  return window.location.hostname === 'localhost' 
+    ? 'http://localhost:3000' 
+    : APP_BASE;
+};

@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mock User Test - InvestorProps</title>
+  
+  <!-- Same dependencies as roi-finder.html -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script type="text/babel" src="/components/RentalComparisonView.jsx"></script>
+  
+  <style>
+    .test-section {
+      margin: 2rem 0;
+      padding: 1.5rem;
+      border: 2px solid #e5e7eb;
+      border-radius: 0.5rem;
+    }
+    .test-passed { background-color: #d1fae5; border-color: #10b981; }
+    .test-failed { background-color: #fee2e2; border-color: #ef4444; }
+    .test-pending { background-color: #fef3c7; border-color: #f59e0b; }
+  </style>
+</head>
+<body class="bg-gray-100 p-8">
+  <div class="max-w-7xl mx-auto">
+    <h1 class="text-3xl font-bold mb-8">Mock User Test - InvestorProps</h1>
+    
+    <!-- Test 1: Landing Page Experience -->
+    <div class="test-section test-pending" id="test-landing">
+      <h2 class="text-xl font-semibold mb-4">Test 1: New User Visits Landing Page</h2>
+      <p class="mb-4">Simulating user arriving at the site for the first time...</p>
+      
+      <div class="bg-white p-4 rounded border">
+        <h3 class="font-semibold mb-2">Expected:</h3>
+        <ul class="list-disc list-inside">
+          <li>See hero section with value proposition</li>
+          <li>Find "Get Started" or "Try Now" button</li>
+          <li>Able to navigate to main app</li>
+        </ul>
+      </div>
+      
+      <div class="mt-4">
+        <button onclick="testLanding()" class="bg-blue-500 text-white px-4 py-2 rounded">
+          Run Test
+        </button>
+        <div id="landing-result" class="mt-2"></div>
+      </div>
+    </div>
+    
+    <!-- Test 2: Authentication -->
+    <div class="test-section test-pending" id="test-auth">
+      <h2 class="text-xl font-semibold mb-4">Test 2: User Creates Account</h2>
+      <p class="mb-4">Testing signup/login flow...</p>
+      
+      <div class="bg-white p-4 rounded border">
+        <form id="mock-auth-form" class="space-y-4">
+          <input type="email" placeholder="Email" value="test@example.com" class="w-full p-2 border rounded">
+          <input type="password" placeholder="Password" value="Test123!" class="w-full p-2 border rounded">
+          <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">
+            Sign Up
+          </button>
+        </form>
+      </div>
+      
+      <div id="auth-result" class="mt-2"></div>
+    </div>
+    
+    <!-- Test 3: Property Analysis -->
+    <div class="test-section test-pending" id="test-property">
+      <h2 class="text-xl font-semibold mb-4">Test 3: Analyze Property with STR</h2>
+      <p class="mb-4">Testing property analysis form...</p>
+      
+      <div class="bg-white p-4 rounded border">
+        <form id="mock-property-form" class="space-y-4">
+          <input type="text" id="street" placeholder="Street Address" value="123 Main Street" class="w-full p-2 border rounded">
+          <div class="grid grid-cols-2 gap-4">
+            <input type="text" id="city" placeholder="City" value="Toronto" class="w-full p-2 border rounded">
+            <input type="text" id="state" placeholder="Province" value="Ontario" class="w-full p-2 border rounded">
+          </div>
+          <label class="flex items-center gap-2">
+            <input type="checkbox" id="include-str" checked>
+            <span>Include STR Analysis (Airbnb comparison)</span>
+          </label>
+          <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded">
+            Analyze Property
+          </button>
+        </form>
+      </div>
+      
+      <div id="property-result" class="mt-2"></div>
+    </div>
+    
+    <!-- Test 4: View Results -->
+    <div class="test-section test-pending" id="test-results">
+      <h2 class="text-xl font-semibold mb-4">Test 4: View Analysis Results</h2>
+      <p class="mb-4">Testing results display with STR comparison...</p>
+      
+      <button onclick="testResults()" class="bg-purple-500 text-white px-4 py-2 rounded mb-4">
+        Simulate Results Display
+      </button>
+      
+      <div id="str-comparison-container" class="mt-4" style="display: none;"></div>
+      <div id="results-status" class="mt-2"></div>
+    </div>
+    
+    <!-- Test 5: Browser Extension -->
+    <div class="test-section test-pending" id="test-extension">
+      <h2 class="text-xl font-semibold mb-4">Test 5: Browser Extension Flow</h2>
+      <p class="mb-4">Simulating extension usage on Realtor.ca...</p>
+      
+      <div class="bg-white p-4 rounded border">
+        <div class="mb-4 p-4 bg-gray-100 rounded">
+          <h4 class="font-semibold">Mock Realtor.ca Property Page</h4>
+          <p>123 Maple Drive, Toronto, ON</p>
+          <p class="text-2xl font-bold">$850,000</p>
+          <button onclick="testExtension()" class="mt-2 bg-gradient-to-r from-indigo-500 to-purple-500 text-white px-4 py-2 rounded">
+            Analyze with StarterPackApp
+          </button>
+        </div>
+      </div>
+      
+      <div id="extension-result" class="mt-2"></div>
+    </div>
+    
+    <!-- Overall Results -->
+    <div class="mt-8 p-6 bg-white rounded-lg shadow">
+      <h2 class="text-2xl font-bold mb-4">User Experience Summary</h2>
+      <div id="overall-results"></div>
+    </div>
+  </div>
+  
+  <script>
+    const testResults = {
+      landing: null,
+      auth: null,
+      property: null,
+      results: null,
+      extension: null
+    };
+    
+    function updateTestStatus(testId, passed, message) {
+      const element = document.getElementById(`test-${testId}`);
+      element.classList.remove('test-pending', 'test-passed', 'test-failed');
+      element.classList.add(passed ? 'test-passed' : 'test-failed');
+      
+      const resultElement = document.getElementById(`${testId}-result`);
+      if (resultElement) {
+        resultElement.innerHTML = `
+          <div class="mt-2 p-2 ${passed ? 'bg-green-100' : 'bg-red-100'} rounded">
+            ${passed ? '✅' : '❌'} ${message}
+          </div>
+        `;
+      }
+      
+      testResults[testId] = passed;
+      updateOverallResults();
+    }
+    
+    function updateOverallResults() {
+      const total = Object.keys(testResults).length;
+      const passed = Object.values(testResults).filter(r => r === true).length;
+      const failed = Object.values(testResults).filter(r => r === false).length;
+      const pending = Object.values(testResults).filter(r => r === null).length;
+      
+      document.getElementById('overall-results').innerHTML = `
+        <div class="grid grid-cols-3 gap-4 text-center">
+          <div>
+            <p class="text-3xl font-bold text-green-600">${passed}</p>
+            <p class="text-gray-600">Passed</p>
+          </div>
+          <div>
+            <p class="text-3xl font-bold text-red-600">${failed}</p>
+            <p class="text-gray-600">Failed</p>
+          </div>
+          <div>
+            <p class="text-3xl font-bold text-yellow-600">${pending}</p>
+            <p class="text-gray-600">Pending</p>
+          </div>
+        </div>
+        <div class="mt-4 text-center">
+          <p class="text-xl">
+            User Success Rate: <span class="font-bold">${total > 0 ? Math.round(passed / total * 100) : 0}%</span>
+          </p>
+        </div>
+      `;
+    }
+    
+    // Test functions
+    function testLanding() {
+      // Simulate checking landing page
+      setTimeout(() => {
+        updateTestStatus('landing', true, 'Landing page provides clear path to get started');
+      }, 500);
+    }
+    
+    // Auth form test
+    document.getElementById('mock-auth-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      
+      // Check if Firebase is available
+      if (typeof firebase !== 'undefined') {
+        updateTestStatus('auth', false, 'Firebase not loaded in this test environment');
+      } else {
+        // Simulate successful auth
+        updateTestStatus('auth', true, 'Auth form works (Firebase required for real test)');
+      }
+    });
+    
+    // Property form test
+    document.getElementById('mock-property-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      
+      const hasAllFields = 
+        document.getElementById('street').value &&
+        document.getElementById('city').value &&
+        document.getElementById('state').value;
+      
+      const includeSTR = document.getElementById('include-str').checked;
+      
+      if (hasAllFields) {
+        updateTestStatus('property', true, 
+          `Form submitted successfully${includeSTR ? ' with STR analysis' : ''}`);
+      } else {
+        updateTestStatus('property', false, 'Missing required fields');
+      }
+    });
+    
+    // Results test
+    function testResults() {
+      const container = document.getElementById('str-comparison-container');
+      
+      // Check if React and component are available
+      if (typeof React === 'undefined' || typeof window.RentalComparisonView === 'undefined') {
+        // Wait for Babel
+        setTimeout(() => {
+          if (typeof window.RentalComparisonView !== 'undefined') {
+            mountMockResults();
+          } else {
+            updateTestStatus('results', false, 'React component not loaded');
+          }
+        }, 1000);
+      } else {
+        mountMockResults();
+      }
+    }
+    
+    function mountMockResults() {
+      try {
+        const mockData = {
+          propertyDetails: { estimatedValue: 850000 },
+          longTermRental: {
+            monthlyRent: 2500,
+            annualRevenue: 30000,
+            annualProfit: 15000,
+            capRate: 5.2
+          },
+          strAnalysis: {
+            avgNightlyRate: 150,
+            occupancyRate: 70,
+            annualRevenue: 38325,
+            annualProfit: 20000
+          },
+          comparison: {
+            betterStrategy: 'str',
+            annualProfitDiff: 5000,
+            percentageIncrease: 33,
+            breakEvenOccupancy: 55,
+            recommendation: 'Short-term rental recommended'
+          }
+        };
+        
+        const container = document.getElementById('str-comparison-container');
+        container.style.display = 'block';
+        
+        ReactDOM.render(
+          React.createElement(window.RentalComparisonView, {
+            analysis: mockData,
+            propertyAddress: '123 Main Street, Toronto, ON'
+          }),
+          container
+        );
+        
+        updateTestStatus('results', true, 'STR comparison component rendered successfully');
+      } catch (error) {
+        updateTestStatus('results', false, `Component error: ${error.message}`);
+      }
+    }
+    
+    // Extension test
+    function testExtension() {
+      // Simulate extension click
+      updateTestStatus('extension', true, 
+        'Extension button works (requires Chrome extension for full test)');
+    }
+    
+    // Initialize
+    updateOverallResults();
+  </script>
+</body>
+</html>

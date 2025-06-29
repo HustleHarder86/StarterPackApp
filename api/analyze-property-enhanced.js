@@ -1,10 +1,54 @@
 // api/analyze-property-enhanced.js
 // Enhanced property analysis with LTR discovery and STR comparison
 
+/**
+ * @typedef {Object} Address
+ * @property {string} street - Street address
+ * @property {string} city - City name
+ * @property {string} state - State/Province
+ * @property {string} country - Country
+ * @property {string} postal - Postal code
+ */
+
+/**
+ * @typedef {Object} PropertyDetails
+ * @property {string} propertyType - Type of property (House, Condo, etc.)
+ * @property {number} bedrooms - Number of bedrooms
+ * @property {number} bathrooms - Number of bathrooms
+ * @property {number} sqft - Square footage
+ * @property {number} estimatedValue - Estimated property value
+ */
+
+/**
+ * @typedef {Object} LongTermRental
+ * @property {number} monthlyRent - Monthly rental income
+ * @property {Object} rentRange - Min and max rent range
+ * @property {Array} comparables - Comparable properties
+ * @property {number} vacancyRate - Vacancy rate percentage
+ * @property {number} annualRevenue - Annual rental revenue
+ * @property {number} cashFlow - Monthly cash flow
+ * @property {string} dataSource - Source of data (ai_research or estimated)
+ */
+
+/**
+ * @typedef {Object} STRAnalysis
+ * @property {number} avgNightlyRate - Average nightly rate
+ * @property {number} occupancyRate - Occupancy rate percentage
+ * @property {Array} comparables - Comparable STR properties
+ * @property {number} annualRevenue - Annual STR revenue
+ * @property {string} dataSource - Source of data
+ */
+
 const { calculateAccurateExpenses, getPropertyTaxRate, estimateRentalRate, calculateInsurance } = require('./property-calculations.js');
 import { initializeApp, cert } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 import { getAuth } from 'firebase-admin/auth';
+import { cacheable, cacheKeys, setInCache, getFromCache } from '../utils/cache-manager.js';
+import { loggers } from '../utils/logger.js';
+import { validateAddress, ValidationError } from '../utils/validators.js';
+import { withCors } from '../utils/cors-config.js';
+import { errorHandler } from '../utils/error-handler.js';
+import { monitorAPICall, Timer } from '../utils/performance-monitor.js';
 
 // Initialize Firebase Admin if not already initialized
 let db;
@@ -23,6 +67,11 @@ try {
 }
 
 export default async function handler(req, res) {
+  const requestTimer = new Timer('api.analyze-property', {
+    method: req.method,
+    path: req.url
+  });
+  const logger = loggers.api.child('analyze-property');
   // Set CORS headers
   res.setHeader('Access-Control-Allow-Credentials', true);
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -66,8 +115,12 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Property address or ID is required' });
     }
 
-    console.log('Starting enhanced property analysis for:', propertyAddress);
-    console.log('Include STR analysis:', includeSTR);
+    logger.info('Starting enhanced property analysis', {
+      propertyAddress,
+      includeSTR,
+      userId,
+      propertyId
+    });
 
     // Check user's STR trial status if not Pro
     let canUseSTR = includeSTR;
@@ -80,7 +133,10 @@ export default async function handler(req, res) {
         
         if (!isPro && trialRemaining <= 0) {
           canUseSTR = false;
-          console.log('User has exhausted STR trial analyses');
+          logger.warn('User exhausted STR trial analyses', {
+            userId,
+            trialUsed: userData.strTrialUsed
+          });
         }
       }
     }
@@ -110,8 +166,26 @@ export default async function handler(req, res) {
       postal: addressParts[4] || ''
     };
 
+    // Check cache first
+    const cacheKey = cacheKeys.propertyAnalysis(
+      propertyId || propertyAddress.toLowerCase().replace(/\s+/g, '-'),
+      canUseSTR
+    );
+    
+    const cachedAnalysis = await getFromCache(cacheKey);
+    if (cachedAnalysis) {
+      logger.info('Returning cached analysis', { cacheKey });
+      requestTimer.end({ cacheHit: true });
+      return res.status(200).json({
+        success: true,
+        analysisId: cachedAnalysis.id,
+        analysis: cachedAnalysis,
+        cached: true
+      });
+    }
+    
     // Step 1: Enhanced Long-Term Rental Discovery with Perplexity AI
-    console.log('Discovering long-term rental rates with AI...');
+    logger.debug('Discovering long-term rental rates with AI');
     
     const ltrPrompt = `Find current long-term rental rates for properties similar to:
 - Address: ${propertyAddress}
@@ -142,7 +216,8 @@ FORMAT EVERY DATA POINT WITH: SOURCE: [full URL]`;
 
     let ltrResearch;
     try {
-      const ltrResponse = await fetch('https://api.perplexity.ai/chat/completions', {
+      const ltrResponse = await monitorAPICall('perplexity.ltr-research', async () => {
+        return await fetch('https://api.perplexity.ai/chat/completions', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${perplexityApiKey}`,
@@ -168,6 +243,7 @@ FORMAT EVERY DATA POINT WITH: SOURCE: [full URL]`;
           return_citations: true
         })
       });
+      }, { endpoint: 'chat/completions', purpose: 'ltr-research' });
 
       if (!ltrResponse.ok) {
         throw new Error(`LTR research failed: ${ltrResponse.status}`);
@@ -175,9 +251,12 @@ FORMAT EVERY DATA POINT WITH: SOURCE: [full URL]`;
 
       const ltrData = await ltrResponse.json();
       ltrResearch = ltrData.choices[0].message.content;
-      console.log('LTR Research completed:', ltrResearch.substring(0, 500) + '...');
+      logger.debug('LTR Research completed', { 
+        responseLength: ltrResearch.length,
+        preview: ltrResearch.substring(0, 200) + '...'
+      });
     } catch (error) {
-      console.error('LTR research error:', error);
+      logger.error('LTR research failed', { error, propertyAddress });
       ltrResearch = null;
     }
 
@@ -196,7 +275,8 @@ Include SOURCE: [URL] for every data point.`;
 
     let propertyResearch;
     try {
-      const propertyResponse = await fetch('https://api.perplexity.ai/chat/completions', {
+      const propertyResponse = await monitorAPICall('perplexity.property-research', async () => {
+        return await fetch('https://api.perplexity.ai/chat/completions', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${perplexityApiKey}`,
@@ -221,6 +301,7 @@ Include SOURCE: [URL] for every data point.`;
           return_citations: true
         })
       });
+      }, { endpoint: 'chat/completions', purpose: 'property-research' });
 
       if (!propertyResponse.ok) {
         throw new Error(`Property research failed: ${propertyResponse.status}`);
@@ -228,8 +309,11 @@ Include SOURCE: [URL] for every data point.`;
 
       const propData = await propertyResponse.json();
       propertyResearch = propData.choices[0].message.content;
+      logger.debug('Property research completed', {
+        responseLength: propertyResearch.length
+      });
     } catch (error) {
-      console.error('Property research error:', error);
+      logger.error('Property research failed', { error, propertyAddress });
       propertyResearch = null;
     }
 
@@ -250,7 +334,8 @@ Search for:
 Include SOURCE: [URL] for all data.`;
 
       try {
-        const strResponse = await fetch('https://api.perplexity.ai/chat/completions', {
+        const strResponse = await monitorAPICall('perplexity.str-research', async () => {
+          return await fetch('https://api.perplexity.ai/chat/completions', {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${perplexityApiKey}`,
@@ -275,6 +360,7 @@ Include SOURCE: [URL] for all data.`;
             return_citations: true
           })
         });
+        }, { endpoint: 'chat/completions', purpose: 'str-research' });
 
         if (strResponse.ok) {
           const strData = await strResponse.json();
@@ -286,9 +372,10 @@ Include SOURCE: [URL] for all data.`;
               strTrialUsed: (userData.strTrialUsed || 0) + 1
             });
           }
+          logger.info('STR analysis completed', { userId, trialUpdated: !isPro });
         }
       } catch (error) {
-        console.error('STR analysis error:', error);
+        logger.error('STR analysis failed', { error, propertyAddress });
       }
     }
 
@@ -329,7 +416,11 @@ Include SOURCE: [URL] for all data.`;
     };
 
     await db.collection('analyses').doc(analysisId).set(analysisData);
-    console.log('Enhanced analysis saved:', analysisId);
+    logger.info('Analysis saved to database', { analysisId, userId });
+    
+    // Cache the analysis for 24 hours
+    await setInCache(cacheKey, analysisData, 86400); // 24 hours
+    logger.debug('Analysis cached', { cacheKey, ttl: 86400 });
 
     // Update user analysis count
     if (userId && requestType === 'authenticated') {
@@ -339,21 +430,36 @@ Include SOURCE: [URL] for all data.`;
           monthlyAnalysisCount: admin.firestore.FieldValue.increment(1),
           lastAnalysisDate: new Date().toISOString()
         });
+        logger.debug('User analysis count updated', { userId });
       } catch (error) {
-        console.error('Failed to update analysis count:', error);
+        logger.error('Failed to update analysis count', { error, userId });
       }
     }
 
     // Return enhanced analysis results
-    return res.status(200).json({
+    const response = {
       success: true,
       analysisId,
       analysis: analysisData,
       strTrialRemaining: canUseSTR ? null : (5 - (userData?.strTrialUsed || 0))
+    };
+    
+    requestTimer.end({ success: true, cached: false });
+    logger.info('Analysis completed successfully', {
+      analysisId,
+      duration: requestTimer.duration
     });
+    
+    return res.status(200).json(response);
 
   } catch (error) {
-    console.error('Enhanced analysis error:', error);
+    requestTimer.end({ success: false, error: error.name });
+    logger.error('Analysis failed', { 
+      error,
+      propertyAddress: req.body.propertyAddress,
+      userId: req.body.userId
+    });
+    
     return res.status(500).json({ 
       error: 'Analysis failed', 
       message: error.message 

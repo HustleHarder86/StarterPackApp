@@ -5,9 +5,9 @@
 // Allowed origins based on environment
 const getAllowedOrigins = () => {
   const origins = [
-    'https://starterpackapp.vercel.app',
-    'https://starterpackapp.com',
-    'https://www.starterpackapp.com'
+    'https://investorprops.vercel.app',
+    'https://investorprops.com',
+    'https://www.investorprops.com'
   ];
   
   // Add development origins
@@ -43,7 +43,7 @@ export function applyCorsHeaders(req, res) {
     res.setHeader('Access-Control-Allow-Origin', origin || '*');
   } else {
     // In production, use the primary domain as fallback
-    res.setHeader('Access-Control-Allow-Origin', 'https://starterpackapp.vercel.app');
+    res.setHeader('Access-Control-Allow-Origin', 'https://investorprops.vercel.app');
   }
   
   // Set other CORS headers

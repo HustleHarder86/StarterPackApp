@@ -16,6 +16,8 @@ firebase-debug.log
 .firebase/
 firebase-admin-key.json
 serviceAccountKey.json
+firestore-debug.log
+ui-debug.log
 
 # Vercel
 .vercel
@@ -40,6 +42,10 @@ logs/
 # Testing
 coverage/
 .nyc_output/
+tests/e2e/.auth/
+test-results/
+playwright-report/
+.env.test.local
 
 # Temporary files
 tmp/
