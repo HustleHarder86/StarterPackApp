@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  
+  <!-- Dynamic meta tags - will be replaced by server/build process -->
+  <title>{title} - InvestorProps Blog</title>
+  <meta name="description" content="{excerpt}">
+  
+  <!-- SEO Meta Tags -->
+  <meta property="og:title" content="{title}">
+  <meta property="og:description" content="{excerpt}">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://investorprops.vercel.app/blog/{slug}">
+  <meta property="og:image" content="{thumbnail}">
+  <meta property="article:author" content="{author}">
+  <meta property="article:published_time" content="{publishedAt}">
+  <meta property="article:tag" content="{tags}">
+  <meta name="twitter:card" content="summary_large_image">
+  
+  <!-- Canonical URL -->
+  <link rel="canonical" href="https://investorprops.vercel.app/blog/{slug}">
+  
+  <link rel="stylesheet" href="/styles.css" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Schema.org structured data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "{title}",
+    "description": "{excerpt}",
+    "image": "{thumbnail}",
+    "datePublished": "{publishedAt}",
+    "dateModified": "{updatedAt}",
+    "author": {
+      "@type": "Person",
+      "name": "{author}"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "InvestorProps",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://investorprops.vercel.app/assets/logo.png"
+      }
+    },
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https://investorprops.vercel.app/blog/{slug}"
+    }
+  }
+  </script>
+  
+  <style>
+    /* Article content styles */
+    .article-content {
+      font-size: 1.125rem;
+      line-height: 1.75;
+      color: #374151;
+    }
+    
+    .article-content h2 {
+      font-size: 1.875rem;
+      font-weight: 700;
+      margin-top: 2.5rem;
+      margin-bottom: 1rem;
+      color: #111827;
+    }
+    
+    .article-content h3 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-top: 2rem;
+      margin-bottom: 0.75rem;
+      color: #111827;
+    }
+    
+    .article-content p {
+      margin-bottom: 1.5rem;
+    }
+    
+    .article-content ul,
+    .article-content ol {
+      margin-bottom: 1.5rem;
+      padding-left: 1.5rem;
+    }
+    
+    .article-content li {
+      margin-bottom: 0.5rem;
+    }
+    
+    .article-content blockquote {
+      border-left: 4px solid #667eea;
+      padding-left: 1.5rem;
+      margin: 2rem 0;
+      font-style: italic;
+      color: #4b5563;
+    }
+    
+    .article-content img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 0.5rem;
+      margin: 2rem auto;
+    }
+    
+    .article-content a {
+      color: #667eea;
+      text-decoration: underline;
+    }
+    
+    .article-content a:hover {
+      color: #764ba2;
+    }
+    
+    /* Table of contents */
+    .toc {
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 0.5rem;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    
+    .toc-link {
+      display: block;
+      padding: 0.25rem 0;
+      color: #4b5563;
+      text-decoration: none;
+    }
+    
+    .toc-link:hover {
+      color: #667eea;
+    }
+    
+    /* Share buttons */
+    .share-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      border: 1px solid #e5e7eb;
+      border-radius: 0.375rem;
+      background: white;
+      color: #4b5563;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    
+    .share-button:hover {
+      background: #f9fafb;
+      border-color: #d1d5db;
+    }
+    
+    /* Related posts */
+    .related-post {
+      display: block;
+      padding: 1rem;
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 0.5rem;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    
+    .related-post:hover {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      transform: translateY(-2px);
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="nav-bar">
+    <div class="nav-logo">InvestorProps</div>
+    <ul class="nav-links">
+      <li><a href="/index.html" class="nav-link">Home</a></li>
+      <li><a href="/blog.html" class="nav-link">Blog</a></li>
+      <li><a href="/#features" class="nav-link">Features</a></li>
+      <li><a href="/#pricing" class="nav-link">Pricing</a></li>
+      <li><a href="/contact.html" class="nav-link">Contact</a></li>
+      <li><a href="/roi-finder.html" class="nav-link btn-primary">Launch ROI Finder</a></li>
+    </ul>
+  </nav>
+
+  <!-- Article Header -->
+  <header class="bg-gradient-to-br from-gray-50 to-blue-50 py-12">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- Breadcrumb -->
+      <nav class="mb-6">
+        <ol class="flex items-center gap-2 text-sm text-gray-600">
+          <li><a href="/" class="hover:text-gray-900">Home</a></li>
+          <li>/</li>
+          <li><a href="/blog" class="hover:text-gray-900">Blog</a></li>
+          <li>/</li>
+          <li><a href="/blog?category={category}" class="hover:text-gray-900">{categoryName}</a></li>
+        </ol>
+      </nav>
+      
+      <!-- Article meta -->
+      <div class="mb-6">
+        <span class="inline-block px-3 py-1 bg-blue-100 text-blue-800 text-sm font-medium rounded-full">
+          {categoryName}
+        </span>
+      </div>
+      
+      <!-- Title -->
+      <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+        {title}
+      </h1>
+      
+      <!-- Author and date -->
+      <div class="flex flex-wrap items-center gap-6 text-gray-600">
+        <div class="flex items-center gap-3">
+          <img 
+            src="{authorAvatar}" 
+            alt="{author}"
+            class="w-12 h-12 rounded-full"
+            onerror="this.src='https://ui-avatars.com/api/?name={author}&background=667eea&color=fff'"
+          >
+          <div>
+            <p class="font-medium text-gray-900">{author}</p>
+            <p class="text-sm">{authorTitle}</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-4 text-sm">
+          <span>{publishedDate}</span>
+          <span>•</span>
+          <span>{readTime}</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="py-12">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid lg:grid-cols-3 gap-8">
+        <!-- Article Content -->
+        <article class="lg:col-span-2">
+          <!-- Featured Image -->
+          <img 
+            src="{thumbnail}" 
+            alt="{title}"
+            class="w-full h-auto rounded-lg mb-8"
+          >
+          
+          <!-- Table of Contents (if applicable) -->
+          <div id="table-of-contents" class="toc" style="display: none;">
+            <h3 class="text-lg font-semibold mb-3">Table of Contents</h3>
+            <nav id="toc-nav">
+              <!-- TOC will be dynamically generated -->
+            </nav>
+          </div>
+          
+          <!-- Article Body -->
+          <div class="article-content" id="article-content">
+            {content}
+          </div>
+          
+          <!-- Tags -->
+          <div class="mt-8 pt-8 border-t">
+            <h3 class="text-sm font-semibold text-gray-700 mb-3">Tags:</h3>
+            <div class="flex flex-wrap gap-2" id="tags-container">
+              <!-- Tags will be dynamically inserted -->
+            </div>
+          </div>
+          
+          <!-- Share buttons -->
+          <div class="mt-8 pt-8 border-t">
+            <h3 class="text-lg font-semibold mb-4">Share this article</h3>
+            <div class="flex flex-wrap gap-3">
+              <a 
+                href="https://twitter.com/intent/tweet?text={title}&url=https://investorprops.vercel.app/blog/{slug}" 
+                target="_blank"
+                rel="noopener noreferrer"
+                class="share-button"
+              >
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/></svg>
+                Twitter
+              </a>
+              <a 
+                href="https://www.linkedin.com/sharing/share-offsite/?url=https://investorprops.vercel.app/blog/{slug}" 
+                target="_blank"
+                rel="noopener noreferrer"
+                class="share-button"
+              >
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 24 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                LinkedIn
+              </a>
+              <a 
+                href="https://www.facebook.com/sharer/sharer.php?u=https://investorprops.vercel.app/blog/{slug}" 
+                target="_blank"
+                rel="noopener noreferrer"
+                class="share-button"
+              >
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                Facebook
+              </a>
+            </div>
+          </div>
+        </article>
+        
+        <!-- Sidebar -->
+        <aside class="lg:col-span-1">
+          <!-- Author Bio -->
+          <div class="bg-white p-6 rounded-lg border border-gray-200 mb-8">
+            <h3 class="text-lg font-semibold mb-4">About the Author</h3>
+            <div class="flex items-center gap-4 mb-4">
+              <img 
+                src="{authorAvatar}" 
+                alt="{author}"
+                class="w-16 h-16 rounded-full"
+                onerror="this.src='https://ui-avatars.com/api/?name={author}&background=667eea&color=fff'"
+              >
+              <div>
+                <p class="font-medium">{author}</p>
+                <p class="text-sm text-gray-600">{authorTitle}</p>
+              </div>
+            </div>
+            <p class="text-gray-600 text-sm">{authorBio}</p>
+          </div>
+          
+          <!-- Newsletter CTA -->
+          <div class="bg-gradient-to-br from-blue-50 to-purple-50 p-6 rounded-lg mb-8">
+            <h3 class="text-lg font-semibold mb-3">Get Investment Insights</h3>
+            <p class="text-gray-600 text-sm mb-4">
+              Join thousands of investors getting our weekly market analysis.
+            </p>
+            <form class="space-y-3">
+              <input 
+                type="email" 
+                placeholder="Your email"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
+              >
+              <button type="submit" class="w-full px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-medium rounded-lg hover:shadow-lg transition">
+                Subscribe
+              </button>
+            </form>
+          </div>
+          
+          <!-- Related Posts -->
+          <div class="bg-white p-6 rounded-lg border border-gray-200">
+            <h3 class="text-lg font-semibold mb-4">Related Articles</h3>
+            <div class="space-y-4" id="related-posts">
+              <!-- Related posts will be dynamically inserted -->
+            </div>
+          </div>
+        </aside>
+      </div>
+      
+      <!-- More from category -->
+      <section class="mt-16 pt-16 border-t">
+        <h2 class="text-2xl font-bold mb-8">More in {categoryName}</h2>
+        <div class="grid md:grid-cols-3 gap-6" id="category-posts">
+          <!-- Category posts will be dynamically inserted -->
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-gray-900 text-white py-12 mt-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div>
+          <h3 class="text-xl font-bold mb-4">InvestorProps</h3>
+          <p class="text-gray-400">Making real estate investment analysis simple and powerful.</p>
+        </div>
+        <div>
+          <h4 class="font-semibold mb-4">Quick Links</h4>
+          <ul class="space-y-2 text-gray-400">
+            <li><a href="/" class="hover:text-white">Home</a></li>
+            <li><a href="/blog" class="hover:text-white">Blog</a></li>
+            <li><a href="/roi-finder.html" class="hover:text-white">ROI Finder</a></li>
+            <li><a href="/contact.html" class="hover:text-white">Contact</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="font-semibold mb-4">Resources</h4>
+          <ul class="space-y-2 text-gray-400">
+            <li><a href="/blog?category=market-analysis" class="hover:text-white">Market Analysis</a></li>
+            <li><a href="/blog?category=investment-strategies" class="hover:text-white">Investment Strategies</a></li>
+            <li><a href="/blog?category=property-management" class="hover:text-white">Property Management</a></li>
+            <li><a href="/blog?category=financing" class="hover:text-white">Financing</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="font-semibold mb-4">Legal</h4>
+          <ul class="space-y-2 text-gray-400">
+            <li><a href="/privacy" class="hover:text-white">Privacy Policy</a></li>
+            <li><a href="/terms" class="hover:text-white">Terms of Service</a></li>
+            <li><a href="/sitemap.xml" class="hover:text-white">Sitemap</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="mt-8 pt-8 border-t border-gray-800 text-center text-gray-400">
+        <p>&copy; 2024 InvestorProps. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // This would typically be handled by your programmatic SEO tool
+    // For now, we'll add some basic functionality
+    
+    document.addEventListener('DOMContentLoaded', () => {
+      // Generate table of contents
+      generateTableOfContents();
+      
+      // Load related posts
+      loadRelatedPosts();
+      
+      // Load more from category
+      loadCategoryPosts();
+      
+      // Handle newsletter form
+      document.querySelector('form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        alert('Newsletter subscription coming soon!');
+      });
+    });
+    
+    function generateTableOfContents() {
+      const content = document.getElementById('article-content');
+      const headings = content.querySelectorAll('h2, h3');
+      
+      if (headings.length > 3) {
+        const tocNav = document.getElementById('toc-nav');
+        const tocContainer = document.getElementById('table-of-contents');
+        
+        headings.forEach((heading, index) => {
+          // Add ID to heading
+          const id = `heading-${index}`;
+          heading.id = id;
+          
+          // Create TOC link
+          const link = document.createElement('a');
+          link.href = `#${id}`;
+          link.className = 'toc-link';
+          link.textContent = heading.textContent;
+          
+          if (heading.tagName === 'H3') {
+            link.style.paddingLeft = '1rem';
+          }
+          
+          tocNav.appendChild(link);
+        });
+        
+        tocContainer.style.display = 'block';
+      }
+    }
+    
+    function loadRelatedPosts() {
+      // This would typically fetch from your API
+      // For now, showing placeholder
+      const relatedPosts = [
+        {
+          title: 'Understanding Cap Rates in Real Estate',
+          slug: 'understanding-cap-rates-real-estate',
+          readTime: '5 min read'
+        },
+        {
+          title: 'First-Time Investor\'s Guide to Property Analysis',
+          slug: 'first-time-investor-guide-property-analysis',
+          readTime: '8 min read'
+        },
+        {
+          title: 'Market Timing: When to Buy Investment Properties',
+          slug: 'market-timing-buy-investment-properties',
+          readTime: '6 min read'
+        }
+      ];
+      
+      const container = document.getElementById('related-posts');
+      container.innerHTML = relatedPosts.map(post => `
+        <a href="/blog/${post.slug}" class="related-post">
+          <h4 class="font-medium text-gray-900 mb-1">${post.title}</h4>
+          <p class="text-sm text-gray-600">${post.readTime}</p>
+        </a>
+      `).join('');
+    }
+    
+    function loadCategoryPosts() {
+      // This would typically fetch from your API
+      // For now, showing placeholder
+      const categoryPosts = [
+        {
+          title: 'Toronto Housing Market Update: Q1 2024',
+          slug: 'toronto-housing-market-update-q1-2024',
+          excerpt: 'Latest trends and data from Toronto\'s real estate market.',
+          thumbnail: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=400&h=300&fit=crop',
+          readTime: '7 min read'
+        },
+        {
+          title: 'Vancouver Real Estate: Investment Opportunities',
+          slug: 'vancouver-real-estate-investment-opportunities',
+          excerpt: 'Discover emerging neighborhoods and investment strategies in Vancouver.',
+          thumbnail: 'https://images.unsplash.com/photo-1559599101-f09722fb4948?w=400&h=300&fit=crop',
+          readTime: '9 min read'
+        },
+        {
+          title: 'Calgary Market Analysis: Post-Pandemic Recovery',
+          slug: 'calgary-market-analysis-post-pandemic',
+          excerpt: 'How Calgary\'s real estate market is performing in 2024.',
+          thumbnail: 'https://images.unsplash.com/photo-1513584684374-8bab748fbf90?w=400&h=300&fit=crop',
+          readTime: '6 min read'
+        }
+      ];
+      
+      const container = document.getElementById('category-posts');
+      container.innerHTML = categoryPosts.map(post => `
+        <article class="bg-white rounded-lg overflow-hidden border border-gray-200">
+          <a href="/blog/${post.slug}">
+            <img src="${post.thumbnail}" alt="${post.title}" class="w-full h-48 object-cover">
+          </a>
+          <div class="p-4">
+            <h3 class="font-semibold text-lg mb-2">
+              <a href="/blog/${post.slug}" class="text-gray-900 hover:text-blue-600">
+                ${post.title}
+              </a>
+            </h3>
+            <p class="text-gray-600 text-sm mb-3">${post.excerpt}</p>
+            <p class="text-sm text-gray-500">${post.readTime}</p>
+          </div>
+        </article>
+      `).join('');
+    }
+  </script>
+</body>
+</html>
