@@ -93,4 +93,16 @@ export async function runTransaction(callback) {
   return firestore.runTransaction(callback);
 }
 
+// Export function for getting Firebase Admin instance
+export async function getFirebaseAdmin() {
+  return {
+    admin,
+    auth,
+    db: firestore,
+    storage,
+    FieldValue,
+    Timestamp
+  };
+}
+
 export default app;
