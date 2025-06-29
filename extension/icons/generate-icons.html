@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Generate Extension Icons</title>
+</head>
+<body>
+  <h1>InvestorProps Icon Generator</h1>
+  <p>This page generates the extension icons. Save each canvas as PNG with the specified filename.</p>
+  
+  <div>
+    <h3>icon-16.png</h3>
+    <canvas id="icon16" width="16" height="16"></canvas>
+  </div>
+  
+  <div>
+    <h3>icon-32.png</h3>
+    <canvas id="icon32" width="32" height="32"></canvas>
+  </div>
+  
+  <div>
+    <h3>icon-48.png</h3>
+    <canvas id="icon48" width="48" height="48"></canvas>
+  </div>
+  
+  <div>
+    <h3>icon-128.png</h3>
+    <canvas id="icon128" width="128" height="128"></canvas>
+  </div>
+
+  <script>
+    // Function to draw icon at specific size
+    function drawIcon(canvasId, size) {
+      const canvas = document.getElementById(canvasId);
+      const ctx = canvas.getContext('2d');
+      
+      // Create gradient background
+      const gradient = ctx.createLinearGradient(0, 0, size, size);
+      gradient.addColorStop(0, '#667eea');
+      gradient.addColorStop(1, '#764ba2');
+      
+      // Draw rounded rectangle background
+      ctx.fillStyle = gradient;
+      ctx.beginPath();
+      ctx.roundRect(0, 0, size, size, size * 0.2);
+      ctx.fill();
+      
+      // Draw chart icon
+      ctx.fillStyle = 'white';
+      ctx.strokeStyle = 'white';
+      ctx.lineWidth = Math.max(1, size * 0.06);
+      
+      // Draw bars
+      const barWidth = size * 0.15;
+      const gap = size * 0.1;
+      const baseY = size * 0.8;
+      
+      // First bar (shortest)
+      ctx.fillRect(size * 0.2, baseY - size * 0.3, barWidth, size * 0.3);
+      
+      // Second bar (medium)
+      ctx.fillRect(size * 0.2 + barWidth + gap, baseY - size * 0.5, barWidth, size * 0.5);
+      
+      // Third bar (tallest)
+      ctx.fillRect(size * 0.2 + 2 * (barWidth + gap), baseY - size * 0.6, barWidth, size * 0.6);
+    }
+    
+    // Generate all icon sizes
+    drawIcon('icon16', 16);
+    drawIcon('icon32', 32);
+    drawIcon('icon48', 48);
+    drawIcon('icon128', 128);
+    
+    // Add download functionality
+    document.querySelectorAll('canvas').forEach(canvas => {
+      canvas.style.border = '1px solid #ccc';
+      canvas.style.margin = '10px';
+      canvas.style.cursor = 'pointer';
+      
+      canvas.addEventListener('click', () => {
+        canvas.toBlob(blob => {
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = canvas.id + '.png';
+          a.click();
+          URL.revokeObjectURL(url);
+        });
+      });
+    });
+  </script>
+</body>
+</html>

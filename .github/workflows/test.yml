@@ -1,0 +1,105 @@
+name: Test Suite
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Create test env file
+      run: |
+        cp .env.test .env.test.local
+        echo "FIREBASE_PROJECT_ID=${{ secrets.TEST_FIREBASE_PROJECT_ID }}" >> .env.test.local
+        echo "FIREBASE_CLIENT_EMAIL=${{ secrets.TEST_FIREBASE_CLIENT_EMAIL }}" >> .env.test.local
+        echo "FIREBASE_PRIVATE_KEY=${{ secrets.TEST_FIREBASE_PRIVATE_KEY }}" >> .env.test.local
+    
+    - name: Run unit tests
+      run: npm test -- --coverage
+    
+    - name: Upload coverage reports
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./coverage/lcov.info
+        flags: unittests
+        name: codecov-umbrella
+    
+    - name: Install Playwright browsers
+      run: npx playwright install --with-deps
+    
+    - name: Run E2E tests
+      run: npm run test:e2e
+    
+    - name: Upload test results
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: test-results-${{ matrix.node-version }}
+        path: |
+          test-results/
+          playwright-report/
+          coverage/
+        retention-days: 7
+    
+    - name: Comment PR with results
+      uses: actions/github-script@v6
+      if: github.event_name == 'pull_request'
+      with:
+        script: |
+          const fs = require('fs');
+          let comment = '## Test Results\n\n';
+          
+          // Add test summary
+          comment += '✅ Tests completed on Node.js ${{ matrix.node-version }}\n\n';
+          
+          // Add coverage if available
+          if (fs.existsSync('coverage/coverage-summary.json')) {
+            const coverage = JSON.parse(fs.readFileSync('coverage/coverage-summary.json', 'utf8'));
+            const total = coverage.total;
+            comment += '### Coverage\n';
+            comment += `- Lines: ${total.lines.pct}%\n`;
+            comment += `- Statements: ${total.statements.pct}%\n`;
+            comment += `- Functions: ${total.functions.pct}%\n`;
+            comment += `- Branches: ${total.branches.pct}%\n`;
+          }
+          
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: comment
+          });
+
+  deploy-preview:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Deploy to Vercel Preview
+      run: |
+        npm i -g vercel
+        vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
+        vercel build --token=${{ secrets.VERCEL_TOKEN }}
+        vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }}

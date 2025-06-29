@@ -1,0 +1,63 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    function isValidImageFile() {
+      return request.resource.contentType.matches('image/.*');
+    }
+    
+    function isValidPDFFile() {
+      return request.resource.contentType == 'application/pdf';
+    }
+    
+    function isValidFileSize() {
+      return request.resource.size < 10 * 1024 * 1024; // 10MB limit
+    }
+    
+    // User profile images
+    match /users/{userId}/profile/{filename} {
+      allow read: if isAuthenticated();
+      allow write: if isOwner(userId) && isValidImageFile() && isValidFileSize();
+      allow delete: if isOwner(userId);
+    }
+    
+    // Property images
+    match /properties/{propertyId}/images/{filename} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated() && 
+        isValidImageFile() && 
+        isValidFileSize() &&
+        firestore.get(/databases/(default)/documents/properties/$(propertyId)).data.userId == request.auth.uid;
+      allow delete: if isAuthenticated() &&
+        firestore.get(/databases/(default)/documents/properties/$(propertyId)).data.userId == request.auth.uid;
+    }
+    
+    // Analysis reports (PDFs)
+    match /reports/{userId}/{reportId}/{filename} {
+      allow read: if isOwner(userId);
+      allow write: if false; // Only server can write reports
+      allow delete: if isOwner(userId);
+    }
+    
+    // Temporary uploads (for processing)
+    match /temp/{userId}/{filename} {
+      allow read: if isOwner(userId);
+      allow write: if isOwner(userId) && isValidFileSize();
+      allow delete: if isOwner(userId);
+    }
+    
+    // Public assets (cached)
+    match /public/{allPaths=**} {
+      allow read: if true;
+      allow write: if false; // Only admin through console
+    }
+  }
+}

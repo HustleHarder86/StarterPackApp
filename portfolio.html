@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Property Portfolio - InvestorProps</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Chart.js for portfolio analytics -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+  
+  <style>
+    /* Loading animation */
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    .animate-spin {
+      animation: spin 1s linear infinite;
+    }
+    
+    /* Property card hover effects */
+    .property-card {
+      transition: all 0.3s ease;
+    }
+    
+    .property-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* Chart container */
+    .chart-container {
+      position: relative;
+      height: 300px;
+    }
+    
+    /* Metric cards */
+    .metric-card {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+    }
+    
+    .metric-card:hover {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+  </style>
+</head>
+<body class="bg-gray-50">
+  <!-- Loading Screen -->
+  <div id="loading-screen" class="fixed inset-0 bg-white z-50 flex items-center justify-center">
+    <div class="text-center">
+      <div class="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto"></div>
+      <p class="mt-4 text-gray-600">Loading your portfolio...</p>
+    </div>
+  </div>
+
+  <!-- Main App Container -->
+  <div id="app" style="display: none;">
+    <!-- Navigation Header -->
+    <header class="bg-white shadow-sm">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center py-4">
+          <div class="flex items-center gap-8">
+            <h1 class="text-2xl font-bold text-gray-900">Property Portfolio</h1>
+            <nav class="hidden md:flex gap-6">
+              <a href="/roi-finder.html" class="text-gray-600 hover:text-gray-900">Dashboard</a>
+              <a href="/portfolio.html" class="text-blue-600 font-medium">Portfolio</a>
+              <a href="/reports.html" class="text-gray-600 hover:text-gray-900">Reports</a>
+              <a href="/realtor-settings.html" class="text-gray-600 hover:text-gray-900">Branding</a>
+            </nav>
+          </div>
+          <div class="flex items-center gap-4">
+            <span class="text-sm text-gray-600" id="user-email">-</span>
+            <button id="logout-btn" class="text-sm text-gray-600 hover:text-gray-900">
+              Logout
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Portfolio Overview Section -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <!-- Portfolio Metrics -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div class="metric-card">
+          <p class="text-sm text-gray-600 mb-1">Total Properties</p>
+          <p class="text-3xl font-bold text-gray-900" id="total-properties">0</p>
+          <p class="text-xs text-gray-500 mt-1">In your portfolio</p>
+        </div>
+        <div class="metric-card">
+          <p class="text-sm text-gray-600 mb-1">Total Value</p>
+          <p class="text-3xl font-bold text-gray-900" id="total-value">$0</p>
+          <p class="text-xs text-gray-500 mt-1">Combined property value</p>
+        </div>
+        <div class="metric-card">
+          <p class="text-sm text-gray-600 mb-1">Monthly Income</p>
+          <p class="text-3xl font-bold text-green-600" id="monthly-income">$0</p>
+          <p class="text-xs text-gray-500 mt-1">Projected rental income</p>
+        </div>
+        <div class="metric-card">
+          <p class="text-sm text-gray-600 mb-1">Avg Cap Rate</p>
+          <p class="text-3xl font-bold text-blue-600" id="avg-cap-rate">0%</p>
+          <p class="text-xs text-gray-500 mt-1">Portfolio average</p>
+        </div>
+      </div>
+
+      <!-- Portfolio Charts -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <!-- Property Distribution Chart -->
+        <div class="bg-white rounded-xl shadow-lg p-6">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">Property Type Distribution</h3>
+          <div class="chart-container">
+            <canvas id="property-type-chart"></canvas>
+          </div>
+        </div>
+
+        <!-- ROI Distribution Chart -->
+        <div class="bg-white rounded-xl shadow-lg p-6">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">ROI Performance</h3>
+          <div class="chart-container">
+            <canvas id="roi-distribution-chart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filters and Actions -->
+      <div class="bg-white rounded-lg shadow mb-6 p-4">
+        <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+          <div class="flex items-center gap-4 w-full md:w-auto">
+            <input 
+              type="text" 
+              id="search-properties" 
+              placeholder="Search properties..." 
+              class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-full md:w-64"
+            />
+            <select 
+              id="filter-type" 
+              class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="">All Types</option>
+              <option value="House">House</option>
+              <option value="Condo">Condo</option>
+              <option value="Townhouse">Townhouse</option>
+              <option value="Multi-family">Multi-family</option>
+            </select>
+            <select 
+              id="sort-by" 
+              class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="date-desc">Newest First</option>
+              <option value="date-asc">Oldest First</option>
+              <option value="roi-desc">Highest ROI</option>
+              <option value="roi-asc">Lowest ROI</option>
+              <option value="value-desc">Highest Value</option>
+              <option value="value-asc">Lowest Value</option>
+            </select>
+          </div>
+          <div class="flex gap-2">
+            <button 
+              id="export-portfolio" 
+              class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+            >
+              Export CSV
+            </button>
+            <button 
+              onclick="window.location.href='/roi-finder.html'" 
+              class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              + Add Property
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Properties Grid -->
+      <div id="properties-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Property cards will be dynamically inserted here -->
+      </div>
+
+      <!-- Empty State -->
+      <div id="empty-state" class="text-center py-12" style="display: none;">
+        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+        </svg>
+        <h3 class="mt-2 text-sm font-medium text-gray-900">No properties yet</h3>
+        <p class="mt-1 text-sm text-gray-500">Get started by analyzing your first property.</p>
+        <div class="mt-6">
+          <button 
+            onclick="window.location.href='/roi-finder.html'" 
+            class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+          >
+            Analyze Property
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Property Details Modal -->
+  <div id="property-modal" class="fixed inset-0 bg-gray-500 bg-opacity-75 z-50" style="display: none;">
+    <div class="flex items-center justify-center min-h-screen p-4">
+      <div class="bg-white rounded-lg max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+        <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+          <h2 class="text-xl font-semibold text-gray-900" id="modal-property-address">Property Details</h2>
+          <button onclick="closePropertyModal()" class="text-gray-400 hover:text-gray-500">
+            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        <div id="modal-content" class="p-6">
+          <!-- Property details will be loaded here -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyBvVaw35Gzl98MOrclJaCCC0jcHzJLqkwc",
+      authDomain: "rental-roi-calculator-ddce2.firebaseapp.com",
+      projectId: "rental-roi-calculator-ddce2",
+      storageBucket: "rental-roi-calculator-ddce2.appspot.com",
+      messagingSenderId: "1034879055851",
+      appId: "1:1034879055851:web:2dd56a7e05a3154dcbac88"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    // Global variables
+    let currentUser = null;
+    let properties = [];
+    let filteredProperties = [];
+    let propertyTypeChart = null;
+    let roiDistributionChart = null;
+
+    // Check authentication
+    auth.onAuthStateChanged(async (user) => {
+      if (user) {
+        currentUser = user;
+        document.getElementById('user-email').textContent = user.email;
+        await loadPortfolio();
+        showApp();
+      } else {
+        window.location.href = '/roi-finder.html';
+      }
+    });
+
+    // Show app after loading
+    function showApp() {
+      document.getElementById('loading-screen').style.display = 'none';
+      document.getElementById('app').style.display = 'block';
+    }
+
+    // Load portfolio data
+    async function loadPortfolio() {
+      try {
+        // Load user's properties
+        const snapshot = await db.collection('properties')
+          .where('userId', '==', currentUser.uid)
+          .orderBy('createdAt', 'desc')
+          .get();
+
+        properties = [];
+        const propertyIds = [];
+        
+        snapshot.forEach(doc => {
+          const data = doc.data();
+          properties.push({
+            id: doc.id,
+            ...data
+          });
+          propertyIds.push(doc.id);
+        });
+
+        // Load analyses for these properties
+        if (propertyIds.length > 0) {
+          const analysesByProperty = {};
+          
+          // Split into chunks of 10 for Firestore 'in' query limitation
+          for (let i = 0; i < propertyIds.length; i += 10) {
+            const chunk = propertyIds.slice(i, i + 10);
+            const analysesSnapshot = await db.collection('analyses')
+              .where('propertyId', 'in', chunk)
+              .get();
+            
+            analysesSnapshot.forEach(doc => {
+              const analysis = doc.data();
+              analysesByProperty[analysis.propertyId] = analysis;
+            });
+          }
+
+          // Merge analysis data with properties
+          properties = properties.map(property => ({
+            ...property,
+            analysis: analysesByProperty[property.id] || null
+          }));
+        }
+
+        filteredProperties = [...properties];
+        updateMetrics();
+        renderProperties();
+        createCharts();
+        
+        // Show/hide empty state
+        document.getElementById('empty-state').style.display = 
+          properties.length === 0 ? 'block' : 'none';
+          
+      } catch (error) {
+        console.error('Error loading portfolio:', error);
+      }
+    }
+
+    // Update portfolio metrics
+    function updateMetrics() {
+      const totalProperties = properties.length;
+      let totalValue = 0;
+      let totalMonthlyIncome = 0;
+      let totalCapRate = 0;
+      let capRateCount = 0;
+
+      properties.forEach(property => {
+        if (property.price) {
+          totalValue += property.price;
+        }
+        
+        if (property.analysis) {
+          const monthlyRent = property.analysis.long_term_rental?.monthly_rent || 0;
+          totalMonthlyIncome += monthlyRent;
+          
+          const capRate = parseFloat(property.analysis.roi_percentage || 0);
+          if (capRate > 0) {
+            totalCapRate += capRate;
+            capRateCount++;
+          }
+        }
+      });
+
+      const avgCapRate = capRateCount > 0 ? totalCapRate / capRateCount : 0;
+
+      document.getElementById('total-properties').textContent = totalProperties;
+      document.getElementById('total-value').textContent = '$' + totalValue.toLocaleString();
+      document.getElementById('monthly-income').textContent = '$' + totalMonthlyIncome.toLocaleString();
+      document.getElementById('avg-cap-rate').textContent = avgCapRate.toFixed(1) + '%';
+    }
+
+    // Create portfolio charts
+    function createCharts() {
+      // Destroy existing charts to prevent memory leaks
+      if (propertyTypeChart) {
+        propertyTypeChart.destroy();
+        propertyTypeChart = null;
+      }
+      if (roiDistributionChart) {
+        roiDistributionChart.destroy();
+        roiDistributionChart = null;
+      }
+      
+      // Property Type Distribution
+      const propertyTypes = {};
+      properties.forEach(property => {
+        const type = property.propertyType || 'Unknown';
+        propertyTypes[type] = (propertyTypes[type] || 0) + 1;
+      });
+
+      const typeCtx = document.getElementById('property-type-chart').getContext('2d');
+      propertyTypeChart = new Chart(typeCtx, {
+        type: 'doughnut',
+        data: {
+          labels: Object.keys(propertyTypes),
+          datasets: [{
+            data: Object.values(propertyTypes),
+            backgroundColor: [
+              '#3b82f6',
+              '#10b981',
+              '#f59e0b',
+              '#ef4444',
+              '#8b5cf6'
+            ]
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'bottom'
+            }
+          }
+        }
+      });
+
+      // ROI Distribution
+      const roiRanges = {
+        'Below 2%': 0,
+        '2-4%': 0,
+        '4-6%': 0,
+        '6-8%': 0,
+        'Above 8%': 0
+      };
+
+      properties.forEach(property => {
+        if (property.analysis) {
+          const roi = parseFloat(property.analysis.roi_percentage || 0);
+          if (roi < 2) roiRanges['Below 2%']++;
+          else if (roi < 4) roiRanges['2-4%']++;
+          else if (roi < 6) roiRanges['4-6%']++;
+          else if (roi < 8) roiRanges['6-8%']++;
+          else roiRanges['Above 8%']++;
+        }
+      });
+
+      const roiCtx = document.getElementById('roi-distribution-chart').getContext('2d');
+      roiDistributionChart = new Chart(roiCtx, {
+        type: 'bar',
+        data: {
+          labels: Object.keys(roiRanges),
+          datasets: [{
+            label: 'Properties',
+            data: Object.values(roiRanges),
+            backgroundColor: '#3b82f6'
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                stepSize: 1
+              }
+            }
+          },
+          plugins: {
+            legend: {
+              display: false
+            }
+          }
+        }
+      });
+    }
+
+    // Render property cards
+    function renderProperties() {
+      const grid = document.getElementById('properties-grid');
+      grid.innerHTML = '';
+
+      filteredProperties.forEach(property => {
+        const card = createPropertyCard(property);
+        grid.appendChild(card);
+      });
+    }
+
+    // Create property card element
+    function createPropertyCard(property) {
+      const card = document.createElement('div');
+      card.className = 'property-card bg-white rounded-lg shadow cursor-pointer';
+      card.onclick = () => openPropertyModal(property);
+
+      const roi = property.analysis ? parseFloat(property.analysis.roi_percentage || 0) : 0;
+      const roiColor = roi >= 6 ? 'text-green-600' : roi >= 4 ? 'text-blue-600' : 'text-orange-600';
+
+      card.innerHTML = `
+        <div class="p-6">
+          <div class="flex justify-between items-start mb-4">
+            <div class="flex-1">
+              <h3 class="text-lg font-semibold text-gray-900 mb-1">
+                ${property.address?.street || 'Unknown Address'}
+              </h3>
+              <p class="text-sm text-gray-600">
+                ${property.address?.city || ''}, ${property.address?.province || ''}
+              </p>
+            </div>
+            <span class="ml-2 px-2 py-1 text-xs font-semibold ${roiColor} bg-opacity-10 ${roiColor.replace('text-', 'bg-')} rounded">
+              ${roi.toFixed(1)}% ROI
+            </span>
+          </div>
+          
+          <div class="grid grid-cols-2 gap-4 text-sm">
+            <div>
+              <p class="text-gray-600">Value</p>
+              <p class="font-semibold">$${(property.price || 0).toLocaleString()}</p>
+            </div>
+            <div>
+              <p class="text-gray-600">Monthly Rent</p>
+              <p class="font-semibold">$${(property.analysis?.long_term_rental?.monthly_rent || 0).toLocaleString()}</p>
+            </div>
+            <div>
+              <p class="text-gray-600">Type</p>
+              <p class="font-semibold">${property.propertyType || 'Unknown'}</p>
+            </div>
+            <div>
+              <p class="text-gray-600">Analyzed</p>
+              <p class="font-semibold">${property.lastAnalyzed?.toDate ? new Date(property.lastAnalyzed.toDate()).toLocaleDateString() : 'N/A'}</p>
+            </div>
+          </div>
+          
+          <div class="mt-4 pt-4 border-t border-gray-100 flex justify-between items-center">
+            <button 
+              onclick="event.stopPropagation(); viewAnalysis('${property.id}')" 
+              class="text-sm text-blue-600 hover:text-blue-800"
+            >
+              View Analysis
+            </button>
+            <button 
+              onclick="event.stopPropagation(); deleteProperty('${property.id}')" 
+              class="text-sm text-red-600 hover:text-red-800"
+            >
+              Remove
+            </button>
+          </div>
+        </div>
+      `;
+
+      return card;
+    }
+
+    // View analysis
+    function viewAnalysis(propertyId) {
+      // Navigate to roi-finder.html with the analysis
+      window.location.href = `/roi-finder.html?view=${propertyId}`;
+    }
+
+    // Delete property
+    async function deleteProperty(propertyId) {
+      if (confirm('Are you sure you want to remove this property from your portfolio?')) {
+        try {
+          await db.collection('properties').doc(propertyId).delete();
+          
+          // Also delete related analyses
+          const analysesSnapshot = await db.collection('analyses')
+            .where('propertyId', '==', propertyId)
+            .get();
+          
+          const batch = db.batch();
+          analysesSnapshot.forEach(doc => {
+            batch.delete(doc.ref);
+          });
+          await batch.commit();
+          
+          // Reload portfolio
+          await loadPortfolio();
+        } catch (error) {
+          console.error('Error deleting property:', error);
+          alert('Failed to delete property');
+        }
+      }
+    }
+
+    // Open property modal
+    function openPropertyModal(property) {
+      document.getElementById('modal-property-address').textContent = 
+        property.address?.street || 'Property Details';
+      
+      const modalContent = document.getElementById('modal-content');
+      modalContent.innerHTML = `
+        <div class="space-y-6">
+          <!-- Property Info -->
+          <div>
+            <h3 class="text-lg font-medium text-gray-900 mb-4">Property Information</h3>
+            <div class="grid grid-cols-2 gap-4 text-sm">
+              <div>
+                <p class="text-gray-600">Full Address</p>
+                <p class="font-semibold">
+                  ${property.address?.street || 'N/A'}<br>
+                  ${property.address?.city || ''}, ${property.address?.province || ''} ${property.address?.postalCode || ''}
+                </p>
+              </div>
+              <div>
+                <p class="text-gray-600">Property Type</p>
+                <p class="font-semibold">${property.propertyType || 'Unknown'}</p>
+              </div>
+              <div>
+                <p class="text-gray-600">Bedrooms</p>
+                <p class="font-semibold">${property.bedrooms || 'N/A'}</p>
+              </div>
+              <div>
+                <p class="text-gray-600">Bathrooms</p>
+                <p class="font-semibold">${property.bathrooms || 'N/A'}</p>
+              </div>
+              <div>
+                <p class="text-gray-600">Square Feet</p>
+                <p class="font-semibold">${property.sqft ? property.sqft.toLocaleString() : 'N/A'}</p>
+              </div>
+              <div>
+                <p class="text-gray-600">List Price</p>
+                <p class="font-semibold">$${(property.price || 0).toLocaleString()}</p>
+              </div>
+            </div>
+          </div>
+
+          ${property.analysis ? `
+            <!-- Financial Analysis -->
+            <div>
+              <h3 class="text-lg font-medium text-gray-900 mb-4">Financial Analysis</h3>
+              <div class="grid grid-cols-2 gap-4 text-sm">
+                <div>
+                  <p class="text-gray-600">Monthly Rent</p>
+                  <p class="font-semibold text-green-600">$${(property.analysis.long_term_rental?.monthly_rent || 0).toLocaleString()}</p>
+                </div>
+                <div>
+                  <p class="text-gray-600">Cap Rate</p>
+                  <p class="font-semibold">${property.analysis.roi_percentage || 0}%</p>
+                </div>
+                <div>
+                  <p class="text-gray-600">Monthly Cash Flow</p>
+                  <p class="font-semibold ${property.analysis.long_term_rental?.monthly_cash_flow >= 0 ? 'text-green-600' : 'text-red-600'}">
+                    $${(property.analysis.long_term_rental?.monthly_cash_flow || 0).toLocaleString()}
+                  </p>
+                </div>
+                <div>
+                  <p class="text-gray-600">Annual Profit</p>
+                  <p class="font-semibold">$${(property.analysis.long_term_rental?.annual_profit || 0).toLocaleString()}</p>
+                </div>
+              </div>
+            </div>
+
+            ${property.analysis.strAnalysis ? `
+              <!-- STR Analysis -->
+              <div>
+                <h3 class="text-lg font-medium text-gray-900 mb-4">Short-Term Rental Analysis</h3>
+                <div class="grid grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <p class="text-gray-600">Avg Nightly Rate</p>
+                    <p class="font-semibold">$${(property.analysis.strAnalysis.avgNightlyRate || 0).toFixed(0)}</p>
+                  </div>
+                  <div>
+                    <p class="text-gray-600">Occupancy Rate</p>
+                    <p class="font-semibold">${(property.analysis.strAnalysis.occupancyRate || 0).toFixed(0)}%</p>
+                  </div>
+                  <div>
+                    <p class="text-gray-600">Monthly Revenue</p>
+                    <p class="font-semibold text-green-600">$${(property.analysis.strAnalysis.monthlyRevenue || 0).toLocaleString()}</p>
+                  </div>
+                  <div>
+                    <p class="text-gray-600">Annual Revenue</p>
+                    <p class="font-semibold">$${(property.analysis.strAnalysis.annualRevenue || 0).toLocaleString()}</p>
+                  </div>
+                </div>
+              </div>
+            ` : ''}
+          ` : '<p class="text-gray-500">No analysis data available</p>'}
+
+          <!-- Actions -->
+          <div class="flex gap-3 pt-4 border-t border-gray-200">
+            <button 
+              onclick="viewAnalysis('${property.id}')" 
+              class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              View Full Analysis
+            </button>
+            <button 
+              onclick="generateReport('${property.id}')" 
+              class="flex-1 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+            >
+              Generate Report
+            </button>
+          </div>
+        </div>
+      `;
+      
+      document.getElementById('property-modal').style.display = 'block';
+    }
+
+    // Close property modal
+    function closePropertyModal() {
+      document.getElementById('property-modal').style.display = 'none';
+    }
+
+    // Generate report
+    function generateReport(propertyId) {
+      // Redirect to reports page with property pre-selected
+      window.location.href = `/reports.html?generate=${propertyId}`;
+    }
+
+    // Search and filter functionality
+    document.getElementById('search-properties').addEventListener('input', filterProperties);
+    document.getElementById('filter-type').addEventListener('change', filterProperties);
+    document.getElementById('sort-by').addEventListener('change', sortProperties);
+
+    function filterProperties() {
+      const searchTerm = document.getElementById('search-properties').value.toLowerCase();
+      const filterType = document.getElementById('filter-type').value;
+
+      filteredProperties = properties.filter(property => {
+        const matchesSearch = !searchTerm || 
+          property.address?.street?.toLowerCase().includes(searchTerm) ||
+          property.address?.city?.toLowerCase().includes(searchTerm);
+        
+        const matchesType = !filterType || property.propertyType === filterType;
+        
+        return matchesSearch && matchesType;
+      });
+
+      sortProperties();
+    }
+
+    function sortProperties() {
+      const sortBy = document.getElementById('sort-by').value;
+
+      filteredProperties.sort((a, b) => {
+        switch(sortBy) {
+          case 'date-desc':
+            return (b.createdAt?.toDate() || 0) - (a.createdAt?.toDate() || 0);
+          case 'date-asc':
+            return (a.createdAt?.toDate() || 0) - (b.createdAt?.toDate() || 0);
+          case 'roi-desc':
+            return (b.analysis?.roi_percentage || 0) - (a.analysis?.roi_percentage || 0);
+          case 'roi-asc':
+            return (a.analysis?.roi_percentage || 0) - (b.analysis?.roi_percentage || 0);
+          case 'value-desc':
+            return (b.price || 0) - (a.price || 0);
+          case 'value-asc':
+            return (a.price || 0) - (b.price || 0);
+          default:
+            return 0;
+        }
+      });
+
+      renderProperties();
+    }
+
+    // Export portfolio to CSV
+    document.getElementById('export-portfolio').addEventListener('click', exportPortfolio);
+
+    function exportPortfolio() {
+      // Helper function to escape CSV fields
+      const escapeCSV = (field) => {
+        if (field == null) return '';
+        const str = String(field);
+        // If field contains comma, quotes, or newlines, wrap in quotes and escape quotes
+        if (str.includes(',') || str.includes('"') || str.includes('\n')) {
+          return '"' + str.replace(/"/g, '""') + '"';
+        }
+        return str;
+      };
+      
+      const csv = [
+        ['Address', 'City', 'Province', 'Type', 'Bedrooms', 'Bathrooms', 'Sqft', 'Price', 'Monthly Rent', 'Cap Rate', 'Cash Flow', 'Analyzed Date']
+      ];
+
+      properties.forEach(property => {
+        csv.push([
+          escapeCSV(property.address?.street || ''),
+          escapeCSV(property.address?.city || ''),
+          escapeCSV(property.address?.province || ''),
+          escapeCSV(property.propertyType || ''),
+          escapeCSV(property.bedrooms || ''),
+          escapeCSV(property.bathrooms || ''),
+          escapeCSV(property.sqft || ''),
+          escapeCSV(property.price || ''),
+          escapeCSV(property.analysis?.long_term_rental?.monthly_rent || ''),
+          escapeCSV(property.analysis?.roi_percentage || ''),
+          escapeCSV(property.analysis?.long_term_rental?.monthly_cash_flow || ''),
+          escapeCSV(property.lastAnalyzed?.toDate ? new Date(property.lastAnalyzed.toDate()).toLocaleDateString() : '')
+        ]);
+      });
+
+      const csvContent = csv.map(row => row.join(',')).join('\n');
+      const blob = new Blob([csvContent], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `portfolio-${new Date().toISOString().split('T')[0]}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    // Logout
+    document.getElementById('logout-btn').addEventListener('click', () => {
+      auth.signOut();
+    });
+
+    // Close modal on click outside
+    document.getElementById('property-modal').addEventListener('click', (e) => {
+      if (e.target.id === 'property-modal') {
+        closePropertyModal();
+      }
+    });
+  </script>
+</body>
+</html>

@@ -32,8 +32,8 @@ body {
 .nav-logo {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #16a34a;
-  background: linear-gradient(135deg, #16a34a, #22c55e);
+  color: #667eea;
+  background: linear-gradient(135deg, #667eea, #764ba2);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -56,7 +56,7 @@ body {
 }
 
 .nav-link:hover {
-  color: #16a34a;
+  color: #667eea;
 }
 
 .nav-link::after {
@@ -66,7 +66,7 @@ body {
   height: 2px;
   bottom: -5px;
   left: 0;
-  background: linear-gradient(90deg, #16a34a, #22c55e);
+  background: linear-gradient(90deg, #667eea, #764ba2);
   transition: width 0.3s ease;
 }
 
@@ -76,7 +76,7 @@ body {
 
 /* Buttons */
 .btn-primary {
-  background: linear-gradient(135deg, #16a34a, #22c55e);
+  background: linear-gradient(135deg, #667eea, #764ba2);
   color: white;
   padding: 12px 28px;
   border-radius: 12px;
@@ -114,9 +114,9 @@ body {
 
 .btn-secondary {
   background: transparent;
-  color: #16a34a;
+  color: #667eea;
   padding: 12px 28px;
-  border: 2px solid #16a34a;
+  border: 2px solid #667eea;
   border-radius: 12px;
   font-weight: 600;
   display: inline-block;
@@ -125,7 +125,7 @@ body {
 }
 
 .btn-secondary:hover {
-  background: #16a34a;
+  background: #667eea;
   color: white;
   transform: translateY(-2px);
 }
@@ -227,7 +227,7 @@ body {
 }
 
 .hero-badge {
-  background: linear-gradient(135deg, #16a34a, #22c55e);
+  background: linear-gradient(135deg, #667eea, #764ba2);
   color: white;
   padding: 8px 20px;
   border-radius: 50px;
@@ -254,7 +254,7 @@ body {
 }
 
 .highlight {
-  background: linear-gradient(135deg, #16a34a, #22c55e);
+  background: linear-gradient(135deg, #667eea, #764ba2);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -268,7 +268,7 @@ body {
   left: 0;
   right: 0;
   height: 3px;
-  background: linear-gradient(90deg, #bbf7d0, #16a34a);
+  background: linear-gradient(90deg, #bbf7d0, #667eea);
   border-radius: 2px;
 }
 
@@ -288,7 +288,7 @@ body {
 .stat-number {
   font-size: 2.5rem;
   font-weight: 800;
-  color: #16a34a;
+  color: #667eea;
   display: block;
 }
 
@@ -350,7 +350,7 @@ body {
 
 .property-roi {
   font-size: 0.9rem;
-  color: #16a34a;
+  color: #667eea;
   font-weight: 600;
 }
 
@@ -379,12 +379,12 @@ body {
 
 .hero-lead-form input:focus {
   outline: none;
-  border-color: #16a34a;
+  border-color: #667eea;
   box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1);
 }
 
 .hero-lead-form button {
-  background: linear-gradient(135deg, #16a34a, #22c55e);
+  background: linear-gradient(135deg, #667eea, #764ba2);
   color: white;
   font-weight: 600;
   cursor: pointer;
@@ -490,7 +490,7 @@ body {
   left: 0;
   right: 0;
   height: 3px;
-  background: linear-gradient(90deg, #16a34a, #22c55e);
+  background: linear-gradient(90deg, #667eea, #764ba2);
 }
 
 .feature-icon {
@@ -532,7 +532,7 @@ body {
 .price {
   font-size: 3rem;
   font-weight: 800;
-  color: #16a34a;
+  color: #667eea;
   margin-bottom: 2rem;
 }
 
@@ -559,12 +559,12 @@ body {
   content: "✓";
   position: absolute;
   left: 0;
-  color: #16a34a;
+  color: #667eea;
   font-weight: bold;
 }
 
 .highlight-card {
-  border-color: #16a34a;
+  border-color: #667eea;
   transform: scale(1.05);
   box-shadow: 0 20px 40px rgba(22, 163, 74, 0.2);
 }
@@ -574,7 +574,7 @@ body {
   top: -12px;
   left: 50%;
   transform: translateX(-50%);
-  background: linear-gradient(135deg, #16a34a, #22c55e);
+  background: linear-gradient(135deg, #667eea, #764ba2);
   color: white;
   padding: 6px 20px;
   border-radius: 20px;
@@ -642,7 +642,7 @@ body {
   width: 50px;
   height: 50px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #16a34a, #22c55e);
+  background: linear-gradient(135deg, #667eea, #764ba2);
   color: white;
   display: flex;
   align-items: center;

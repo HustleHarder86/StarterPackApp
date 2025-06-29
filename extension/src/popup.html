@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>InvestorProps</title>
+  <link href="popup.css" rel="stylesheet">
+</head>
+<body>
+  <div class="popup-container">
+    <div class="header">
+      <img src="../icons/icon-48.png" alt="InvestorProps" class="logo">
+      <h1>InvestorProps</h1>
+    </div>
+
+    <!-- Login State -->
+    <div id="loginState" class="state-container" style="display: none;">
+      <div class="welcome-text">
+        <p>Welcome to InvestorProps! Please login to start analyzing properties.</p>
+      </div>
+      
+      <form id="loginForm" class="login-form">
+        <input 
+          type="email" 
+          id="email" 
+          placeholder="Email address" 
+          required
+          class="input-field"
+        />
+        <input 
+          type="password" 
+          id="password" 
+          placeholder="Password" 
+          required
+          class="input-field"
+        />
+        <button type="submit" class="btn btn-primary">Login</button>
+      </form>
+      
+      <div class="divider">or</div>
+      
+      <a href="https://investorprops.vercel.app/roi-finder.html" target="_blank" class="btn btn-secondary">
+        Create Account
+      </a>
+    </div>
+
+    <!-- Logged In State -->
+    <div id="loggedInState" class="state-container" style="display: none;">
+      <div class="user-info">
+        <div class="user-email" id="userEmail"></div>
+        <div class="user-stats">
+          <div class="stat">
+            <span class="stat-value" id="analysisCount">0</span>
+            <span class="stat-label">Analyses</span>
+          </div>
+          <div class="stat">
+            <span class="stat-value" id="strTrialCount">5</span>
+            <span class="stat-label">STR Trial Left</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="instructions">
+        <h3>How to use:</h3>
+        <ol>
+          <li>Navigate to any property on Realtor.ca</li>
+          <li>Click the "Analyze with InvestorProps" button</li>
+          <li>View comprehensive ROI analysis</li>
+        </ol>
+      </div>
+
+      <div class="actions">
+        <a href="https://investorprops.vercel.app/roi-finder.html" target="_blank" class="btn btn-primary">
+          Open Dashboard
+        </a>
+        <button id="logoutBtn" class="btn btn-secondary">Logout</button>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div id="loadingState" class="state-container">
+      <div class="spinner"></div>
+      <p>Loading...</p>
+    </div>
+
+    <!-- Error State -->
+    <div id="errorState" class="state-container" style="display: none;">
+      <div class="error-message" id="errorMessage"></div>
+      <button id="retryBtn" class="btn btn-primary">Retry</button>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

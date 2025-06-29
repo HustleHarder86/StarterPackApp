@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Investment Property Analysis - InvestorProps</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- React -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  
+  <!-- Load Component -->
+  <script type="text/babel" src="/components/ClientPresentationView.jsx"></script>
+  
+  <style>
+    /* Clean print styles */
+    @media print {
+      @page {
+        size: letter;
+        margin: 0.5in;
+      }
+      
+      .no-print {
+        display: none !important;
+      }
+      
+      body {
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
+      }
+    }
+    
+    /* Loading animation */
+    .loading-spinner {
+      border: 3px solid #f3f4f6;
+      border-top: 3px solid #3b82f6;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body class="bg-gray-50">
+  <!-- Loading State -->
+  <div id="loading-screen" class="min-h-screen flex items-center justify-center">
+    <div class="text-center">
+      <div class="loading-spinner mx-auto mb-4"></div>
+      <p class="text-gray-600">Loading presentation...</p>
+    </div>
+  </div>
+
+  <!-- Error State -->
+  <div id="error-screen" class="min-h-screen flex items-center justify-center" style="display: none;">
+    <div class="max-w-md w-full bg-white rounded-lg shadow-lg p-8 text-center">
+      <svg class="w-16 h-16 text-red-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+      </svg>
+      <h2 class="text-2xl font-bold text-gray-900 mb-2">Presentation Not Available</h2>
+      <p id="error-message" class="text-gray-600 mb-6">This presentation may have expired or the link is invalid.</p>
+      <a href="/" class="text-blue-600 hover:text-blue-700 font-medium">Return to Home</a>
+    </div>
+  </div>
+
+  <!-- Expired State -->
+  <div id="expired-screen" class="min-h-screen flex items-center justify-center" style="display: none;">
+    <div class="max-w-md w-full bg-white rounded-lg shadow-lg p-8 text-center">
+      <svg class="w-16 h-16 text-yellow-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+      </svg>
+      <h2 class="text-2xl font-bold text-gray-900 mb-2">Presentation Expired</h2>
+      <p class="text-gray-600 mb-6">This presentation link has expired. Please contact your realtor for an updated analysis.</p>
+      <div id="realtor-contact" class="mt-4 p-4 bg-gray-50 rounded-lg">
+        <!-- Realtor contact info will be inserted here -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content Container -->
+  <div id="presentation-container" style="display: none;"></div>
+
+  <script>
+    // Get token from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get('token');
+    
+    if (!token) {
+      showError('Invalid presentation link');
+    } else {
+      loadPresentation();
+    }
+    
+    async function loadPresentation() {
+      try {
+        const response = await fetch(`/api/reports/client-presentation?token=${token}`);
+        const result = await response.json();
+        
+        if (!response.ok) {
+          if (response.status === 410) {
+            showExpired(result.realtorInfo);
+          } else {
+            showError(result.error || 'Failed to load presentation');
+          }
+          return;
+        }
+        
+        if (result.success && result.data) {
+          displayPresentation(result.data);
+        } else {
+          showError('Invalid presentation data');
+        }
+        
+      } catch (error) {
+        console.error('Load error:', error);
+        showError('Failed to load presentation. Please try again.');
+      }
+    }
+    
+    function showError(message) {
+      document.getElementById('loading-screen').style.display = 'none';
+      document.getElementById('error-screen').style.display = 'flex';
+      document.getElementById('error-message').textContent = message;
+    }
+    
+    function showExpired(realtorInfo) {
+      document.getElementById('loading-screen').style.display = 'none';
+      document.getElementById('expired-screen').style.display = 'flex';
+      
+      if (realtorInfo) {
+        document.getElementById('realtor-contact').innerHTML = `
+          <p class="font-semibold">${realtorInfo.name}</p>
+          ${realtorInfo.phone ? `<p>${realtorInfo.phone}</p>` : ''}
+          ${realtorInfo.email ? `<p><a href="mailto:${realtorInfo.email}" class="text-blue-600">${realtorInfo.email}</a></p>` : ''}
+        `;
+      }
+    }
+    
+    function displayPresentation(data) {
+      // Wait for React component to load
+      const checkComponent = () => {
+        if (typeof window.ClientPresentationView !== 'undefined') {
+          renderPresentation(data);
+        } else {
+          setTimeout(checkComponent, 100);
+        }
+      };
+      checkComponent();
+    }
+    
+    function renderPresentation(data) {
+      const container = document.getElementById('presentation-container');
+      
+      // Hide loading screen
+      document.getElementById('loading-screen').style.display = 'none';
+      container.style.display = 'block';
+      
+      // Render the presentation component
+      ReactDOM.render(
+        React.createElement(window.ClientPresentationView, {
+          analysis: data.analysis,
+          propertyAddress: data.property?.address?.full || 
+                          `${data.property?.address?.street}, ${data.property?.address?.city}` ||
+                          data.analysis.property_address ||
+                          'Investment Property',
+          realtorInfo: data.presentation.realtorInfo,
+          clientName: data.presentation.clientName,
+          presentationMode: true
+        }),
+        container
+      );
+      
+      // Update page title
+      document.title = `Investment Analysis - ${data.property?.address?.street || 'Property'} | StarterPackApp`;
+    }
+    
+    // Add keyboard navigation
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && document.fullscreenElement) {
+        document.exitFullscreen();
+      }
+    });
+    
+    // Enable fullscreen for presentations
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen();
+      } else {
+        document.exitFullscreen();
+      }
+    }
+  </script>
+</body>
+</html>
