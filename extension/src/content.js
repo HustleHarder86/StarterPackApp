@@ -199,24 +199,57 @@ function addAnalyzeButton() {
     return;
   }
 
-  // Find a good location for the button
-  const priceContainer = document.querySelector('[data-testid="listingPrice"]')?.parentElement ||
-                        document.querySelector('.listingPrice')?.parentElement ||
-                        document.querySelector('[class*="price"]')?.parentElement;
+  console.log('[StarterPack] Looking for place to add button...');
 
-  if (priceContainer) {
+  // Find a good location for the button - try multiple selectors
+  let targetContainer = null;
+  
+  // Try 1: Price element (new Realtor.ca layout)
+  const priceElement = document.querySelector('.listingDetailsPrice');
+  if (priceElement && priceElement.parentElement) {
+    targetContainer = priceElement.parentElement;
+    console.log('[StarterPack] Found price container');
+  }
+  
+  // Try 2: Old selectors
+  if (!targetContainer) {
+    targetContainer = document.querySelector('[data-testid="listingPrice"]')?.parentElement ||
+                     document.querySelector('.listingPrice')?.parentElement ||
+                     document.querySelector('[class*="price"]')?.parentElement;
+  }
+  
+  // Try 3: Property details section
+  if (!targetContainer) {
+    targetContainer = document.querySelector('.propertyDetailsSectionContentSubCon') ||
+                     document.querySelector('.listingDetailsSectionContentSubCon');
+  }
+  
+  // Try 4: After address
+  if (!targetContainer) {
+    const addressElement = document.querySelector('.listingDetailsAddressBar');
+    if (addressElement && addressElement.parentElement) {
+      targetContainer = addressElement.parentElement;
+    }
+  }
+
+  if (targetContainer) {
+    console.log('[StarterPack] Adding analyze button to:', targetContainer.className);
+    
     const analyzeButton = document.createElement('button');
     analyzeButton.id = 'starterpack-analyze-btn';
     analyzeButton.className = 'starterpack-analyze-button';
     analyzeButton.innerHTML = `
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
       </svg>
       Analyze with StarterPack
     `;
     
     analyzeButton.addEventListener('click', handleAnalyzeClick);
-    priceContainer.appendChild(analyzeButton);
+    targetContainer.appendChild(analyzeButton);
+    console.log('[StarterPack] Button added successfully');
+  } else {
+    console.log('[StarterPack] Could not find suitable container for button');
   }
 }
 
@@ -262,8 +295,17 @@ async function handleAnalyzeClick() {
 
 // Initialize extension
 function initialize() {
-  // Add button on page load
-  setTimeout(addAnalyzeButton, 1000);
+  console.log('[StarterPack] Initializing extension on:', window.location.href);
+  
+  // Try to add button multiple times with delays
+  const attempts = [500, 1000, 2000, 3000, 5000];
+  attempts.forEach(delay => {
+    setTimeout(() => {
+      if (!document.getElementById('starterpack-analyze-btn')) {
+        addAnalyzeButton();
+      }
+    }, delay);
+  });
   
   // Watch for navigation changes (single-page app)
   let lastUrl = location.href;
@@ -271,7 +313,15 @@ function initialize() {
     const url = location.href;
     if (url !== lastUrl) {
       lastUrl = url;
-      setTimeout(addAnalyzeButton, 1000);
+      console.log('[StarterPack] URL changed to:', url);
+      // Try adding button multiple times on navigation
+      attempts.forEach(delay => {
+        setTimeout(() => {
+          if (!document.getElementById('starterpack-analyze-btn')) {
+            addAnalyzeButton();
+          }
+        }, delay);
+      });
     }
   }).observe(document, {subtree: true, childList: true});
 }
