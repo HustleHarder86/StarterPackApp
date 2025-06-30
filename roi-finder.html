@@ -829,73 +829,84 @@
                 const isFromExtension = urlParams.get('fromExtension') === 'true';
                 
                 if (isFromExtension) {
-                  console.log('[StarterPack] Coming from extension, showing property form');
-                  showView('property-form');
+                  console.log('[StarterPack] Coming from extension, starting direct analysis');
                   
-                  // Pre-fill form with URL parameters
-                  setTimeout(() => {
-                    // Address fields
-                    if (urlParams.get('street')) {
-                      const streetField = document.getElementById('street');
-                      if (streetField) streetField.value = urlParams.get('street');
-                    }
-                    if (urlParams.get('city')) {
-                      const cityField = document.getElementById('city');
-                      if (cityField) cityField.value = urlParams.get('city');
-                    }
-                    if (urlParams.get('state')) {
-                      const stateField = document.getElementById('state');
-                      if (stateField) stateField.value = urlParams.get('state');
-                    }
-                    if (urlParams.get('country')) {
-                      const countryField = document.getElementById('country');
-                      if (countryField) countryField.value = urlParams.get('country') || 'Canada';
-                    }
-                    if (urlParams.get('postal')) {
-                      const postalField = document.getElementById('postal');
-                      if (postalField) postalField.value = urlParams.get('postal');
+                  // Show loading screen with analysis message
+                  document.getElementById('loading-message').textContent = 'Analyzing property from Realtor.ca...';
+                  showView('loading');
+                  
+                  // Parse city to remove province if included
+                  let city = urlParams.get('city') || '';
+                  if (city.includes(',')) {
+                    city = city.split(',')[0].trim();
+                  }
+                  
+                  // Construct address object from URL params
+                  const address = {
+                    street: urlParams.get('street') || '',
+                    city: city,
+                    state: urlParams.get('state') || '',
+                    country: urlParams.get('country') || 'Canada',
+                    postal: urlParams.get('postal') || ''
+                  };
+                  
+                  // Construct property data
+                  const propertyData = {
+                    address: address,
+                    price: parseInt(urlParams.get('price')) || 0,
+                    bedrooms: parseInt(urlParams.get('bedrooms')) || 0,
+                    bathrooms: parseFloat(urlParams.get('bathrooms')) || 0,
+                    sqft: parseInt(urlParams.get('sqft')) || 0,
+                    propertyTaxes: parseInt(urlParams.get('taxes')) || 0,
+                    condoFees: parseInt(urlParams.get('condoFees')) || 0,
+                    mlsNumber: urlParams.get('mlsNumber') || '',
+                    propertyType: urlParams.get('propertyType') || ''
+                  };
+                  
+                  console.log('[StarterPack] Property data from extension:', propertyData);
+                  
+                  try {
+                    // Format full address
+                    const fullAddress = `${address.street}, ${address.city}, ${address.state}, ${address.country} ${address.postal}`.trim();
+                    
+                    // Call enhanced API directly with all property data
+                    const response = await fetch('/api/analyze-property-enhanced', {
+                      method: 'POST',
+                      headers: {
+                        'Content-Type': 'application/json'
+                      },
+                      body: JSON.stringify({
+                        userId: currentUser.uid,
+                        propertyAddress: fullAddress,
+                        userEmail: currentUser.email,
+                        userName: currentUser.displayName,
+                        requestType: 'authenticated',
+                        includeStrAnalysis: false // Default to false for now
+                      })
+                    });
+                    
+                    if (!response.ok) {
+                      throw new Error('Analysis API request failed');
                     }
                     
-                    // Property details
-                    if (urlParams.get('price')) {
-                      const priceField = document.getElementById('purchase-price');
-                      if (priceField) priceField.value = urlParams.get('price');
-                    }
-                    if (urlParams.get('bedrooms')) {
-                      const bedroomsField = document.getElementById('bedrooms');
-                      if (bedroomsField) bedroomsField.value = urlParams.get('bedrooms');
-                    }
-                    if (urlParams.get('bathrooms')) {
-                      const bathroomsField = document.getElementById('bathrooms');
-                      if (bathroomsField) bathroomsField.value = urlParams.get('bathrooms');
-                    }
-                    if (urlParams.get('sqft')) {
-                      const sqftField = document.getElementById('sqft');
-                      if (sqftField) sqftField.value = urlParams.get('sqft');
-                    }
-                    if (urlParams.get('taxes')) {
-                      const taxesField = document.getElementById('property-taxes');
-                      if (taxesField) taxesField.value = urlParams.get('taxes');
-                    }
-                    if (urlParams.get('condoFees')) {
-                      const condoFeesField = document.getElementById('condo-fees');
-                      if (condoFeesField) condoFeesField.value = urlParams.get('condoFees');
-                    }
+                    const result = await response.json();
+                    console.log('Analysis result:', result);
                     
-                    console.log('[StarterPack] Form pre-filled with extension data');
-                    
-                    // Auto-analyze if requested
-                    if (urlParams.get('autoAnalyze') === 'true') {
-                      console.log('[StarterPack] Auto-analyze requested, triggering form submission');
-                      // Give form time to render, then trigger analysis
-                      setTimeout(() => {
-                        const analyzeBtn = document.querySelector('#property-form button[type="submit"]');
-                        if (analyzeBtn) {
-                          analyzeBtn.click();
-                        }
-                      }, 1000);
+                    if (result.success && result.data) {
+                      // Display results directly
+                      displayResults(result.data);
+                      showView('results');
+                      
+                      // Reload user analyses to update the dashboard
+                      await loadUserAnalyses();
+                    } else {
+                      throw new Error(result.error || 'Analysis failed');
                     }
-                  }, 500); // Give form time to render
+                  } catch (error) {
+                    console.error('Direct analysis error:', error);
+                    alert('Failed to analyze property: ' + error.message);
+                    showView('dashboard');
+                  }
                 } else {
                   showView('dashboard');
                   loadUserAnalyses();
