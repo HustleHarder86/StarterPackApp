@@ -232,6 +232,14 @@ function extractMainImage() {
     for (const selector of selectors) {
       const imgElement = document.querySelector(selector);
       if (imgElement && imgElement.src) {
+        // Skip SVG icons and small images
+        if (imgElement.src.includes('.svg') || 
+            imgElement.src.includes('icon') || 
+            imgElement.src.includes('logo') ||
+            imgElement.src.includes('heart')) {
+          continue;
+        }
+        
         console.log('[StarterPack] Found main image:', imgElement.src, 'from selector:', selector);
         // Return the full resolution image URL
         let imageUrl = imgElement.src;
@@ -246,6 +254,11 @@ function extractMainImage() {
     console.log('[StarterPack] Found', allImages.length, 'total images on page');
     
     for (const img of allImages) {
+      // Skip icons and SVGs
+      if (img.src && (img.src.includes('.svg') || img.src.includes('icon') || img.src.includes('heart'))) {
+        continue;
+      }
+      
       // Check if image is loaded and has reasonable dimensions
       if (img.src && img.complete) {
         console.log('[StarterPack] Checking image:', img.src, 'dimensions:', img.naturalWidth, 'x', img.naturalHeight);
@@ -256,10 +269,14 @@ function extractMainImage() {
       }
     }
     
-    // Try images that might not be fully loaded yet
+    // Try images that might not be fully loaded yet  
     for (const img of allImages) {
-      if (img.src && img.src.includes('realtor') && !img.src.includes('logo')) {
-        console.log('[StarterPack] Using realtor image (not fully loaded):', img.src);
+      if (img.src && 
+          (img.src.includes('rcp-prod-uploads-realtor') || 
+           img.src.includes('s3.amazonaws.com')) && 
+          !img.src.includes('logo') && 
+          !img.src.includes('.svg')) {
+        console.log('[StarterPack] Using property image (not fully loaded):', img.src);
         return img.src;
       }
     }
