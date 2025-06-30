@@ -2096,7 +2096,18 @@
               userEmail: currentUser.email,
               userName: currentUser.displayName,
               requestType: 'authenticated',
-              includeStrAnalysis: false // Default to false for now
+              includeStrAnalysis: false, // Default to false for now
+              // Include actual property data from extension
+              propertyData: {
+                price: propertyData.price,
+                propertyTaxes: propertyData.propertyTaxes,
+                bedrooms: propertyData.bedrooms,
+                bathrooms: propertyData.bathrooms,
+                sqft: propertyData.sqft,
+                propertyType: propertyData.propertyType,
+                condoFees: propertyData.condoFees,
+                mlsNumber: propertyData.mlsNumber
+              }
             })
           });
           

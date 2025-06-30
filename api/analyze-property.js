@@ -23,7 +23,7 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    const { userId, propertyAddress, userEmail, userName, requestType } = req.body;
+    const { userId, propertyAddress, userEmail, userName, requestType, propertyData } = req.body;
 
     if (!propertyAddress) {
       return res.status(400).json({ error: 'Property address is required' });
@@ -407,7 +407,7 @@ Extract into this JSON format:
           console.log('========== END EXTRACTED DATA ==========');
           
           // Build structured data from extraction
-          structuredData = buildStructuredData(extracted, propertyAddress, researchContent, citations, address);
+          structuredData = buildStructuredData(extracted, propertyAddress, researchContent, citations, address, propertyData);
         } else {
           throw new Error('OpenAI extraction failed');
         }
@@ -525,9 +525,10 @@ Extract into this JSON format:
 }
 
 // Helper function to build structured data
-function buildStructuredData(extracted, propertyAddress, researchContent, citations, address) {
+function buildStructuredData(extracted, propertyAddress, researchContent, citations, address, propertyData) {
   // Use accurate expense calculations
-  const propertyValue = extracted.property_details?.estimated_value || 850000;
+  // Use actual property data if provided, otherwise use extracted/estimated values
+  const propertyValue = propertyData?.price || extracted.property_details?.estimated_value || 850000;
   
   // First, try to extract property tax from comparables
   const comparableTax = extractPropertyTaxFromComparables(researchContent, propertyValue);
@@ -542,8 +543,23 @@ function buildStructuredData(extracted, propertyAddress, researchContent, citati
     hasAmenities: false // Could be enhanced with amenity detection
   });
   
-  // If we found comparable tax data, use it instead of calculated
-  if (comparableTax) {
+  // First check if we have actual property tax data from the extension
+  if (propertyData?.propertyTaxes) {
+    console.log('========== ACTUAL PROPERTY TAX DATA FROM EXTENSION ==========');
+    console.log(`Using actual property tax: $${propertyData.propertyTaxes}/year instead of calculated $${accurateExpenses.property_tax_annual}/year`);
+    accurateExpenses.property_tax_annual = propertyData.propertyTaxes;
+    accurateExpenses.property_tax_rate = propertyData.propertyTaxes / propertyValue;
+    // Recalculate totals
+    accurateExpenses.total_annual_expenses = Math.round(
+      propertyData.propertyTaxes +
+      accurateExpenses.insurance_annual +
+      accurateExpenses.maintenance_annual +
+      (accurateExpenses.hoa_monthly * 12) +
+      (accurateExpenses.utilities_monthly * 12)
+    );
+    accurateExpenses.total_monthly_expenses = Math.round(accurateExpenses.total_annual_expenses / 12);
+  } else if (comparableTax) {
+    // Fall back to comparable tax data if no actual data
     console.log('========== COMPARABLE TAX DATA FOUND ==========');
     console.log(`Using comparable tax data: $${comparableTax}/year instead of calculated $${accurateExpenses.property_tax_annual}/year`);
     accurateExpenses.property_tax_annual = comparableTax;
@@ -571,12 +587,12 @@ function buildStructuredData(extracted, propertyAddress, researchContent, citati
     },
     property_details: {
       address: propertyAddress,
-      estimated_value: extracted.property_details?.estimated_value || estimateValueFromResearch(researchContent),
+      estimated_value: propertyValue,
       value_date: new Date().toLocaleDateString(),
-      property_type: extracted.property_details?.property_type || "Single Family",
-      bedrooms: extracted.property_details?.bedrooms || 3,
-      bathrooms: extracted.property_details?.bathrooms || 2,
-      square_feet: extracted.property_details?.square_feet || 1800,
+      property_type: propertyData?.propertyType || extracted.property_details?.property_type || "Single Family",
+      bedrooms: propertyData?.bedrooms || extracted.property_details?.bedrooms || 3,
+      bathrooms: propertyData?.bathrooms || extracted.property_details?.bathrooms || 2,
+      square_feet: propertyData?.sqft || extracted.property_details?.square_feet || 1800,
       listing_status: "off-market",
       days_on_market: 0
     },
