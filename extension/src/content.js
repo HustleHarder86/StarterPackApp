@@ -80,6 +80,28 @@ function extractPropertyData() {
       mainImageLength: propertyData.mainImage ? propertyData.mainImage.length : 0
     });
     
+    // Debug summary for easy visibility
+    console.log('========== STARTERPACK EXTRACTION SUMMARY ==========');
+    console.log(`Price: $${propertyData.price?.toLocaleString() || 'NOT FOUND'}`);
+    console.log(`Property Tax: $${propertyData.propertyTaxes?.toLocaleString() || 'NOT FOUND'}/year`);
+    console.log(`Condo Fees: $${propertyData.condoFees || 'NOT FOUND'}/month`);
+    console.log(`Bedrooms: ${propertyData.bedrooms || 'NOT FOUND'}`);
+    console.log(`Bathrooms: ${propertyData.bathrooms || 'NOT FOUND'}`);
+    console.log(`Square Feet: ${propertyData.sqft || 'NOT FOUND'}`);
+    console.log(`Property Type: ${propertyData.propertyType || 'NOT FOUND'}`);
+    console.log(`MLS Number: ${propertyData.mlsNumber || 'NOT FOUND'}`);
+    console.log(`Address: ${propertyData.address?.full || 'NOT FOUND'}`);
+    console.log(`Image: ${propertyData.mainImage ? 'FOUND' : 'NOT FOUND'}`);
+    console.log('==================================================');
+    
+    // Alert if critical data is missing
+    if (!propertyData.sqft) {
+      console.warn('[StarterPack] ⚠️ WARNING: Square footage not found! This will affect calculations.');
+    }
+    if (!propertyData.propertyTaxes) {
+      console.warn('[StarterPack] ⚠️ WARNING: Property taxes not found! Calculations will use estimates.');
+    }
+    
     return propertyData;
   } catch (error) {
     console.error('Error extracting property data:', error);
@@ -581,16 +603,71 @@ function extractPropertyTaxes() {
 }
 
 function extractCondoFees() {
-  const feeElement = Array.from(document.querySelectorAll('*'))
-    .find(el => el.textContent.match(/(condo|maintenance|strata).*fee.*\$[\d,]+/i));
-  
-  if (feeElement) {
-    const match = feeElement.textContent.match(/\$?([\d,]+)/);
-    if (match) {
-      return parseInt(match[1].replace(/,/g, ''));
+  try {
+    console.log('[StarterPack] Starting condo fees extraction...');
+    
+    // Method 1: Look in property details table
+    const tables = document.querySelectorAll('.propertyDetailsSectionContentSubCon, #propertyDetailsSectionContentSubCon, table');
+    for (const table of tables) {
+      const rows = table.querySelectorAll('tr');
+      for (const row of rows) {
+        const cells = row.querySelectorAll('td');
+        if (cells.length >= 2) {
+          const label = cells[0]?.textContent?.trim().toLowerCase() || '';
+          const value = cells[1]?.textContent?.trim() || '';
+          
+          if (label.includes('condo fee') || label.includes('maintenance fee') || label.includes('strata fee') || label.includes('hoa')) {
+            const feeAmount = parseInt(value.replace(/[^0-9]/g, '')) || 0;
+            if (feeAmount > 0) {
+              console.log('[StarterPack] Found condo fees in table:', feeAmount);
+              return feeAmount;
+            }
+          }
+        }
+      }
     }
+    
+    // Method 2: Search for specific text patterns
+    const feePatterns = [
+      /condo\s+fees?[:\s]+\$?([\d,]+)\s*(?:\/\s*month)?/i,
+      /maintenance\s+fees?[:\s]+\$?([\d,]+)\s*(?:\/\s*month)?/i,
+      /strata\s+fees?[:\s]+\$?([\d,]+)\s*(?:\/\s*month)?/i,
+      /hoa\s+fees?[:\s]+\$?([\d,]+)\s*(?:\/\s*month)?/i,
+      /monthly\s+fees?[:\s]+\$?([\d,]+)/i
+    ];
+    
+    const allText = document.body.innerText;
+    for (const pattern of feePatterns) {
+      const match = allText.match(pattern);
+      if (match && match[1]) {
+        const amount = parseInt(match[1].replace(/,/g, ''));
+        if (amount > 0 && amount < 5000) { // Sanity check - monthly fees shouldn't be too high
+          console.log('[StarterPack] Found condo fees via pattern:', amount);
+          return amount;
+        }
+      }
+    }
+    
+    // Method 3: Look for any element mentioning fees
+    const feeElements = Array.from(document.querySelectorAll('*'))
+      .filter(el => el.textContent.match(/(condo|maintenance|strata|hoa).*fee.*\$[\d,]+/i));
+    
+    for (const element of feeElements) {
+      const match = element.textContent.match(/\$?([\d,]+)/);
+      if (match) {
+        const amount = parseInt(match[1].replace(/,/g, ''));
+        if (amount > 0 && amount < 5000) {
+          console.log('[StarterPack] Found condo fees in element:', amount);
+          return amount;
+        }
+      }
+    }
+    
+    console.log('[StarterPack] No condo fees found');
+  } catch (e) {
+    console.error('[StarterPack] Error extracting condo fees:', e);
   }
-  return null;
+  return 0;
 }
 
 // Add analyze button to property pages
@@ -649,6 +726,9 @@ function addAnalyzeButton() {
     analyzeButton.addEventListener('click', handleAnalyzeClick);
     targetContainer.appendChild(analyzeButton);
     console.log('[StarterPack] Button added successfully');
+    
+    // Add a data preview panel for debugging
+    addDataPreviewPanel();
   } else {
     console.log('[StarterPack] Could not find suitable container for button');
   }
@@ -771,6 +851,47 @@ function extractAllText() {
     return mainContent.textContent.replace(/\s+/g, ' ').trim().substring(0, 10000); // Limit to 10k chars
   }
   return '';
+}
+
+// Add data preview panel for debugging
+function addDataPreviewPanel() {
+  // Only add in development/debug mode
+  if (!window.location.href.includes('debug=true')) return;
+  
+  const panel = document.createElement('div');
+  panel.id = 'starterpack-data-preview';
+  panel.style.cssText = `
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: white;
+    border: 2px solid #3b82f6;
+    border-radius: 8px;
+    padding: 16px;
+    max-width: 300px;
+    z-index: 9999;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    font-family: monospace;
+    font-size: 12px;
+  `;
+  
+  // Extract data for preview
+  const previewData = extractPropertyData();
+  
+  panel.innerHTML = `
+    <h3 style="margin: 0 0 10px 0; color: #3b82f6;">StarterPack Data Preview</h3>
+    <div style="display: grid; gap: 4px;">
+      <div>Price: <strong>${previewData?.price ? '$' + previewData.price.toLocaleString() : '❌ Not Found'}</strong></div>
+      <div>Tax: <strong>${previewData?.propertyTaxes ? '$' + previewData.propertyTaxes + '/yr' : '❌ Not Found'}</strong></div>
+      <div>Sq Ft: <strong>${previewData?.sqft || '❌ Not Found'}</strong></div>
+      <div>Beds: <strong>${previewData?.bedrooms || '❌ Not Found'}</strong></div>
+      <div>Baths: <strong>${previewData?.bathrooms || '❌ Not Found'}</strong></div>
+      <div>HOA: <strong>${previewData?.condoFees ? '$' + previewData.condoFees + '/mo' : '❌ Not Found'}</strong></div>
+    </div>
+    <button onclick="this.parentElement.remove()" style="margin-top: 10px; padding: 4px 8px; background: #ef4444; color: white; border: none; border-radius: 4px; cursor: pointer;">Close</button>
+  `;
+  
+  document.body.appendChild(panel);
 }
 
 // Handle analyze button click
