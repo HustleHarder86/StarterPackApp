@@ -74,6 +74,12 @@ function extractPropertyData() {
     }
     
     console.log('[StarterPack] Comprehensive extraction complete:', propertyData);
+    console.log('[StarterPack] Final property data with image:', {
+      ...propertyData,
+      mainImageFound: !!propertyData.mainImage,
+      mainImageLength: propertyData.mainImage ? propertyData.mainImage.length : 0
+    });
+    
     return propertyData;
   } catch (error) {
     console.error('Error extracting property data:', error);

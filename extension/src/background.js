@@ -41,6 +41,7 @@ async function handlePropertyAnalysis(propertyData) {
   try {
     // For now, skip auth check and go directly to analysis
     console.log('[StarterPack] Processing property data:', propertyData);
+    console.log('[StarterPack] Image URL:', propertyData.mainImage);
     
     // Build analysis URL with property data
     const queryParams = new URLSearchParams();
@@ -64,7 +65,10 @@ async function handlePropertyAnalysis(propertyData) {
     if (propertyData.yearBuilt) queryParams.set('yearBuilt', propertyData.yearBuilt);
     if (propertyData.propertyTaxes) queryParams.set('taxes', propertyData.propertyTaxes);
     if (propertyData.condoFees) queryParams.set('condoFees', propertyData.condoFees);
-    if (propertyData.mainImage) queryParams.set('image', encodeURIComponent(propertyData.mainImage));
+    if (propertyData.mainImage) {
+      console.log('[StarterPack] Encoding image URL, length:', propertyData.mainImage.length);
+      queryParams.set('image', encodeURIComponent(propertyData.mainImage));
+    }
     
     queryParams.set('fromExtension', 'true');
     queryParams.set('autoAnalyze', 'true');
@@ -72,6 +76,8 @@ async function handlePropertyAnalysis(propertyData) {
     const analysisUrl = `https://starter-pack-app.vercel.app/roi-finder.html?${queryParams.toString()}`;
     
     console.log('[StarterPack] Opening analysis URL:', analysisUrl);
+    console.log('[StarterPack] URL params include image?', queryParams.has('image'));
+    console.log('[StarterPack] Full URL length:', analysisUrl.length);
     
     // Open analysis in new tab
     chrome.tabs.create({ url: analysisUrl });
