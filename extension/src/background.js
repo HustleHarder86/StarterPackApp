@@ -3,8 +3,8 @@ console.log('[StarterPack Extension] Background service worker starting...');
 
 // Configuration
 const API_ENDPOINTS = {
-  development: 'http://localhost:3000/api/properties/ingest',
-  production: 'https://starter-pack-app.vercel.app/api/properties/ingest'
+  development: 'http://localhost:3000/api/properties/ingest-simple',
+  production: 'https://starter-pack-app.vercel.app/api/properties/ingest-simple'
 };
 
 // Get current environment - check if extension ID matches production
@@ -70,7 +70,11 @@ async function handlePropertyAnalysis(propertyData) {
     const result = await response.json();
     
     // Open analysis in new tab
-    if (result.analysisId) {
+    if (result.analysisUrl) {
+      // Use the URL provided by the API
+      chrome.tabs.create({ url: result.analysisUrl });
+    } else if (result.analysisId) {
+      // Fallback to constructing URL
       const appUrl = isDevelopment 
         ? `http://localhost:3000/roi-finder.html?analysisId=${result.analysisId}`
         : `https://starter-pack-app.vercel.app/roi-finder.html?analysisId=${result.analysisId}`;
