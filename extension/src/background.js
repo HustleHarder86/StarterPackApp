@@ -39,50 +39,44 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 // Handle property analysis
 async function handlePropertyAnalysis(propertyData) {
   try {
-    // Get user auth token from storage
-    const { authToken } = await chrome.storage.local.get('authToken');
+    // For now, skip auth check and go directly to analysis
+    console.log('[StarterPack] Processing property data:', propertyData);
     
-    if (!authToken) {
-      // Open popup to prompt login
-      chrome.action.openPopup();
-      throw new Error('Please login to StarterPack first');
+    // Build analysis URL with property data
+    const queryParams = new URLSearchParams();
+    
+    // Add address components
+    if (propertyData.address) {
+      if (propertyData.address.street) queryParams.set('street', propertyData.address.street);
+      if (propertyData.address.city) queryParams.set('city', propertyData.address.city);
+      if (propertyData.address.province) queryParams.set('state', propertyData.address.province);
+      if (propertyData.address.country) queryParams.set('country', propertyData.address.country);
+      if (propertyData.address.postalCode) queryParams.set('postal', propertyData.address.postalCode);
     }
-
-    // Send property data to API
-    const response = await fetch(API_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${authToken}`
-      },
-      body: JSON.stringify({
-        propertyData,
-        source: 'browser_extension',
-        timestamp: new Date().toISOString()
-      })
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error || 'Failed to analyze property');
-    }
-
-    const result = await response.json();
+    
+    // Add property details
+    if (propertyData.price) queryParams.set('price', propertyData.price);
+    if (propertyData.mlsNumber) queryParams.set('mlsNumber', propertyData.mlsNumber);
+    if (propertyData.bedrooms) queryParams.set('bedrooms', propertyData.bedrooms);
+    if (propertyData.bathrooms) queryParams.set('bathrooms', propertyData.bathrooms);
+    if (propertyData.sqft) queryParams.set('sqft', propertyData.sqft);
+    if (propertyData.propertyType) queryParams.set('propertyType', propertyData.propertyType);
+    if (propertyData.yearBuilt) queryParams.set('yearBuilt', propertyData.yearBuilt);
+    if (propertyData.propertyTaxes) queryParams.set('taxes', propertyData.propertyTaxes);
+    if (propertyData.condoFees) queryParams.set('condoFees', propertyData.condoFees);
+    
+    queryParams.set('fromExtension', 'true');
+    queryParams.set('autoAnalyze', 'true');
+    
+    const analysisUrl = `https://starter-pack-app.vercel.app/roi-finder.html?${queryParams.toString()}`;
+    
+    console.log('[StarterPack] Opening analysis URL:', analysisUrl);
     
     // Open analysis in new tab
-    if (result.analysisUrl) {
-      // Use the URL provided by the API
-      chrome.tabs.create({ url: result.analysisUrl });
-    } else if (result.analysisId) {
-      // Fallback to constructing URL
-      const appUrl = isDevelopment 
-        ? `http://localhost:3000/roi-finder.html?analysisId=${result.analysisId}`
-        : `https://starter-pack-app.vercel.app/roi-finder.html?analysisId=${result.analysisId}`;
-      
-      chrome.tabs.create({ url: appUrl });
-    }
-
-    return result;
+    chrome.tabs.create({ url: analysisUrl });
+    
+    return { success: true, analysisUrl };
+    
   } catch (error) {
     console.error('Analysis error:', error);
     throw error;
