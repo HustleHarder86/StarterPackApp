@@ -71,6 +71,39 @@ async function checkAuthStatus() {
       }
     } catch (e) {
       console.log('[StarterPack] Could not get auth from main app tab:', e.message);
+      
+      // Fallback: Try to get auth directly from the tab using executeScript
+      if (tabs.length > 0) {
+        console.log('[StarterPack] Trying fallback method...');
+        try {
+          const results = await chrome.scripting.executeScript({
+            target: { tabId: tabs[0].id },
+            func: () => {
+              return {
+                token: localStorage.getItem('starterpack_auth_token'),
+                user: localStorage.getItem('starterpack_user')
+              };
+            }
+          });
+          
+          if (results && results[0] && results[0].result) {
+            const { token, user } = results[0].result;
+            console.log('[StarterPack] Fallback method got token:', !!token);
+            
+            if (token) {
+              authToken = token;
+              userData = user ? JSON.parse(user) : null;
+              await chrome.storage.local.set({ 
+                authToken: authToken,
+                userData: userData 
+              });
+              console.log('[StarterPack] Stored auth from fallback method');
+            }
+          }
+        } catch (fallbackError) {
+          console.log('[StarterPack] Fallback method also failed:', fallbackError.message);
+        }
+      }
     }
     
     // Fall back to stored token

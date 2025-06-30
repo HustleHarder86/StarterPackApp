@@ -5,7 +5,8 @@
   "description": "Analyze real estate investments with one click from Realtor.ca",
   "permissions": [
     "activeTab",
-    "storage"
+    "storage",
+    "scripting"
   ],
   "host_permissions": [
     "https://*.realtor.ca/*",
@@ -23,7 +24,7 @@
       "run_at": "document_idle"
     },
     {
-      "matches": ["https://starterpackapp.vercel.app/*"],
+      "matches": ["https://starter-pack-app.vercel.app/*"],
       "js": ["src/app-content.js"],
       "run_at": "document_idle"
     }
