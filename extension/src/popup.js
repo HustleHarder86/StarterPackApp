@@ -120,8 +120,8 @@ async function checkAuthStatus() {
     
     console.log('[StarterPack] Found auth token, verifying with API...');
 
-    // Verify token with API
-    const response = await fetch(`${API_BASE}/user-management`, {
+    // Verify token with API - use properties/list as a simple auth check
+    const response = await fetch(`${API_BASE}/properties/list`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${authToken}`
@@ -132,14 +132,23 @@ async function checkAuthStatus() {
       throw new Error('Invalid session');
     }
 
-    const responseData = await response.json();
-    currentUser = responseData.user;
-    
-    // Update stored user data
-    if (currentUser) {
-      await chrome.storage.local.set({ 
-        userData: currentUser 
-      });
+    // Since we're using properties/list for auth check, we need to get user data differently
+    // The stored userData from localStorage should already have the user info
+    if (userData) {
+      currentUser = userData;
+    } else if (authToken) {
+      // Decode the JWT to get basic user info (this is safe for client-side)
+      try {
+        const tokenParts = authToken.split('.');
+        const payload = JSON.parse(atob(tokenParts[1]));
+        currentUser = {
+          uid: payload.user_id || payload.sub,
+          email: payload.email
+        };
+      } catch (e) {
+        console.log('[StarterPack] Could not decode token:', e);
+        currentUser = { email: 'User' }; // Fallback
+      }
     }
     
     updateUserInterface();
@@ -161,17 +170,20 @@ async function checkAuthStatus() {
 function updateUserInterface() {
   if (!currentUser) return;
 
-  document.getElementById('userEmail').textContent = currentUser.email;
+  document.getElementById('userEmail').textContent = currentUser.email || 'User';
   document.getElementById('analysisCount').textContent = 
-    currentUser.monthlyAnalysisCount || 0;
+    currentUser.monthlyAnalysisCount || '-';
   
   // Calculate STR trials remaining
-  const strTrialLeft = Math.max(0, 5 - (currentUser.strTrialUsed || 0));
+  const strTrialLeft = currentUser.strTrialUsed !== undefined 
+    ? Math.max(0, 5 - currentUser.strTrialUsed) 
+    : '-';
   document.getElementById('strTrialCount').textContent = strTrialLeft;
   
   // Hide STR trial count if user is Pro
   if (currentUser.subscriptionTier === 'pro' || currentUser.subscriptionTier === 'enterprise') {
-    document.querySelector('.stat:nth-child(2)').style.display = 'none';
+    const strStat = document.querySelector('.stat:nth-child(2)');
+    if (strStat) strStat.style.display = 'none';
   }
 }
 
