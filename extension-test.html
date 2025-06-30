@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Extension API Test - StarterPack</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen p-8">
+    <div class="max-w-2xl mx-auto">
+        <h1 class="text-3xl font-bold mb-8">StarterPack Extension API Test</h1>
+        
+        <div class="bg-white rounded-lg shadow p-6 mb-6">
+            <h2 class="text-xl font-semibold mb-4">API Endpoint Status</h2>
+            <div id="api-status" class="space-y-3">
+                <p class="text-gray-600">Testing API endpoints...</p>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg shadow p-6">
+            <h2 class="text-xl font-semibold mb-4">Test Results</h2>
+            <div id="test-results" class="space-y-2 font-mono text-sm">
+                <p class="text-gray-600">Running tests...</p>
+            </div>
+        </div>
+
+        <div class="mt-6 space-y-4">
+            <button onclick="testAPIs()" class="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600">
+                Run API Tests
+            </button>
+            <a href="/roi-finder.html" class="inline-block bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600">
+                Go to Main App
+            </a>
+        </div>
+    </div>
+
+    <script>
+        async function testAPIs() {
+            const statusDiv = document.getElementById('api-status');
+            const resultsDiv = document.getElementById('test-results');
+            
+            statusDiv.innerHTML = '<p class="text-gray-600">Testing...</p>';
+            resultsDiv.innerHTML = '';
+
+            const tests = [
+                {
+                    name: 'Properties Ingest API',
+                    url: 'https://starterpackapp.vercel.app/api/properties/ingest',
+                    method: 'OPTIONS',
+                    expected: 200
+                },
+                {
+                    name: 'User Management API',
+                    url: 'https://starterpackapp.vercel.app/api/user-management',
+                    method: 'GET',
+                    expected: [401, 403] // Expect auth error
+                },
+                {
+                    name: 'Extension Welcome Page',
+                    url: 'https://starterpackapp.vercel.app/extension-welcome.html',
+                    method: 'HEAD',
+                    expected: 200
+                }
+            ];
+
+            const results = [];
+            
+            for (const test of tests) {
+                try {
+                    const response = await fetch(test.url, {
+                        method: test.method,
+                        mode: 'cors',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    
+                    const expected = Array.isArray(test.expected) 
+                        ? test.expected.includes(response.status)
+                        : response.status === test.expected;
+                    
+                    results.push({
+                        name: test.name,
+                        status: response.status,
+                        success: expected,
+                        message: expected ? 'Working correctly' : `Unexpected status: ${response.status}`
+                    });
+                } catch (error) {
+                    results.push({
+                        name: test.name,
+                        status: 'ERROR',
+                        success: false,
+                        message: error.message
+                    });
+                }
+            }
+
+            // Display results
+            statusDiv.innerHTML = results.map(r => `
+                <div class="flex items-center justify-between p-2 rounded ${r.success ? 'bg-green-50' : 'bg-red-50'}">
+                    <span class="${r.success ? 'text-green-800' : 'text-red-800'}">
+                        ${r.success ? '✓' : '✗'} ${r.name}
+                    </span>
+                    <span class="text-sm ${r.success ? 'text-green-600' : 'text-red-600'}">
+                        ${r.status}
+                    </span>
+                </div>
+            `).join('');
+
+            resultsDiv.innerHTML = results.map(r => `
+                <div class="${r.success ? 'text-green-600' : 'text-red-600'}">
+                    ${r.name}: ${r.message}
+                </div>
+            `).join('');
+        }
+
+        // Run tests on load
+        window.addEventListener('load', testAPIs);
+    </script>
+</body>
+</html>

@@ -88,13 +88,14 @@ loginForm.addEventListener('submit', async (e) => {
   e.preventDefault();
   
   // For now, redirect to web app for login
-  // In a future update, we could implement Firebase Auth directly in the extension
-  showError('Please login through the StarterPack website first');
+  showError('Please sign up or login through the StarterPack website first');
   
-  // Open login page
-  chrome.tabs.create({
-    url: `${APP_BASE}/roi-finder.html?extension=true`
-  });
+  // Open main app
+  setTimeout(() => {
+    chrome.tabs.create({
+      url: `${APP_BASE}/roi-finder.html`
+    });
+  }, 2000);
 });
 
 // Handle logout

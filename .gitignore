@@ -71,3 +71,6 @@ Desktop.ini
 # Local development
 .local/
 scratch/
+
+# Amy's local files
+Amys-To-Dos.md

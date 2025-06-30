@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Amy's To-Do's - InvestorProps Testing Guide</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        h1 {
+            color: #1a1a1a;
+            border-bottom: 3px solid #6366f1;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #4f46e5;
+            margin-top: 40px;
+            border-bottom: 1px solid #e5e7eb;
+            padding-bottom: 5px;
+        }
+        h3 {
+            color: #1f2937;
+            margin-top: 25px;
+        }
+        ul {
+            padding-left: 20px;
+        }
+        li {
+            margin: 8px 0;
+        }
+        code {
+            background: #f3f4f6;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 0.9em;
+        }
+        .checkbox {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #6366f1;
+            border-radius: 3px;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+        .priority {
+            background: #fef3c7;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .warning {
+            background: #fee2e2;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .success {
+            background: #d1fae5;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 15px 0;
+        }
+        th, td {
+            border: 1px solid #e5e7eb;
+            padding: 8px 12px;
+            text-align: left;
+        }
+        th {
+            background: #f9fafb;
+            font-weight: 600;
+        }
+        .time-estimate {
+            background: #ede9fe;
+            padding: 10px 15px;
+            border-radius: 8px;
+            display: inline-block;
+            font-weight: 600;
+        }
+        @media print {
+            body {
+                padding: 20px;
+            }
+            .priority, .warning, .success {
+                break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Amy's To-Do's - InvestorProps Testing Guide</h1>
+    <p><em>Created: June 29, 2025</em></p>
+    
+    <div class="priority">
+        <h2>🎯 Priority 1: Core Functionality Testing <span class="time-estimate">30 mins</span></h2>
+        
+        <h3>✅ Test the Rebranding</h3>
+        <ul>
+            <li><span class="checkbox"></span> Visit https://starter-pack-app.vercel.app/</li>
+            <li><span class="checkbox"></span> Verify "InvestorProps" appears everywhere (not StarterPackApp)</li>
+            <li><span class="checkbox"></span> Check that the purple/indigo color scheme is consistent</li>
+        </ul>
+        
+        <h3>🏠 Test ROI Finder (Main Product)</h3>
+        <ul>
+            <li><span class="checkbox"></span> Go to ROI Finder from homepage</li>
+            <li><span class="checkbox"></span> Log in with your existing account</li>
+            <li><span class="checkbox"></span> Try analyzing a property with sample data:
+                <ul>
+                    <li><strong>Address:</strong> 123 Main St, Toronto, ON</li>
+                    <li><strong>Price:</strong> $800,000</li>
+                    <li><strong>Bedrooms:</strong> 3, <strong>Bathrooms:</strong> 2</li>
+                    <li><strong>Square feet:</strong> 1,500</li>
+                </ul>
+            </li>
+            <li><span class="checkbox"></span> Verify the analysis results display properly</li>
+            <li><span class="checkbox"></span> Check if STR (Airbnb) analysis is working</li>
+        </ul>
+        
+        <h3>📊 Test Portfolio Page</h3>
+        <ul>
+            <li><span class="checkbox"></span> Click "Portfolio" in navigation</li>
+            <li><span class="checkbox"></span> Check if your previous analyses show up</li>
+            <li><span class="checkbox"></span> Verify the charts display correctly</li>
+            <li><span class="checkbox"></span> Test the export to CSV feature</li>
+        </ul>
+    </div>
+    
+    <div class="priority">
+        <h2>🆕 Priority 2: New Features Testing <span class="time-estimate">20 mins</span></h2>
+        
+        <h3>🎨 Test Realtor Branding Feature</h3>
+        <ul>
+            <li><span class="checkbox"></span> Go to "Branding" in navigation</li>
+            <li><span class="checkbox"></span> Fill out your branding info:
+                <ul>
+                    <li>Your name</li>
+                    <li>Phone number</li>
+                    <li>Email</li>
+                    <li>Upload a logo (optional)</li>
+                    <li>Pick brand colors</li>
+                </ul>
+            </li>
+            <li><span class="checkbox"></span> Save and verify it saves successfully</li>
+            <li><span class="checkbox"></span> Check if the preview updates live</li>
+        </ul>
+        
+        <h3>📝 Test Blog Section</h3>
+        <ul>
+            <li><span class="checkbox"></span> Click "Blog" in navigation</li>
+            <li><span class="checkbox"></span> Verify sample blog posts appear</li>
+            <li><span class="checkbox"></span> Test search functionality</li>
+            <li><span class="checkbox"></span> Try filtering by category</li>
+            <li><span class="checkbox"></span> Click on a blog post to read it</li>
+        </ul>
+    </div>
+    
+    <div class="priority">
+        <h2>🔧 Priority 3: Admin Features <span class="time-estimate">15 mins</span></h2>
+        
+        <h3>🔥 Set Up Firebase Admin (Required for Blog Admin)</h3>
+        <p><strong>You need to do this first:</strong></p>
+        <ol>
+            <li>Go to Firebase Console (https://console.firebase.google.com)</li>
+            <li>Select your project: <code>rental-roi-calculator-ddce2</code></li>
+            <li>Go to <strong>Project Settings</strong> → <strong>Service Accounts</strong></li>
+            <li>Click <strong>"Generate New Private Key"</strong></li>
+            <li>Open the downloaded JSON file</li>
+            <li>Go to Vercel Dashboard (https://vercel.com/dashboard)</li>
+            <li>Select your project → <strong>Settings</strong> → <strong>Environment Variables</strong></li>
+            <li>Add these variables from the JSON:</li>
+        </ol>
+        
+        <table>
+            <tr>
+                <th>Variable Name</th>
+                <th>Value</th>
+            </tr>
+            <tr>
+                <td><code>FIREBASE_PROJECT_ID</code></td>
+                <td>rental-roi-calculator-ddce2</td>
+            </tr>
+            <tr>
+                <td><code>FIREBASE_CLIENT_EMAIL</code></td>
+                <td>(copy from JSON)</td>
+            </tr>
+            <tr>
+                <td><code>FIREBASE_PRIVATE_KEY</code></td>
+                <td>(copy from JSON, include the \n characters)</td>
+            </tr>
+        </table>
+        
+        <h3>✍️ Test Blog Admin (After Firebase Setup)</h3>
+        <ul>
+            <li><span class="checkbox"></span> Go to https://starter-pack-app.vercel.app/blog-admin.html</li>
+            <li><span class="checkbox"></span> Log in with your account</li>
+            <li><span class="checkbox"></span> Try creating a test blog post:
+                <ul>
+                    <li><strong>Title:</strong> "Test Post - Delete Later"</li>
+                    <li><strong>Category:</strong> Market Analysis</li>
+                    <li>Write some test content</li>
+                </ul>
+            </li>
+            <li><span class="checkbox"></span> Save as draft first</li>
+            <li><span class="checkbox"></span> Then publish it</li>
+            <li><span class="checkbox"></span> Go back to the public blog page and verify it appears</li>
+        </ul>
+    </div>
+    
+    <div class="priority">
+        <h2>🧩 Priority 4: Browser Extension Testing <span class="time-estimate">15 mins</span></h2>
+        
+        <h3>📥 Install the Browser Extension</h3>
+        <p><strong>Step-by-step instructions:</strong></p>
+        <ol>
+            <li><strong>Open Chrome or Edge browser</strong></li>
+            <li><strong>Navigate to extension settings:</strong>
+                <ul>
+                    <li><strong>Chrome:</strong> Type <code>chrome://extensions</code> in address bar</li>
+                    <li><strong>Edge:</strong> Type <code>edge://extensions</code> in address bar</li>
+                </ul>
+            </li>
+            <li><strong>Enable Developer Mode:</strong>
+                <ul>
+                    <li>Look for toggle switch in top right</li>
+                    <li>Turn it ON (should be blue)</li>
+                </ul>
+            </li>
+            <li><strong>Load the extension:</strong>
+                <ul>
+                    <li>Click <strong>"Load unpacked"</strong> button</li>
+                    <li>Navigate to: <code>StarterPackApp/extension</code></li>
+                    <li>Click <strong>"Select Folder"</strong></li>
+                </ul>
+            </li>
+            <li><strong>Verify installation:</strong>
+                <ul>
+                    <li>Should see "InvestorProps Extension" in list</li>
+                    <li>Check for error messages (red text)</li>
+                    <li>Extension icon appears in toolbar</li>
+                </ul>
+            </li>
+        </ol>
+        
+        <h3>🏘️ Test Extension on Realtor.ca</h3>
+        <ol>
+            <li>Go to Realtor.ca (https://www.realtor.ca)</li>
+            <li>Search for any property (e.g., "Toronto condos")</li>
+            <li>Click on any property listing</li>
+            <li>Look for extension features:
+                <ul>
+                    <li>Extension icon shows active state</li>
+                    <li>InvestorProps button on page</li>
+                </ul>
+            </li>
+            <li>Click extension icon in toolbar:
+                <ul>
+                    <li>Popup should say "InvestorProps"</li>
+                    <li>Look for "Analyze Property" button</li>
+                </ul>
+            </li>
+            <li>Try analyzing the property:
+                <ul>
+                    <li>Should send data to ROI finder</li>
+                    <li>Or show login message</li>
+                    <li>Note any errors</li>
+                </ul>
+            </li>
+        </ol>
+    </div>
+    
+    <div class="success">
+        <h2>✓ Quick Verification Checklist</h2>
+        
+        <h3>Navigation Consistency</h3>
+        <ul>
+            <li><span class="checkbox"></span> "Blog" link appears on all pages when logged in</li>
+            <li><span class="checkbox"></span> All navigation links work properly</li>
+            <li><span class="checkbox"></span> No broken links or 404 errors</li>
+        </ul>
+        
+        <h3>Mobile Check (Optional - 5 mins)</h3>
+        <ul>
+            <li><span class="checkbox"></span> Open site on phone</li>
+            <li><span class="checkbox"></span> Verify homepage looks good</li>
+            <li><span class="checkbox"></span> Test blog on mobile</li>
+        </ul>
+    </div>
+    
+    <div class="warning">
+        <h2>⚠️ Known Issues to Ignore</h2>
+        <ol>
+            <li><strong>Blog API Error</strong> - Fixed after Firebase Admin setup</li>
+            <li><strong>Sample Blog Posts</strong> - Placeholders until you create content</li>
+            <li><strong>Email Newsletter</strong> - Shows "coming soon"</li>
+        </ol>
+    </div>
+    
+    <h2>🎯 Success Metrics</h2>
+    <p>Your core product is working if:</p>
+    <ol>
+        <li>✅ Can analyze properties in ROI Finder</li>
+        <li>✅ Can save and view properties in Portfolio</li>
+        <li>✅ Can customize realtor branding</li>
+        <li>✅ Blog displays content</li>
+        <li>✅ Can create blog posts (after Firebase setup)</li>
+        <li>✅ Browser extension installs and shows on Realtor.ca</li>
+    </ol>
+    
+    <div class="time-estimate" style="margin: 30px 0;">
+        ⏱️ Total Time Estimate: 60-75 minutes
+    </div>
+    
+    <p><strong>💡 Tip:</strong> Test in this order - it follows the natural user flow</p>
+</body>
+</html>
