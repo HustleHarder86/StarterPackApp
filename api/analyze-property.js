@@ -31,6 +31,7 @@ module.exports = async function handler(req, res) {
 
     console.log('Starting FRESH property analysis for:', propertyAddress);
     console.log('Timestamp:', new Date().toISOString());
+    console.log('Property data received:', propertyData);
 
     // Check if API keys are configured
     const perplexityApiKey = process.env.PERPLEXITY_API_KEY;
@@ -413,11 +414,11 @@ Extract into this JSON format:
         }
       } catch (error) {
         console.log('OpenAI failed, using fallback extraction');
-        structuredData = fallbackDataExtraction(researchContent, propertyAddress, address, citations);
+        structuredData = fallbackDataExtraction(researchContent, propertyAddress, address, citations, propertyData);
       }
     } else {
       // Use fallback extraction if no OpenAI
-      structuredData = fallbackDataExtraction(researchContent, propertyAddress, address, citations);
+      structuredData = fallbackDataExtraction(researchContent, propertyAddress, address, citations, propertyData);
     }
 
     // Ensure all calculations are done
@@ -544,6 +545,9 @@ function buildStructuredData(extracted, propertyAddress, researchContent, citati
   });
   
   // First check if we have actual property tax data from the extension
+  console.log('Checking for property tax data. propertyData:', propertyData);
+  console.log('propertyData.propertyTaxes:', propertyData?.propertyTaxes);
+  
   if (propertyData?.propertyTaxes) {
     console.log('========== ACTUAL PROPERTY TAX DATA FROM EXTENSION ==========');
     console.log(`Using actual property tax: $${propertyData.propertyTaxes}/year instead of calculated $${accurateExpenses.property_tax_annual}/year`);
@@ -570,6 +574,22 @@ function buildStructuredData(extracted, propertyAddress, researchContent, citati
       accurateExpenses.insurance_annual +
       accurateExpenses.maintenance_annual +
       (accurateExpenses.hoa_monthly * 12) +
+      (accurateExpenses.utilities_monthly * 12)
+    );
+    accurateExpenses.total_monthly_expenses = Math.round(accurateExpenses.total_annual_expenses / 12);
+  }
+  
+  // Also check for condo fees
+  if (propertyData?.condoFees) {
+    console.log('========== ACTUAL CONDO FEE DATA FROM EXTENSION ==========');
+    console.log(`Using actual condo fees: $${propertyData.condoFees}/month instead of calculated $${accurateExpenses.hoa_monthly}/month`);
+    accurateExpenses.hoa_monthly = propertyData.condoFees;
+    // Recalculate totals with actual condo fees
+    accurateExpenses.total_annual_expenses = Math.round(
+      accurateExpenses.property_tax_annual +
+      accurateExpenses.insurance_annual +
+      accurateExpenses.maintenance_annual +
+      (propertyData.condoFees * 12) +
       (accurateExpenses.utilities_monthly * 12)
     );
     accurateExpenses.total_monthly_expenses = Math.round(accurateExpenses.total_annual_expenses / 12);
@@ -605,7 +625,7 @@ function buildStructuredData(extracted, propertyAddress, researchContent, citati
       utilities_monthly: accurateExpenses.utilities_monthly,
       total_monthly_expenses: accurateExpenses.total_monthly_expenses,
       total_annual_expenses: accurateExpenses.total_annual_expenses,
-      calculation_method: 'location_based_accurate'
+      calculation_method: propertyData?.propertyTaxes ? 'actual_data' : (comparableTax ? 'comparable_data' : 'location_based_accurate')
     },
     long_term_rental: {
       monthly_rent: extracted.rental_data?.monthly_rent || estimateRentalRate(
@@ -648,16 +668,17 @@ function buildStructuredData(extracted, propertyAddress, researchContent, citati
 }
 
 // Fallback extraction when APIs fail
-function fallbackDataExtraction(researchContent, propertyAddress, address, citations) {
+function fallbackDataExtraction(researchContent, propertyAddress, address, citations, propertyData) {
   console.log('Using fallback data extraction with accurate calculations...');
+  console.log('Property data in fallback:', propertyData);
   
   // Try to extract numbers from research content
   const priceMatches = researchContent.match(/\$[\d,]+,\d{3}/g) || [];
   const rentMatches = researchContent.match(/\$(\d{1,2},?\d{3})\s*(?:per month|\/month|monthly)/gi) || [];
   
   // Best guess at property value from price matches
-  let estimatedValue = 850000; // Default
-  if (priceMatches.length > 0) {
+  let estimatedValue = propertyData?.price || 850000; // Use actual price if provided
+  if (!propertyData?.price && priceMatches.length > 0) {
     const prices = priceMatches.map(p => parseInt(p.replace(/[$,]/g, '')));
     estimatedValue = Math.round(prices.reduce((a, b) => a + b, 0) / prices.length);
   }
@@ -691,10 +712,10 @@ function fallbackDataExtraction(researchContent, propertyAddress, address, citat
       address: propertyAddress,
       estimated_value: estimatedValue,
       value_date: new Date().toLocaleDateString(),
-      property_type: "Single Family",
-      bedrooms: 3,
-      bathrooms: 2,
-      square_feet: 1800,
+      property_type: propertyData?.propertyType || "Single Family",
+      bedrooms: propertyData?.bedrooms || 3,
+      bathrooms: propertyData?.bathrooms || 2,
+      square_feet: propertyData?.sqft || 1800,
       listing_status: "off-market"
     },
     costs: (() => {
@@ -703,11 +724,33 @@ function fallbackDataExtraction(researchContent, propertyAddress, address, citat
         propertyValue: estimatedValue,
         city: address.city,
         province: address.state,
-        propertyType: 'Single Family', // Default assumption
-        squareFeet: 1800, // Default assumption
-        yearBuilt: 2000, // Default assumption
+        propertyType: propertyData?.propertyType || 'Single Family',
+        squareFeet: propertyData?.sqft || 1800,
+        yearBuilt: propertyData?.yearBuilt || 2000,
         hasAmenities: false
       });
+      
+      // Override with actual property taxes if provided
+      if (propertyData?.propertyTaxes) {
+        console.log('========== USING ACTUAL PROPERTY TAX IN FALLBACK ==========');
+        console.log(`Overriding calculated tax ${expenses.property_tax_annual} with actual ${propertyData.propertyTaxes}`);
+        expenses.property_tax_annual = propertyData.propertyTaxes;
+        expenses.property_tax_rate = propertyData.propertyTaxes / estimatedValue;
+        // Recalculate totals with actual tax
+        expenses.total_annual_expenses = Math.round(
+          propertyData.propertyTaxes +
+          expenses.insurance_annual +
+          expenses.maintenance_annual +
+          (expenses.hoa_monthly * 12) +
+          (expenses.utilities_monthly * 12)
+        );
+        expenses.total_monthly_expenses = Math.round(expenses.total_annual_expenses / 12);
+      }
+      
+      // Override HOA fees if provided
+      if (propertyData?.condoFees) {
+        expenses.hoa_monthly = propertyData.condoFees;
+      }
       
       return {
         property_tax_annual: expenses.property_tax_annual,
@@ -718,7 +761,7 @@ function fallbackDataExtraction(researchContent, propertyAddress, address, citat
         utilities_monthly: expenses.utilities_monthly,
         property_management_percent: 0, // Default to self-managed
         cost_updated_date: new Date().toLocaleDateString(),
-        calculation_method: 'location_based_fallback'
+        calculation_method: propertyData?.propertyTaxes ? 'actual_data' : 'location_based_fallback'
       };
     })(),
     long_term_rental: {
@@ -763,8 +806,13 @@ function ensureCalculations(data) {
   const currentPropertyValue = data.property_details?.estimated_value || 850000;
   
   // Property tax should be 0.5-1.5% of value typically
-  // Check if it's too high OR too low
-  if (propertyTaxAnnual > currentPropertyValue * 0.015 || propertyTaxAnnual < currentPropertyValue * 0.005) {
+  // Check if it's too high OR too low - BUT RESPECT ACTUAL DATA
+  const hasActualData = data.costs?.calculation_method === 'actual_data';
+  if (hasActualData) {
+    console.log(`========== KEEPING ACTUAL PROPERTY TAX DATA ==========`);
+    console.log(`Property tax: $${propertyTaxAnnual}/year (${(propertyTaxAnnual/currentPropertyValue*100).toFixed(2)}% of value)`);
+    console.log(`This is actual data from property listing - NOT overriding`);
+  } else if (propertyTaxAnnual > currentPropertyValue * 0.015 || propertyTaxAnnual < currentPropertyValue * 0.005) {
     // This is likely incorrect - either monthly amount or just wrong
     // Use accurate location-based calculation
     let city = 'Toronto';

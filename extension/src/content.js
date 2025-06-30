@@ -350,7 +350,7 @@ function extractSquareFootage() {
     const rows = document.querySelectorAll('.propertyDetailsSectionContentRow, tr');
     for (const row of rows) {
       const label = row.textContent.toLowerCase();
-      if (label.includes('square') || label.includes('sq') || label.includes('area')) {
+      if (label.includes('square') || label.includes('sq') || label.includes('area') || label.includes('size')) {
         const match = row.textContent.match(/(\d{1,3}(?:,\d{3})*)/);
         if (match) {
           const sqft = parseInt(match[1].replace(/,/g, ''));
@@ -359,6 +359,17 @@ function extractSquareFootage() {
             return sqft;
           }
         }
+      }
+    }
+    
+    // Last resort: look for any text with sq ft pattern
+    const allText = document.body.innerText;
+    const sqftMatch = allText.match(/(\d{1,3}(?:,\d{3})*)\s*(?:sq\.?\s*ft|square\s*feet)/i);
+    if (sqftMatch) {
+      const sqft = parseInt(sqftMatch[1].replace(/,/g, ''));
+      if (sqft > 100 && sqft < 50000) {
+        console.log('[StarterPack] Found square footage via text search:', sqft);
+        return sqft;
       }
     }
     
