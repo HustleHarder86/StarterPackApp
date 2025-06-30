@@ -1,4 +1,4 @@
-// Force auth sync from main app to extension
+/// Force auth sync from main app to extension
 // Run this in the extension popup console
 
 console.log('=== Forcing Auth Sync ===');

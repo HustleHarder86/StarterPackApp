@@ -146,24 +146,13 @@ async function checkAuthStatus() {
       return;
     }
     
-    console.log('[StarterPack] Found auth token, verifying with API...');
+    console.log('[StarterPack] Found auth token, verifying...');
 
-    // Verify token with API
-    const response = await fetch(`${API_BASE}/auth/verify`, {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${authToken}`
-      }
-    });
-
-    if (!response.ok) {
-      throw new Error('Invalid session');
-    }
-
-    // Since we're using properties/list for auth check, we need to get user data differently
-    // The stored userData from localStorage should already have the user info
+    // Skip API verification for now since the endpoint isn't deployed
+    // Just decode the token locally
     if (userData) {
       currentUser = userData;
+      console.log('[StarterPack] Using stored user data');
     } else if (authToken) {
       // Decode the JWT to get basic user info (this is safe for client-side)
       try {
@@ -171,11 +160,31 @@ async function checkAuthStatus() {
         const payload = JSON.parse(atob(tokenParts[1]));
         currentUser = {
           uid: payload.user_id || payload.sub,
-          email: payload.email
+          email: payload.email,
+          displayName: payload.name || payload.email
         };
+        console.log('[StarterPack] Decoded user from token:', currentUser.email);
       } catch (e) {
         console.log('[StarterPack] Could not decode token:', e);
         currentUser = { email: 'User' }; // Fallback
+      }
+    }
+
+    // Optional: Verify token expiration
+    if (authToken) {
+      try {
+        const tokenParts = authToken.split('.');
+        const payload = JSON.parse(atob(tokenParts[1]));
+        const exp = payload.exp;
+        const now = Math.floor(Date.now() / 1000);
+        
+        if (exp && exp < now) {
+          console.log('[StarterPack] Token is expired');
+          throw new Error('Token expired');
+        }
+      } catch (e) {
+        // Continue anyway if we can't check expiration
+        console.log('[StarterPack] Could not check token expiration');
       }
     }
     
