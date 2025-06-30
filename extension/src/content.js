@@ -234,34 +234,137 @@ function extractAddress() {
 }
 
 function extractBedrooms() {
-  const bedroomElement = Array.from(document.querySelectorAll('[class*="bedroom"], [data-testid*="bed"]'))
-    .find(el => el.textContent.match(/\d+\s*(bed|bedroom)/i));
-  
-  if (bedroomElement) {
-    const match = bedroomElement.textContent.match(/(\d+)/);
-    return match ? parseInt(match[1]) : null;
+  try {
+    // Try multiple approaches
+    // 1. Look for bedroom-specific elements
+    const selectors = [
+      '[class*="bedroom"]',
+      '[data-testid*="bed"]',
+      '.listingDetailsSectionContentValue',
+      'span:contains("Bed")',
+      'td:contains("Bed")'
+    ];
+    
+    for (const selector of selectors) {
+      const elements = document.querySelectorAll(selector);
+      for (const el of elements) {
+        const text = el.textContent;
+        const match = text.match(/(\d+)\s*(bed|bedroom|bdrm)/i);
+        if (match) {
+          console.log('[StarterPack] Found bedrooms:', match[1], 'in element:', el.className);
+          return parseInt(match[1]);
+        }
+      }
+    }
+    
+    // 2. Search in property details table
+    const rows = document.querySelectorAll('.propertyDetailsSectionContentRow, tr');
+    for (const row of rows) {
+      const label = row.textContent.toLowerCase();
+      if (label.includes('bedroom') || label.includes('bed')) {
+        const match = row.textContent.match(/(\d+)/);
+        if (match) {
+          console.log('[StarterPack] Found bedrooms in table:', match[1]);
+          return parseInt(match[1]);
+        }
+      }
+    }
+    
+    console.log('[StarterPack] Could not extract bedrooms');
+  } catch (e) {
+    console.error('[StarterPack] Bedroom extraction error:', e);
   }
   return null;
 }
 
 function extractBathrooms() {
-  const bathroomElement = Array.from(document.querySelectorAll('[class*="bathroom"], [data-testid*="bath"]'))
-    .find(el => el.textContent.match(/\d+\.?\d*\s*(bath|bathroom)/i));
-  
-  if (bathroomElement) {
-    const match = bathroomElement.textContent.match(/(\d+\.?\d*)/);
-    return match ? parseFloat(match[1]) : null;
+  try {
+    // Try multiple approaches
+    const selectors = [
+      '[class*="bathroom"]',
+      '[data-testid*="bath"]',
+      '.listingDetailsSectionContentValue',
+      'span:contains("Bath")',
+      'td:contains("Bath")'
+    ];
+    
+    for (const selector of selectors) {
+      const elements = document.querySelectorAll(selector);
+      for (const el of elements) {
+        const text = el.textContent;
+        const match = text.match(/(\d+\.?\d*)\s*(bath|bathroom|bthrm)/i);
+        if (match) {
+          console.log('[StarterPack] Found bathrooms:', match[1], 'in element:', el.className);
+          return parseFloat(match[1]);
+        }
+      }
+    }
+    
+    // Search in property details table
+    const rows = document.querySelectorAll('.propertyDetailsSectionContentRow, tr');
+    for (const row of rows) {
+      const label = row.textContent.toLowerCase();
+      if (label.includes('bathroom') || label.includes('bath')) {
+        const match = row.textContent.match(/(\d+\.?\d*)/);
+        if (match) {
+          console.log('[StarterPack] Found bathrooms in table:', match[1]);
+          return parseFloat(match[1]);
+        }
+      }
+    }
+    
+    console.log('[StarterPack] Could not extract bathrooms');
+  } catch (e) {
+    console.error('[StarterPack] Bathroom extraction error:', e);
   }
   return null;
 }
 
 function extractSquareFootage() {
-  const sqftElement = Array.from(document.querySelectorAll('[class*="sqft"], [class*="square"]'))
-    .find(el => el.textContent.match(/\d+\s*(sq|square)/i));
-  
-  if (sqftElement) {
-    const match = sqftElement.textContent.match(/(\d+)/);
-    return match ? parseInt(match[1]) : null;
+  try {
+    // Try multiple approaches
+    const selectors = [
+      '[class*="sqft"]',
+      '[class*="square"]',
+      '[class*="area"]',
+      '.listingDetailsSectionContentValue',
+      'span:contains("sq")',
+      'td:contains("sq")'
+    ];
+    
+    for (const selector of selectors) {
+      const elements = document.querySelectorAll(selector);
+      for (const el of elements) {
+        const text = el.textContent;
+        // Look for patterns like "1,234 sq ft" or "1234 square feet"
+        const match = text.match(/(\d{1,3}(?:,\d{3})*)\s*(sq\.?\s*ft|square\s*feet|sqft)/i);
+        if (match) {
+          const sqft = parseInt(match[1].replace(/,/g, ''));
+          console.log('[StarterPack] Found square footage:', sqft, 'in element:', el.className);
+          return sqft;
+        }
+      }
+    }
+    
+    // Search in property details table
+    const rows = document.querySelectorAll('.propertyDetailsSectionContentRow, tr');
+    for (const row of rows) {
+      const label = row.textContent.toLowerCase();
+      if (label.includes('square') || label.includes('sq') || label.includes('area')) {
+        const match = row.textContent.match(/(\d{1,3}(?:,\d{3})*)/);
+        if (match) {
+          const sqft = parseInt(match[1].replace(/,/g, ''));
+          if (sqft > 100 && sqft < 50000) { // Sanity check
+            console.log('[StarterPack] Found square footage in table:', sqft);
+            return sqft;
+          }
+        }
+      }
+    }
+    
+    console.log('[StarterPack] Could not extract square footage');
+  } catch (e) {
+    console.error('[StarterPack] Square footage extraction error:', e);
   }
   return null;
 }
