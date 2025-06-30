@@ -64,6 +64,7 @@ async function handlePropertyAnalysis(propertyData) {
     if (propertyData.yearBuilt) queryParams.set('yearBuilt', propertyData.yearBuilt);
     if (propertyData.propertyTaxes) queryParams.set('taxes', propertyData.propertyTaxes);
     if (propertyData.condoFees) queryParams.set('condoFees', propertyData.condoFees);
+    if (propertyData.mainImage) queryParams.set('image', encodeURIComponent(propertyData.mainImage));
     
     queryParams.set('fromExtension', 'true');
     queryParams.set('autoAnalyze', 'true');

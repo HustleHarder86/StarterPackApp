@@ -62,7 +62,10 @@ function extractPropertyData() {
       neighborhood: extractNeighborhood(),
       
       // All text for AI analysis
-      allTextContent: extractAllText()
+      allTextContent: extractAllText(),
+      
+      // Main property image
+      mainImage: extractMainImage()
     };
     
     // Calculate price per sqft
@@ -192,6 +195,50 @@ function extractSquareFootage() {
   if (sqftElement) {
     const match = sqftElement.textContent.match(/(\d+)/);
     return match ? parseInt(match[1]) : null;
+  }
+  return null;
+}
+
+function extractMainImage() {
+  try {
+    // Try multiple selectors for the main property image
+    const selectors = [
+      '.heroImageWrapper img',
+      '.primaryPhoto img',
+      '.listingPrimaryImage img',
+      '[data-testid="hero-image"] img',
+      '.gallery img',
+      '.photoGallery img',
+      '.listingPhotos img',
+      '.propertyPhoto img',
+      'img[alt*="property"]',
+      'img[alt*="listing"]'
+    ];
+    
+    for (const selector of selectors) {
+      const imgElement = document.querySelector(selector);
+      if (imgElement && imgElement.src) {
+        console.log('[StarterPack] Found main image:', imgElement.src, 'from selector:', selector);
+        // Return the full resolution image URL
+        let imageUrl = imgElement.src;
+        // Remove any resize parameters to get full quality
+        imageUrl = imageUrl.replace(/\/\d+x\d+\//, '/');
+        return imageUrl;
+      }
+    }
+    
+    // Fallback: try to find the first large image on the page
+    const allImages = document.querySelectorAll('img');
+    for (const img of allImages) {
+      if (img.src && img.naturalWidth > 400 && img.naturalHeight > 300) {
+        console.log('[StarterPack] Using fallback image:', img.src);
+        return img.src;
+      }
+    }
+    
+    console.log('[StarterPack] No property image found');
+  } catch (e) {
+    console.error('[StarterPack] Image extraction error:', e);
   }
   return null;
 }

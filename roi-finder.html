@@ -351,6 +351,11 @@
         </div>
         
         <div class="space-y-4">
+          <!-- Property Image -->
+          <div id="confirm-image-container" class="rounded-lg overflow-hidden mb-4" style="display: none;">
+            <img id="confirm-image" src="" alt="Property" class="w-full h-64 object-cover">
+          </div>
+          
           <!-- Property Address -->
           <div class="bg-gray-50 rounded-lg p-4">
             <h3 class="text-sm font-medium text-gray-700 mb-2">Property Address</h3>
@@ -936,7 +941,8 @@
                     propertyTaxes: parseInt(urlParams.get('taxes')) || 0,
                     condoFees: parseInt(urlParams.get('condoFees')) || 0,
                     mlsNumber: urlParams.get('mlsNumber') || '',
-                    propertyType: urlParams.get('propertyType') || ''
+                    propertyType: urlParams.get('propertyType') || '',
+                    mainImage: urlParams.get('image') ? decodeURIComponent(urlParams.get('image')) : null
                   };
                   
                   // Store property data for later use
@@ -1111,6 +1117,14 @@
         document.getElementById('confirm-condo-fees').textContent = `${formatCurrency(propertyData.condoFees)}/month`;
       } else {
         document.getElementById('confirm-condo-section').style.display = 'none';
+      }
+      
+      // Show property image if available
+      if (propertyData.mainImage) {
+        document.getElementById('confirm-image-container').style.display = 'block';
+        document.getElementById('confirm-image').src = propertyData.mainImage;
+      } else {
+        document.getElementById('confirm-image-container').style.display = 'none';
       }
       
       // Show confirmation screen
