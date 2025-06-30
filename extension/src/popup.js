@@ -7,6 +7,7 @@ const APP_BASE = 'https://starterpackapp.vercel.app';
 let currentUser = null;
 
 // DOM elements
+const welcomeState = document.getElementById('welcomeState');
 const loginState = document.getElementById('loginState');
 const loggedInState = document.getElementById('loggedInState');
 const loadingState = document.getElementById('loadingState');
@@ -14,6 +15,7 @@ const errorState = document.getElementById('errorState');
 const loginForm = document.getElementById('loginForm');
 const logoutBtn = document.getElementById('logoutBtn');
 const retryBtn = document.getElementById('retryBtn');
+const continueBtn = document.getElementById('continueBtn');
 
 // Initialize popup
 document.addEventListener('DOMContentLoaded', async () => {
@@ -25,6 +27,13 @@ async function checkAuthStatus() {
   showState('loading');
   
   try {
+    // Check if we should show welcome screen
+    const { showWelcome } = await chrome.storage.local.get('showWelcome');
+    if (showWelcome) {
+      showState('welcome');
+      return;
+    }
+
     const { authToken } = await chrome.storage.local.get('authToken');
     
     if (!authToken) {
@@ -105,9 +114,20 @@ retryBtn.addEventListener('click', () => {
   checkAuthStatus();
 });
 
+// Continue button handler
+if (continueBtn) {
+  continueBtn.addEventListener('click', async () => {
+    // Remove welcome flag
+    await chrome.storage.local.remove('showWelcome');
+    // Show login screen
+    showState('login');
+  });
+}
+
 // Show specific state
 function showState(state) {
   // Hide all states
+  welcomeState.style.display = 'none';
   loginState.style.display = 'none';
   loggedInState.style.display = 'none';
   loadingState.style.display = 'none';
@@ -115,6 +135,9 @@ function showState(state) {
   
   // Show requested state
   switch (state) {
+    case 'welcome':
+      welcomeState.style.display = 'block';
+      break;
     case 'login':
       loginState.style.display = 'block';
       break;

@@ -13,6 +13,20 @@
       <h1>StarterPack</h1>
     </div>
 
+    <!-- Welcome State (shown on first install) -->
+    <div id="welcomeState" class="state-container" style="display: none;">
+      <div class="welcome-text">
+        <h2>Welcome to StarterPack!</h2>
+        <p>Your extension is successfully installed.</p>
+      </div>
+      <a href="https://starterpackapp.vercel.app/extension-welcome.html" target="_blank" class="btn btn-primary">
+        View Setup Guide
+      </a>
+      <button id="continueBtn" class="btn btn-secondary" style="margin-top: 10px;">
+        Continue to Login
+      </button>
+    </div>
+
     <!-- Login State -->
     <div id="loginState" class="state-container" style="display: none;">
       <div class="welcome-text">

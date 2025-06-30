@@ -93,7 +93,13 @@ chrome.runtime.onInstalled.addListener((details) => {
     console.log('[StarterPack Extension] Opening welcome page...');
     chrome.tabs.create({
       url: 'https://starterpackapp.vercel.app/extension-welcome.html'
+    }).catch(error => {
+      console.error('[StarterPack Extension] Failed to open welcome page:', error);
+      // Store flag to show welcome message in popup instead
+      chrome.storage.local.set({ showWelcome: true });
     });
+  } else if (details.reason === 'update') {
+    console.log('[StarterPack Extension] Extension updated to version', chrome.runtime.getManifest().version);
   }
 });
 
