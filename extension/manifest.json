@@ -10,7 +10,7 @@
   "host_permissions": [
     "https://*.realtor.ca/*",
     "http://localhost:3000/*",
-    "https://starterpackapp.vercel.app/*"
+    "https://starter-pack-app.vercel.app/*"
   ],
   "background": {
     "service_worker": "src/background.js"

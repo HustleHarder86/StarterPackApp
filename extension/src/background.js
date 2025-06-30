@@ -4,7 +4,7 @@ console.log('[StarterPack Extension] Background service worker starting...');
 // Configuration
 const API_ENDPOINTS = {
   development: 'http://localhost:3000/api/properties/ingest',
-  production: 'https://starterpackapp.vercel.app/api/properties/ingest'
+  production: 'https://starter-pack-app.vercel.app/api/properties/ingest'
 };
 
 // Get current environment - check if extension ID matches production
@@ -73,7 +73,7 @@ async function handlePropertyAnalysis(propertyData) {
     if (result.analysisId) {
       const appUrl = isDevelopment 
         ? `http://localhost:3000/roi-finder.html?analysisId=${result.analysisId}`
-        : `https://starterpackapp.vercel.app/roi-finder.html?analysisId=${result.analysisId}`;
+        : `https://starter-pack-app.vercel.app/roi-finder.html?analysisId=${result.analysisId}`;
       
       chrome.tabs.create({ url: appUrl });
     }
@@ -92,7 +92,7 @@ chrome.runtime.onInstalled.addListener((details) => {
     // Open welcome page on install
     console.log('[StarterPack Extension] Opening welcome page...');
     chrome.tabs.create({
-      url: 'https://starterpackapp.vercel.app/extension-welcome.html'
+      url: 'https://starter-pack-app.vercel.app/extension-welcome.html'
     }).catch(error => {
       console.error('[StarterPack Extension] Failed to open welcome page:', error);
       // Store flag to show welcome message in popup instead

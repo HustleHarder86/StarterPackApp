@@ -1,7 +1,7 @@
 // Popup script for StarterPack extension
 
-const API_BASE = 'https://starterpackapp.vercel.app/api';
-const APP_BASE = 'https://starterpackapp.vercel.app';
+const API_BASE = 'https://starter-pack-app.vercel.app/api';
+const APP_BASE = 'https://starter-pack-app.vercel.app';
 
 // State management
 let currentUser = null;
@@ -41,7 +41,7 @@ async function checkAuthStatus() {
     
     try {
       // Try to access the main app's localStorage through a content script
-      const tabs = await chrome.tabs.query({ url: 'https://starterpackapp.vercel.app/*' });
+      const tabs = await chrome.tabs.query({ url: 'https://starter-pack-app.vercel.app/*' });
       if (tabs.length > 0) {
         const result = await chrome.tabs.sendMessage(tabs[0].id, {
           action: 'getAuthFromLocalStorage'
