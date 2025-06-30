@@ -16,6 +16,7 @@ const loginForm = document.getElementById('loginForm');
 const logoutBtn = document.getElementById('logoutBtn');
 const retryBtn = document.getElementById('retryBtn');
 const continueBtn = document.getElementById('continueBtn');
+const syncAuthBtn = document.getElementById('syncAuthBtn');
 
 // Initialize popup
 document.addEventListener('DOMContentLoaded', async () => {
@@ -26,9 +27,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 async function checkAuthStatus() {
   showState('loading');
   
+  // Add debug logging
+  console.log('[StarterPack] Starting auth check...');
+  
   try {
     // Check if we should show welcome screen
     const { showWelcome } = await chrome.storage.local.get('showWelcome');
+    console.log('[StarterPack] Show welcome?', showWelcome);
+    
     if (showWelcome) {
       showState('welcome');
       return;
@@ -41,11 +47,17 @@ async function checkAuthStatus() {
     
     try {
       // Try to access the main app's localStorage through a content script
+      console.log('[StarterPack] Looking for main app tabs...');
       const tabs = await chrome.tabs.query({ url: 'https://starter-pack-app.vercel.app/*' });
+      console.log('[StarterPack] Found tabs:', tabs.length);
+      
       if (tabs.length > 0) {
+        console.log('[StarterPack] Sending message to tab:', tabs[0].url);
         const result = await chrome.tabs.sendMessage(tabs[0].id, {
           action: 'getAuthFromLocalStorage'
         });
+        console.log('[StarterPack] Got result from tab:', result);
+        
         if (result && result.token) {
           authToken = result.token;
           userData = result.user;
@@ -54,23 +66,28 @@ async function checkAuthStatus() {
             authToken: authToken,
             userData: userData 
           });
+          console.log('[StarterPack] Stored auth from main app');
         }
       }
     } catch (e) {
-      console.log('Could not get auth from main app tab');
+      console.log('[StarterPack] Could not get auth from main app tab:', e.message);
     }
     
     // Fall back to stored token
     if (!authToken) {
       const stored = await chrome.storage.local.get(['authToken', 'userData']);
+      console.log('[StarterPack] Checking stored auth:', stored);
       authToken = stored.authToken;
       userData = stored.userData;
     }
     
     if (!authToken) {
+      console.log('[StarterPack] No auth token found, showing login');
       showState('login');
       return;
     }
+    
+    console.log('[StarterPack] Found auth token, verifying with API...');
 
     // Verify token with API
     const response = await fetch(`${API_BASE}/user-management`, {
@@ -166,6 +183,48 @@ if (continueBtn) {
     await chrome.storage.local.remove('showWelcome');
     // Show login screen
     showState('login');
+  });
+}
+
+// Sync auth button handler
+if (syncAuthBtn) {
+  syncAuthBtn.addEventListener('click', async () => {
+    showState('loading');
+    
+    // Open main app in new tab
+    const tab = await chrome.tabs.create({ 
+      url: `${APP_BASE}/roi-finder.html`,
+      active: false
+    });
+    
+    // Wait a bit for page to load
+    setTimeout(async () => {
+      try {
+        const result = await chrome.tabs.sendMessage(tab.id, {
+          action: 'getAuthFromLocalStorage'
+        });
+        
+        if (result && result.token) {
+          await chrome.storage.local.set({ 
+            authToken: result.token,
+            userData: result.user 
+          });
+          
+          // Close the tab
+          chrome.tabs.remove(tab.id);
+          
+          // Re-check auth
+          await checkAuthStatus();
+        } else {
+          chrome.tabs.update(tab.id, { active: true });
+          showError('Please login to the main app first');
+        }
+      } catch (error) {
+        console.error('Sync error:', error);
+        chrome.tabs.update(tab.id, { active: true });
+        showError('Please login to the main app in the new tab');
+      }
+    }, 3000);
   });
 }
 
