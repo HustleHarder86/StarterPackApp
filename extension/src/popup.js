@@ -45,63 +45,61 @@ async function checkAuthStatus() {
     let authToken = null;
     let userData = null;
     
-    try {
-      // Try to access the main app's localStorage through a content script
-      console.log('[StarterPack] Looking for main app tabs...');
-      const tabs = await chrome.tabs.query({ url: 'https://starter-pack-app.vercel.app/*' });
-      console.log('[StarterPack] Found tabs:', tabs.length);
-      
-      if (tabs.length > 0) {
-        console.log('[StarterPack] Sending message to tab:', tabs[0].url);
-        const result = await chrome.tabs.sendMessage(tabs[0].id, {
-          action: 'getAuthFromLocalStorage'
-        });
-        console.log('[StarterPack] Got result from tab:', result);
-        
-        if (result && result.token) {
-          authToken = result.token;
-          userData = result.user;
-          // Store in extension storage
-          await chrome.storage.local.set({ 
-            authToken: authToken,
-            userData: userData 
-          });
-          console.log('[StarterPack] Stored auth from main app');
-        }
-      }
-    } catch (e) {
-      console.log('[StarterPack] Could not get auth from main app tab:', e.message);
-      
-      // Fallback: Try to get auth directly from the tab using executeScript
-      if (tabs.length > 0) {
-        console.log('[StarterPack] Trying fallback method...');
-        try {
-          const results = await chrome.scripting.executeScript({
-            target: { tabId: tabs[0].id },
-            func: () => {
-              return {
-                token: localStorage.getItem('starterpack_auth_token'),
-                user: localStorage.getItem('starterpack_user')
-              };
-            }
-          });
-          
-          if (results && results[0] && results[0].result) {
-            const { token, user } = results[0].result;
-            console.log('[StarterPack] Fallback method got token:', !!token);
-            
-            if (token) {
-              authToken = token;
-              userData = user ? JSON.parse(user) : null;
-              await chrome.storage.local.set({ 
-                authToken: authToken,
-                userData: userData 
-              });
-              console.log('[StarterPack] Stored auth from fallback method');
-            }
+    // Try to access the main app's localStorage
+    console.log('[StarterPack] Looking for main app tabs...');
+    const tabs = await chrome.tabs.query({ url: 'https://starter-pack-app.vercel.app/*' });
+    console.log('[StarterPack] Found tabs:', tabs.length);
+    
+    if (tabs.length > 0) {
+      // Try direct script execution first (more reliable)
+      console.log('[StarterPack] Using direct script execution on tab:', tabs[0].url);
+      try {
+        const results = await chrome.scripting.executeScript({
+          target: { tabId: tabs[0].id },
+          func: () => {
+            return {
+              token: localStorage.getItem('starterpack_auth_token'),
+              user: localStorage.getItem('starterpack_user')
+            };
           }
-        } catch (fallbackError) {
-          console.log('[StarterPack] Fallback method also failed:', fallbackError.message);
+        });
+        
+        if (results && results[0] && results[0].result) {
+          const { token, user } = results[0].result;
+          console.log('[StarterPack] Direct execution got token:', !!token, 'user:', !!user);
+          
+          if (token) {
+            authToken = token;
+            userData = user ? JSON.parse(user) : null;
+            await chrome.storage.local.set({ 
+              authToken: authToken,
+              userData: userData 
+            });
+            console.log('[StarterPack] Stored auth from direct execution');
+          }
+        }
+      } catch (scriptError) {
+        console.log('[StarterPack] Direct script execution failed:', scriptError.message);
+        
+        // Fallback to content script messaging
+        try {
+          console.log('[StarterPack] Trying content script messaging...');
+          const result = await chrome.tabs.sendMessage(tabs[0].id, {
+            action: 'getAuthFromLocalStorage'
+          });
+          console.log('[StarterPack] Got result from content script:', result);
+          
+          if (result && result.token) {
+            authToken = result.token;
+            userData = result.user;
+            await chrome.storage.local.set({ 
+              authToken: authToken,
+              userData: userData 
+            });
+            console.log('[StarterPack] Stored auth from content script');
+          }
+        } catch (messageError) {
+          console.log('[StarterPack] Content script messaging also failed:', messageError.message);
         }
       }
     }
