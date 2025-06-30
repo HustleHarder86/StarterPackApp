@@ -12,7 +12,12 @@ if (!admin.apps.length) {
     const privateKey = process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n');
 
     if (!projectId || !clientEmail || !privateKey) {
-      throw new Error('Missing Firebase Admin credentials. Please check environment variables.');
+      const missingVars = [];
+      if (!projectId) missingVars.push('FIREBASE_PROJECT_ID');
+      if (!clientEmail) missingVars.push('FIREBASE_CLIENT_EMAIL');
+      if (!privateKey) missingVars.push('FIREBASE_PRIVATE_KEY');
+      
+      throw new Error(`Missing Firebase Admin credentials. Required environment variables not set: ${missingVars.join(', ')}`);
     }
 
     app = admin.initializeApp({

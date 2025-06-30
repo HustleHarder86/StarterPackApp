@@ -14,7 +14,17 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { db } = await getFirebaseAdmin();
+    let db;
+    try {
+      const firebaseAdmin = await getFirebaseAdmin();
+      db = firebaseAdmin.db;
+    } catch (error) {
+      console.error('Firebase Admin initialization failed:', error);
+      return res.status(503).json({ 
+        error: 'Database service temporarily unavailable',
+        details: process.env.NODE_ENV === 'development' ? error.message : undefined
+      });
+    }
 
     // GET - Fetch blog posts
     if (req.method === 'GET') {
