@@ -106,8 +106,10 @@ function extractPrice() {
       '[class*="priceWrapper"] span',
       '[class*="listingPrice"]',
       'div[class*="price"]:not([class*="priceChange"])',
-      '.propertyDetailsSectionContentValue:has-text("$")',
-      'span:has-text("$"):not(:has(*))'  // Span containing $ but no children
+      '.propertyDetailsSectionContentValue',
+      'span[class*="price"]',
+      '.listingDetailsPriceAmount',
+      '[class*="priceAmount"]'
     ];
     
     for (const selector of selectors) {
@@ -140,17 +142,37 @@ function extractPrice() {
       }
     }
     
+    // Try to find price in property details section
+    const propertyDetailsRows = document.querySelectorAll('.propertyDetailsSectionContentRow, tr');
+    for (const row of propertyDetailsRows) {
+      const label = row.querySelector('.propertyDetailsSectionContentLabel, td:first-child');
+      const value = row.querySelector('.propertyDetailsSectionContentValue, td:last-child');
+      if (label && value && label.textContent.toLowerCase().includes('price')) {
+        const priceText = value.textContent.trim();
+        console.log('[StarterPack] Found price in property details:', priceText);
+        const priceMatch = priceText.match(/\$([0-9,]+)/);
+        if (priceMatch) {
+          const price = priceMatch[1].replace(/,/g, '');
+          const priceNum = parseInt(price);
+          if (!isNaN(priceNum) && priceNum > 10000) {
+            return priceNum;
+          }
+        }
+      }
+    }
+    
     // Last resort: search all elements for price pattern
     console.log('[StarterPack] Trying last resort price search...');
-    const allElements = document.querySelectorAll('*');
+    const allElements = document.querySelectorAll('span, div, p, td');
     for (const element of allElements) {
-      if (element.childNodes.length === 1 && element.childNodes[0].nodeType === 3) { // Text node only
+      if (element.childNodes.length > 0) {
         const text = element.textContent.trim();
-        if (text.match(/^\$[0-9,]+$/)) {
+        // Look for standalone price format
+        if (text.match(/^\$[0-9]{1,3}(,[0-9]{3})+$/)) {
           const price = text.replace(/[$,]/g, '');
           const priceNum = parseInt(price);
           if (!isNaN(priceNum) && priceNum > 10000 && priceNum < 100000000) {
-            console.log('[StarterPack] Found price in element:', text, 'tag:', element.tagName);
+            console.log('[StarterPack] Found price in element:', text, 'tag:', element.tagName, 'class:', element.className);
             return priceNum;
           }
         }
