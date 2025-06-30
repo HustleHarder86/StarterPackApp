@@ -71,11 +71,31 @@ async function checkAuthStatus() {
           if (token) {
             authToken = token;
             userData = user ? JSON.parse(user) : null;
-            await chrome.storage.local.set({ 
-              authToken: authToken,
-              userData: userData 
-            });
-            console.log('[StarterPack] Stored auth from direct execution');
+            
+            // Store in extension storage with verification
+            try {
+              await chrome.storage.local.set({ 
+                authToken: authToken,
+                userData: userData 
+              });
+              
+              // Verify it was actually stored
+              const verify = await chrome.storage.local.get(['authToken']);
+              if (verify.authToken) {
+                console.log('[StarterPack] Successfully stored and verified auth token in extension storage');
+              } else {
+                console.error('[StarterPack] Failed to verify token storage!');
+                throw new Error('Token storage verification failed');
+              }
+            } catch (storageError) {
+              console.error('[StarterPack] Storage error:', storageError);
+              // Try alternative storage method
+              await chrome.storage.sync.set({ 
+                authToken: authToken,
+                userData: userData 
+              });
+              console.log('[StarterPack] Stored auth using sync storage as fallback');
+            }
           }
         }
       } catch (scriptError) {
@@ -106,8 +126,16 @@ async function checkAuthStatus() {
     
     // Fall back to stored token
     if (!authToken) {
-      const stored = await chrome.storage.local.get(['authToken', 'userData']);
-      console.log('[StarterPack] Checking stored auth:', stored);
+      // Try local storage first
+      let stored = await chrome.storage.local.get(['authToken', 'userData']);
+      console.log('[StarterPack] Checking local storage:', stored);
+      
+      // If not in local, try sync storage
+      if (!stored.authToken) {
+        stored = await chrome.storage.sync.get(['authToken', 'userData']);
+        console.log('[StarterPack] Checking sync storage:', stored);
+      }
+      
       authToken = stored.authToken;
       userData = stored.userData;
     }
@@ -120,8 +148,8 @@ async function checkAuthStatus() {
     
     console.log('[StarterPack] Found auth token, verifying with API...');
 
-    // Verify token with API - use properties/list as a simple auth check
-    const response = await fetch(`${API_BASE}/properties/list`, {
+    // Verify token with API
+    const response = await fetch(`${API_BASE}/auth/verify`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${authToken}`
