@@ -712,11 +712,17 @@
           console.log('Auth state changed:', user);
           if (user) {
             currentUser = user;
+            console.log('[StarterPack] User logged in:', user.email, user.uid);
+            
             userProfile = await loadUserProfile(user.uid);
+            console.log('[StarterPack] User profile loaded:', userProfile);
             
             // Always store auth token in localStorage for extension access
             try {
+              console.log('[StarterPack] Getting ID token...');
               const token = await user.getIdToken();
+              console.log('[StarterPack] Got token:', token ? 'Yes' : 'No', 'Length:', token ? token.length : 0);
+              
               localStorage.setItem('starterpack_auth_token', token);
               localStorage.setItem('starterpack_user', JSON.stringify({
                 uid: user.uid,
@@ -724,8 +730,12 @@
                 displayName: user.displayName
               }));
               console.log('[StarterPack] Auth token stored in localStorage');
+              
+              // Verify storage
+              const storedToken = localStorage.getItem('starterpack_auth_token');
+              console.log('[StarterPack] Verified token in localStorage:', storedToken ? 'Yes' : 'No');
             } catch (error) {
-              console.error('Failed to store auth token:', error);
+              console.error('[StarterPack] Failed to store auth token:', error);
             }
             
             // Send auth token to extension if present
