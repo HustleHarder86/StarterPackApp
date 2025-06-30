@@ -5,13 +5,16 @@ console.log('StarterPack extension loaded on Realtor.ca');
 function extractPropertyData() {
   try {
     // Check if we're on a property details page
-    // Updated to handle all property types (house, condo, townhouse, etc.)
-    const isPropertyPage = window.location.pathname.includes('/real-estate/') && 
-                          window.location.pathname.match(/(house|condo|townhouse|apartment|property|mls-[a-zA-Z0-9]+)($|\?|#)/);
+    // Updated to handle all property types and URL patterns
+    const isPropertyPage = window.location.pathname.includes('/real-estate/') || 
+                          window.location.pathname.includes('/immobilier/');
     
     if (!isPropertyPage) {
+      console.log('[StarterPack] Not a property page:', window.location.pathname);
       return null;
     }
+    
+    console.log('[StarterPack] Extracting property data from:', window.location.href);
 
     // Extract data from the page
     const propertyData = {
@@ -65,35 +68,71 @@ function extractMLSFromURL() {
 
 // Helper functions for data extraction
 function extractPrice() {
-  const priceElement = document.querySelector('[data-testid="listingPrice"]') ||
-                      document.querySelector('.listingPrice') ||
-                      document.querySelector('[class*="price"]');
-  
-  if (priceElement) {
-    const priceText = priceElement.textContent;
-    const price = priceText.replace(/[^0-9]/g, '');
-    return parseInt(price) || null;
+  try {
+    // Try multiple selectors
+    const selectors = [
+      '.listingDetailsPrice',
+      '[data-testid="listingPrice"]',
+      '.listingPrice',
+      '[class*="price"]',
+      'h1 + div span' // Sometimes price is in a span after h1
+    ];
+    
+    for (const selector of selectors) {
+      const priceElement = document.querySelector(selector);
+      if (priceElement && priceElement.textContent) {
+        const priceText = priceElement.textContent;
+        const price = priceText.replace(/[^0-9]/g, '');
+        const priceNum = parseInt(price);
+        if (!isNaN(priceNum) && priceNum > 0) {
+          console.log('[StarterPack] Found price:', priceNum, 'from selector:', selector);
+          return priceNum;
+        }
+      }
+    }
+    
+    console.log('[StarterPack] Could not extract price');
+  } catch (e) {
+    console.error('[StarterPack] Price extraction error:', e);
   }
   return null;
 }
 
 function extractAddress() {
-  const addressElement = document.querySelector('[data-testid="listingAddress"]') ||
-                        document.querySelector('.listingAddress');
-  
-  if (addressElement) {
-    const fullAddress = addressElement.textContent.trim();
-    const parts = fullAddress.split(',').map(part => part.trim());
+  try {
+    // Try multiple selectors
+    const selectors = [
+      '.listingDetailsAddressBar',
+      '[data-testid="listingAddress"]',
+      '.listingAddress',
+      '[class*="address"]',
+      'h1'
+    ];
     
-    // Try to parse Canadian address format
-    return {
-      street: parts[0] || '',
-      city: parts[1] || '',
-      province: parts[2]?.split(' ')[0] || '',
-      postalCode: parts[2]?.split(' ').slice(1).join(' ') || '',
-      country: 'Canada',
-      full: fullAddress
-    };
+    for (const selector of selectors) {
+      const addressElement = document.querySelector(selector);
+      if (addressElement && addressElement.textContent) {
+        const fullAddress = addressElement.textContent.trim();
+        if (fullAddress && fullAddress.length > 5 && !fullAddress.includes('Cookie')) {
+          console.log('[StarterPack] Found address:', fullAddress, 'from selector:', selector);
+          const parts = fullAddress.split(',').map(part => part.trim());
+          
+          // Try to parse Canadian address format
+          return {
+            street: parts[0] || '',
+            city: parts[1] || '',
+            province: parts[2]?.split(' ')[0] || '',
+            postalCode: parts[2]?.split(' ').slice(1).join(' ') || '',
+            country: 'Canada',
+            full: fullAddress
+          };
+        }
+      }
+    }
+    
+    console.log('[StarterPack] Could not extract address');
+  } catch (e) {
+    console.error('[StarterPack] Address extraction error:', e);
   }
   
   return {
@@ -260,22 +299,50 @@ async function handleAnalyzeClick() {
   button.innerHTML = 'Extracting data...';
 
   try {
-    const propertyData = extractPropertyData();
+    let propertyData = extractPropertyData();
     
     if (!propertyData) {
-      throw new Error('Unable to extract property data');
+      console.log('[StarterPack] Extraction failed, using fallback data');
+      // Create minimal property data from URL
+      propertyData = {
+        source: 'realtor.ca',
+        url: window.location.href,
+        extractedAt: new Date().toISOString(),
+        mlsNumber: extractMLSFromURL() || 'Unknown',
+        price: 0,
+        address: {
+          full: 'Property from Realtor.ca',
+          street: '',
+          city: '',
+          province: '',
+          postalCode: '',
+          country: 'Canada'
+        },
+        // Set defaults
+        bedrooms: 0,
+        bathrooms: 0,
+        sqft: 0,
+        propertyType: 'residential',
+        yearBuilt: null,
+        taxes: 0,
+        condoFees: 0,
+        description: 'Property data will be filled in manually',
+        extractionFailed: true
+      };
     }
+
+    console.log('[StarterPack] Sending property data:', propertyData);
 
     // Send to background script
     chrome.runtime.sendMessage({
       action: 'analyzeProperty',
       data: propertyData
     }, (response) => {
-      if (response.success) {
+      if (response && response.success) {
         button.innerHTML = '✓ Analysis started!';
         setTimeout(() => {
           button.innerHTML = `
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
             </svg>
             Analyze with StarterPack
@@ -283,11 +350,11 @@ async function handleAnalyzeClick() {
           button.disabled = false;
         }, 3000);
       } else {
-        throw new Error(response.error || 'Analysis failed');
+        throw new Error(response?.error || 'Analysis failed');
       }
     });
   } catch (error) {
-    console.error('Analysis error:', error);
+    console.error('[StarterPack] Analysis error:', error);
     button.innerHTML = '✗ Error - Try again';
     button.disabled = false;
   }
