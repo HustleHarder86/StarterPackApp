@@ -1172,7 +1172,7 @@
         const fullAddress = `${address.street}, ${address.city}, ${address.state}, ${address.country} ${address.postal}`.trim();
         
         // Call enhanced API with STR analysis
-        const response = await fetch('/api/analyze-property-enhanced', {
+        const response = await fetch('/api/analyze-property', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -2084,8 +2084,8 @@
           // Format full address
           const fullAddress = `${propertyData.address.street}, ${propertyData.address.city}, ${propertyData.address.state}, ${propertyData.address.country} ${propertyData.address.postal}`.trim();
           
-          // Call enhanced API with property data
-          const response = await fetch('/api/analyze-property-enhanced', {
+          // Call API with property data
+          const response = await fetch('/api/analyze-property', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json'
