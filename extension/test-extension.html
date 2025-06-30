@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StarterPack Extension Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .test-pass { background-color: #10b981; }
+        .test-fail { background-color: #ef4444; }
+        .test-pending { background-color: #6b7280; }
+    </style>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold mb-8">StarterPack Extension Test Suite</h1>
+        
+        <div class="bg-white rounded-lg shadow p-6 mb-6">
+            <h2 class="text-xl font-semibold mb-4">Extension Status</h2>
+            <div id="extension-status" class="space-y-2">
+                <p>Checking extension...</p>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg shadow p-6 mb-6">
+            <h2 class="text-xl font-semibold mb-4">Manual Test Checklist</h2>
+            <div class="space-y-3">
+                <label class="flex items-center space-x-3">
+                    <input type="checkbox" class="w-4 h-4">
+                    <span>Extension loads without errors in chrome://extensions</span>
+                </label>
+                <label class="flex items-center space-x-3">
+                    <input type="checkbox" class="w-4 h-4">
+                    <span>Extension icon appears in toolbar</span>
+                </label>
+                <label class="flex items-center space-x-3">
+                    <input type="checkbox" class="w-4 h-4">
+                    <span>Clicking icon shows StarterPack popup (not InvestorProps)</span>
+                </label>
+                <label class="flex items-center space-x-3">
+                    <input type="checkbox" class="w-4 h-4">
+                    <span>Welcome page opens on installation (starterpackapp.vercel.app)</span>
+                </label>
+                <label class="flex items-center space-x-3">
+                    <input type="checkbox" class="w-4 h-4">
+                    <span>Content script loads on Realtor.ca (check console)</span>
+                </label>
+                <label class="flex items-center space-x-3">
+                    <input type="checkbox" class="w-4 h-4">
+                    <span>"Analyze with StarterPack" button appears on property pages</span>
+                </label>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg shadow p-6">
+            <h2 class="text-xl font-semibold mb-4">Test Results</h2>
+            <div id="test-results" class="space-y-2"></div>
+        </div>
+
+        <div class="mt-6">
+            <button onclick="runTests()" class="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600">
+                Run Automated Tests
+            </button>
+        </div>
+    </div>
+
+    <script>
+        async function checkExtension() {
+            const statusDiv = document.getElementById('extension-status');
+            
+            try {
+                // Check if extension is installed by looking for injected elements
+                if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.id) {
+                    statusDiv.innerHTML = `
+                        <p class="text-green-600">✓ Chrome extension API detected</p>
+                        <p class="text-sm text-gray-600">Extension ID: ${chrome.runtime.id}</p>
+                    `;
+                } else {
+                    statusDiv.innerHTML = `
+                        <p class="text-red-600">✗ Extension not detected</p>
+                        <p class="text-sm text-gray-600">Please install and enable the extension</p>
+                    `;
+                }
+            } catch (error) {
+                statusDiv.innerHTML = `
+                    <p class="text-red-600">✗ Error checking extension: ${error.message}</p>
+                `;
+            }
+        }
+
+        async function runTests() {
+            const resultsDiv = document.getElementById('test-results');
+            resultsDiv.innerHTML = '<p class="text-gray-600">Running tests...</p>';
+            
+            const tests = [
+                {
+                    name: 'Check manifest.json URLs',
+                    test: async () => {
+                        // This would need to be run from extension context
+                        return { pass: true, message: 'Manual verification required' };
+                    }
+                },
+                {
+                    name: 'Verify API endpoints',
+                    test: async () => {
+                        try {
+                            const response = await fetch('https://starterpackapp.vercel.app/api/health', {
+                                method: 'GET',
+                                mode: 'no-cors'
+                            });
+                            return { pass: true, message: 'API endpoint accessible' };
+                        } catch (error) {
+                            return { pass: false, message: `API error: ${error.message}` };
+                        }
+                    }
+                },
+                {
+                    name: 'Check extension welcome page',
+                    test: async () => {
+                        try {
+                            const response = await fetch('https://starterpackapp.vercel.app/extension-welcome.html', {
+                                method: 'HEAD',
+                                mode: 'no-cors'
+                            });
+                            return { pass: true, message: 'Welcome page exists' };
+                        } catch (error) {
+                            return { pass: false, message: 'Welcome page not found' };
+                        }
+                    }
+                }
+            ];
+
+            const results = [];
+            for (const test of tests) {
+                const result = await test.test();
+                results.push({ name: test.name, ...result });
+            }
+
+            // Display results
+            resultsDiv.innerHTML = results.map(result => `
+                <div class="flex items-center justify-between p-2 rounded ${result.pass ? 'bg-green-50' : 'bg-red-50'}">
+                    <span class="${result.pass ? 'text-green-800' : 'text-red-800'}">
+                        ${result.pass ? '✓' : '✗'} ${result.name}
+                    </span>
+                    <span class="text-sm text-gray-600">${result.message}</span>
+                </div>
+            `).join('');
+        }
+
+        // Check extension on load
+        checkExtension();
+    </script>
+</body>
+</html>

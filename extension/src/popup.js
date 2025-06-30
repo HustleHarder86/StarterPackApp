@@ -1,7 +1,7 @@
-// Popup script for InvestorProps extension
+// Popup script for StarterPack extension
 
-const API_BASE = 'https://investorprops.vercel.app/api';
-const APP_BASE = 'https://investorprops.vercel.app';
+const API_BASE = 'https://starterpackapp.vercel.app/api';
+const APP_BASE = 'https://starterpackapp.vercel.app';
 
 // State management
 let currentUser = null;
@@ -80,7 +80,7 @@ loginForm.addEventListener('submit', async (e) => {
   
   // For now, redirect to web app for login
   // In a future update, we could implement Firebase Auth directly in the extension
-  showError('Please login through the InvestorProps website first');
+  showError('Please login through the StarterPack website first');
   
   // Open login page
   chrome.tabs.create({

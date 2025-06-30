@@ -1,9 +1,10 @@
-// Background service worker for InvestorProps extension
+// Background service worker for StarterPack extension
+console.log('[StarterPack Extension] Background service worker starting...');
 
 // Configuration
 const API_ENDPOINTS = {
   development: 'http://localhost:3000/api/properties/ingest',
-  production: 'https://investorprops.vercel.app/api/properties/ingest'
+  production: 'https://starterpackapp.vercel.app/api/properties/ingest'
 };
 
 // Get current environment - check if extension ID matches production
@@ -44,7 +45,7 @@ async function handlePropertyAnalysis(propertyData) {
     if (!authToken) {
       // Open popup to prompt login
       chrome.action.openPopup();
-      throw new Error('Please login to InvestorProps first');
+      throw new Error('Please login to StarterPack first');
     }
 
     // Send property data to API
@@ -86,8 +87,10 @@ async function handlePropertyAnalysis(propertyData) {
 
 // Handle extension installation
 chrome.runtime.onInstalled.addListener((details) => {
+  console.log('[StarterPack Extension] Installation event:', details.reason);
   if (details.reason === 'install') {
     // Open welcome page on install
+    console.log('[StarterPack Extension] Opening welcome page...');
     chrome.tabs.create({
       url: 'https://starterpackapp.vercel.app/extension-welcome.html'
     });

@@ -1,6 +1,6 @@
-/* InvestorProps Extension Styles */
+/* StarterPack Extension Styles */
 
-.investorprops-analyze-button {
+.starterpack-analyze-button {
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -17,27 +17,27 @@
   box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
 }
 
-.investorprops-analyze-button:hover:not(:disabled) {
+.starterpack-analyze-button:hover:not(:disabled) {
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
 }
 
-.investorprops-analyze-button:active:not(:disabled) {
+.starterpack-analyze-button:active:not(:disabled) {
   transform: translateY(0);
 }
 
-.investorprops-analyze-button:disabled {
+.starterpack-analyze-button:disabled {
   opacity: 0.7;
   cursor: not-allowed;
 }
 
-.investorprops-analyze-button svg {
+.starterpack-analyze-button svg {
   width: 20px;
   height: 20px;
 }
 
 /* Popup notification styles */
-.investorprops-notification {
+.starterpack-notification {
   position: fixed;
   top: 20px;
   right: 20px;
@@ -49,11 +49,11 @@
   animation: slideIn 0.3s ease;
 }
 
-.investorprops-notification.success {
+.starterpack-notification.success {
   border-left: 4px solid #10b981;
 }
 
-.investorprops-notification.error {
+.starterpack-notification.error {
   border-left: 4px solid #ef4444;
 }
 
