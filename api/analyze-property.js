@@ -31,7 +31,20 @@ module.exports = async function handler(req, res) {
 
     console.log('Starting FRESH property analysis for:', propertyAddress);
     console.log('Timestamp:', new Date().toISOString());
-    console.log('Property data received:', propertyData);
+    console.log('Property data received:', JSON.stringify(propertyData, null, 2));
+    
+    // Log specific property data fields for debugging
+    if (propertyData) {
+      console.log('========== PROPERTY DATA FROM EXTENSION ==========');
+      console.log(`Price: $${propertyData.price?.toLocaleString() || 'NOT PROVIDED'}`);
+      console.log(`Property Taxes: $${propertyData.propertyTaxes || 'NOT PROVIDED'}/year`);
+      console.log(`Condo Fees: $${propertyData.condoFees || 'NOT PROVIDED'}/month`);
+      console.log(`Bedrooms: ${propertyData.bedrooms || 'NOT PROVIDED'}`);
+      console.log(`Bathrooms: ${propertyData.bathrooms || 'NOT PROVIDED'}`);
+      console.log(`Square Feet: ${propertyData.sqft || 'NOT PROVIDED'}`);
+      console.log(`Property Type: ${propertyData.propertyType || 'NOT PROVIDED'}`);
+      console.log('==================================================');
+    }
 
     // Check if API keys are configured
     const perplexityApiKey = process.env.PERPLEXITY_API_KEY;
