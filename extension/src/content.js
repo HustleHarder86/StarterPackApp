@@ -322,58 +322,98 @@ function extractBathrooms() {
 
 function extractSquareFootage() {
   try {
+    console.log('[StarterPack] Starting square footage extraction...');
+    
     // Try multiple approaches
     const selectors = [
       '[class*="sqft"]',
       '[class*="square"]',
       '[class*="area"]',
+      '[class*="size"]',
+      '[class*="living"]',
       '.listingDetailsSectionContentValue',
-      'span:contains("sq")',
-      'td:contains("sq")'
+      '.propertyDetailsSectionContentValue',
+      'span',
+      'td',
+      'div'
     ];
     
-    for (const selector of selectors) {
-      const elements = document.querySelectorAll(selector);
-      for (const el of elements) {
-        const text = el.textContent;
-        // Look for patterns like "1,234 sq ft" or "1234 square feet"
-        const match = text.match(/(\d{1,3}(?:,\d{3})*)\s*(sq\.?\s*ft|square\s*feet|sqft)/i);
-        if (match) {
-          const sqft = parseInt(match[1].replace(/,/g, ''));
-          console.log('[StarterPack] Found square footage:', sqft, 'in element:', el.className);
-          return sqft;
-        }
-      }
-    }
-    
-    // Search in property details table
-    const rows = document.querySelectorAll('.propertyDetailsSectionContentRow, tr');
-    for (const row of rows) {
-      const label = row.textContent.toLowerCase();
-      if (label.includes('square') || label.includes('sq') || label.includes('area') || label.includes('size')) {
-        const match = row.textContent.match(/(\d{1,3}(?:,\d{3})*)/);
-        if (match) {
-          const sqft = parseInt(match[1].replace(/,/g, ''));
-          if (sqft > 100 && sqft < 50000) { // Sanity check
-            console.log('[StarterPack] Found square footage in table:', sqft);
-            return sqft;
+    // First, look for specific patterns in all text elements
+    const allElements = document.querySelectorAll('*');
+    for (const el of allElements) {
+      if (el.childNodes.length === 1 && el.childNodes[0].nodeType === Node.TEXT_NODE) {
+        const text = el.textContent.trim();
+        // Look for patterns like "1,234 sq ft" or "1234 square feet" or "1234 sqft"
+        const patterns = [
+          /(\d{1,3}(?:,\d{3})*)\s*(?:sq\.?\s*ft\.?|square\s*feet|sqft|sf)/i,
+          /(\d{3,5})\s*(?:sq\.?\s*ft\.?|square\s*feet|sqft|sf)/i,
+          /living\s*area[:\s]*(\d{1,3}(?:,\d{3})*)/i,
+          /floor\s*area[:\s]*(\d{1,3}(?:,\d{3})*)/i,
+          /total\s*area[:\s]*(\d{1,3}(?:,\d{3})*)/i
+        ];
+        
+        for (const pattern of patterns) {
+          const match = text.match(pattern);
+          if (match) {
+            const sqft = parseInt(match[1].replace(/,/g, ''));
+            if (sqft > 100 && sqft < 50000) { // Sanity check
+              console.log('[StarterPack] Found square footage:', sqft, 'in text:', text, 'element:', el.tagName);
+              return sqft;
+            }
           }
         }
       }
     }
     
-    // Last resort: look for any text with sq ft pattern
-    const allText = document.body.innerText;
-    const sqftMatch = allText.match(/(\d{1,3}(?:,\d{3})*)\s*(?:sq\.?\s*ft|square\s*feet)/i);
-    if (sqftMatch) {
-      const sqft = parseInt(sqftMatch[1].replace(/,/g, ''));
-      if (sqft > 100 && sqft < 50000) {
-        console.log('[StarterPack] Found square footage via text search:', sqft);
-        return sqft;
+    // Search in property details table more thoroughly
+    const tables = document.querySelectorAll('table, .propertyDetailsSectionContentSubCon, [class*="details"]');
+    for (const table of tables) {
+      const rows = table.querySelectorAll('tr, .propertyDetailsSectionContentRow, [class*="row"]');
+      for (const row of rows) {
+        const text = row.textContent;
+        console.log('[StarterPack] Checking table row:', text.substring(0, 100));
+        
+        // Check if this row contains size/area information
+        if (text.match(/square|sq\s*ft|area|size|living|floor/i)) {
+          // Extract numbers from this row
+          const numbers = text.match(/\d{1,3}(?:,\d{3})*|\d{3,5}/g);
+          if (numbers) {
+            for (const num of numbers) {
+              const sqft = parseInt(num.replace(/,/g, ''));
+              if (sqft > 100 && sqft < 50000) {
+                console.log('[StarterPack] Found potential square footage in table:', sqft, 'from row:', text);
+                return sqft;
+              }
+            }
+          }
+        }
       }
     }
     
-    console.log('[StarterPack] Could not extract square footage');
+    // Last resort: look for any text with sq ft pattern in full page
+    const allText = document.body.innerText;
+    console.log('[StarterPack] Searching full page text for square footage patterns...');
+    
+    // Try multiple patterns
+    const pagePatterns = [
+      /(\d{1,3}(?:,\d{3})*)\s*(?:sq\.?\s*ft\.?|square\s*feet|sqft|sf)(?!\s*lot)/i,
+      /living\s*area[:\s]*(\d{1,3}(?:,\d{3})*)/i,
+      /floor\s*area[:\s]*(\d{1,3}(?:,\d{3})*)/i,
+      /(\d{3,5})\s*sf(?:\s|$)/i
+    ];
+    
+    for (const pattern of pagePatterns) {
+      const matches = allText.match(pattern);
+      if (matches) {
+        const sqft = parseInt(matches[1].replace(/,/g, ''));
+        if (sqft > 100 && sqft < 50000) {
+          console.log('[StarterPack] Found square footage via page text search:', sqft, 'pattern:', pattern);
+          return sqft;
+        }
+      }
+    }
+    
+    console.log('[StarterPack] Could not extract square footage from any source');
   } catch (e) {
     console.error('[StarterPack] Square footage extraction error:', e);
   }
