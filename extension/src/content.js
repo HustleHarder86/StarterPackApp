@@ -211,6 +211,14 @@ function extractMainImage() {
       '.photoGallery img',
       '.listingPhotos img',
       '.propertyPhoto img',
+      '.listingDetailsHero img',
+      '.heroImage img',
+      '.mediaContainer img',
+      '.listingMedia img',
+      '[class*="hero"] img',
+      '[class*="Hero"] img',
+      '[class*="gallery"] img:first-child',
+      '[class*="Gallery"] img:first-child',
       'img[alt*="property"]',
       'img[alt*="listing"]'
     ];
@@ -229,9 +237,23 @@ function extractMainImage() {
     
     // Fallback: try to find the first large image on the page
     const allImages = document.querySelectorAll('img');
+    console.log('[StarterPack] Found', allImages.length, 'total images on page');
+    
     for (const img of allImages) {
-      if (img.src && img.naturalWidth > 400 && img.naturalHeight > 300) {
-        console.log('[StarterPack] Using fallback image:', img.src);
+      // Check if image is loaded and has reasonable dimensions
+      if (img.src && img.complete) {
+        console.log('[StarterPack] Checking image:', img.src, 'dimensions:', img.naturalWidth, 'x', img.naturalHeight);
+        if (img.naturalWidth > 400 && img.naturalHeight > 300) {
+          console.log('[StarterPack] Using fallback image:', img.src);
+          return img.src;
+        }
+      }
+    }
+    
+    // Try images that might not be fully loaded yet
+    for (const img of allImages) {
+      if (img.src && img.src.includes('realtor') && !img.src.includes('logo')) {
+        console.log('[StarterPack] Using realtor image (not fully loaded):', img.src);
         return img.src;
       }
     }
