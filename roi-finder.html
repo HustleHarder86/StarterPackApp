@@ -714,6 +714,20 @@
             currentUser = user;
             userProfile = await loadUserProfile(user.uid);
             
+            // Always store auth token in localStorage for extension access
+            try {
+              const token = await user.getIdToken();
+              localStorage.setItem('starterpack_auth_token', token);
+              localStorage.setItem('starterpack_user', JSON.stringify({
+                uid: user.uid,
+                email: user.email,
+                displayName: user.displayName
+              }));
+              console.log('[StarterPack] Auth token stored in localStorage');
+            } catch (error) {
+              console.error('Failed to store auth token:', error);
+            }
+            
             // Send auth token to extension if present
             const urlParams = new URLSearchParams(window.location.search);
             const fromExtension = urlParams.get('extension');
@@ -732,13 +746,6 @@
                     }
                   }, '*');
                 }
-                // Also store in local storage for extension access
-                localStorage.setItem('starterpack_auth_token', token);
-                localStorage.setItem('starterpack_user', JSON.stringify({
-                  uid: user.uid,
-                  email: user.email,
-                  displayName: user.displayName
-                }));
               } catch (error) {
                 console.error('Failed to send token to extension:', error);
               }
@@ -1768,6 +1775,11 @@
 
       // Sign out
       document.getElementById('sign-out-btn').addEventListener('click', function() {
+        // Clear localStorage auth data
+        localStorage.removeItem('starterpack_auth_token');
+        localStorage.removeItem('starterpack_user');
+        console.log('[StarterPack] Cleared auth data from localStorage');
+        
         firebase.auth().signOut();
       });
 
