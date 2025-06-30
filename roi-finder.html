@@ -2100,8 +2100,12 @@
             })
           });
           
+          console.log('API Response status:', response.status);
+          
           if (!response.ok) {
-            throw new Error('Analysis API request failed');
+            const errorText = await response.text();
+            console.error('API Error Response:', errorText);
+            throw new Error(`Analysis API request failed: ${response.status} - ${errorText}`);
           }
           
           const result = await response.json();
@@ -2122,7 +2126,18 @@
           }
         } catch (error) {
           console.error('Analysis error:', error);
-          alert('Failed to analyze property: ' + error.message);
+          console.error('Error details:', {
+            message: error.message,
+            stack: error.stack,
+            response: error.response
+          });
+          
+          // Check if it's a network error
+          if (error.message === 'Failed to fetch') {
+            alert('Network error: Unable to connect to the analysis service. Please check your connection and try again.');
+          } else {
+            alert('Failed to analyze property: ' + (error.message || 'Unknown error'));
+          }
           showView('dashboard');
         }
       });
