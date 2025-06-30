@@ -96,13 +96,18 @@ function extractMLSFromURL() {
 // Helper functions for data extraction
 function extractPrice() {
   try {
-    // Try multiple selectors
+    // Try multiple selectors - more specific for Realtor.ca
     const selectors = [
       '.listingDetailsPrice',
       '[data-testid="listingPrice"]',
+      '.priceWrapper',
+      '.price',
       '.listingPrice',
-      '[class*="price"]',
-      'h1 + div span' // Sometimes price is in a span after h1
+      '[class*="priceWrapper"] span',
+      '[class*="listingPrice"]',
+      'div[class*="price"]:not([class*="priceChange"])',
+      '.propertyDetailsSectionContentValue:has-text("$")',
+      'span:has-text("$"):not(:has(*))'  // Span containing $ but no children
     ];
     
     for (const selector of selectors) {
@@ -129,6 +134,23 @@ function extractPrice() {
           const priceNum = parseInt(price);
           if (!isNaN(priceNum) && priceNum > 10000 && priceNum < 100000000) {
             console.log('[StarterPack] Extracted price (fallback):', priceNum);
+            return priceNum;
+          }
+        }
+      }
+    }
+    
+    // Last resort: search all elements for price pattern
+    console.log('[StarterPack] Trying last resort price search...');
+    const allElements = document.querySelectorAll('*');
+    for (const element of allElements) {
+      if (element.childNodes.length === 1 && element.childNodes[0].nodeType === 3) { // Text node only
+        const text = element.textContent.trim();
+        if (text.match(/^\$[0-9,]+$/)) {
+          const price = text.replace(/[$,]/g, '');
+          const priceNum = parseInt(price);
+          if (!isNaN(priceNum) && priceNum > 10000 && priceNum < 100000000) {
+            console.log('[StarterPack] Found price in element:', text, 'tag:', element.tagName);
             return priceNum;
           }
         }
