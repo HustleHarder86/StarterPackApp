@@ -336,6 +336,86 @@
     </div>
   </div>
 
+  <!-- Property Confirmation Screen -->
+  <div id="confirmation-screen" class="min-h-screen bg-gradient-to-br from-blue-50 to-green-50 flex items-center justify-center p-6" style="display: none;">
+    <div class="max-w-2xl w-full">
+      <div class="card bg-white">
+        <div class="text-center mb-6">
+          <div class="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-4">
+            <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+            </svg>
+          </div>
+          <h2 class="text-2xl font-bold text-gray-900 mb-2">Confirm Property Analysis</h2>
+          <p class="text-gray-600">Review the property details before we analyze the investment potential</p>
+        </div>
+        
+        <div class="space-y-4">
+          <!-- Property Address -->
+          <div class="bg-gray-50 rounded-lg p-4">
+            <h3 class="text-sm font-medium text-gray-700 mb-2">Property Address</h3>
+            <p id="confirm-address" class="text-lg font-semibold text-gray-900"></p>
+          </div>
+          
+          <!-- Property Details Grid -->
+          <div class="grid grid-cols-2 gap-4">
+            <div class="bg-gray-50 rounded-lg p-4">
+              <h3 class="text-sm font-medium text-gray-700 mb-1">Listing Price</h3>
+              <p id="confirm-price" class="text-xl font-bold text-green-600"></p>
+            </div>
+            <div class="bg-gray-50 rounded-lg p-4">
+              <h3 class="text-sm font-medium text-gray-700 mb-1">Property Taxes</h3>
+              <p id="confirm-taxes" class="text-xl font-bold text-gray-900"></p>
+            </div>
+            <div class="bg-gray-50 rounded-lg p-4">
+              <h3 class="text-sm font-medium text-gray-700 mb-1">Bedrooms</h3>
+              <p id="confirm-bedrooms" class="text-xl font-bold text-gray-900"></p>
+            </div>
+            <div class="bg-gray-50 rounded-lg p-4">
+              <h3 class="text-sm font-medium text-gray-700 mb-1">Bathrooms</h3>
+              <p id="confirm-bathrooms" class="text-xl font-bold text-gray-900"></p>
+            </div>
+            <div class="bg-gray-50 rounded-lg p-4">
+              <h3 class="text-sm font-medium text-gray-700 mb-1">Square Feet</h3>
+              <p id="confirm-sqft" class="text-xl font-bold text-gray-900"></p>
+            </div>
+            <div class="bg-gray-50 rounded-lg p-4">
+              <h3 class="text-sm font-medium text-gray-700 mb-1">Property Type</h3>
+              <p id="confirm-type" class="text-xl font-bold text-gray-900"></p>
+            </div>
+          </div>
+          
+          <!-- Condo Fees (if applicable) -->
+          <div id="confirm-condo-section" class="bg-yellow-50 rounded-lg p-4" style="display: none;">
+            <h3 class="text-sm font-medium text-yellow-800 mb-1">Monthly Condo Fees</h3>
+            <p id="confirm-condo-fees" class="text-xl font-bold text-yellow-800"></p>
+          </div>
+          
+          <!-- MLS Number -->
+          <div class="text-center text-sm text-gray-500">
+            MLS® Number: <span id="confirm-mls" class="font-medium"></span>
+          </div>
+        </div>
+        
+        <!-- Action Buttons -->
+        <div class="flex gap-4 mt-8">
+          <button id="cancel-analysis-btn" class="flex-1 btn-secondary">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+            </svg>
+            Cancel
+          </button>
+          <button id="confirm-analysis-btn" class="flex-1 btn-primary">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+            </svg>
+            Analyze Investment
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Analysis Results Screen -->
   <div id="results-screen" class="min-h-screen bg-gray-50" style="display: none;">
     <!-- Header -->
@@ -829,11 +909,7 @@
                 const isFromExtension = urlParams.get('fromExtension') === 'true';
                 
                 if (isFromExtension) {
-                  console.log('[StarterPack] Coming from extension, starting direct analysis');
-                  
-                  // Show loading screen with analysis message
-                  document.getElementById('loading-message').textContent = 'Analyzing property from Realtor.ca...';
-                  showView('loading');
+                  console.log('[StarterPack] Coming from extension, preparing confirmation');
                   
                   // Parse city to remove province if included
                   let city = urlParams.get('city') || '';
@@ -863,50 +939,13 @@
                     propertyType: urlParams.get('propertyType') || ''
                   };
                   
-                  console.log('[StarterPack] Property data from extension:', propertyData);
+                  // Store property data for later use
+                  window.pendingPropertyData = propertyData;
                   
-                  try {
-                    // Format full address
-                    const fullAddress = `${address.street}, ${address.city}, ${address.state}, ${address.country} ${address.postal}`.trim();
-                    
-                    // Call enhanced API directly with all property data
-                    const response = await fetch('/api/analyze-property-enhanced', {
-                      method: 'POST',
-                      headers: {
-                        'Content-Type': 'application/json'
-                      },
-                      body: JSON.stringify({
-                        userId: currentUser.uid,
-                        propertyAddress: fullAddress,
-                        userEmail: currentUser.email,
-                        userName: currentUser.displayName,
-                        requestType: 'authenticated',
-                        includeStrAnalysis: false // Default to false for now
-                      })
-                    });
-                    
-                    if (!response.ok) {
-                      throw new Error('Analysis API request failed');
-                    }
-                    
-                    const result = await response.json();
-                    console.log('Analysis result:', result);
-                    
-                    if (result.success && result.data) {
-                      // Display results directly
-                      displayResults(result.data);
-                      showView('results');
-                      
-                      // Reload user analyses to update the dashboard
-                      await loadUserAnalyses();
-                    } else {
-                      throw new Error(result.error || 'Analysis failed');
-                    }
-                  } catch (error) {
-                    console.error('Direct analysis error:', error);
-                    alert('Failed to analyze property: ' + error.message);
-                    showView('dashboard');
-                  }
+                  // Show property confirmation screen
+                  showPropertyConfirmation(propertyData);
+                  
+                  console.log('[StarterPack] Property data from extension:', propertyData);
                 } else {
                   showView('dashboard');
                   loadUserAnalyses();
@@ -1039,6 +1078,45 @@
       }
     }
 
+    // Show property confirmation screen
+    function showPropertyConfirmation(propertyData) {
+      // Format currency
+      const formatCurrency = (value) => {
+        return new Intl.NumberFormat('en-CA', {
+          style: 'currency',
+          currency: 'CAD',
+          minimumFractionDigits: 0,
+          maximumFractionDigits: 0
+        }).format(value);
+      };
+      
+      // Format address
+      const fullAddress = `${propertyData.address.street}, ${propertyData.address.city}, ${propertyData.address.state} ${propertyData.address.postal}`;
+      document.getElementById('confirm-address').textContent = fullAddress;
+      
+      // Set property details
+      document.getElementById('confirm-price').textContent = formatCurrency(propertyData.price);
+      document.getElementById('confirm-taxes').textContent = propertyData.propertyTaxes ? 
+        `${formatCurrency(propertyData.propertyTaxes)}/year` : 'Not available';
+      document.getElementById('confirm-bedrooms').textContent = propertyData.bedrooms || 'N/A';
+      document.getElementById('confirm-bathrooms').textContent = propertyData.bathrooms || 'N/A';
+      document.getElementById('confirm-sqft').textContent = propertyData.sqft ? 
+        `${propertyData.sqft.toLocaleString()} sq ft` : 'Not available';
+      document.getElementById('confirm-type').textContent = propertyData.propertyType || 'Residential';
+      document.getElementById('confirm-mls').textContent = propertyData.mlsNumber || 'N/A';
+      
+      // Show condo fees if applicable
+      if (propertyData.condoFees && propertyData.condoFees > 0) {
+        document.getElementById('confirm-condo-section').style.display = 'block';
+        document.getElementById('confirm-condo-fees').textContent = `${formatCurrency(propertyData.condoFees)}/month`;
+      } else {
+        document.getElementById('confirm-condo-section').style.display = 'none';
+      }
+      
+      // Show confirmation screen
+      showView('confirmation');
+    }
+    
     // Show specific view
     function showView(viewName) {
       console.log('Showing view:', viewName);
@@ -1048,6 +1126,7 @@
       document.getElementById('auth-screen').style.display = 'none';
       document.getElementById('dashboard-screen').style.display = 'none';
       document.getElementById('property-form-screen').style.display = 'none';
+      document.getElementById('confirmation-screen').style.display = 'none';
       document.getElementById('results-screen').style.display = 'none';
       
       // Show target screen
@@ -1063,6 +1142,9 @@
         case 'property-form':
           document.getElementById('property-form-screen').style.display = 'flex';
           updateStrTrialInfo();
+          break;
+        case 'confirmation':
+          document.getElementById('confirmation-screen').style.display = 'flex';
           break;
         case 'results':
           document.getElementById('results-screen').style.display = 'block';
@@ -2020,6 +2102,73 @@
       // Back to dashboard
       document.getElementById('back-to-dashboard').addEventListener('click', function() {
         showView('dashboard');
+      });
+      
+      // Confirmation screen buttons
+      document.getElementById('cancel-analysis-btn').addEventListener('click', function() {
+        // Go back to dashboard
+        showView('dashboard');
+        // Clear the URL parameters
+        const newUrl = window.location.pathname;
+        window.history.replaceState({}, document.title, newUrl);
+      });
+      
+      document.getElementById('confirm-analysis-btn').addEventListener('click', async function() {
+        try {
+          // Show loading screen
+          document.getElementById('loading-message').textContent = 'Analyzing investment potential...';
+          showView('loading');
+          
+          // Get the stored property data
+          const propertyData = window.pendingPropertyData;
+          if (!propertyData) {
+            throw new Error('No property data found');
+          }
+          
+          // Format full address
+          const fullAddress = `${propertyData.address.street}, ${propertyData.address.city}, ${propertyData.address.state}, ${propertyData.address.country} ${propertyData.address.postal}`.trim();
+          
+          // Call enhanced API with property data
+          const response = await fetch('/api/analyze-property-enhanced', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              userId: currentUser.uid,
+              propertyAddress: fullAddress,
+              userEmail: currentUser.email,
+              userName: currentUser.displayName,
+              requestType: 'authenticated',
+              includeStrAnalysis: false // Default to false for now
+            })
+          });
+          
+          if (!response.ok) {
+            throw new Error('Analysis API request failed');
+          }
+          
+          const result = await response.json();
+          console.log('Analysis result:', result);
+          
+          if (result.success && result.data) {
+            // Display results
+            displayResults(result.data);
+            showView('results');
+            
+            // Reload user analyses to update the dashboard
+            await loadUserAnalyses();
+            
+            // Clear the stored property data
+            window.pendingPropertyData = null;
+          } else {
+            throw new Error(result.error || 'Analysis failed');
+          }
+        } catch (error) {
+          console.error('Analysis error:', error);
+          alert('Failed to analyze property: ' + error.message);
+          showView('dashboard');
+        }
       });
 
       // Property form
