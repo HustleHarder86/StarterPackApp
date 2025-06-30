@@ -34,7 +34,38 @@ async function checkAuthStatus() {
       return;
     }
 
-    const { authToken } = await chrome.storage.local.get('authToken');
+    // First check if we can get auth from the main app via localStorage
+    // This works when both are on the same domain
+    let authToken = null;
+    let userData = null;
+    
+    try {
+      // Try to access the main app's localStorage through a content script
+      const tabs = await chrome.tabs.query({ url: 'https://starterpackapp.vercel.app/*' });
+      if (tabs.length > 0) {
+        const result = await chrome.tabs.sendMessage(tabs[0].id, {
+          action: 'getAuthFromLocalStorage'
+        });
+        if (result && result.token) {
+          authToken = result.token;
+          userData = result.user;
+          // Store in extension storage
+          await chrome.storage.local.set({ 
+            authToken: authToken,
+            userData: userData 
+          });
+        }
+      }
+    } catch (e) {
+      console.log('Could not get auth from main app tab');
+    }
+    
+    // Fall back to stored token
+    if (!authToken) {
+      const stored = await chrome.storage.local.get(['authToken', 'userData']);
+      authToken = stored.authToken;
+      userData = stored.userData;
+    }
     
     if (!authToken) {
       showState('login');

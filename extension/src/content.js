@@ -7,7 +7,7 @@ function extractPropertyData() {
     // Check if we're on a property details page
     // Updated to handle all property types (house, condo, townhouse, etc.)
     const isPropertyPage = window.location.pathname.includes('/real-estate/') && 
-                          window.location.pathname.match(//(house|condo|townhouse|apartment|property|mls-[a-zA-Z0-9]+)($|\?|#)/);
+                          window.location.pathname.match(/(house|condo|townhouse|apartment|property|mls-[a-zA-Z0-9]+)($|\?|#)/);
     
     if (!isPropertyPage) {
       return null;

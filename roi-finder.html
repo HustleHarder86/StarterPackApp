@@ -714,8 +714,37 @@
             currentUser = user;
             userProfile = await loadUserProfile(user.uid);
             
-            // Check if viewing a specific analysis
+            // Send auth token to extension if present
             const urlParams = new URLSearchParams(window.location.search);
+            const fromExtension = urlParams.get('extension');
+            if (fromExtension === 'true') {
+              try {
+                const token = await user.getIdToken();
+                // Send message to extension
+                if (window.opener) {
+                  window.opener.postMessage({
+                    type: 'AUTH_TOKEN_UPDATE',
+                    token: token,
+                    user: {
+                      uid: user.uid,
+                      email: user.email,
+                      displayName: user.displayName
+                    }
+                  }, '*');
+                }
+                // Also store in local storage for extension access
+                localStorage.setItem('starterpack_auth_token', token);
+                localStorage.setItem('starterpack_user', JSON.stringify({
+                  uid: user.uid,
+                  email: user.email,
+                  displayName: user.displayName
+                }));
+              } catch (error) {
+                console.error('Failed to send token to extension:', error);
+              }
+            }
+            
+            // Check if viewing a specific analysis
             const viewId = urlParams.get('view');
             if (viewId) {
               await loadAnalysisById(viewId);

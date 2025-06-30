@@ -21,6 +21,11 @@
       "js": ["src/content.js"],
       "css": ["src/content.css"],
       "run_at": "document_idle"
+    },
+    {
+      "matches": ["https://starterpackapp.vercel.app/*"],
+      "js": ["src/app-content.js"],
+      "run_at": "document_idle"
     }
   ],
   "action": {
