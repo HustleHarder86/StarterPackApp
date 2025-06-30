@@ -67,7 +67,8 @@ async function handlePropertyAnalysis(propertyData) {
     if (propertyData.condoFees) queryParams.set('condoFees', propertyData.condoFees);
     if (propertyData.mainImage) {
       console.log('[StarterPack] Encoding image URL, length:', propertyData.mainImage.length);
-      queryParams.set('image', encodeURIComponent(propertyData.mainImage));
+      // Don't encode - URLSearchParams will handle it
+      queryParams.set('image', propertyData.mainImage);
     }
     
     queryParams.set('fromExtension', 'true');

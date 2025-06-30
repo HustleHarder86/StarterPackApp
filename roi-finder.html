@@ -942,16 +942,17 @@
                     condoFees: parseInt(urlParams.get('condoFees')) || 0,
                     mlsNumber: urlParams.get('mlsNumber') || '',
                     propertyType: urlParams.get('propertyType') || '',
-                    mainImage: urlParams.get('image') ? decodeURIComponent(urlParams.get('image')) : null
+                    mainImage: urlParams.get('image') || null
                   };
                   
                   // Store property data for later use
                   window.pendingPropertyData = propertyData;
                   
+                  console.log('[StarterPack] Property data from extension:', propertyData);
+                  console.log('[StarterPack] Image URL from params:', propertyData.mainImage);
+                  
                   // Show property confirmation screen
                   showPropertyConfirmation(propertyData);
-                  
-                  console.log('[StarterPack] Property data from extension:', propertyData);
                 } else {
                   showView('dashboard');
                   loadUserAnalyses();
