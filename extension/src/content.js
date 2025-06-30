@@ -14,22 +14,21 @@ function extractPropertyData() {
       return null;
     }
     
-    console.log('[StarterPack] Extracting property data from:', window.location.href);
+    console.log('[StarterPack] Extracting comprehensive property data from:', window.location.href);
 
-    // Extract data from the page
     const propertyData = {
       source: 'realtor.ca',
       url: window.location.href,
       extractedAt: new Date().toISOString(),
       
-      // MLS Number - try multiple selectors
-      mlsNumber: document.querySelector('[data-testid="listingIDValue"]')?.textContent?.trim() || 
-                 document.querySelector('.listingIdValue')?.textContent?.trim() ||
-                 document.querySelector('[class*="listingId"]')?.textContent?.trim() ||
-                 extractMLSFromURL(),
+      // MLS Number
+      mlsNumber: extractMLSNumber(),
       
-      // Price
+      // Price and financial
       price: extractPrice(),
+      pricePerSqft: 0,
+      propertyTaxes: extractPropertyTaxes(),
+      condoFees: extractCondoFees(),
       
       // Address components
       address: extractAddress(),
@@ -38,21 +37,40 @@ function extractPropertyData() {
       bedrooms: extractBedrooms(),
       bathrooms: extractBathrooms(),
       sqft: extractSquareFootage(),
+      lotSize: extractLotSize(),
       propertyType: extractPropertyType(),
+      style: extractBuildingStyle(),
       yearBuilt: extractYearBuilt(),
       
-      // Financial details
-      taxes: extractPropertyTaxes(),
-      condoFees: extractCondoFees(),
+      // Features
+      parking: extractParking(),
+      garage: extractGarage(),
+      basement: extractBasement(),
+      heating: extractHeating(),
+      cooling: extractCooling(),
+      appliances: extractAppliances(),
       
-      // Additional details
-      description: document.querySelector('[data-testid="listingDescription"]')?.textContent?.trim() ||
-                  document.querySelector('.propertyDescriptionText')?.textContent?.trim(),
+      // Building info (for condos)
+      buildingAmenities: extractBuildingAmenities(),
       
-      // Raw listing data for backup
-      rawHtml: document.querySelector('.listingDetailsContainer')?.innerHTML
+      // Listing details
+      daysOnMarket: extractDaysOnMarket(),
+      virtualTour: hasVirtualTour(),
+      
+      // Description and neighborhood
+      description: extractDescription(),
+      neighborhood: extractNeighborhood(),
+      
+      // All text for AI analysis
+      allTextContent: extractAllText()
     };
-
+    
+    // Calculate price per sqft
+    if (propertyData.price && propertyData.sqft) {
+      propertyData.pricePerSqft = Math.round(propertyData.price / propertyData.sqft);
+    }
+    
+    console.log('[StarterPack] Comprehensive extraction complete:', propertyData);
     return propertyData;
   } catch (error) {
     console.error('Error extracting property data:', error);
@@ -206,16 +224,53 @@ function extractYearBuilt() {
 }
 
 function extractPropertyTaxes() {
-  const taxElement = Array.from(document.querySelectorAll('*'))
-    .find(el => el.textContent.match(/tax(es)?.*\$[\d,]+/i));
-  
-  if (taxElement) {
-    const match = taxElement.textContent.match(/\$?([\d,]+)/);
-    if (match) {
-      return parseInt(match[1].replace(/,/g, ''));
+  try {
+    // Method 1: Look in property details table
+    const tables = document.querySelectorAll('.propertyDetailsSectionContentSubCon, #propertyDetailsSectionContentSubCon, table');
+    for (const table of tables) {
+      const rows = table.querySelectorAll('tr');
+      for (const row of rows) {
+        const cells = row.querySelectorAll('td');
+        if (cells.length >= 2) {
+          const label = cells[0]?.textContent?.trim().toLowerCase() || '';
+          const value = cells[1]?.textContent?.trim() || '';
+          
+          if (label.includes('annual property tax') || label.includes('property tax')) {
+            const taxAmount = parseInt(value.replace(/[^0-9]/g, '')) || 0;
+            if (taxAmount > 0) {
+              console.log('[StarterPack] Found property taxes in table:', taxAmount);
+              return taxAmount;
+            }
+          }
+        }
+      }
     }
+    
+    // Method 2: Search for specific text patterns
+    const taxPatterns = [
+      /annual\s+property\s+tax[:\s]+\$?([\d,]+)/i,
+      /property\s+tax[:\s]+\$?([\d,]+)/i,
+      /taxes[:\s]+\$?([\d,]+)\s*\/\s*year/i,
+      /taxes[:\s]+\$?([\d,]+)/i
+    ];
+    
+    const allText = document.body.innerText;
+    for (const pattern of taxPatterns) {
+      const match = allText.match(pattern);
+      if (match && match[1]) {
+        const amount = parseInt(match[1].replace(/,/g, ''));
+        if (amount > 0 && amount < 100000) { // Sanity check
+          console.log('[StarterPack] Found property taxes via pattern:', amount);
+          return amount;
+        }
+      }
+    }
+    
+    console.log('[StarterPack] No property taxes found');
+  } catch (e) {
+    console.error('[StarterPack] Error extracting property taxes:', e);
   }
-  return null;
+  return 0;
 }
 
 function extractCondoFees() {
@@ -290,6 +345,125 @@ function addAnalyzeButton() {
   } else {
     console.log('[StarterPack] Could not find suitable container for button');
   }
+}
+
+// New extraction functions for comprehensive data
+function extractMLSNumber() {
+  // Try URL first
+  const urlMatch = window.location.pathname.match(/mls-([a-zA-Z0-9]+)/);
+  if (urlMatch) return urlMatch[1];
+  
+  // Try page content
+  const mlsElement = Array.from(document.querySelectorAll('*')).find(el => 
+    el.textContent.match(/MLS®?\s*Number:?\s*([A-Z0-9]+)/i)
+  );
+  if (mlsElement) {
+    const match = mlsElement.textContent.match(/MLS®?\s*Number:?\s*([A-Z0-9]+)/i);
+    return match ? match[1] : '';
+  }
+  return '';
+}
+
+function extractLotSize() {
+  const patterns = [/lot\s+size[:\s]+([\d,.]+ x [\d,.]+|[\d,.]+ sq\.? ?ft)/i];
+  const text = document.body.innerText;
+  for (const pattern of patterns) {
+    const match = text.match(pattern);
+    if (match) return match[1];
+  }
+  return '';
+}
+
+function extractBuildingStyle() {
+  const stylePatterns = ['detached', 'semi-detached', 'attached', 'townhouse', 'condo', 'apartment'];
+  const text = document.body.innerText.toLowerCase();
+  for (const style of stylePatterns) {
+    if (text.includes(style)) return style;
+  }
+  return '';
+}
+
+function extractParking() {
+  const parkingElement = Array.from(document.querySelectorAll('*')).find(el => 
+    el.textContent.match(/parking[:\s]+(.*?)(?:\.|,|$)/i)
+  );
+  if (parkingElement) {
+    const match = parkingElement.textContent.match(/parking[:\s]+(.*?)(?:\.|,|$)/i);
+    return match ? match[1].trim() : '';
+  }
+  return '';
+}
+
+function extractGarage() {
+  const text = document.body.innerText;
+  const match = text.match(/garage[:\s]+(.*?)(?:\.|,|$)/i);
+  return match ? match[1].trim() : '';
+}
+
+function extractBasement() {
+  const text = document.body.innerText;
+  const match = text.match(/basement[:\s]+(.*?)(?:\.|,|$)/i);
+  return match ? match[1].trim() : '';
+}
+
+function extractHeating() {
+  const text = document.body.innerText;
+  const match = text.match(/heating[:\s]+(.*?)(?:\.|,|$)/i);
+  return match ? match[1].trim() : '';
+}
+
+function extractCooling() {
+  const text = document.body.innerText;
+  const match = text.match(/(cooling|air conditioning)[:\s]+(.*?)(?:\.|,|$)/i);
+  return match ? match[2].trim() : '';
+}
+
+function extractAppliances() {
+  const applianceKeywords = ['refrigerator', 'fridge', 'stove', 'dishwasher', 'washer', 'dryer', 'microwave'];
+  const found = [];
+  const text = document.body.innerText.toLowerCase();
+  for (const appliance of applianceKeywords) {
+    if (text.includes(appliance)) found.push(appliance);
+  }
+  return found;
+}
+
+function extractBuildingAmenities() {
+  const amenityKeywords = ['pool', 'gym', 'fitness', 'concierge', 'security', 'elevator', 'party room', 'sauna'];
+  const found = [];
+  const text = document.body.innerText.toLowerCase();
+  for (const amenity of amenityKeywords) {
+    if (text.includes(amenity)) found.push(amenity);
+  }
+  return found;
+}
+
+function extractDaysOnMarket() {
+  const text = document.body.innerText;
+  const match = text.match(/time on realtor\.ca[:\s]+(\d+)\s*days?/i);
+  return match ? parseInt(match[1]) : 0;
+}
+
+function hasVirtualTour() {
+  return !!document.querySelector('[class*="virtual-tour"], [class*="3d-tour"], [class*="video-tour"]');
+}
+
+function extractDescription() {
+  const descElement = document.querySelector('.listingDescriptionCon, [class*="description"]');
+  return descElement ? descElement.textContent.trim() : '';
+}
+
+function extractNeighborhood() {
+  const neighborhoodElement = document.querySelector('[class*="neighbourhood"], [class*="neighborhood"]');
+  return neighborhoodElement ? neighborhoodElement.textContent.trim() : '';
+}
+
+function extractAllText() {
+  const mainContent = document.querySelector('.listingDetailsCon, .propertyDetailsCon, main');
+  if (mainContent) {
+    return mainContent.textContent.replace(/\s+/g, ' ').trim().substring(0, 10000); // Limit to 10k chars
+  }
+  return '';
 }
 
 // Handle analyze button click

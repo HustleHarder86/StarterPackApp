@@ -81,8 +81,22 @@ export default async function handler(req, res) {
     if (propertyData.sqft) queryParams.set('sqft', propertyData.sqft);
     if (propertyData.propertyType) queryParams.set('propertyType', propertyData.propertyType);
     if (propertyData.yearBuilt) queryParams.set('yearBuilt', propertyData.yearBuilt);
-    if (propertyData.taxes) queryParams.set('taxes', propertyData.taxes);
+    if (propertyData.propertyTaxes) queryParams.set('taxes', propertyData.propertyTaxes);
     if (propertyData.condoFees) queryParams.set('condoFees', propertyData.condoFees);
+    
+    // Add additional extracted data
+    if (propertyData.lotSize) queryParams.set('lotSize', propertyData.lotSize);
+    if (propertyData.parking) queryParams.set('parking', propertyData.parking);
+    if (propertyData.heating) queryParams.set('heating', propertyData.heating);
+    if (propertyData.cooling) queryParams.set('cooling', propertyData.cooling);
+    if (propertyData.basement) queryParams.set('basement', propertyData.basement);
+    if (propertyData.garage) queryParams.set('garage', propertyData.garage);
+    if (propertyData.daysOnMarket) queryParams.set('daysOnMarket', propertyData.daysOnMarket);
+    
+    // Store full data in temporary storage for AI analysis
+    const fullDataKey = `property_${Date.now()}_${Math.random().toString(36).substring(7)}`;
+    // In production, this would be stored in a database or cache
+    console.log('Full property data for AI analysis:', propertyData);
     
     // Mark as from extension
     queryParams.set('fromExtension', 'true');
