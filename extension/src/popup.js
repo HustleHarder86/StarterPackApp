@@ -84,15 +84,28 @@ async function checkAuthStatus() {
       throw new Error('Invalid session');
     }
 
-    const userData = await response.json();
-    currentUser = userData.user;
+    const responseData = await response.json();
+    currentUser = responseData.user;
+    
+    // Update stored user data
+    if (currentUser) {
+      await chrome.storage.local.set({ 
+        userData: currentUser 
+      });
+    }
     
     updateUserInterface();
     showState('loggedIn');
   } catch (error) {
     console.error('Auth check failed:', error);
-    await chrome.storage.local.remove('authToken');
-    showState('login');
+    await chrome.storage.local.remove(['authToken', 'userData']);
+    
+    // If it's a network error, show error state
+    if (error.message.includes('fetch')) {
+      showError('Network error. Please check your connection.');
+    } else {
+      showState('login');
+    }
   }
 }
 
