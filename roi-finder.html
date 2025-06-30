@@ -846,67 +846,9 @@
               }
             }
             
-            // Check if coming from extension with property data
-            const isFromExtension = urlParams.get('fromExtension') === 'true';
-            if (isFromExtension) {
-              console.log('[StarterPack] Pre-filling form with extension data');
-              
-              // Pre-fill form with URL parameters
-              setTimeout(() => {
-                // Address fields
-                if (urlParams.get('street')) document.getElementById('street').value = urlParams.get('street');
-                if (urlParams.get('city')) document.getElementById('city').value = urlParams.get('city');
-                if (urlParams.get('state')) document.getElementById('state').value = urlParams.get('state');
-                if (urlParams.get('country')) document.getElementById('country').value = urlParams.get('country') || 'Canada';
-                if (urlParams.get('postal')) document.getElementById('postal').value = urlParams.get('postal');
-                
-                // Property details
-                if (urlParams.get('price')) {
-                  const priceField = document.getElementById('purchase-price');
-                  if (priceField) priceField.value = urlParams.get('price');
-                }
-                if (urlParams.get('bedrooms')) {
-                  const bedroomsField = document.getElementById('bedrooms');
-                  if (bedroomsField) bedroomsField.value = urlParams.get('bedrooms');
-                }
-                if (urlParams.get('bathrooms')) {
-                  const bathroomsField = document.getElementById('bathrooms');
-                  if (bathroomsField) bathroomsField.value = urlParams.get('bathrooms');
-                }
-                if (urlParams.get('sqft')) {
-                  const sqftField = document.getElementById('sqft');
-                  if (sqftField) sqftField.value = urlParams.get('sqft');
-                }
-                if (urlParams.get('taxes')) {
-                  const taxesField = document.getElementById('property-taxes');
-                  if (taxesField) taxesField.value = urlParams.get('taxes');
-                }
-                if (urlParams.get('condoFees')) {
-                  const condoFeesField = document.getElementById('condo-fees');
-                  if (condoFeesField) condoFeesField.value = urlParams.get('condoFees');
-                }
-                
-                // Show the property form
-                showView('property-form');
-                
-                // Auto-analyze if requested
-                if (urlParams.get('autoAnalyze') === 'true') {
-                  console.log('[StarterPack] Auto-analyze requested');
-                  // Give form time to render, then trigger analysis
-                  setTimeout(() => {
-                    const analyzeBtn = document.querySelector('#property-form button[type="submit"]');
-                    if (analyzeBtn) {
-                      console.log('[StarterPack] Triggering auto-analysis');
-                      // analyzeBtn.click(); // Uncomment to auto-submit
-                    }
-                  }, 1000);
-                }
-              }, 500);
-              
-            } else {
-              // Check if viewing a specific analysis
-              const viewId = urlParams.get('view');
-              if (viewId) {
+            // Check if viewing a specific analysis
+            const viewId = urlParams.get('view');
+            if (viewId) {
                 await loadAnalysisById(viewId);
               } else {
                 // Check if coming from extension
