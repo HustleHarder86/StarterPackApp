@@ -108,12 +108,29 @@ function extractPrice() {
     for (const selector of selectors) {
       const priceElement = document.querySelector(selector);
       if (priceElement && priceElement.textContent) {
-        const priceText = priceElement.textContent;
-        const price = priceText.replace(/[^0-9]/g, '');
-        const priceNum = parseInt(price);
-        if (!isNaN(priceNum) && priceNum > 0) {
-          console.log('[StarterPack] Found price:', priceNum, 'from selector:', selector);
-          return priceNum;
+        const priceText = priceElement.textContent.trim();
+        console.log('[StarterPack] Price text found:', priceText, 'from selector:', selector);
+        
+        // Extract price more carefully - look for dollar sign and number pattern
+        const priceMatch = priceText.match(/\$([0-9,]+)/);
+        if (priceMatch) {
+          const price = priceMatch[1].replace(/,/g, '');
+          const priceNum = parseInt(price);
+          if (!isNaN(priceNum) && priceNum > 10000 && priceNum < 100000000) {
+            console.log('[StarterPack] Extracted price:', priceNum);
+            return priceNum;
+          }
+        }
+        
+        // Fallback: if no $ sign, try to extract just numbers with commas
+        const fallbackMatch = priceText.match(/([0-9]{1,3}(?:,[0-9]{3})+)/);
+        if (fallbackMatch) {
+          const price = fallbackMatch[1].replace(/,/g, '');
+          const priceNum = parseInt(price);
+          if (!isNaN(priceNum) && priceNum > 10000 && priceNum < 100000000) {
+            console.log('[StarterPack] Extracted price (fallback):', priceNum);
+            return priceNum;
+          }
         }
       }
     }
