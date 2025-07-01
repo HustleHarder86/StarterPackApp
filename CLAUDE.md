@@ -51,8 +51,21 @@ This workflow ensures:
 
 **StarterPackApp** is an advanced real estate investment analysis SaaS platform that helps investors make data-driven decisions. The platform combines traditional rental analysis with short-term rental (Airbnb) projections, automated property data extraction via browser extension, and professional reporting capabilities.
 
+### 🎯 CORE PRINCIPLE: Use Real Listing Data
+
+**CRITICAL**: This application's PRIMARY PURPOSE is to extract and use ACTUAL data from property listings, NOT estimates or calculations. When making any changes:
+
+1. **Always Prioritize Actual Data**: If the browser extension provides data (price, taxes, square footage, etc.), ALWAYS use it over any calculated or estimated values
+2. **Never Override Real Data**: The system should NEVER replace actual listing data with estimates or "corrections"
+3. **Preserve Data Integrity**: Pass all extracted data through the entire pipeline (extension → API → analysis)
+4. **Debug Missing Data**: If data is missing, improve extraction - don't just estimate
+5. **Clear Data Source Tracking**: Always indicate whether data is from listing (actual) or estimated
+
+Example: If a listing shows $5,490 in property taxes, use $5,490 - NOT a calculated estimate based on property value.
+
 ### Key Platform Features
-- **Browser Extension Integration**: One-click property analysis from Realtor.ca listings
+- **Browser Extension Integration**: One-click property analysis from Realtor.ca listings with comprehensive data extraction
+- **Real Data Extraction**: Captures actual listing data including price, taxes, square footage, bedrooms, bathrooms, HOA fees
 - **Dual Analysis Modes**: Traditional long-term rental AND short-term rental (STR) analysis
 - **AI-Powered Insights**: Market research via Perplexity AI with intelligent recommendations
 - **Professional Reports**: PDF generation with comprehensive investment metrics
@@ -385,11 +398,16 @@ Provide:
     postalCode: string
   },
   listingData: object,         // Full Realtor.ca JSON
-  price: number,
-  bedrooms: number,
-  bathrooms: number,
-  sqft: number,
-  propertyType: string,
+  price: number,               // ACTUAL from listing
+  propertyTaxes: number,       // ACTUAL from listing (annual)
+  condoFees: number,           // ACTUAL from listing (monthly)
+  bedrooms: number,            // ACTUAL from listing
+  bathrooms: number,           // ACTUAL from listing
+  sqft: number,                // ACTUAL from listing
+  propertyType: string,        // ACTUAL from listing
+  yearBuilt: number,           // ACTUAL from listing if available
+  mainImage: string,           // URL of property image
+  dataSource: 'listing',       // Always 'listing' for extension data
   createdAt: timestamp,
   lastAnalyzed: timestamp
 }
@@ -399,6 +417,14 @@ Provide:
   userId: string,
   propertyId: string,
   analysisType: 'traditional' | 'str' | 'combined',
+  costs: {
+    property_tax_annual: number,     // From listing or calculated
+    insurance_annual: number,
+    maintenance_annual: number,
+    hoa_monthly: number,             // From listing or estimated
+    utilities_monthly: number,
+    calculation_method: string       // 'actual_data' | 'comparable_data' | 'location_based_accurate'
+  },
   longTermRental: {
     monthlyRent: number,        // AI-discovered from Perplexity
     rentRange: {
@@ -410,7 +436,8 @@ Provide:
     cashFlow: number,
     capRate: number,
     roi: number,
-    expenses: object
+    expenses: object,
+    dataSource: string          // 'actual_listing' or 'ai_estimated'
   },
   strAnalysis: {              // Pro feature only
     avgNightlyRate: number,
@@ -720,17 +747,44 @@ This allows Claude to debug visual UI issues without human intervention!
 6. Cache results for 24 hours
 7. Display comparables with source links
 
+## Recent Major Enhancements (2024-2025)
+
+### Browser Extension Data Extraction
+- **Comprehensive Property Data**: Extracts price, taxes, square footage, bedrooms, bathrooms, HOA fees, property type, MLS number
+- **Property Images**: Captures main listing image for visual confirmation
+- **Smart Extraction**: Multiple fallback patterns for each data field
+- **Debug Tools**: Console logging summary and optional debug panel (?debug=true)
+
+### Data Integrity Improvements
+- **Actual vs Estimated**: System now respects actual listing data and never overrides with estimates
+- **Property Tax Fix**: Uses exact tax amounts from listings (e.g., $5,490) instead of calculated values
+- **Data Pipeline**: propertyData passes through: extension → roi-finder.html → API → analysis
+- **Calculation Method Tracking**: Marks data as 'actual_data' when from listing vs 'estimated'
+
+### Enhanced Extraction Patterns
+- **Square Footage**: Multiple regex patterns, text node searching, table parsing
+- **Property Taxes**: Table cell extraction, multiple text patterns
+- **Condo/HOA Fees**: Support for various fee types (maintenance, strata, HOA)
+- **Logging**: Comprehensive extraction summary shows what was found/missing
+
+### API Enhancements
+- **Property Data Handling**: buildStructuredData and fallbackDataExtraction now accept propertyData
+- **Data Preservation**: ensureCalculations respects actual data, doesn't "correct" it
+- **Debug Logging**: Detailed logging of all received property data fields
+
 ## Project-Specific Rules
 
 1. **Real Estate Focus**: All features should relate to property investment analysis
-2. **Canadian Market Priority**: Optimize for Canadian real estate (taxes, regulations, currency)
-3. **User Experience**: Prioritize speed and simplicity in the interface
-4. **Data Accuracy**: When using AI APIs, always validate and cross-reference data
-5. **Cost Efficiency**: Monitor API usage to control costs (especially Airbnb API)
-6. **Mobile First**: Ensure all features work well on mobile devices
-7. **Subscription Enforcement**: Enforce tier limits (STR trial for free users, unlimited for Pro)
-8. **Privacy Compliance**: Follow Canadian privacy laws (PIPEDA)
-9. **Trial Experience**: Give free users 5 STR analyses to experience full value before upgrading
+2. **Real Listing Data First**: ALWAYS use actual data from listings over any estimates or calculations
+3. **Canadian Market Priority**: Optimize for Canadian real estate (taxes, regulations, currency)
+4. **User Experience**: Prioritize speed and simplicity in the interface
+5. **Data Accuracy**: When using AI APIs, always validate and cross-reference data
+6. **Cost Efficiency**: Monitor API usage to control costs (especially Airbnb API)
+7. **Mobile First**: Ensure all features work well on mobile devices
+8. **Subscription Enforcement**: Enforce tier limits (STR trial for free users, unlimited for Pro)
+9. **Privacy Compliance**: Follow Canadian privacy laws (PIPEDA)
+10. **Trial Experience**: Give free users 5 STR analyses to experience full value before upgrading
+11. **Data Extraction Priority**: If data extraction fails, fix the extraction - don't just provide estimates
 
 ## Implementation Phases
 

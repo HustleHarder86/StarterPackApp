@@ -2,6 +2,10 @@
 
 A sophisticated real estate investment analysis SaaS platform that combines AI-powered property analysis with automated data extraction from property listings. Features both traditional rental and short-term rental (Airbnb) analysis with professional reporting.
 
+## 🎯 Core Principle: Real Listing Data First
+
+This platform prioritizes **ACTUAL data from property listings** over estimates or calculations. The browser extension extracts real data (price, taxes, square footage, etc.) directly from Realtor.ca listings, ensuring accurate investment analysis based on facts, not approximations.
+
 ## 🚀 Key Features
 
 ### Core Features
@@ -9,7 +13,7 @@ A sophisticated real estate investment analysis SaaS platform that combines AI-p
 - 📊 **Comprehensive Dashboard** - Track all property analyses and portfolio performance
 - 🌍 **Canadian Market Focus** - Optimized for Canadian real estate with international support
 - 🤖 **AI-Powered Analysis** - Perplexity AI for market research + intelligent recommendations
-- 🏠 **Browser Extension** - One-click analysis from Realtor.ca listings
+- 🏠 **Browser Extension** - One-click analysis from Realtor.ca listings with comprehensive data extraction
 
 ### Analysis Capabilities
 - 💰 **AI-Powered Rental Discovery** - Uses Perplexity AI to find current long-term rental rates
@@ -49,6 +53,15 @@ A sophisticated real estate investment analysis SaaS platform that combines AI-p
 - **Platform**: Chrome/Edge WebExtensions API
 - **Target**: Realtor.ca property listings
 - **Communication**: REST API to backend
+- **Data Extraction**: 
+  - Property price (actual listing price)
+  - Annual property taxes (exact amount from listing)
+  - Monthly HOA/condo fees
+  - Square footage
+  - Bedrooms and bathrooms
+  - Property type and MLS number
+  - Main property image
+  - Full address with postal code
 
 ## 📋 Prerequisites
 
@@ -209,12 +222,14 @@ service cloud.firestore {
 
 1. **Data Ingestion**
    - Browser extension extracts Realtor.ca listing data
+   - Captures ACTUAL values: price, taxes, square footage, fees
    - POST to `/api/properties/ingest` endpoint
-   - Property data validated and stored
+   - Property data validated and stored with source tracking
 
 2. **Analysis Engine**
+   - **Data Priority**: Uses actual listing data over any estimates
    - **LTR Discovery**: Perplexity AI searches for long-term rental rates
-   - **Financial Calculations**: Mortgage, expenses, cash flow for both strategies
+   - **Financial Calculations**: Uses real property taxes from listing (e.g., $5,490 not calculated estimates)
    - **STR Analysis**: Queries Airbnb API for comparable properties
    - **Comparison Algorithm**: Calculates net returns for LTR vs STR
    - **AI Recommendations**: Suggests optimal rental strategy based on data
@@ -224,6 +239,26 @@ service cloud.firestore {
    - Generate PDF using templates
    - Store in Firebase Storage
    - Email delivery option
+
+## 🔄 Recent Major Enhancements (2024-2025)
+
+### Data Integrity Improvements
+- **Actual vs Estimated**: System now respects actual listing data and never overrides with estimates
+- **Property Tax Fix**: Uses exact tax amounts from listings instead of percentage-based calculations
+- **Data Pipeline**: Complete data flow from extension → API → analysis preserves all listing data
+- **Source Tracking**: Every data point marked as 'actual_data' or 'estimated' for transparency
+
+### Enhanced Browser Extension
+- **Comprehensive Extraction**: Price, taxes, HOA fees, square footage, bedrooms, bathrooms
+- **Smart Patterns**: Multiple fallback patterns for each data field
+- **Debug Tools**: Console logging summary and optional debug panel (?debug=true on Realtor.ca)
+- **Visual Confirmation**: Property image extraction for user verification
+
+### API Enhancements
+- **Property Data Handling**: All functions now accept and preserve propertyData from listings
+- **No Override Logic**: ensureCalculations respects actual data, doesn't "correct" it
+- **Detailed Logging**: Every API call logs all received property data fields
+- **Calculation Methods**: Tracks whether using 'actual_data', 'comparable_data', or 'location_based_accurate'
 
 ## 📊 API Endpoints
 
@@ -256,21 +291,39 @@ service cloud.firestore {
 
 ### Common Issues
 
-1. **"Cannot type in address field"**
+1. **"Property data not extracting correctly"**
+   - Check browser console for extraction summary
+   - Add `?debug=true` to Realtor.ca URL for debug panel
+   - Look for "STARTERPACK EXTRACTION SUMMARY" in console
+   - Ensure extension is updated to latest version
+
+2. **"Wrong property taxes or estimates used"**
+   - System should use actual listing data (e.g., $5,490 not calculated)
+   - Check API logs for "PROPERTY DATA FROM EXTENSION"
+   - Verify `calculation_method` shows 'actual_data'
+   - If still using estimates, check data pipeline
+
+3. **"Square footage showing as 0"**
+   - Known issue on some listings
+   - Check console logs for extraction attempts
+   - May need manual entry if not in standard format
+   - Working on additional extraction patterns
+
+4. **"Cannot type in address field"**
    - Fixed with proper React state management
    - Uses `useCallback` to prevent re-renders
 
-2. **"Only demo data shows"**
+5. **"Only demo data shows"**
    - Ensure AI API keys are configured
    - Check Vercel environment variables
    - View logs in Vercel dashboard
 
-3. **"Firebase connection error"**
+6. **"Firebase connection error"**
    - Verify Firebase credentials
    - Check private key formatting (needs `\n`)
    - Ensure Firestore is initialized
 
-4. **"Analysis limit reached"**
+7. **"Analysis limit reached"**
    - Free trial: 3 analyses
    - Upgrade to paid plan for more
    - Resets monthly for paid users
