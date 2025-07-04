@@ -50,6 +50,15 @@ module.exports = async function handler(req, res) {
     const perplexityApiKey = process.env.PERPLEXITY_API_KEY;
     const openaiApiKey = process.env.OPENAI_API_KEY;
 
+    console.log('========== API KEY VALIDATION ==========');
+    console.log('Perplexity API Key exists:', !!perplexityApiKey);
+    console.log('Perplexity API Key length:', perplexityApiKey ? perplexityApiKey.length : 0);
+    console.log('Perplexity API Key prefix:', perplexityApiKey ? perplexityApiKey.substring(0, 5) : 'N/A');
+    console.log('Perplexity API Key suffix:', perplexityApiKey ? '...' + perplexityApiKey.substring(perplexityApiKey.length - 4) : 'N/A');
+    console.log('Starts with pplx-:', perplexityApiKey ? perplexityApiKey.startsWith('pplx-') : false);
+    console.log('Is placeholder key:', perplexityApiKey === 'your_perplexity_api_key');
+    console.log('========== END API KEY VALIDATION ==========');
+
     const perplexityConfigured = !!perplexityApiKey && perplexityApiKey.startsWith('pplx-') && perplexityApiKey !== 'your_perplexity_api_key';
     const openaiConfigured = !!openaiApiKey && openaiApiKey.startsWith('sk-') && openaiApiKey !== 'your_openai_api_key';
     
@@ -100,27 +109,20 @@ module.exports = async function handler(req, res) {
       estimatedValue: estimatedValue
     });
     
-    let perplexityResponse;
-    try {
-      perplexityResponse = await fetch('https://api.perplexity.ai/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${perplexityApiKey}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        model: 'llama-3.1-sonar-large-128k-online',
-        messages: [
-          {
-            role: 'system',
-            content: `You are a real estate investment analyst specializing in accurate property data research. 
+    // Prepare request body
+    const perplexityRequestBody = {
+      model: 'llama-3.1-sonar-large-128k-online',
+      messages: [
+        {
+          role: 'system',
+          content: `You are a real estate investment analyst specializing in accurate property data research. 
 CRITICAL: Research CURRENT data as of ${new Date().toISOString()}. 
 Provide SPECIFIC NUMBERS from real sources.
 ALWAYS include source URLs in format: SOURCE: [URL]`
-          },
-          {
-            role: 'user',
-            content: `Perform REAL-TIME research for property: ${propertyAddress}
+        },
+        {
+          role: 'user',
+          content: `Perform REAL-TIME research for property: ${propertyAddress}
 
 RESEARCH INSTRUCTIONS:
 
@@ -181,12 +183,45 @@ IMPORTANT FORMATTING:
         temperature: 0.1,
         top_p: 0.9,
         stream: false
-      })
+      }
+    };
+
+    // Log the full request details
+    console.log('========== PERPLEXITY API REQUEST ==========');
+    console.log('API Endpoint:', 'https://api.perplexity.ai/chat/completions');
+    console.log('HTTP Method:', 'POST');
+    console.log('Request Headers:', {
+      'Authorization': `Bearer ${perplexityApiKey ? perplexityApiKey.substring(0, 15) + '...' : 'MISSING'}`,
+      'Content-Type': 'application/json'
     });
+    console.log('Request Body:', JSON.stringify(perplexityRequestBody, null, 2));
+    console.log('========== END REQUEST DETAILS ==========');
+
+    let perplexityResponse;
+    try {
+      const startTime = Date.now();
+      perplexityResponse = await fetch('https://api.perplexity.ai/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${perplexityApiKey}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(perplexityRequestBody)
+      });
+      
+      const requestTime = Date.now() - startTime;
+      console.log(`========== PERPLEXITY API RESPONSE RECEIVED ==========`);
+      console.log(`Response Time: ${requestTime}ms`);
+      console.log(`Response Status: ${perplexityResponse.status}`);
+      console.log(`Response Status Text: ${perplexityResponse.statusText}`);
+      console.log(`Response Headers:`, Object.fromEntries(perplexityResponse.headers.entries()));
+      console.log('========== END RESPONSE METADATA ==========');
+      
     } catch (fetchError) {
       console.error('========== FETCH ERROR ==========');
       console.error('Error fetching from Perplexity:', fetchError.message);
       console.error('Error type:', fetchError.name);
+      console.error('Error stack:', fetchError.stack);
       console.error('Full error:', fetchError);
       console.error('========== END FETCH ERROR ==========');
       throw new Error(`Failed to connect to Perplexity API: ${fetchError.message}`);
@@ -197,9 +232,19 @@ IMPORTANT FORMATTING:
       console.error('========== PERPLEXITY API ERROR ==========');
       console.error('Status:', perplexityResponse.status);
       console.error('Status Text:', perplexityResponse.statusText);
-      console.error('Error Response:', errorData);
+      console.error('Error Response Body:', errorData);
       console.error('API Key:', perplexityApiKey ? `${perplexityApiKey.substring(0, 10)}...` : 'MISSING');
       console.error('========== END ERROR ==========');
+      
+      // Try to parse error as JSON if possible
+      let errorMessage = errorData;
+      try {
+        const errorJson = JSON.parse(errorData);
+        console.error('Parsed Error JSON:', errorJson);
+        errorMessage = errorJson.message || errorJson.error || errorData;
+      } catch (e) {
+        console.error('Error response is not JSON');
+      }
       
       // Return more specific error messages
       if (perplexityResponse.status === 401) {
@@ -207,17 +252,45 @@ IMPORTANT FORMATTING:
       } else if (perplexityResponse.status === 429) {
         throw new Error('Perplexity API rate limit exceeded. Please try again later.');
       } else if (perplexityResponse.status === 400) {
-        throw new Error('Invalid request to Perplexity API. Check the request format.');
+        throw new Error(`Invalid request to Perplexity API: ${errorMessage}`);
+      } else if (perplexityResponse.status === 403) {
+        throw new Error('Forbidden: Your API key may not have access to this model or endpoint.');
+      } else if (perplexityResponse.status === 404) {
+        throw new Error('Perplexity API endpoint not found. The API may have changed.');
       } else {
-        throw new Error(`Perplexity API request failed: ${perplexityResponse.status} ${perplexityResponse.statusText}`);
+        throw new Error(`Perplexity API request failed: ${perplexityResponse.status} ${perplexityResponse.statusText} - ${errorMessage}`);
       }
     }
 
-    const perplexityData = await perplexityResponse.json();
+    // Log raw response text before parsing
+    const responseText = await perplexityResponse.text();
+    console.log('========== PERPLEXITY RAW RESPONSE TEXT ==========');
+    console.log('Response length:', responseText.length);
+    console.log('First 500 chars:', responseText.substring(0, 500));
+    console.log('========== END RAW RESPONSE TEXT ==========');
+    
+    let perplexityData;
+    try {
+      perplexityData = JSON.parse(responseText);
+    } catch (parseError) {
+      console.error('========== JSON PARSE ERROR ==========');
+      console.error('Failed to parse Perplexity response as JSON');
+      console.error('Parse error:', parseError.message);
+      console.error('Response text:', responseText);
+      console.error('========== END PARSE ERROR ==========');
+      throw new Error('Invalid JSON response from Perplexity API');
+    }
+    console.log('========== PERPLEXITY PARSED DATA ==========');
+    console.log('Response has choices:', !!perplexityData.choices);
+    console.log('Number of choices:', perplexityData.choices?.length);
+    console.log('First choice has message:', !!perplexityData.choices?.[0]?.message);
+    console.log('========== END PARSED DATA ==========');
+    
     const researchContent = perplexityData.choices[0].message.content;
-    console.log('========== PERPLEXITY RAW RESPONSE ==========');
+    console.log('========== PERPLEXITY RESEARCH CONTENT ==========');
+    console.log('Research content length:', researchContent.length);
     console.log('Full research content:', researchContent);
-    console.log('========== END PERPLEXITY RESPONSE ==========');
+    console.log('========== END RESEARCH CONTENT ==========');
 
     // Calculate API costs from token usage
     const apiCosts = calculateAPIUsageCost(perplexityData.usage || {});
