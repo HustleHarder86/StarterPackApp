@@ -356,6 +356,19 @@
         </div>
         
         <div class="space-y-4">
+          <!-- Analysis Mode Selector -->
+          <div class="mb-4">
+            <div class="flex rounded-lg bg-gray-100 p-1">
+              <button type="button" id="confirm-ltr-mode-btn" class="flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all duration-200 bg-white text-gray-900 shadow-sm">
+                Traditional Rental (LTR)
+              </button>
+              <button type="button" id="confirm-str-mode-btn" class="flex-1 py-2 px-4 rounded-md text-sm font-medium text-gray-500 transition-all duration-200">
+                Short-Term Rental (STR)
+              </button>
+            </div>
+            <div id="confirm-str-trial-info" class="mt-2 text-sm text-center"></div>
+          </div>
+          
           <!-- Property Image -->
           <div id="confirm-image-container" class="rounded-lg overflow-hidden mb-4" style="display: none;">
             <img id="confirm-image" src="" alt="Property" class="w-full h-64 object-cover">
@@ -406,6 +419,9 @@
             MLS® Number: <span id="confirm-mls" class="font-medium"></span>
           </div>
         </div>
+        
+        <!-- Hidden input for analysis mode -->
+        <input type="hidden" id="confirm-analysis-mode" value="ltr" />
         
         <!-- Action Buttons -->
         <div class="flex gap-4 mt-8">
@@ -1116,6 +1132,17 @@
           break;
         case 'confirmation':
           document.getElementById('confirmation-screen').style.display = 'flex';
+          // Reset to LTR mode by default
+          document.getElementById('confirm-analysis-mode').value = 'ltr';
+          const confirmLtrBtn = document.getElementById('confirm-ltr-mode-btn');
+          const confirmStrBtn = document.getElementById('confirm-str-mode-btn');
+          if (confirmLtrBtn && confirmStrBtn) {
+            confirmLtrBtn.classList.add('bg-white', 'text-gray-900', 'shadow-sm');
+            confirmLtrBtn.classList.remove('text-gray-500');
+            confirmStrBtn.classList.remove('bg-white', 'text-gray-900', 'shadow-sm');
+            confirmStrBtn.classList.add('text-gray-500');
+          }
+          updateConfirmStrTrialInfo();
           break;
         case 'results':
           document.getElementById('results-screen').style.display = 'block';
@@ -1182,6 +1209,35 @@
           // Switch back to LTR mode if no trials remaining
           document.getElementById('analysis-mode').value = 'ltr';
           document.getElementById('ltr-mode-btn').click();
+        }
+      }
+    }
+    
+    // Update STR trial info for confirmation screen
+    function updateConfirmStrTrialInfo() {
+      const infoEl = document.getElementById('confirm-str-trial-info');
+      if (!userProfile) return;
+      
+      const currentMode = document.getElementById('confirm-analysis-mode').value;
+      
+      if (currentMode === 'ltr') {
+        infoEl.innerHTML = '<span class="text-gray-600">Traditional long-term rental analysis</span>';
+        return;
+      }
+      
+      if (userProfile.subscriptionTier === 'pro' || userProfile.subscriptionTier === 'enterprise') {
+        infoEl.innerHTML = '<span class="text-green-600">✓ STR analysis included with your Pro subscription</span>';
+      } else {
+        const trialsUsed = userProfile.strTrialUsed || 0;
+        const trialsRemaining = Math.max(0, 5 - trialsUsed);
+        
+        if (trialsRemaining > 0) {
+          infoEl.innerHTML = `<span class="text-blue-600">Free trial: ${trialsRemaining} STR analyses remaining</span>`;
+        } else {
+          infoEl.innerHTML = '<span class="text-gray-600">Free STR trial expired. <a href="#" class="text-blue-600 underline">Upgrade to Pro</a> for unlimited STR analysis</span>';
+          // Switch back to LTR mode if no trials remaining
+          document.getElementById('confirm-analysis-mode').value = 'ltr';
+          document.getElementById('confirm-ltr-mode-btn').click();
         }
       }
     }
@@ -2044,6 +2100,52 @@
         });
       }
       
+      // Confirmation screen analysis mode toggle buttons
+      const confirmLtrBtn = document.getElementById('confirm-ltr-mode-btn');
+      const confirmStrBtn = document.getElementById('confirm-str-mode-btn');
+      
+      if (confirmLtrBtn && confirmStrBtn) {
+        confirmLtrBtn.addEventListener('click', function() {
+          // Switch to LTR mode
+          document.getElementById('confirm-analysis-mode').value = 'ltr';
+          
+          // Update button styles
+          confirmLtrBtn.classList.add('bg-white', 'text-gray-900', 'shadow-sm');
+          confirmLtrBtn.classList.remove('text-gray-500');
+          confirmStrBtn.classList.remove('bg-white', 'text-gray-900', 'shadow-sm');
+          confirmStrBtn.classList.add('text-gray-500');
+          
+          // Update trial info
+          updateConfirmStrTrialInfo();
+        });
+        
+        confirmStrBtn.addEventListener('click', function() {
+          // Check if user can use STR
+          if (userProfile) {
+            const canUseSTR = userProfile.subscriptionTier === 'pro' || 
+                             userProfile.subscriptionTier === 'enterprise' || 
+                             (userProfile.strTrialUsed || 0) < 5;
+            
+            if (!canUseSTR) {
+              alert('Your free STR trial has expired. Upgrade to Pro for unlimited STR analyses.');
+              return;
+            }
+          }
+          
+          // Switch to STR mode
+          document.getElementById('confirm-analysis-mode').value = 'str';
+          
+          // Update button styles
+          confirmStrBtn.classList.add('bg-white', 'text-gray-900', 'shadow-sm');
+          confirmStrBtn.classList.remove('text-gray-500');
+          confirmLtrBtn.classList.remove('bg-white', 'text-gray-900', 'shadow-sm');
+          confirmLtrBtn.classList.add('text-gray-500');
+          
+          // Update trial info
+          updateConfirmStrTrialInfo();
+        });
+      }
+      
       // New analysis button
       document.getElementById('new-analysis-btn').addEventListener('click', function() {
         console.log('New analysis button clicked!');
@@ -2165,7 +2267,7 @@
               userEmail: currentUser.email,
               userName: currentUser.displayName,
               requestType: 'authenticated',
-              includeStrAnalysis: false, // Default to false for now
+              includeStrAnalysis: document.getElementById('confirm-analysis-mode').value === 'str',
               // Include actual property data from extension
               propertyData: {
                 price: propertyData.price,
