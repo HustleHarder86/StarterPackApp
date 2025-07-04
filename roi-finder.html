@@ -273,6 +273,21 @@
       </div>
 
       <div class="bg-white rounded-2xl shadow-xl p-8">
+        <!-- Analysis Mode Selector -->
+        <div class="mb-6">
+          <div class="flex rounded-lg bg-gray-100 p-1">
+            <button type="button" id="ltr-mode-btn" class="flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all duration-200 bg-white text-gray-900 shadow-sm">
+              Traditional Rental (LTR)
+            </button>
+            <button type="button" id="str-mode-btn" class="flex-1 py-2 px-4 rounded-md text-sm font-medium text-gray-500 transition-all duration-200">
+              Short-Term Rental (STR)
+            </button>
+          </div>
+          <p class="text-xs text-gray-500 mt-2 text-center" id="str-trial-info">
+            <!-- Trial info will be populated here -->
+          </p>
+        </div>
+        
         <form id="property-form">
           <div class="space-y-6">
             <div>
@@ -302,18 +317,8 @@
               </div>
             </div>
 
-            <div class="bg-blue-50 rounded-lg p-4">
-              <label class="flex items-center gap-3 cursor-pointer">
-                <input type="checkbox" id="include-str-analysis" class="w-5 h-5 text-blue-600 rounded focus:ring-blue-500" checked />
-                <span class="text-sm text-gray-700">
-                  <strong>Include Short-Term Rental (Airbnb) Analysis</strong>
-                  <span class="text-xs text-gray-500 block">Compare traditional rental vs Airbnb income potential</span>
-                </span>
-              </label>
-              <p class="text-xs text-gray-500 mt-2" id="str-trial-info">
-                <!-- Trial info will be populated here -->
-              </p>
-            </div>
+            <!-- Hidden field to track selected mode -->
+            <input type="hidden" id="analysis-mode" value="ltr" />
 
             <button type="submit" class="btn-primary w-full">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1097,6 +1102,16 @@
           break;
         case 'property-form':
           document.getElementById('property-form-screen').style.display = 'flex';
+          // Reset to LTR mode by default
+          document.getElementById('analysis-mode').value = 'ltr';
+          const ltrBtn = document.getElementById('ltr-mode-btn');
+          const strBtn = document.getElementById('str-mode-btn');
+          if (ltrBtn && strBtn) {
+            ltrBtn.classList.add('bg-white', 'text-gray-900', 'shadow-sm');
+            ltrBtn.classList.remove('text-gray-500');
+            strBtn.classList.remove('bg-white', 'text-gray-900', 'shadow-sm');
+            strBtn.classList.add('text-gray-500');
+          }
           updateStrTrialInfo();
           break;
         case 'confirmation':
@@ -1147,6 +1162,13 @@
       const infoEl = document.getElementById('str-trial-info');
       if (!userProfile) return;
       
+      const currentMode = document.getElementById('analysis-mode').value;
+      
+      if (currentMode === 'ltr') {
+        infoEl.innerHTML = '<span class="text-gray-600">Traditional long-term rental analysis</span>';
+        return;
+      }
+      
       if (userProfile.subscriptionTier === 'pro' || userProfile.subscriptionTier === 'enterprise') {
         infoEl.innerHTML = '<span class="text-green-600">✓ STR analysis included with your Pro subscription</span>';
       } else {
@@ -1157,8 +1179,9 @@
           infoEl.innerHTML = `<span class="text-blue-600">Free trial: ${trialsRemaining} STR analyses remaining</span>`;
         } else {
           infoEl.innerHTML = '<span class="text-gray-600">Free STR trial expired. <a href="#" class="text-blue-600 underline">Upgrade to Pro</a> for unlimited STR analysis</span>';
-          document.getElementById('include-str-analysis').checked = false;
-          document.getElementById('include-str-analysis').disabled = true;
+          // Switch back to LTR mode if no trials remaining
+          document.getElementById('analysis-mode').value = 'ltr';
+          document.getElementById('ltr-mode-btn').click();
         }
       }
     }
@@ -1183,7 +1206,7 @@
             userEmail: currentUser.email,
             userName: currentUser.displayName,
             requestType: 'authenticated',
-            includeStrAnalysis: document.getElementById('include-str-analysis').checked
+            includeStrAnalysis: document.getElementById('analysis-mode').value === 'str'
           })
         });
         
@@ -1975,6 +1998,52 @@
         firebase.auth().signOut();
       });
 
+      // Analysis mode toggle buttons
+      const ltrModeBtn = document.getElementById('ltr-mode-btn');
+      const strModeBtn = document.getElementById('str-mode-btn');
+      
+      if (ltrModeBtn && strModeBtn) {
+        ltrModeBtn.addEventListener('click', function() {
+          // Switch to LTR mode
+          document.getElementById('analysis-mode').value = 'ltr';
+          
+          // Update button styles
+          ltrModeBtn.classList.add('bg-white', 'text-gray-900', 'shadow-sm');
+          ltrModeBtn.classList.remove('text-gray-500');
+          strModeBtn.classList.remove('bg-white', 'text-gray-900', 'shadow-sm');
+          strModeBtn.classList.add('text-gray-500');
+          
+          // Update trial info
+          updateStrTrialInfo();
+        });
+        
+        strModeBtn.addEventListener('click', function() {
+          // Check if user can use STR
+          if (userProfile) {
+            const canUseSTR = userProfile.subscriptionTier === 'pro' || 
+                             userProfile.subscriptionTier === 'enterprise' || 
+                             (userProfile.strTrialUsed || 0) < 5;
+            
+            if (!canUseSTR) {
+              alert('Your free STR trial has expired. Upgrade to Pro for unlimited STR analyses.');
+              return;
+            }
+          }
+          
+          // Switch to STR mode
+          document.getElementById('analysis-mode').value = 'str';
+          
+          // Update button styles
+          strModeBtn.classList.add('bg-white', 'text-gray-900', 'shadow-sm');
+          strModeBtn.classList.remove('text-gray-500');
+          ltrModeBtn.classList.remove('bg-white', 'text-gray-900', 'shadow-sm');
+          ltrModeBtn.classList.add('text-gray-500');
+          
+          // Update trial info
+          updateStrTrialInfo();
+        });
+      }
+      
       // New analysis button
       document.getElementById('new-analysis-btn').addEventListener('click', function() {
         console.log('New analysis button clicked!');
@@ -2252,6 +2321,14 @@
         });
       } else {
         console.error('Reset button NOT found in DOM!');
+      }
+      
+      // Back to dashboard from property form
+      const backToDashboardBtn = document.getElementById('back-to-dashboard');
+      if (backToDashboardBtn) {
+        backToDashboardBtn.addEventListener('click', function() {
+          showView('dashboard');
+        });
       }
 
       // Initialize the app

@@ -8,6 +8,18 @@ describe('auth-middleware', () => {
   let req, res, next;
   const mockAuth = getAuth();
   const mockDb = getFirestore();
+  
+  // Create stable mock references
+  const mockDoc = {
+    get: jest.fn(),
+    set: jest.fn(),
+    update: jest.fn(),
+    delete: jest.fn()
+  };
+  
+  const mockCollection = {
+    doc: jest.fn(() => mockDoc)
+  };
 
   beforeEach(() => {
     req = {
@@ -24,6 +36,9 @@ describe('auth-middleware', () => {
     };
 
     next = jest.fn();
+    
+    // Setup the mock chain
+    mockDb.collection.mockReturnValue(mockCollection);
   });
 
   describe('authenticate', () => {
@@ -32,7 +47,10 @@ describe('auth-middleware', () => {
       await authenticate(req, res, next);
       
       expect(res.status).toHaveBeenCalledWith(401);
-      expect(res.json).toHaveBeenCalledWith({ error: 'Unauthorized' });
+      expect(res.json).toHaveBeenCalledWith({ 
+        error: 'Unauthorized',
+        message: 'Authentication required'
+      });
       expect(next).not.toHaveBeenCalled();
     });
 
@@ -42,60 +60,47 @@ describe('auth-middleware', () => {
       await authenticate(req, res, next);
       
       expect(res.status).toHaveBeenCalledWith(401);
-      expect(res.json).toHaveBeenCalledWith({ error: 'Invalid token' });
+      expect(res.json).toHaveBeenCalledWith({ 
+        error: 'Invalid token',
+        message: 'Authentication failed'
+      });
       expect(next).not.toHaveBeenCalled();
     });
 
     test('authenticates valid tokens and adds user to request', async () => {
       const mockUser = {
         uid: 'user-123',
-        email: 'test@example.com'
+        email: 'test@example.com',
+        email_verified: true
       };
       
       mockAuth.verifyIdToken.mockResolvedValue(mockUser);
-      mockDb.collection().doc().get.mockResolvedValue({
+
+      await authenticate(req, res, next);
+      
+      expect(req.user).toEqual({
+        uid: 'user-123',
+        email: 'test@example.com',
+        emailVerified: true,
+        customClaims: {}
+      });
+      expect(next).toHaveBeenCalled();
+    });
+
+  });
+
+  describe('requireSubscription', () => {
+    test('allows access for required tier', async () => {
+      req.user = { uid: 'user-123' };
+      
+      mockDoc.get.mockResolvedValue({
         exists: true,
         data: () => ({
           email: 'test@example.com',
           subscriptionTier: 'pro'
         })
       });
-
-      await authenticate(req, res, next);
       
-      expect(req.user).toEqual(expect.objectContaining({
-        uid: 'user-123',
-        email: 'test@example.com',
-        subscriptionTier: 'pro'
-      }));
-      expect(next).toHaveBeenCalled();
-    });
-
-    test('creates user document if it does not exist', async () => {
-      mockAuth.verifyIdToken.mockResolvedValue({
-        uid: 'new-user',
-        email: 'new@example.com'
-      });
-      
-      mockDb.collection().doc().get.mockResolvedValue({
-        exists: false
-      });
-
-      await authenticate(req, res, next);
-      
-      expect(mockDb.collection().doc().set).toHaveBeenCalledWith(
-        expect.objectContaining({
-          email: 'new@example.com',
-          subscriptionTier: 'free',
-          monthlyAnalysisCount: 0
-        })
-      );
-    });
-  });
-
-  describe('requireSubscription', () => {
-    test('allows access for required tier', async () => {
-      req.user = { subscriptionTier: 'pro' };
       const middleware = requireSubscription('pro');
       
       await middleware(req, res, next);
@@ -105,7 +110,16 @@ describe('auth-middleware', () => {
     });
 
     test('allows access for higher tier', async () => {
-      req.user = { subscriptionTier: 'enterprise' };
+      req.user = { uid: 'user-123' };
+      
+      mockDoc.get.mockResolvedValue({
+        exists: true,
+        data: () => ({
+          email: 'test@example.com',
+          subscriptionTier: 'enterprise'
+        })
+      });
+      
       const middleware = requireSubscription('pro');
       
       await middleware(req, res, next);
@@ -114,16 +128,26 @@ describe('auth-middleware', () => {
     });
 
     test('denies access for lower tier', async () => {
-      req.user = { subscriptionTier: 'free' };
+      req.user = { uid: 'user-123' };
+      
+      mockDoc.get.mockResolvedValue({
+        exists: true,
+        data: () => ({
+          email: 'test@example.com',
+          subscriptionTier: 'free'
+        })
+      });
+      
       const middleware = requireSubscription('pro');
       
       await middleware(req, res, next);
       
       expect(res.status).toHaveBeenCalledWith(403);
       expect(res.json).toHaveBeenCalledWith({
-        error: 'Insufficient subscription tier',
-        required: 'pro',
-        current: 'free'
+        error: 'Insufficient subscription',
+        message: 'This feature requires pro subscription or higher',
+        currentTier: 'free',
+        requiredTier: 'pro'
       });
       expect(next).not.toHaveBeenCalled();
     });

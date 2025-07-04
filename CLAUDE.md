@@ -47,6 +47,30 @@ This workflow ensures:
 
 **Note**: We do NOT commit directly to main. All changes go through feature branches and pull requests for proper review and testing.
 
+## Development Workflow
+
+When working on tasks in this project, follow this structured workflow:
+
+1. **First think through the problem**: Read the codebase for relevant files and write a comprehensive plan to `tasks/todo.md`
+
+2. **Create a detailed task list**: The plan should have a list of todo items that you can check off as you complete them
+
+3. **Get approval before starting**: Before you begin working, check in with the user to verify the plan
+
+4. **Work incrementally**: Begin working on the todo items, marking them as complete as you go
+
+5. **Communicate progress**: Every step of the way, provide a high-level explanation of what changes were made
+
+6. **Prioritize simplicity**: Make every task and code change as simple as possible. Avoid making massive or complex changes. Every change should impact as little code as possible. Everything is about simplicity.
+
+7. **Document completion**: Finally, add a review section to the `todo.md` file with a summary of the changes made and any other relevant information
+
+### Key Principles:
+- **Small, focused changes**: Each change should be minimal and targeted
+- **Clear communication**: Regular updates on progress and changes
+- **Verification before action**: Always get plan approval before implementation
+- **Comprehensive documentation**: Maintain clear records in `todo.md`
+
 ## Project Overview
 
 **StarterPackApp** is an advanced real estate investment analysis SaaS platform that helps investors make data-driven decisions. The platform combines traditional rental analysis with short-term rental (Airbnb) projections, automated property data extraction via browser extension, and professional reporting capabilities.
