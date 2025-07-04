@@ -73,5 +73,22 @@
 - Modified form submission to use selected analysis mode
 - Maintained seamless integration with existing subscription logic
 
+## New Issue Identified: Square Footage Extraction Error
+
+### Problem
+- **Listing shows**: 2000-2500 sq ft
+- **Analysis extracted**: 500 sq ft  
+- **Impact**: Incorrect rental calculations and ROI analysis
+
+### Root Cause
+Browser extension is not properly extracting square footage from Realtor.ca listings when shown as a range.
+
+### Fix Plan
+- [ ] Investigate browser extension square footage extraction patterns
+- [ ] Update extraction logic to handle ranges (2000-2500)
+- [ ] Use midpoint of range (2250 sq ft) or conservative estimate
+- [ ] Test on the Milton property listing
+- [ ] Verify fix preserves actual listing data
+
 ## Review Section
 (To be completed after implementation)

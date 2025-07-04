@@ -360,13 +360,37 @@ function extractSquareFootage() {
       'div'
     ];
     
-    // First, look for specific patterns in all text elements
+    // First, look for range patterns in all text elements - HIGHEST PRIORITY
     const allElements = document.querySelectorAll('*');
     for (const el of allElements) {
       if (el.childNodes.length === 1 && el.childNodes[0].nodeType === Node.TEXT_NODE) {
         const text = el.textContent.trim();
-        // Look for patterns like "1,234 sq ft" or "1234 square feet" or "1234 sqft"
-        const patterns = [
+        
+        // PRIORITY 1: Look for range patterns first
+        const rangePatterns = [
+          /(\d{1,3}(?:,\d{3})*)\s*-\s*(\d{1,3}(?:,\d{3})*)\s*(?:sq\.?\s*ft\.?|square\s*feet|sqft|sf)/i,
+          /(\d{3,5})\s*-\s*(\d{3,5})\s*(?:sq\.?\s*ft\.?|square\s*feet|sqft|sf)/i,
+          /living\s*area[:\s]*(\d{1,3}(?:,\d{3})*)\s*-\s*(\d{1,3}(?:,\d{3})*)/i,
+          /floor\s*area[:\s]*(\d{1,3}(?:,\d{3})*)\s*-\s*(\d{1,3}(?:,\d{3})*)/i,
+          /total\s*area[:\s]*(\d{1,3}(?:,\d{3})*)\s*-\s*(\d{1,3}(?:,\d{3})*)/i
+        ];
+        
+        for (const pattern of rangePatterns) {
+          const match = text.match(pattern);
+          if (match) {
+            const lowSqft = parseInt(match[1].replace(/,/g, ''));
+            const highSqft = parseInt(match[2].replace(/,/g, ''));
+            
+            if (lowSqft > 100 && lowSqft < 50000 && highSqft > 100 && highSqft < 50000 && highSqft > lowSqft) {
+              const midpointSqft = Math.round((lowSqft + highSqft) / 2);
+              console.log('[StarterPack] Found square footage RANGE:', `${lowSqft}-${highSqft}`, 'using midpoint:', midpointSqft, 'in text:', text, 'element:', el.tagName);
+              return midpointSqft;
+            }
+          }
+        }
+        
+        // PRIORITY 2: Look for single number patterns (existing logic)
+        const singlePatterns = [
           /(\d{1,3}(?:,\d{3})*)\s*(?:sq\.?\s*ft\.?|square\s*feet|sqft|sf)/i,
           /(\d{3,5})\s*(?:sq\.?\s*ft\.?|square\s*feet|sqft|sf)/i,
           /living\s*area[:\s]*(\d{1,3}(?:,\d{3})*)/i,
@@ -374,12 +398,12 @@ function extractSquareFootage() {
           /total\s*area[:\s]*(\d{1,3}(?:,\d{3})*)/i
         ];
         
-        for (const pattern of patterns) {
+        for (const pattern of singlePatterns) {
           const match = text.match(pattern);
           if (match) {
             const sqft = parseInt(match[1].replace(/,/g, ''));
             if (sqft > 100 && sqft < 50000) { // Sanity check
-              console.log('[StarterPack] Found square footage:', sqft, 'in text:', text, 'element:', el.tagName);
+              console.log('[StarterPack] Found square footage (single):', sqft, 'in text:', text, 'element:', el.tagName);
               return sqft;
             }
           }
@@ -397,7 +421,20 @@ function extractSquareFootage() {
         
         // Check if this row contains size/area information
         if (text.match(/square|sq\s*ft|area|size|living|floor/i)) {
-          // Extract numbers from this row
+          // PRIORITY 1: Look for ranges in table rows
+          const rangeMatch = text.match(/(\d{1,3}(?:,\d{3})*)\s*-\s*(\d{1,3}(?:,\d{3})*)/);
+          if (rangeMatch) {
+            const lowSqft = parseInt(rangeMatch[1].replace(/,/g, ''));
+            const highSqft = parseInt(rangeMatch[2].replace(/,/g, ''));
+            
+            if (lowSqft > 100 && lowSqft < 50000 && highSqft > 100 && highSqft < 50000 && highSqft > lowSqft) {
+              const midpointSqft = Math.round((lowSqft + highSqft) / 2);
+              console.log('[StarterPack] Found square footage RANGE in table:', `${lowSqft}-${highSqft}`, 'using midpoint:', midpointSqft, 'from row:', text);
+              return midpointSqft;
+            }
+          }
+          
+          // PRIORITY 2: Extract single numbers from this row
           const numbers = text.match(/\d{1,3}(?:,\d{3})*|\d{3,5}/g);
           if (numbers) {
             for (const num of numbers) {
@@ -416,15 +453,36 @@ function extractSquareFootage() {
     const allText = document.body.innerText;
     console.log('[StarterPack] Searching full page text for square footage patterns...');
     
-    // Try multiple patterns
-    const pagePatterns = [
+    // PRIORITY 1: Look for range patterns in full page text
+    const pageRangePatterns = [
+      /(\d{1,3}(?:,\d{3})*)\s*-\s*(\d{1,3}(?:,\d{3})*)\s*(?:sq\.?\s*ft\.?|square\s*feet|sqft|sf)(?!\s*lot)/i,
+      /living\s*area[:\s]*(\d{1,3}(?:,\d{3})*)\s*-\s*(\d{1,3}(?:,\d{3})*)/i,
+      /floor\s*area[:\s]*(\d{1,3}(?:,\d{3})*)\s*-\s*(\d{1,3}(?:,\d{3})*)/i
+    ];
+    
+    for (const pattern of pageRangePatterns) {
+      const matches = allText.match(pattern);
+      if (matches) {
+        const lowSqft = parseInt(matches[1].replace(/,/g, ''));
+        const highSqft = parseInt(matches[2].replace(/,/g, ''));
+        
+        if (lowSqft > 100 && lowSqft < 50000 && highSqft > 100 && highSqft < 50000 && highSqft > lowSqft) {
+          const midpointSqft = Math.round((lowSqft + highSqft) / 2);
+          console.log('[StarterPack] Found square footage RANGE via page text search:', `${lowSqft}-${highSqft}`, 'using midpoint:', midpointSqft, 'pattern:', pattern);
+          return midpointSqft;
+        }
+      }
+    }
+    
+    // PRIORITY 2: Try single number patterns in full page text
+    const pageSinglePatterns = [
       /(\d{1,3}(?:,\d{3})*)\s*(?:sq\.?\s*ft\.?|square\s*feet|sqft|sf)(?!\s*lot)/i,
       /living\s*area[:\s]*(\d{1,3}(?:,\d{3})*)/i,
       /floor\s*area[:\s]*(\d{1,3}(?:,\d{3})*)/i,
       /(\d{3,5})\s*sf(?:\s|$)/i
     ];
     
-    for (const pattern of pagePatterns) {
+    for (const pattern of pageSinglePatterns) {
       const matches = allText.match(pattern);
       if (matches) {
         const sqft = parseInt(matches[1].replace(/,/g, ''));
