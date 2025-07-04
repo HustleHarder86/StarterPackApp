@@ -184,7 +184,6 @@ IMPORTANT FORMATTING:
         top_p: 0.9,
         stream: false
       }
-    };
 
     // Log the full request details
     console.log('========== PERPLEXITY API REQUEST ==========');
