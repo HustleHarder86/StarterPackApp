@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Extension Auth Flow</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            cursor: pointer;
+        }
+        .success { color: green; }
+        .error { color: red; }
+        .info { color: blue; }
+        pre {
+            background: #f5f5f5;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Extension Authentication Flow Test</h1>
+    
+    <div class="test-section">
+        <h2>1. Simulate Extension Flow</h2>
+        <p>This simulates what happens when the extension opens roi-finder.html with property data:</p>
+        <button onclick="simulateExtensionFlow()">Open ROI Finder as Extension Would</button>
+        <div id="extension-result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>2. Check Current Auth State</h2>
+        <button onclick="checkAuthState()">Check Auth State</button>
+        <div id="auth-state"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>3. Test URL Parameters</h2>
+        <p>Example URL that extension would generate:</p>
+        <pre id="example-url"></pre>
+        <button onclick="copyExampleUrl()">Copy URL</button>
+    </div>
+
+    <script>
+        // Generate example URL with property data
+        const baseUrl = window.location.origin + '/roi-finder.html';
+        const propertyData = {
+            fromExtension: 'true',
+            autoAnalyze: 'true',
+            address: '123 Test Street',
+            city: 'Toronto',
+            province: 'ON',
+            postalCode: 'M1M 1M1',
+            price: '599000',
+            bedrooms: '3',
+            bathrooms: '2',
+            sqft: '1500',
+            propertyType: 'Detached',
+            propertyTaxes: '5490',
+            mlsNumber: 'TEST123'
+        };
+        
+        const exampleUrl = baseUrl + '?' + new URLSearchParams(propertyData).toString();
+        document.getElementById('example-url').textContent = exampleUrl;
+        
+        function simulateExtensionFlow() {
+            const resultDiv = document.getElementById('extension-result');
+            resultDiv.innerHTML = '<p class="info">Opening roi-finder.html with property data...</p>';
+            
+            // Open in new tab as extension would
+            window.open(exampleUrl, '_blank');
+            
+            resultDiv.innerHTML += '<p class="success">✓ Opened roi-finder.html in new tab</p>';
+            resultDiv.innerHTML += '<p>Check the new tab to see if:</p>';
+            resultDiv.innerHTML += '<ul>';
+            resultDiv.innerHTML += '<li>If logged in: You should see the property confirmation screen</li>';
+            resultDiv.innerHTML += '<li>If not logged in: You should see the auth screen, then after login, the property confirmation</li>';
+            resultDiv.innerHTML += '</ul>';
+        }
+        
+        function checkAuthState() {
+            const stateDiv = document.getElementById('auth-state');
+            stateDiv.innerHTML = '<p class="info">Checking authentication state...</p>';
+            
+            // Check localStorage
+            const authToken = localStorage.getItem('starterpack_auth_token');
+            const userData = localStorage.getItem('starterpack_user');
+            
+            if (authToken) {
+                stateDiv.innerHTML += '<p class="success">✓ Auth token found in localStorage</p>';
+                stateDiv.innerHTML += '<pre>Token: ' + authToken.substring(0, 20) + '...</pre>';
+            } else {
+                stateDiv.innerHTML += '<p class="error">✗ No auth token in localStorage</p>';
+            }
+            
+            if (userData) {
+                const user = JSON.parse(userData);
+                stateDiv.innerHTML += '<p class="success">✓ User data found</p>';
+                stateDiv.innerHTML += '<pre>Email: ' + (user.email || 'N/A') + '</pre>';
+            } else {
+                stateDiv.innerHTML += '<p class="error">✗ No user data in localStorage</p>';
+            }
+        }
+        
+        function copyExampleUrl() {
+            navigator.clipboard.writeText(exampleUrl).then(() => {
+                alert('URL copied to clipboard!');
+            });
+        }
+        
+        // Check auth state on load
+        window.onload = () => {
+            checkAuthState();
+        };
+    </script>
+</body>
+</html>

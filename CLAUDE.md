@@ -315,7 +315,7 @@ Example: If a listing shows $5,490 in property taxes, use $5,490 - NOT a calcula
 
 ### Perplexity AI Guidelines
 
-1. **Model Selection**: Use `llama-3.1-sonar-large-128k-online` for best results
+1. **Model Selection**: Use `sonar` for best results
 2. **Use Cases**:
    - **Long-Term Rental Rates**: Search for current rental rates in the area
    - **Market Research**: Neighborhood data, trends, demographics

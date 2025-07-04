@@ -224,7 +224,7 @@ FORMAT EVERY DATA POINT WITH: SOURCE: [full URL]`;
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          model: 'llama-3.1-sonar-large-128k-online',
+          model: 'sonar',
           messages: [
             {
               role: 'system',
@@ -283,7 +283,7 @@ Include SOURCE: [URL] for every data point.`;
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          model: 'llama-3.1-sonar-large-128k-online',
+          model: 'sonar',
           messages: [
             {
               role: 'system',
@@ -342,7 +342,7 @@ Include SOURCE: [URL] for all data.`;
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            model: 'llama-3.1-sonar-large-128k-online',
+            model: 'sonar',
             messages: [
               {
                 role: 'system',
