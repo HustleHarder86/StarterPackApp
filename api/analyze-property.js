@@ -180,8 +180,7 @@ IMPORTANT FORMATTING:
         max_tokens: 3000,
         temperature: 0.1,
         top_p: 0.9,
-        stream: false,
-        search_domain_filter: ["realtor.ca", "housesigma.com", "zolo.ca", "rentals.ca", "kijiji.ca", "realtor.com", "zillow.com", "redfin.com"]
+        stream: false
       })
     });
     } catch (fetchError) {
