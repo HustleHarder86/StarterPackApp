@@ -181,20 +181,14 @@ IMPORTANT FORMATTING:
         temperature: 0.1,
         top_p: 0.9,
         stream: false,
-        search_depth: "advanced",
-        search_recency_filter: "year",
-        search_domain_filter: ["realtor.ca", "housesigma.com", "zolo.ca", "rentals.ca", "kijiji.ca", "realtor.com", "zillow.com", "redfin.com"],
-        return_citations: true,
-        return_images: false,
-        return_related_questions: false,
-        search_recency_days: 365,
-        top_k: 10
+        search_domain_filter: ["realtor.ca", "housesigma.com", "zolo.ca", "rentals.ca", "kijiji.ca", "realtor.com", "zillow.com", "redfin.com"]
       })
     });
     } catch (fetchError) {
       console.error('========== FETCH ERROR ==========');
       console.error('Error fetching from Perplexity:', fetchError.message);
       console.error('Error type:', fetchError.name);
+      console.error('Full error:', fetchError);
       console.error('========== END FETCH ERROR ==========');
       throw new Error(`Failed to connect to Perplexity API: ${fetchError.message}`);
     }
