@@ -48,38 +48,25 @@ class AirbnbScraper {
   buildQuery(property) {
     const location = this.formatLocation(property.address || property);
     
-    // Base query structure for Apify Airbnb Scraper
+    // Build query with correct parameters for Apify Airbnb Scraper
     const query = {
-      location,
-      maxListings: 20, // Limit results to control costs
+      locationQueries: [location], // Changed from 'location' to 'locationQueries' array
       currency: 'CAD',
-      includeReviews: false, // Skip reviews to reduce data size
-      limitPoints: 100, // Cost control: 100 points = ~20 listings
-      timeoutSecs: 300, // 5 minute timeout
-      proxy: {
-        useApifyProxy: true,
-        apifyProxyGroups: ['RESIDENTIAL']
-      }
+      locale: 'en-US'
     };
 
     // Add filters based on property characteristics
     if (property.bedrooms) {
       query.minBedrooms = Math.max(1, property.bedrooms - 1);
-      query.maxBedrooms = property.bedrooms + 1;
+      // Note: maxBedrooms is not supported by the actor
     }
-
-    // Property type mapping
-    const propertyTypeMap = {
-      'Single Family': 'House',
-      'Condo': 'Apartment',
-      'Townhouse': 'Townhouse',
-      'Semi-Detached': 'House',
-      'Detached': 'House'
-    };
-
-    if (property.propertyType && propertyTypeMap[property.propertyType]) {
-      query.propertyType = propertyTypeMap[property.propertyType];
+    
+    if (property.bathrooms) {
+      query.minBathrooms = Math.max(1, property.bathrooms - 1);
     }
+    
+    // Set reasonable number of adults based on bedrooms
+    query.adults = property.bedrooms ? property.bedrooms * 2 : 4;
 
     console.log('Built Apify query:', JSON.stringify(query, null, 2));
     
