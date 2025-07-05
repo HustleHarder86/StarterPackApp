@@ -90,7 +90,8 @@ class AirbnbScraper {
     try {
       const input = this.buildQuery(property);
       
-      console.log(`Starting Apify actor run for ${input.location}...`);
+      console.log(`Starting Apify actor run for ${input.locationQueries[0]}...`);
+      console.log('Full Apify input:', JSON.stringify(input, null, 2));
       
       // Run the Airbnb Scraper actor
       const run = await this.client.actor(this.actorId).call(input);
