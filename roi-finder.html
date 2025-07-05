@@ -789,6 +789,14 @@
   <script>
     console.log('Script starting...');
 
+    // Helper function for safe number formatting
+    function safeToLocaleString(value, defaultValue = 0) {
+      if (value === null || value === undefined || isNaN(value)) {
+        return defaultValue.toLocaleString();
+      }
+      return Number(value).toLocaleString();
+    }
+
     // Global state
     let currentUser = null;
     let userProfile = null;
@@ -1070,7 +1078,7 @@
       document.getElementById('confirm-bedrooms').textContent = propertyData.bedrooms || 'N/A';
       document.getElementById('confirm-bathrooms').textContent = propertyData.bathrooms || 'N/A';
       document.getElementById('confirm-sqft').textContent = propertyData.sqft ? 
-        `${propertyData.sqft.toLocaleString()} sq ft` : 'Not available';
+        `${safeToLocaleString(propertyData.sqft)} sq ft` : 'Not available';
       document.getElementById('confirm-type').textContent = propertyData.propertyType || 'Residential';
       document.getElementById('confirm-mls').textContent = propertyData.mlsNumber || 'N/A';
       
@@ -1301,14 +1309,14 @@
         detailsEl.innerHTML = `
           ${analysis.property_details.bedrooms ? `<div><span class="text-gray-600">Bedrooms:</span> <span class="font-semibold">${analysis.property_details.bedrooms}</span></div>` : ''}
           ${analysis.property_details.bathrooms ? `<div><span class="text-gray-600">Bathrooms:</span> <span class="font-semibold">${analysis.property_details.bathrooms}</span></div>` : ''}
-          ${analysis.property_details.square_feet ? `<div><span class="text-gray-600">Square Feet:</span> <span class="font-semibold">${analysis.property_details.square_feet.toLocaleString()}</span></div>` : ''}
+          ${analysis.property_details.square_feet ? `<div><span class="text-gray-600">Square Feet:</span> <span class="font-semibold">${safeToLocaleString(analysis.property_details.square_feet)}</span></div>` : ''}
           ${analysis.property_details.property_type ? `<div><span class="text-gray-600">Type:</span> <span class="font-semibold">${analysis.property_details.property_type}</span></div>` : ''}
         `;
       }
       
       // Key metrics
-      document.getElementById('result-value').textContent = '$' + (analysis.property_details?.estimated_value || 0).toLocaleString();
-      document.getElementById('result-rent').textContent = '$' + (analysis.long_term_rental?.monthly_rent || 0).toLocaleString();
+      document.getElementById('result-value').textContent = '$' + safeToLocaleString(analysis.property_details?.estimated_value || 0);
+      document.getElementById('result-rent').textContent = '$' + safeToLocaleString(analysis.long_term_rental?.monthly_rent || 0);
       document.getElementById('result-cap-rate').textContent = analysis.roi_percentage + '%';
       
       // ROI Grade with color
@@ -1366,37 +1374,37 @@
       const monthlyHoa = analysis.costs?.hoa_monthly || 0;
       
       // Monthly Income
-      document.getElementById('breakdown-income').textContent = '$' + monthlyRent.toLocaleString();
+      document.getElementById('breakdown-income').textContent = '$' + safeToLocaleString(monthlyRent);
       
       // Monthly Expenses  
-      document.getElementById('breakdown-mortgage').textContent = '$' + mortgagePayment.toLocaleString();
+      document.getElementById('breakdown-mortgage').textContent = '$' + safeToLocaleString(mortgagePayment);
       
       // Property Taxes - show monthly with annual reference
-      document.getElementById('breakdown-taxes').textContent = '$' + monthlyTaxes.toLocaleString();
+      document.getElementById('breakdown-taxes').textContent = '$' + safeToLocaleString(monthlyTaxes);
       const actualTaxAnnual = taxAnnual > propertyValue * 0.02 ? monthlyTaxes * 12 : taxAnnual;
-      document.getElementById('breakdown-taxes-annual').textContent = '($' + actualTaxAnnual.toLocaleString() + '/year)';
+      document.getElementById('breakdown-taxes-annual').textContent = '($' + safeToLocaleString(actualTaxAnnual) + '/year)';
       
       // Insurance - show monthly with annual reference  
-      document.getElementById('breakdown-insurance').textContent = '$' + monthlyInsurance.toLocaleString();
+      document.getElementById('breakdown-insurance').textContent = '$' + safeToLocaleString(monthlyInsurance);
       const actualInsuranceAnnual = insuranceAnnual > propertyValue * 0.01 ? monthlyInsurance * 12 : insuranceAnnual;
-      document.getElementById('breakdown-insurance-annual').textContent = '($' + actualInsuranceAnnual.toLocaleString() + '/year)';
+      document.getElementById('breakdown-insurance-annual').textContent = '($' + safeToLocaleString(actualInsuranceAnnual) + '/year)';
       
       // HOA - monthly only
-      document.getElementById('breakdown-hoa').textContent = '$' + monthlyHoa.toLocaleString();
+      document.getElementById('breakdown-hoa').textContent = '$' + safeToLocaleString(monthlyHoa);
       
       // Maintenance - this is actually annual, show monthly equivalent
       const monthlyMaintenance = Math.round(annualMaintenance / 12);
-      document.getElementById('breakdown-maintenance').textContent = '$' + monthlyMaintenance.toLocaleString();
-      document.getElementById('breakdown-maintenance-annual').textContent = '($' + annualMaintenance.toLocaleString() + '/year)';
+      document.getElementById('breakdown-maintenance').textContent = '$' + safeToLocaleString(monthlyMaintenance);
+      document.getElementById('breakdown-maintenance-annual').textContent = '($' + safeToLocaleString(annualMaintenance) + '/year)';
       
       // Property Management - default to 0% since most people self-manage
       const managementFee = 0; // Default to 0 instead of 8%
-      document.getElementById('breakdown-management').textContent = '$' + managementFee.toLocaleString();
+      document.getElementById('breakdown-management').textContent = '$' + safeToLocaleString(managementFee);
       document.getElementById('breakdown-management-rate').textContent = '(0% - self managed)';
       
       // Calculate net income (monthly) with corrected amounts
       const netIncome = monthlyRent - mortgagePayment - monthlyTaxes - monthlyInsurance - monthlyHoa - monthlyMaintenance - managementFee;
-      document.getElementById('breakdown-net-income').textContent = '$' + netIncome.toLocaleString();
+      document.getElementById('breakdown-net-income').textContent = '$' + safeToLocaleString(netIncome);
       
       // Initialize edit fields with current values (correcting the data structure)
       document.getElementById('edit-income').value = monthlyRent;
@@ -1408,15 +1416,15 @@
       document.getElementById('edit-management').value = 0; // Default to 0%
       
       // Rental strategies
-      document.getElementById('ltr-rent').textContent = '$' + (analysis.long_term_rental?.monthly_rent || 0).toLocaleString();
-      document.getElementById('ltr-noi').textContent = '$' + (analysis.long_term_rental?.annual_profit || 0).toLocaleString();
+      document.getElementById('ltr-rent').textContent = '$' + safeToLocaleString(analysis.long_term_rental?.monthly_rent || 0);
+      document.getElementById('ltr-noi').textContent = '$' + safeToLocaleString(analysis.long_term_rental?.annual_profit || 0);
       const ltrCapRate = ((analysis.long_term_rental?.annual_profit || 0) / (analysis.property_details?.estimated_value || 1) * 100).toFixed(2);
       document.getElementById('ltr-cap').textContent = ltrCapRate + '%';
       document.getElementById('ltr-roi').textContent = ltrCapRate + '%';
       
       document.getElementById('str-rate').textContent = '$' + (analysis.short_term_rental?.daily_rate || 0);
       document.getElementById('str-occupancy').textContent = (analysis.short_term_rental?.occupancy_rate || 0) + '%';
-      document.getElementById('str-revenue').textContent = '$' + (analysis.short_term_rental?.annual_revenue || 0).toLocaleString();
+      document.getElementById('str-revenue').textContent = '$' + safeToLocaleString(analysis.short_term_rental?.annual_revenue || 0);
       const strROI = ((analysis.short_term_rental?.annual_profit || 0) / (analysis.property_details?.estimated_value || 1) * 100).toFixed(2);
       document.getElementById('str-roi').textContent = strROI + '%';
       
@@ -1730,19 +1738,19 @@
       const netIncome = income - mortgage - monthlyTaxes - monthlyInsurance - hoa - monthlyMaintenance - managementFee;
       
       // Update all monthly displays
-      document.getElementById('breakdown-income').textContent = `$${income.toLocaleString()}`;
-      document.getElementById('breakdown-mortgage').textContent = `$${mortgage.toLocaleString()}`;
-      document.getElementById('breakdown-taxes').textContent = `$${monthlyTaxes.toLocaleString()}`;
-      document.getElementById('breakdown-taxes-annual').textContent = `($${(monthlyTaxes * 12).toLocaleString()}/year)`;
-      document.getElementById('breakdown-insurance').textContent = `$${monthlyInsurance.toLocaleString()}`;
-      document.getElementById('breakdown-insurance-annual').textContent = `($${(monthlyInsurance * 12).toLocaleString()}/year)`;
-      document.getElementById('breakdown-hoa').textContent = `$${hoa.toLocaleString()}`;
-      document.getElementById('breakdown-maintenance').textContent = `$${monthlyMaintenance.toLocaleString()}`;
-      document.getElementById('breakdown-maintenance-annual').textContent = `($${annualMaintenance.toLocaleString()}/year)`;
-      document.getElementById('breakdown-management').textContent = `$${managementFee.toLocaleString()}`;
+      document.getElementById('breakdown-income').textContent = `$${safeToLocaleString(income)}`;
+      document.getElementById('breakdown-mortgage').textContent = `$${safeToLocaleString(mortgage)}`;
+      document.getElementById('breakdown-taxes').textContent = `$${safeToLocaleString(monthlyTaxes)}`;
+      document.getElementById('breakdown-taxes-annual').textContent = `($${safeToLocaleString(monthlyTaxes * 12)}/year)`;
+      document.getElementById('breakdown-insurance').textContent = `$${safeToLocaleString(monthlyInsurance)}`;
+      document.getElementById('breakdown-insurance-annual').textContent = `($${safeToLocaleString(monthlyInsurance * 12)}/year)`;
+      document.getElementById('breakdown-hoa').textContent = `$${safeToLocaleString(hoa)}`;
+      document.getElementById('breakdown-maintenance').textContent = `$${safeToLocaleString(monthlyMaintenance)}`;
+      document.getElementById('breakdown-maintenance-annual').textContent = `($${safeToLocaleString(annualMaintenance)}/year)`;
+      document.getElementById('breakdown-management').textContent = `$${safeToLocaleString(managementFee)}`;
       const managementText = managementRate > 0 ? `(${managementRate}% of rent)` : '(0% - self managed)';
       document.getElementById('breakdown-management-rate').textContent = managementText;
-      document.getElementById('breakdown-net-income').textContent = `$${netIncome.toLocaleString()}`;
+      document.getElementById('breakdown-net-income').textContent = `$${safeToLocaleString(netIncome)}`;
       
       // Update charts with new data
       if (currentAnalysis) {
@@ -1843,7 +1851,7 @@
               <div class="space-y-2">
                 <div class="flex justify-between">
                   <span class="text-green-700">Rental Income:</span>
-                  <span class="font-semibold text-green-800">$${income.toLocaleString()}</span>
+                  <span class="font-semibold text-green-800">$${safeToLocaleString(income)}</span>
                 </div>
                 <div class="flex justify-between">
                   <span class="text-green-700">Percentage:</span>
@@ -1858,27 +1866,27 @@
                 ${mortgage > 0 ? `
                 <div class="flex justify-between">
                   <span class="text-red-700">Mortgage Payment:</span>
-                  <span class="font-semibold">$${mortgage.toLocaleString()} (${((mortgage/income)*100).toFixed(1)}%)</span>
+                  <span class="font-semibold">$${safeToLocaleString(mortgage)} (${((mortgage/income)*100).toFixed(1)}%)</span>
                 </div>` : ''}
                 <div class="flex justify-between">
                   <span class="text-red-700">Property Taxes:</span>
-                  <span class="font-semibold">$${taxes.toLocaleString()} (${((taxes/income)*100).toFixed(1)}%)</span>
+                  <span class="font-semibold">$${safeToLocaleString(taxes)} (${((taxes/income)*100).toFixed(1)}%)</span>
                 </div>
                 <div class="flex justify-between">
                   <span class="text-red-700">Insurance:</span>
-                  <span class="font-semibold">$${insurance.toLocaleString()} (${((insurance/income)*100).toFixed(1)}%)</span>
+                  <span class="font-semibold">$${safeToLocaleString(insurance)} (${((insurance/income)*100).toFixed(1)}%)</span>
                 </div>
                 <div class="flex justify-between">
                   <span class="text-red-700">HOA/Condo Fees:</span>
-                  <span class="font-semibold">$${hoa.toLocaleString()} (${((hoa/income)*100).toFixed(1)}%)</span>
+                  <span class="font-semibold">$${safeToLocaleString(hoa)} (${((hoa/income)*100).toFixed(1)}%)</span>
                 </div>
                 <div class="flex justify-between">
                   <span class="text-red-700">Maintenance:</span>
-                  <span class="font-semibold">$${maintenance.toLocaleString()} (${((maintenance/income)*100).toFixed(1)}%)</span>
+                  <span class="font-semibold">$${safeToLocaleString(maintenance)} (${((maintenance/income)*100).toFixed(1)}%)</span>
                 </div>
                 <div class="flex justify-between">
                   <span class="text-red-700">Property Management:</span>
-                  <span class="font-semibold">$${management.toLocaleString()} (${((management/income)*100).toFixed(1)}%)</span>
+                  <span class="font-semibold">$${safeToLocaleString(management)} (${((management/income)*100).toFixed(1)}%)</span>
                 </div>
               </div>
             </div>
@@ -1889,13 +1897,13 @@
             <div class="flex justify-between items-center">
               <span class="text-blue-700">Monthly Net Income:</span>
               <span class="text-2xl font-bold ${net >= 0 ? 'text-green-600' : 'text-red-600'}">
-                $${net.toLocaleString()}
+                $${safeToLocaleString(net)}
               </span>
             </div>
             <div class="flex justify-between items-center mt-2">
               <span class="text-blue-700">Annual Net Income:</span>
               <span class="text-xl font-semibold ${net >= 0 ? 'text-green-600' : 'text-red-600'}">
-                $${(net * 12).toLocaleString()}
+                $${safeToLocaleString(net * 12)}
               </span>
             </div>
             <div class="mt-3 text-sm text-blue-700">
@@ -1923,15 +1931,15 @@
               <div class="space-y-2 text-sm">
                 <div class="flex justify-between">
                   <span>Monthly Rent:</span>
-                  <span class="font-semibold">$${(analysis.long_term_rental?.monthly_rent || 0).toLocaleString()}</span>
+                  <span class="font-semibold">$${safeToLocaleString(analysis.long_term_rental?.monthly_rent || 0)}</span>
                 </div>
                 <div class="flex justify-between">
                   <span>Annual Revenue:</span>
-                  <span class="font-semibold">$${(analysis.long_term_rental?.annual_revenue || 0).toLocaleString()}</span>
+                  <span class="font-semibold">$${safeToLocaleString(analysis.long_term_rental?.annual_revenue || 0)}</span>
                 </div>
                 <div class="flex justify-between">
                   <span>Annual Profit:</span>
-                  <span class="font-semibold">$${ltrProfit.toLocaleString()}</span>
+                  <span class="font-semibold">$${safeToLocaleString(ltrProfit)}</span>
                 </div>
                 <div class="flex justify-between border-t pt-2">
                   <span class="font-semibold">ROI:</span>
@@ -1953,11 +1961,11 @@
                 </div>
                 <div class="flex justify-between">
                   <span>Annual Revenue:</span>
-                  <span class="font-semibold">$${(analysis.short_term_rental?.annual_revenue || 0).toLocaleString()}</span>
+                  <span class="font-semibold">$${safeToLocaleString(analysis.short_term_rental?.annual_revenue || 0)}</span>
                 </div>
                 <div class="flex justify-between">
                   <span>Annual Profit:</span>
-                  <span class="font-semibold">$${strProfit.toLocaleString()}</span>
+                  <span class="font-semibold">$${safeToLocaleString(strProfit)}</span>
                 </div>
                 <div class="flex justify-between border-t pt-2">
                   <span class="font-semibold">ROI:</span>
@@ -1971,11 +1979,11 @@
               <div class="space-y-2 text-sm">
                 <div class="flex justify-between">
                   <span>Investment Amount:</span>
-                  <span class="font-semibold">$${propertyValue.toLocaleString()}</span>
+                  <span class="font-semibold">$${safeToLocaleString(propertyValue)}</span>
                 </div>
                 <div class="flex justify-between">
                   <span>Annual Return:</span>
-                  <span class="font-semibold">$${(propertyValue * 0.04).toLocaleString()}</span>
+                  <span class="font-semibold">$${safeToLocaleString(propertyValue * 0.04)}</span>
                 </div>
                 <div class="flex justify-between border-t pt-2">
                   <span class="font-semibold">ROI:</span>
@@ -2003,7 +2011,7 @@
               <div class="text-center">
                 <p class="font-semibold">Annual Difference</p>
                 <p class="text-lg font-bold text-green-600">
-                  $${(Math.max(ltrProfit, strProfit) - (propertyValue * 0.04)).toLocaleString()}
+                  $${safeToLocaleString(Math.max(ltrProfit, strProfit) - (propertyValue * 0.04))}
                 </p>
               </div>
             </div>

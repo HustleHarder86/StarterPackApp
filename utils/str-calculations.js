@@ -266,9 +266,23 @@ function calculateSeasonalAdjustments(baseRate, season = 'average') {
   };
 }
 
+/**
+ * Safely format a number using toLocaleString with null/undefined checks
+ * @param {number|undefined|null} value - The number to format
+ * @param {number} defaultValue - Default value if the input is null/undefined
+ * @returns {string} Formatted number string
+ */
+function safeToLocaleString(value, defaultValue = 0) {
+  if (value === null || value === undefined || isNaN(value)) {
+    return defaultValue.toLocaleString();
+  }
+  return Number(value).toLocaleString();
+}
+
 // Export functions for CommonJS
 module.exports = {
   calculateSTRMetrics,
   filterComparables,
-  calculateSeasonalAdjustments
+  calculateSeasonalAdjustments,
+  safeToLocaleString
 };

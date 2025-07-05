@@ -52,7 +52,10 @@ class AirbnbScraper {
     const query = {
       locationQueries: [location], // Changed from 'location' to 'locationQueries' array
       currency: 'CAD',
-      locale: 'en-US'
+      locale: 'en-US',
+      // Add price limits to control costs and reduce result count
+      priceMin: 50,    // Minimum $50 CAD per night
+      priceMax: 500    // Maximum $500 CAD per night
     };
 
     // Add filters based on property characteristics
