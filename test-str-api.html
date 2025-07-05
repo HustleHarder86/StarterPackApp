@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STR API Test - Development Only</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .loading {
+            display: none;
+            color: #666;
+            margin-top: 20px;
+        }
+        .results {
+            margin-top: 30px;
+            display: none;
+        }
+        .error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 20px;
+        }
+        .success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 20px;
+        }
+        pre {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            overflow-x: auto;
+            font-size: 14px;
+        }
+        .metric {
+            display: inline-block;
+            margin: 10px 20px 10px 0;
+        }
+        .metric-label {
+            font-weight: bold;
+            color: #666;
+        }
+        .metric-value {
+            font-size: 24px;
+            color: #007bff;
+        }
+        .comparables {
+            margin-top: 20px;
+        }
+        .comparable {
+            background: #f8f9fa;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>STR API Test Interface</h1>
+        <div class="warning">
+            <strong>⚠️ Development Only:</strong> This is a test interface for the STR analysis API. 
+            Remove this file before production deployment.
+        </div>
+
+        <div id="controls">
+            <button onclick="testBasicEndpoint()">Test Basic Endpoint</button>
+            <button onclick="testWithCustomProperty()">Test Custom Property</button>
+            <button onclick="clearResults()">Clear Results</button>
+        </div>
+
+        <div class="loading" id="loading">
+            🔄 Loading... This may take 30-60 seconds as we query Airbnb data...
+        </div>
+
+        <div class="results" id="results"></div>
+    </div>
+
+    <script>
+        const API_BASE = '/api';
+
+        function showLoading() {
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('results').style.display = 'none';
+            document.querySelectorAll('button').forEach(btn => btn.disabled = true);
+        }
+
+        function hideLoading() {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('results').style.display = 'block';
+            document.querySelectorAll('button').forEach(btn => btn.disabled = false);
+        }
+
+        function displayResults(data, isError = false) {
+            const resultsDiv = document.getElementById('results');
+            
+            if (isError) {
+                resultsDiv.innerHTML = `
+                    <div class="error">
+                        <h3>❌ Error</h3>
+                        <p><strong>${data.error || 'Unknown error'}</strong></p>
+                        ${data.details ? `<p>Details: ${data.details}</p>` : ''}
+                        ${data.message ? `<p>Message: ${data.message}</p>` : ''}
+                    </div>
+                `;
+                return;
+            }
+
+            const metrics = data.metrics;
+            const searchResults = data.searchResults;
+            
+            resultsDiv.innerHTML = `
+                <div class="success">
+                    <h3>✅ Test Successful</h3>
+                    <p>Found ${searchResults.totalFound} listings, filtered to ${searchResults.filteredCount} comparable properties</p>
+                </div>
+
+                <h3>📊 STR Analysis Metrics</h3>
+                <div class="metrics">
+                    <div class="metric">
+                        <div class="metric-label">Avg Nightly Rate</div>
+                        <div class="metric-value">$${metrics.avgNightlyRate}</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-label">Occupancy Rate</div>
+                        <div class="metric-value">${(metrics.occupancyRate * 100).toFixed(1)}%</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-label">Monthly Revenue</div>
+                        <div class="metric-value">$${metrics.monthlyRevenue.toLocaleString()}</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-label">Annual Revenue</div>
+                        <div class="metric-value">$${metrics.annualRevenue.toLocaleString()}</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-label">Net Annual Revenue</div>
+                        <div class="metric-value">$${metrics.netAnnualRevenue.toLocaleString()}</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-label">Confidence</div>
+                        <div class="metric-value">${metrics.confidence.toUpperCase()}</div>
+                    </div>
+                </div>
+
+                ${data.sampleComparables && data.sampleComparables.length > 0 ? `
+                    <h3>🏠 Sample Comparable Properties</h3>
+                    <div class="comparables">
+                        ${data.sampleComparables.map((comp, idx) => `
+                            <div class="comparable">
+                                <strong>${idx + 1}. ${comp.title}</strong><br>
+                                Price: $${comp.price}/night | 
+                                Bedrooms: ${comp.bedrooms} | 
+                                Type: ${comp.propertyType}<br>
+                                <a href="${comp.url}" target="_blank">View on Airbnb →</a>
+                            </div>
+                        `).join('')}
+                    </div>
+                ` : ''}
+
+                <h3>🔍 Raw Response Data</h3>
+                <pre>${JSON.stringify(data, null, 2)}</pre>
+            `;
+        }
+
+        async function testBasicEndpoint() {
+            showLoading();
+            
+            try {
+                const response = await fetch(`${API_BASE}/test-str`);
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    displayResults(data, true);
+                } else {
+                    displayResults(data);
+                }
+            } catch (error) {
+                displayResults({
+                    error: 'Network Error',
+                    details: error.message
+                }, true);
+            } finally {
+                hideLoading();
+            }
+        }
+
+        async function testWithCustomProperty() {
+            const customProperty = {
+                address: {
+                    city: prompt('Enter city (e.g., Toronto, Milton, Vancouver):', 'Toronto'),
+                    province: prompt('Enter province (e.g., Ontario, BC):', 'Ontario')
+                },
+                bedrooms: parseInt(prompt('Enter number of bedrooms:', '2')),
+                propertyType: prompt('Enter property type (Single Family, Condo, Townhouse):', 'Condo')
+            };
+
+            if (!customProperty.address.city || !customProperty.bedrooms) {
+                alert('City and bedrooms are required');
+                return;
+            }
+
+            showLoading();
+            
+            // For now, use the test endpoint with default property
+            // In production, this would send the custom property data
+            testBasicEndpoint();
+        }
+
+        function clearResults() {
+            document.getElementById('results').innerHTML = '';
+            document.getElementById('results').style.display = 'none';
+        }
+    </script>
+</body>
+</html>

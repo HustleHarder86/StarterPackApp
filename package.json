@@ -22,6 +22,7 @@
     "firebase:deploy:indexes": "firebase deploy --only firestore:indexes"
   },
   "dependencies": {
+    "apify-client": "^2.12.6",
     "firebase-admin": "^11.11.0",
     "puppeteer": "^24.11.1"
   },
