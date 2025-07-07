@@ -118,6 +118,25 @@
     .positive { color: #10b981; }
     .negative { color: #ef4444; }
   </style>
+  
+  <!-- API Configuration -->
+  <script>
+    window.ENV = {
+      isProduction: window.location.hostname !== 'localhost',
+      railwayUrl: window.location.hostname === 'localhost' 
+        ? 'http://localhost:3001' 
+        : 'https://starterpackapp-production.up.railway.app',
+      enableProgressTracking: true,
+      useRailway: true
+    };
+  </script>
+  
+  <!-- Load API Client -->
+  <script src="/utils/api-config.js"></script>
+  <script src="/utils/api-client.js"></script>
+  
+  <!-- Load Progress Modal Component -->
+  <script type="text/babel" src="/components/ProgressModal.jsx"></script>
 </head>
 <body class="bg-gray-50">
   <!-- Loading Screen -->
@@ -127,6 +146,9 @@
       <p id="loading-message" class="mt-4 text-gray-600">Loading ROI Finder...</p>
     </div>
   </div>
+
+  <!-- Progress Modal Container -->
+  <div id="progress-modal-container"></div>
 
   <!-- Auth Screen -->
   <div id="auth-screen" class="min-h-screen bg-gradient-to-br from-blue-50 to-green-50 flex items-center justify-center p-6" style="display: none;">
@@ -1250,41 +1272,109 @@
       }
     }
 
-    // Property analysis function
-    async function analyzeProperty(address) {
+    // Property analysis function using Railway API
+    async function analyzeProperty(address, propertyData = null) {
       try {
         console.log('Starting property analysis for:', address);
         
         // Format address
-        const fullAddress = `${address.street}, ${address.city}, ${address.state}, ${address.country} ${address.postal}`.trim();
+        const fullAddress = typeof address === 'string' ? address : 
+          `${address.street}, ${address.city}, ${address.state}, ${address.country} ${address.postal}`.trim();
         
-        // Call enhanced API with STR analysis
-        const response = await fetch('/api/analyze-property', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            userId: currentUser.uid,
-            propertyAddress: fullAddress,
-            userEmail: currentUser.email,
-            userName: currentUser.displayName,
-            requestType: 'authenticated',
-            includeStrAnalysis: document.getElementById('analysis-mode').value === 'str'
-          })
-        });
+        // Show progress modal
+        const modalContainer = document.getElementById('progress-modal-container');
+        let progressModal = null;
         
-        if (!response.ok) {
-          throw new Error('Analysis API request failed');
+        if (window.ProgressModal && modalContainer) {
+          ReactDOM.render(
+            React.createElement(ProgressModal, {
+              isOpen: true,
+              progress: 0,
+              message: 'Starting analysis...',
+              onCancel: () => {
+                if (window.apiClient) apiClient.cancelActiveJobs();
+                ReactDOM.unmountComponentAtNode(modalContainer);
+              }
+            }),
+            modalContainer
+          );
         }
         
-        const result = await response.json();
-        console.log('Analysis result:', result);
+        // Set up progress listener
+        const unsubscribe = window.apiClient ? apiClient.onProgress((data) => {
+          if (modalContainer && window.ProgressModal) {
+            ReactDOM.render(
+              React.createElement(ProgressModal, {
+                isOpen: true,
+                progress: data.progress || 0,
+                message: data.message || 'Processing...',
+                onCancel: () => {
+                  apiClient.cancelActiveJobs();
+                  ReactDOM.unmountComponentAtNode(modalContainer);
+                }
+              }),
+              modalContainer
+            );
+          }
+        }) : () => {};
         
-        if (result.success && result.data) {
-          return result.data;
-        } else {
-          throw new Error(result.error || 'Analysis failed');
+        try {
+          let result;
+          
+          if (window.apiClient && window.shouldUseRailway()) {
+            // Use Railway API through the API client
+            result = await apiClient.analyzeProperty({
+              propertyAddress: fullAddress,
+              propertyData: propertyData,
+              requestType: 'authenticated',
+              includeStrAnalysis: document.getElementById('analysis-mode')?.value === 'str'
+            });
+          } else {
+            // Fallback to Vercel API
+            const response = await fetch('/api/analyze-property', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                userId: currentUser.uid,
+                propertyAddress: fullAddress,
+                userEmail: currentUser.email,
+                userName: currentUser.displayName,
+                requestType: 'authenticated',
+                includeStrAnalysis: document.getElementById('analysis-mode')?.value === 'str',
+                propertyData: propertyData
+              })
+            });
+            
+            if (!response.ok) {
+              throw new Error('Analysis API request failed');
+            }
+            
+            const apiResult = await response.json();
+            if (apiResult.success && apiResult.data) {
+              result = apiResult.data;
+            } else {
+              throw new Error(apiResult.error || 'Analysis failed');
+            }
+          }
+          
+          // Clean up
+          unsubscribe();
+          if (modalContainer) {
+            ReactDOM.unmountComponentAtNode(modalContainer);
+          }
+          
+          console.log('Analysis result:', result);
+          return result;
+          
+        } catch (error) {
+          // Clean up on error
+          unsubscribe();
+          if (modalContainer) {
+            ReactDOM.unmountComponentAtNode(modalContainer);
+          }
+          throw error;
         }
         
       } catch (error) {
