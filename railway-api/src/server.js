@@ -61,6 +61,22 @@ app.use('/api/analysis', require('./routes/analysis'));
 app.use('/api/reports', require('./routes/reports'));
 app.use('/api/jobs', require('./routes/jobs'));
 
+// Debug route to list all available routes
+app.get('/api/debug/routes', (req, res) => {
+  res.json({
+    availableRoutes: [
+      'GET /health',
+      'POST /api/analysis/property',
+      'POST /api/analysis/str', 
+      'POST /api/analysis/comparables',
+      'POST /api/reports/generate',
+      'GET /api/reports/download/:reportId',
+      'GET /api/jobs/:jobId/status'
+    ],
+    message: 'These are the available API endpoints'
+  });
+});
+
 // 404 handler
 app.use((req, res) => {
   res.status(404).json({
