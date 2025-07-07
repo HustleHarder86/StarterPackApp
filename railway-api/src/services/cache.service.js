@@ -2,15 +2,10 @@ const Redis = require('redis');
 const config = require('../config');
 const logger = require('./logger.service');
 
-// Create Redis client
-const redisClient = Redis.createClient({
-  url: config.redis.url,
-  ...config.redis.options
-});
-
-// Create separate client for pub/sub
-const publisher = redisClient.duplicate();
-const subscriber = redisClient.duplicate();
+// Defer Redis client creation until we actually connect
+let redisClient;
+let publisher;
+let subscriber;
 
 // Connect all clients
 async function connectRedis() {
@@ -23,6 +18,15 @@ async function connectRedis() {
     logger.info('Full process.env keys containing REDIS:', Object.keys(process.env).filter(key => key.includes('REDIS')));
     logger.info('Exact Redis URL being used:', config.redis.url);
     logger.info('========================');
+    
+    // Create Redis clients here with fresh config
+    redisClient = Redis.createClient({
+      url: config.redis.url,
+      ...config.redis.options
+    });
+    
+    publisher = redisClient.duplicate();
+    subscriber = redisClient.duplicate();
     
     await redisClient.connect();
     await publisher.connect();
@@ -57,6 +61,10 @@ connectRedis();
 const cache = {
   async get(key) {
     try {
+      if (!redisClient) {
+        logger.warn('Redis not connected, cache get skipped');
+        return null;
+      }
       const value = await redisClient.get(key);
       return value ? JSON.parse(value) : null;
     } catch (error) {
@@ -67,6 +75,10 @@ const cache = {
   
   async set(key, value, ttlSeconds = 3600) {
     try {
+      if (!redisClient) {
+        logger.warn('Redis not connected, cache set skipped');
+        return false;
+      }
       await redisClient.setEx(
         key,
         ttlSeconds,
@@ -81,6 +93,10 @@ const cache = {
   
   async del(key) {
     try {
+      if (!redisClient) {
+        logger.warn('Redis not connected, cache delete skipped');
+        return false;
+      }
       await redisClient.del(key);
       return true;
     } catch (error) {
@@ -91,6 +107,10 @@ const cache = {
   
   async exists(key) {
     try {
+      if (!redisClient) {
+        logger.warn('Redis not connected, cache exists skipped');
+        return false;
+      }
       return await redisClient.exists(key);
     } catch (error) {
       logger.error('Cache exists error:', error);
@@ -101,6 +121,10 @@ const cache = {
   // Pattern-based deletion
   async delPattern(pattern) {
     try {
+      if (!redisClient) {
+        logger.warn('Redis not connected, cache pattern delete skipped');
+        return false;
+      }
       const keys = await redisClient.keys(pattern);
       if (keys.length > 0) {
         await redisClient.del(keys);
@@ -142,6 +166,10 @@ const cache = {
 const rateLimiter = {
   async checkLimit(key, maxRequests, windowSeconds) {
     try {
+      if (!redisClient) {
+        logger.warn('Redis not connected, rate limiting disabled');
+        return { allowed: true, current: 0, remaining: maxRequests };
+      }
       const current = await redisClient.incr(key);
       
       if (current === 1) {
