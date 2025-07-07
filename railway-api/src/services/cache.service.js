@@ -1,5 +1,6 @@
 const Redis = require('redis');
 const config = require('../config');
+const { redisUrl, redisOptions } = require('../config/redis');
 const logger = require('./logger.service');
 
 // Defer Redis client creation until we actually connect
@@ -19,23 +20,13 @@ async function connectRedis() {
     logger.info('Exact Redis URL being used:', config.redis.url);
     logger.info('========================');
     
-    // Parse Redis URL for Railway compatibility
-    const redisUrl = process.env.REDIS_URL || config.redis.url;
-    logger.info('Creating Redis client with URL:', redisUrl);
+    // Use the centralized Redis configuration
+    logger.info('Creating Redis client with centralized config');
     
     // Create Redis clients here with explicit URL
     redisClient = Redis.createClient({
       url: redisUrl,
-      socket: {
-        connectTimeout: 10000,
-        reconnectStrategy: (retries) => {
-          if (retries > 3) {
-            logger.error('Max Redis reconnection attempts reached');
-            return new Error('Max reconnection attempts');
-          }
-          return Math.min(retries * 100, 3000);
-        }
-      }
+      ...redisOptions
     });
     
     publisher = redisClient.duplicate();

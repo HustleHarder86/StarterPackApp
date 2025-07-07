@@ -1,17 +1,18 @@
 const { Queue, Worker, QueueEvents } = require('bullmq');
 const config = require('../config');
+const { redisUrl } = require('../config/redis');
 const logger = require('./logger.service');
 
 // Debug Redis URL for BullMQ
 logger.info('=== BULLMQ REDIS DEBUG ===');
-logger.info('BullMQ using REDIS_URL:', process.env.REDIS_URL ? 'YES' : 'NO');
-logger.info('BullMQ Redis URL:', (process.env.REDIS_URL || config.redis.url)?.substring(0, 50) + '...');
+logger.info('BullMQ using centralized Redis config');
+logger.info('BullMQ Redis URL:', redisUrl?.substring(0, 50) + '...');
 logger.info('=========================');
 
 // Queue configuration
 const queueConfig = {
   connection: {
-    url: process.env.REDIS_URL || config.redis.url
+    url: redisUrl
   },
   defaultJobOptions: {
     attempts: 3,

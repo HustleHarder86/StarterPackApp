@@ -1,5 +1,6 @@
 const { Worker } = require('bullmq');
 const config = require('../config');
+const { redisUrl } = require('../config/redis');
 const logger = require('../services/logger.service');
 const { updateJobProgress } = require('../services/queue.service');
 const { cache } = require('../services/cache.service');
@@ -10,8 +11,8 @@ const { analyzePropertyLogic } = require('../services/property-analysis.service'
 
 // Debug worker Redis connection
 logger.info('=== WORKER REDIS DEBUG ===');
-logger.info('Worker using REDIS_URL:', process.env.REDIS_URL ? 'YES' : 'NO');
-logger.info('Worker Redis URL:', (process.env.REDIS_URL || config.redis.url)?.substring(0, 50) + '...');
+logger.info('Worker using centralized Redis config');
+logger.info('Worker Redis URL:', redisUrl?.substring(0, 50) + '...');
 logger.info('==========================');
 
 // Create the worker
@@ -90,7 +91,7 @@ const analysisWorker = new Worker(
   },
   {
     connection: {
-      url: process.env.REDIS_URL || config.redis.url
+      url: redisUrl
     },
     concurrency: 5, // Process up to 5 jobs concurrently
     limiter: {
