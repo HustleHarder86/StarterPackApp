@@ -15,6 +15,11 @@ const subscriber = redisClient.duplicate();
 // Connect all clients
 async function connectRedis() {
   try {
+    logger.info('Attempting to connect to Redis...', {
+      url: config.redis.url?.substring(0, 20) + '...', 
+      hasUrl: !!config.redis.url
+    });
+    
     await redisClient.connect();
     await publisher.connect();
     await subscriber.connect();
@@ -28,6 +33,12 @@ async function connectRedis() {
     
   } catch (error) {
     logger.error('Failed to connect to Redis:', error);
+    logger.error('Redis config:', {
+      url: config.redis.url?.substring(0, 20) + '...',
+      hasRedisUrl: !!process.env.REDIS_URL,
+      redisUrlPrefix: process.env.REDIS_URL?.substring(0, 10)
+    });
+    
     // Don't crash the server if Redis is unavailable
     if (config.nodeEnv === 'production') {
       logger.warn('Running without Redis - caching disabled');
