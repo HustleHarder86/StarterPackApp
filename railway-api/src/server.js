@@ -53,6 +53,21 @@ const limiter = rateLimit({
 
 app.use('/api/', limiter);
 
+// Root endpoint
+app.get('/', (req, res) => {
+  res.json({
+    service: 'StarterPackApp Railway API',
+    status: 'operational',
+    version: '1.0.0',
+    endpoints: {
+      health: '/health',
+      analysis: '/api/analysis/*',
+      jobs: '/api/jobs/*',
+      reports: '/api/reports/*'
+    }
+  });
+});
+
 // Health check route
 app.use('/health', require('./routes/health'));
 
