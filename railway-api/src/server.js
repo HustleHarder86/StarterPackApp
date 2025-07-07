@@ -53,22 +53,10 @@ const limiter = rateLimit({
 
 app.use('/api/', limiter);
 
-// Health check endpoint
-app.get('/health', (req, res) => {
-  res.json({
-    status: 'healthy',
-    service: 'starterpack-railway-api',
-    version: '1.0.0',
-    timestamp: new Date().toISOString(),
-    uptime: process.uptime(),
-    memory: {
-      used: Math.round(process.memoryUsage().heapUsed / 1024 / 1024) + 'MB',
-      total: Math.round(process.memoryUsage().heapTotal / 1024 / 1024) + 'MB'
-    }
-  });
-});
+// Health check route
+app.use('/health', require('./routes/health'));
 
-// API routes (to be added)
+// API routes
 app.use('/api/analysis', require('./routes/analysis'));
 app.use('/api/reports', require('./routes/reports'));
 app.use('/api/jobs', require('./routes/jobs'));

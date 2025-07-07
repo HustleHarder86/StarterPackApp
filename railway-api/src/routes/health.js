@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const { db } = require('../services/firebase.service');
 const logger = require('../services/logger.service');
+const { redisClient } = require('../services/cache.service');
+const { checkQueueHealth } = require('../services/queue.service');
 
 // Detailed health check
 router.get('/', async (req, res) => {
@@ -22,6 +24,30 @@ router.get('/', async (req, res) => {
     health.checks.firebase = 'error';
     health.status = 'degraded';
     logger.error('Firebase health check failed:', error);
+  }
+  
+  // Check Redis connection
+  try {
+    if (redisClient.isOpen) {
+      await redisClient.ping();
+      health.checks.redis = 'connected';
+    } else {
+      health.checks.redis = 'disconnected';
+      health.status = 'degraded';
+    }
+  } catch (error) {
+    health.checks.redis = 'error';
+    health.status = 'degraded';
+    logger.error('Redis health check failed:', error);
+  }
+  
+  // Check queue health
+  try {
+    const queueHealth = await checkQueueHealth();
+    health.checks.queues = queueHealth;
+  } catch (error) {
+    health.checks.queues = 'error';
+    logger.error('Queue health check failed:', error);
   }
   
   // Check memory usage
