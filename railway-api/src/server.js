@@ -1,3 +1,6 @@
+// Run startup debug FIRST
+require('./startup-debug');
+
 const express = require('express');
 const helmet = require('helmet');
 const compression = require('compression');

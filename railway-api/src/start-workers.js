@@ -1,5 +1,12 @@
 // Start workers for processing background jobs
-require('dotenv').config();
+
+// Run startup debug FIRST
+require('./startup-debug');
+
+// Only load dotenv in development
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config();
+}
 
 const logger = require('./services/logger.service');
 
