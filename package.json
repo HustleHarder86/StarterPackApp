@@ -19,7 +19,10 @@
     "firebase:admin": "node scripts/create-admin.js",
     "firebase:deploy": "firebase deploy",
     "firebase:deploy:rules": "firebase deploy --only firestore:rules,storage:rules",
-    "firebase:deploy:indexes": "firebase deploy --only firestore:indexes"
+    "firebase:deploy:indexes": "firebase deploy --only firestore:indexes",
+    "start": "cd railway-api && npm install && npm start",
+    "railway:install": "cd railway-api && npm install",
+    "railway:start": "cd railway-api && npm start"
   },
   "dependencies": {
     "apify-client": "^2.12.6",
