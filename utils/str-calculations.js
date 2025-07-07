@@ -6,7 +6,7 @@
  * @param {Object} property - Target property details
  * @returns {Object} Calculated STR metrics
  */
-export function calculateSTRMetrics(comparables, property) {
+function calculateSTRMetrics(comparables, property) {
   if (!comparables || comparables.length === 0) {
     return {
       avgNightlyRate: 0,
