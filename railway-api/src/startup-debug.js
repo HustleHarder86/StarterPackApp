@@ -1,52 +1,40 @@
 // This file runs before anything else to debug environment variables
-console.log('\n\n=== STARTUP DEBUG - ENVIRONMENT VARIABLES ===');
-console.log('Current time:', new Date().toISOString());
-console.log('NODE_ENV:', process.env.NODE_ENV);
-console.log('PORT:', process.env.PORT);
+console.log('STARTUP_DEBUG: Checking Redis environment variables...');
 
-// Check for Redis-related variables
-const redisVars = Object.keys(process.env).filter(key => 
-  key.toLowerCase().includes('redis') || 
-  key.toLowerCase().includes('railway')
+// Only check Redis-related variables to avoid truncation
+const allEnvVars = Object.keys(process.env);
+console.log(`STARTUP_DEBUG: Total env vars: ${allEnvVars.length}`);
+
+// Find any Redis-related variables
+const redisRelated = allEnvVars.filter(key => 
+  key.toUpperCase().includes('REDIS') || 
+  key === 'DATABASE_URL' ||
+  (key.includes('RAILWAY') && process.env[key]?.includes('redis'))
 );
 
-console.log('\nRedis/Railway related env vars found:', redisVars.length > 0 ? redisVars : 'NONE');
+console.log(`STARTUP_DEBUG: Found ${redisRelated.length} Redis-related vars:`, redisRelated.join(', '));
 
-// Check specific Redis variables
-const checkVars = [
-  'REDIS_URL',
-  'REDIS_PRIVATE_URL',
-  'REDIS_PUBLIC_URL', 
-  'RAILWAY_REDIS_URL',
-  'RAILWAY_PRIVATE_REDIS_URL',
-  'REDISCLOUD_URL',
-  'DATABASE_URL'
-];
-
-console.log('\nChecking specific Redis variables:');
-checkVars.forEach(varName => {
-  const value = process.env[varName];
-  if (value) {
-    console.log(`${varName}: ${value.substring(0, 50)}...`);
-  } else {
-    console.log(`${varName}: NOT SET`);
+// Show Redis values
+redisRelated.forEach(key => {
+  const value = process.env[key];
+  if (value && value.includes('redis')) {
+    console.log(`STARTUP_DEBUG: ${key}=${value.substring(0, 60)}...`);
   }
 });
 
-// Show all env vars (be careful with secrets)
-console.log('\nALL environment variables:');
-Object.keys(process.env).sort().forEach(key => {
-  // Hide sensitive values
-  if (key.includes('KEY') || key.includes('SECRET') || key.includes('PASSWORD')) {
-    console.log(`${key}: [HIDDEN]`);
-  } else {
-    const value = process.env[key];
-    if (value && value.length > 100) {
-      console.log(`${key}: ${value.substring(0, 50)}... (truncated)`);
-    } else {
-      console.log(`${key}: ${value}`);
-    }
+// Explicitly check common Redis env vars
+['REDIS_URL', 'REDIS_PRIVATE_URL', 'REDIS_PUBLIC_URL', 'RAILWAY_REDIS_URL'].forEach(key => {
+  if (!redisRelated.includes(key)) {
+    console.log(`STARTUP_DEBUG: ${key}=NOT_SET`);
   }
 });
 
-console.log('\n=== END STARTUP DEBUG ===\n\n');
+// Also check if there's a Railway service variable pattern
+const railwayServiceVars = allEnvVars.filter(key => 
+  key.startsWith('RAILWAY_SERVICE_') && key.includes('REDIS')
+);
+if (railwayServiceVars.length > 0) {
+  console.log('STARTUP_DEBUG: Railway service vars:', railwayServiceVars);
+}
+
+console.log('STARTUP_DEBUG: Complete');

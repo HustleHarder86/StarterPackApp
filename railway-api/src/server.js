@@ -63,6 +63,7 @@ app.use('/health', require('./routes/health'));
 app.use('/api/analysis', require('./routes/analysis'));
 app.use('/api/reports', require('./routes/reports'));
 app.use('/api/jobs', require('./routes/jobs'));
+app.use('/api/debug', require('./routes/debug'));
 
 // Debug route to list all available routes
 app.get('/api/debug/routes', (req, res) => {
