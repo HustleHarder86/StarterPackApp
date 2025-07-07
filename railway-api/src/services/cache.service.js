@@ -15,10 +15,12 @@ const subscriber = redisClient.duplicate();
 // Connect all clients
 async function connectRedis() {
   try {
-    logger.info('Attempting to connect to Redis...', {
-      url: config.redis.url?.substring(0, 20) + '...', 
-      hasUrl: !!config.redis.url
-    });
+    logger.info('=== REDIS DEBUG INFO ===');
+    logger.info('Environment REDIS_URL:', process.env.REDIS_URL?.substring(0, 30) + '...');
+    logger.info('Config redis URL:', config.redis.url?.substring(0, 30) + '...');
+    logger.info('Has REDIS_URL env var:', !!process.env.REDIS_URL);
+    logger.info('Config object:', { url: config.redis.url });
+    logger.info('========================');
     
     await redisClient.connect();
     await publisher.connect();
