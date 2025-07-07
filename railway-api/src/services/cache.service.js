@@ -11,17 +11,8 @@ let subscriber;
 // Connect all clients
 async function connectRedis() {
   try {
-    logger.info('=== REDIS DEBUG INFO ===');
-    logger.info('NODE_ENV:', process.env.NODE_ENV);
-    logger.info('Environment REDIS_URL exists:', !!process.env.REDIS_URL);
-    logger.info('Environment REDIS_URL:', process.env.REDIS_URL?.substring(0, 50) + '...');
-    logger.info('Config redis URL:', config.redis.url?.substring(0, 50) + '...');
-    logger.info('Full process.env keys containing REDIS:', Object.keys(process.env).filter(key => key.includes('REDIS')));
-    logger.info('Exact Redis URL being used:', config.redis.url);
-    logger.info('========================');
-    
     // Use the centralized Redis configuration
-    logger.info('Creating Redis client with centralized config');
+    logger.debug('Connecting to Redis...');
     
     // Create Redis clients here with explicit URL
     redisClient = Redis.createClient({

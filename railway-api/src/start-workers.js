@@ -1,8 +1,5 @@
 // Start workers for processing background jobs
 
-// Run startup debug FIRST
-require('./startup-debug');
-
 // Only load dotenv in development
 if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config();

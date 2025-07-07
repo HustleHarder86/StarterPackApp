@@ -3,11 +3,8 @@ const config = require('../config');
 const { redisUrl } = require('../config/redis');
 const logger = require('./logger.service');
 
-// Debug Redis URL for BullMQ
-logger.info('=== BULLMQ REDIS DEBUG ===');
-logger.info('BullMQ using centralized Redis config');
-logger.info('BullMQ Redis URL:', redisUrl?.substring(0, 50) + '...');
-logger.info('=========================');
+// BullMQ Redis configuration
+logger.debug('Initializing BullMQ with Redis connection');
 
 // Queue configuration
 const queueConfig = {

@@ -9,11 +9,8 @@ const { trackAPIUsage } = require('../services/firebase.service');
 // Import the analysis logic (we'll create this next)
 const { analyzePropertyLogic } = require('../services/property-analysis.service');
 
-// Debug worker Redis connection
-logger.info('=== WORKER REDIS DEBUG ===');
-logger.info('Worker using centralized Redis config');
-logger.info('Worker Redis URL:', redisUrl?.substring(0, 50) + '...');
-logger.info('==========================');
+// Worker Redis configuration
+logger.debug('Initializing analysis worker with Redis connection');
 
 // Create the worker
 const analysisWorker = new Worker(

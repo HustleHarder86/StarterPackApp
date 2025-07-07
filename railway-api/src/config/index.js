@@ -3,14 +3,6 @@ if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config();
 }
 
-// Debug environment loading
-console.log('=== CONFIG DEBUG ===');
-console.log('NODE_ENV:', process.env.NODE_ENV);
-console.log('REDIS_URL from env:', process.env.REDIS_URL);
-console.log('All env vars with REDIS:', Object.keys(process.env).filter(k => k.includes('REDIS')));
-console.log('Dotenv loaded:', process.env.NODE_ENV !== 'production' ? 'YES' : 'NO');
-console.log('===================');
-
 const config = {
   // Server
   port: process.env.PORT || 3000,
