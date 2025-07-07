@@ -8,6 +8,12 @@ const { trackAPIUsage } = require('../services/firebase.service');
 // Import the analysis logic (we'll create this next)
 const { analyzePropertyLogic } = require('../services/property-analysis.service');
 
+// Debug worker Redis connection
+logger.info('=== WORKER REDIS DEBUG ===');
+logger.info('Worker using REDIS_URL:', process.env.REDIS_URL ? 'YES' : 'NO');
+logger.info('Worker Redis URL:', (process.env.REDIS_URL || config.redis.url)?.substring(0, 50) + '...');
+logger.info('==========================');
+
 // Create the worker
 const analysisWorker = new Worker(
   'property-analysis',
@@ -84,7 +90,7 @@ const analysisWorker = new Worker(
   },
   {
     connection: {
-      url: config.redis.url
+      url: process.env.REDIS_URL || config.redis.url
     },
     concurrency: 5, // Process up to 5 jobs concurrently
     limiter: {

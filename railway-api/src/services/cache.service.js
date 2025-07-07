@@ -19,10 +19,23 @@ async function connectRedis() {
     logger.info('Exact Redis URL being used:', config.redis.url);
     logger.info('========================');
     
-    // Create Redis clients here with fresh config
+    // Parse Redis URL for Railway compatibility
+    const redisUrl = process.env.REDIS_URL || config.redis.url;
+    logger.info('Creating Redis client with URL:', redisUrl);
+    
+    // Create Redis clients here with explicit URL
     redisClient = Redis.createClient({
-      url: config.redis.url,
-      ...config.redis.options
+      url: redisUrl,
+      socket: {
+        connectTimeout: 10000,
+        reconnectStrategy: (retries) => {
+          if (retries > 3) {
+            logger.error('Max Redis reconnection attempts reached');
+            return new Error('Max reconnection attempts');
+          }
+          return Math.min(retries * 100, 3000);
+        }
+      }
     });
     
     publisher = redisClient.duplicate();
