@@ -1,0 +1,389 @@
+{
+  "url": "file:///home/amy/StarterPackApp/roi-finder.html",
+  "title": "ROI Finder - StarterPack",
+  "timestamp": "2025-07-11T15:34:40.257Z",
+  "viewport": {
+    "width": 1280,
+    "height": 720
+  },
+  "visibleText": "Loading ROI Finder...",
+  "clickableElements": [
+    {
+      "tag": "BUTTON",
+      "text": "\n              Sign In\n              \n                \n              \n            ",
+      "id": "",
+      "class": "btn-primary w-full",
+      "visible": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Sign Up",
+      "id": "auth-switch",
+      "class": "text-blue-600 hover:text-blue-800 font-semibold",
+      "visible": false
+    },
+    {
+      "tag": "A",
+      "text": "\n            ← Back to Homepage\n          ",
+      "id": "",
+      "class": "text-sm text-blue-600 hover:text-blue-800 flex items-center justify-center gap-1",
+      "href": "file:///home/amy/StarterPackApp/index.html",
+      "visible": false
+    },
+    {
+      "tag": "A",
+      "text": "Dashboard",
+      "id": "",
+      "class": "text-blue-600 font-medium",
+      "href": "file:///roi-finder.html",
+      "visible": false
+    },
+    {
+      "tag": "A",
+      "text": "Portfolio",
+      "id": "",
+      "class": "text-gray-600 hover:text-gray-900",
+      "href": "file:///portfolio.html",
+      "visible": false
+    },
+    {
+      "tag": "A",
+      "text": "Reports",
+      "id": "",
+      "class": "text-gray-600 hover:text-gray-900",
+      "href": "file:///reports.html",
+      "visible": false
+    },
+    {
+      "tag": "A",
+      "text": "Blog",
+      "id": "",
+      "class": "text-gray-600 hover:text-gray-900",
+      "href": "file:///blog.html",
+      "visible": false
+    },
+    {
+      "tag": "A",
+      "text": "Branding",
+      "id": "",
+      "class": "text-gray-600 hover:text-gray-900",
+      "href": "file:///realtor-settings.html",
+      "visible": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "\n              \n                \n              \n              Sign Out\n            ",
+      "id": "sign-out-btn",
+      "class": "flex items-center gap-2 text-gray-600 hover:text-gray-900",
+      "visible": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "\n          \n            \n          \n          New Property Analysis\n        ",
+      "id": "new-analysis-btn",
+      "class": "btn-primary",
+      "visible": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "\n              Traditional Rental (LTR)\n            ",
+      "id": "ltr-mode-btn",
+      "class": "flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all duration-200 bg-white text-gray-900 shadow-sm",
+      "visible": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "\n              Short-Term Rental (STR)\n            ",
+      "id": "str-mode-btn",
+      "class": "flex-1 py-2 px-4 rounded-md text-sm font-medium text-gray-500 transition-all duration-200",
+      "visible": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "\n              \n                \n              \n              Analyze Property\n              \n                \n              \n            ",
+      "id": "",
+      "class": "btn-primary w-full",
+      "visible": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "\n            ← Back to Dashboard\n          ",
+      "id": "back-to-dashboard",
+      "class": "text-sm text-blue-600 hover:text-blue-800 flex items-center gap-1",
+      "visible": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "\n                Traditional Rental (LTR)\n              ",
+      "id": "confirm-ltr-mode-btn",
+      "class": "flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all duration-200 bg-white text-gray-900 shadow-sm",
+      "visible": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "\n                Short-Term Rental (STR)\n              ",
+      "id": "confirm-str-mode-btn",
+      "class": "flex-1 py-2 px-4 rounded-md text-sm font-medium text-gray-500 transition-all duration-200",
+      "visible": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "\n            \n              \n            \n            Cancel\n          ",
+      "id": "cancel-analysis-btn",
+      "class": "flex-1 btn-secondary",
+      "visible": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "\n            \n              \n            \n            Analyze Investment\n          ",
+      "id": "confirm-analysis-btn",
+      "class": "flex-1 btn-primary",
+      "visible": false
+    },
+    {
+      "tag": "A",
+      "text": "Dashboard",
+      "id": "",
+      "class": "text-gray-600 hover:text-gray-900",
+      "href": "file:///roi-finder.html",
+      "visible": false
+    },
+    {
+      "tag": "A",
+      "text": "Portfolio",
+      "id": "",
+      "class": "text-gray-600 hover:text-gray-900",
+      "href": "file:///portfolio.html",
+      "visible": false
+    },
+    {
+      "tag": "A",
+      "text": "Reports",
+      "id": "",
+      "class": "text-gray-600 hover:text-gray-900",
+      "href": "file:///reports.html",
+      "visible": false
+    },
+    {
+      "tag": "A",
+      "text": "Branding",
+      "id": "",
+      "class": "text-gray-600 hover:text-gray-900",
+      "href": "file:///realtor-settings.html",
+      "visible": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "\n              ← Back to Dashboard\n            ",
+      "id": "back-to-dashboard-results",
+      "class": "flex items-center gap-2 text-gray-600 hover:text-gray-900",
+      "visible": false
+    },
+    {
+      "tag": "DIV",
+      "text": "\n          Monthly Cash Flow Analysis\n          Click for detailed breakdown\n          \n            \n          \n        ",
+      "id": "",
+      "class": "bg-white rounded-xl shadow-lg p-6 cursor-pointer hover:shadow-xl transition-shadow",
+      "visible": false
+    },
+    {
+      "tag": "DIV",
+      "text": "\n          Investment Strategy Comparison\n          Click for detailed breakdown\n          \n            \n          \n        ",
+      "id": "",
+      "class": "bg-white rounded-xl shadow-lg p-6 cursor-pointer hover:shadow-xl transition-shadow",
+      "visible": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "\n                Edit Values\n              ",
+      "id": "edit-financials-btn",
+      "class": "px-3 py-1 text-sm bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors",
+      "visible": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "\n                Reset to Original\n              ",
+      "id": "reset-financials-btn",
+      "class": "px-3 py-1 text-sm bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors",
+      "visible": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "\n          \n            \n          \n          Analyze Another Property\n        ",
+      "id": "new-analysis-from-results",
+      "class": "btn-primary",
+      "visible": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "\n          Save Analysis\n        ",
+      "id": "save-analysis",
+      "class": "btn-secondary",
+      "visible": false
+    },
+    {
+      "tag": "BUTTON",
+      "text": "\n              \n                \n              \n            ",
+      "id": "",
+      "class": "text-gray-400 hover:text-gray-600",
+      "visible": false
+    }
+  ],
+  "formFields": [
+    {
+      "tag": "INPUT",
+      "type": "text",
+      "name": "",
+      "id": "name",
+      "value": "",
+      "placeholder": "John Doe",
+      "visible": false
+    },
+    {
+      "tag": "INPUT",
+      "type": "email",
+      "name": "",
+      "id": "email",
+      "value": "",
+      "placeholder": "john@example.com",
+      "visible": false
+    },
+    {
+      "tag": "INPUT",
+      "type": "password",
+      "name": "",
+      "id": "password",
+      "value": "",
+      "placeholder": "••••••••",
+      "visible": false
+    },
+    {
+      "tag": "INPUT",
+      "type": "text",
+      "name": "",
+      "id": "street",
+      "value": "",
+      "placeholder": "123 Main Street",
+      "visible": false
+    },
+    {
+      "tag": "INPUT",
+      "type": "text",
+      "name": "",
+      "id": "city",
+      "value": "",
+      "placeholder": "Toronto",
+      "visible": false
+    },
+    {
+      "tag": "INPUT",
+      "type": "text",
+      "name": "",
+      "id": "state",
+      "value": "",
+      "placeholder": "Ontario",
+      "visible": false
+    },
+    {
+      "tag": "INPUT",
+      "type": "text",
+      "name": "",
+      "id": "country",
+      "value": "",
+      "placeholder": "Canada",
+      "visible": false
+    },
+    {
+      "tag": "INPUT",
+      "type": "text",
+      "name": "",
+      "id": "postal",
+      "value": "",
+      "placeholder": "M5V 3A8",
+      "visible": false
+    },
+    {
+      "tag": "INPUT",
+      "type": "hidden",
+      "name": "",
+      "id": "analysis-mode",
+      "value": "ltr",
+      "placeholder": "",
+      "visible": false
+    },
+    {
+      "tag": "INPUT",
+      "type": "hidden",
+      "name": "",
+      "id": "confirm-analysis-mode",
+      "value": "ltr",
+      "placeholder": "",
+      "visible": false
+    },
+    {
+      "tag": "INPUT",
+      "type": "number",
+      "name": "",
+      "id": "edit-income",
+      "value": "",
+      "placeholder": "",
+      "visible": false
+    },
+    {
+      "tag": "INPUT",
+      "type": "number",
+      "name": "",
+      "id": "edit-mortgage",
+      "value": "0",
+      "placeholder": "",
+      "visible": false
+    },
+    {
+      "tag": "INPUT",
+      "type": "number",
+      "name": "",
+      "id": "edit-taxes",
+      "value": "",
+      "placeholder": "Monthly amount",
+      "visible": false
+    },
+    {
+      "tag": "INPUT",
+      "type": "number",
+      "name": "",
+      "id": "edit-insurance",
+      "value": "",
+      "placeholder": "Monthly amount",
+      "visible": false
+    },
+    {
+      "tag": "INPUT",
+      "type": "number",
+      "name": "",
+      "id": "edit-hoa",
+      "value": "",
+      "placeholder": "",
+      "visible": false
+    },
+    {
+      "tag": "INPUT",
+      "type": "number",
+      "name": "",
+      "id": "edit-maintenance",
+      "value": "",
+      "placeholder": "Annual amount",
+      "visible": false
+    },
+    {
+      "tag": "INPUT",
+      "type": "number",
+      "name": "",
+      "id": "edit-management",
+      "value": "",
+      "placeholder": "Percentage",
+      "visible": false
+    }
+  ],
+  "errors": [],
+  "consoleLogs": []
+}

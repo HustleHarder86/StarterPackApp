@@ -9,6 +9,7 @@ const logger = require('./services/logger.service');
 
 // Import workers
 const analysisWorker = require('./workers/analysis.worker');
+const strAnalysisWorker = require('./workers/str-analysis.worker');
 
 logger.info('Starting workers...');
 
@@ -16,7 +17,8 @@ logger.info('Starting workers...');
 // Add health checks
 setInterval(() => {
   logger.info('Worker health check', {
-    analysisWorker: analysisWorker.isRunning() ? 'running' : 'stopped'
+    analysisWorker: analysisWorker.isRunning() ? 'running' : 'stopped',
+    strAnalysisWorker: strAnalysisWorker.isRunning() ? 'running' : 'stopped'
   });
 }, 60000); // Every minute
 
@@ -24,12 +26,14 @@ setInterval(() => {
 process.on('SIGTERM', async () => {
   logger.info('Received SIGTERM, shutting down workers...');
   await analysisWorker.close();
+  await strAnalysisWorker.close();
   process.exit(0);
 });
 
 process.on('SIGINT', async () => {
   logger.info('Received SIGINT, shutting down workers...');
   await analysisWorker.close();
+  await strAnalysisWorker.close();
   process.exit(0);
 });
 

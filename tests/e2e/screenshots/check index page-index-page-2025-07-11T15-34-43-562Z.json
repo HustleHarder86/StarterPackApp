@@ -1,0 +1,121 @@
+{
+  "url": "file:///home/amy/StarterPackApp/index.html",
+  "title": "InvestorProps - Real Estate SaaS",
+  "timestamp": "2025-07-11T15:34:44.933Z",
+  "viewport": {
+    "width": 1280,
+    "height": 720
+  },
+  "visibleText": "InvestorProps\nHome\nBlog\nFeatures\nPricing\nContact\nLaunch ROI Finder\n🚀 New: AI-Powered Property Analysis\nReal estate investing made simple\n\nDiscover cash-flow positive properties in seconds. Empower your clients with investment-ready listings, instantly.\n\n10K+\nProperties Analyzed\n500+\nHappy Realtors\n95%\nAccuracy Rate\nGet Started Free\n$750,000\nROI: 5.8%\n$650,000\nROI: 6.2%\n$850,000\nROI: 7.1%\nTrusted by top real estate professionals\nWhy Realtors Love Us\n⚡\nSaves Time\n\nInstantly identify investment-ready listings without sifting through hundreds of properties.\n\n📊\nClient-Ready Reports\n\nGenerate beautiful, branded reports that investors love and trust.\n\n🎯\nBoosts Credibility\n\nStand out with data-backed insights and attract more investor clients.\n\n🚀\nEasy to Use\n\nNo training needed. Just input your criteria and get results in seconds.\n\nSimple Pricing\n\nChoose the plan that fits your business\n\nStarter\n$49/month\n100 reports/month\nBasic property filters\nEmail support\nGet Started\nMost Popular\nPro\n$99/month\n250 reports/month\nAdvanced filters & analytics\nPriority support\nCustom branding\nGet Started\nEnterprise\nCustom\nUnlimited reports\nWhite-labeling\nDedicated success manager\nAPI access\nContact Sales\nWhat Realtors Are Saying\n★★★★★\n\n\"Finally, a tool that speaks the investor's language. It's become my listing presentation secret weapon.\"\n\nS\nSarah K. Toronto Realtor\n★★★★★\n\n\"My clients love how clear and data-driven the reports are. It's made the buying process much smoother.\"\n\nJ\nJason L. Mississauga Agent\n★★★★★\n\n\"InvestorProps has doubled my investor client base. The ROI calculations are spot-on every time.\"\n\nM\nMaria C. Vancouver Realtor\n© 2025 InvestorProps. All rights reserved.",
+  "clickableElements": [
+    {
+      "tag": "A",
+      "text": "Home",
+      "id": "",
+      "class": "nav-link",
+      "href": "file:///home/amy/StarterPackApp/index.html",
+      "visible": true
+    },
+    {
+      "tag": "A",
+      "text": "Blog",
+      "id": "",
+      "class": "nav-link",
+      "href": "file:///home/amy/StarterPackApp/blog.html",
+      "visible": true
+    },
+    {
+      "tag": "A",
+      "text": "Features",
+      "id": "",
+      "class": "nav-link",
+      "href": "file:///home/amy/StarterPackApp/index.html#features",
+      "visible": true
+    },
+    {
+      "tag": "A",
+      "text": "Pricing",
+      "id": "",
+      "class": "nav-link",
+      "href": "file:///home/amy/StarterPackApp/index.html#pricing",
+      "visible": true
+    },
+    {
+      "tag": "A",
+      "text": "Contact",
+      "id": "",
+      "class": "nav-link",
+      "href": "file:///home/amy/StarterPackApp/contact.html",
+      "visible": true
+    },
+    {
+      "tag": "A",
+      "text": "Launch ROI Finder",
+      "id": "",
+      "class": "nav-link btn-primary",
+      "href": "file:///home/amy/StarterPackApp/roi-finder.html",
+      "visible": true
+    },
+    {
+      "tag": "A",
+      "text": "Get Started Free",
+      "id": "show-lead-form",
+      "class": "btn-primary pulse",
+      "href": "file:///home/amy/StarterPackApp/index.html#",
+      "visible": true
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Send My Free ROI Report",
+      "id": "",
+      "class": "",
+      "visible": false
+    },
+    {
+      "tag": "A",
+      "text": "Get Started",
+      "id": "",
+      "class": "btn-secondary",
+      "href": "file:///home/amy/StarterPackApp/index.html#",
+      "visible": true
+    },
+    {
+      "tag": "A",
+      "text": "Get Started",
+      "id": "",
+      "class": "btn-primary",
+      "href": "file:///home/amy/StarterPackApp/index.html#",
+      "visible": true
+    },
+    {
+      "tag": "A",
+      "text": "Contact Sales",
+      "id": "",
+      "class": "btn-secondary",
+      "href": "file:///home/amy/StarterPackApp/contact.html",
+      "visible": true
+    }
+  ],
+  "formFields": [
+    {
+      "tag": "INPUT",
+      "type": "text",
+      "name": "name",
+      "id": "",
+      "value": "",
+      "placeholder": "Your Name",
+      "visible": false
+    },
+    {
+      "tag": "INPUT",
+      "type": "email",
+      "name": "email",
+      "id": "",
+      "value": "",
+      "placeholder": "Your Email",
+      "visible": false
+    }
+  ],
+  "errors": [],
+  "consoleLogs": []
+}

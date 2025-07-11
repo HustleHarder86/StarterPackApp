@@ -4,12 +4,12 @@ const { VisualDebugger } = require('./helpers/visual-debugger');
 const path = require('path');
 
 test.describe('ROI Finder - Fixed Tests', () => {
-  let debugger;
+  let visualDebugger;
 
   test.beforeEach(async ({ page }, testInfo) => {
-    debugger = new VisualDebugger(page, testInfo);
-    await debugger.init();
-    debugger.setupConsoleCapture();
+    visualDebugger = new VisualDebugger(page, testInfo);
+    await visualDebugger.init();
+    visualDebugger.setupConsoleCapture();
   });
 
   test('complete property analysis flow with actual IDs', async ({ page }) => {
@@ -18,7 +18,7 @@ test.describe('ROI Finder - Fixed Tests', () => {
     await page.goto(filePath);
     
     // Take initial screenshot
-    await debugger.captureState('1-initial-load');
+    await visualDebugger.captureState('1-initial-load');
     
     // Wait for auth screen to be visible
     await page.waitForSelector('#auth-screen', { state: 'visible' });
@@ -33,7 +33,7 @@ test.describe('ROI Finder - Fixed Tests', () => {
       await page.fill('#email', 'test@example.com');
       await page.fill('#password', 'Test123!');
       
-      await debugger.captureState('2-auth-filled');
+      await visualDebugger.captureState('2-auth-filled');
       
       // Click the auth button (text changes based on mode)
       await page.click('#auth-form button[type="submit"]');
@@ -58,14 +58,14 @@ test.describe('ROI Finder - Fixed Tests', () => {
     
     // Wait for dashboard to appear
     await page.waitForSelector('#dashboard-screen', { state: 'visible', timeout: 10000 });
-    await debugger.captureState('3-dashboard');
+    await visualDebugger.captureState('3-dashboard');
     
     // Click new analysis button
     await page.click('#new-analysis-btn');
     
     // Wait for property form
     await page.waitForSelector('#property-form-screen', { state: 'visible' });
-    await debugger.captureState('4-property-form');
+    await visualDebugger.captureState('4-property-form');
     
     // Fill property address (separate fields!)
     await page.fill('#street', '123 Main Street');
@@ -80,7 +80,7 @@ test.describe('ROI Finder - Fixed Tests', () => {
       await page.check('#include-str-analysis');
     }
     
-    await debugger.captureState('5-form-filled');
+    await visualDebugger.captureState('5-form-filled');
     
     // Submit form (find the actual submit button)
     const submitButton = await page.$('button[type="submit"]');
@@ -93,7 +93,7 @@ test.describe('ROI Finder - Fixed Tests', () => {
     
     // Wait for results
     await page.waitForSelector('#results-screen', { state: 'visible', timeout: 30000 });
-    await debugger.captureState('6-results-shown');
+    await visualDebugger.captureState('6-results-shown');
     
     // Verify some results are displayed
     const propertyValue = await page.textContent('#result-value');
@@ -109,7 +109,7 @@ test.describe('ROI Finder - Fixed Tests', () => {
     // Check if STR comparison is shown
     const strContainer = await page.$('#str-comparison-container');
     if (strContainer) {
-      await debugger.captureState('7-str-comparison');
+      await visualDebugger.captureState('7-str-comparison');
       
       const strRate = await page.textContent('#str-rate');
       const strOccupancy = await page.textContent('#str-occupancy');
@@ -119,7 +119,7 @@ test.describe('ROI Finder - Fixed Tests', () => {
     
     // Save the analysis
     await page.click('#save-analysis');
-    await debugger.captureState('8-analysis-saved');
+    await visualDebugger.captureState('8-analysis-saved');
   });
 
   test('test navigation between screens', async ({ page }) => {
@@ -139,7 +139,7 @@ test.describe('ROI Finder - Fixed Tests', () => {
     });
     
     await page.reload();
-    await debugger.captureState('mocked-auth-state');
+    await visualDebugger.captureState('mocked-auth-state');
     
     // Check which screen is visible
     const screens = ['#auth-screen', '#dashboard-screen', '#property-form-screen', '#results-screen'];
@@ -212,7 +212,7 @@ test.describe('ROI Finder - Fixed Tests', () => {
     });
     
     console.log('Page Analysis:', JSON.stringify(pageAnalysis, null, 2));
-    await debugger.captureState('page-analysis-complete');
+    await visualDebugger.captureState('page-analysis-complete');
     
     // Generate recommendations
     const recommendations = [];

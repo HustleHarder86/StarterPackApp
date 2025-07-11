@@ -44,33 +44,9 @@ router.post('/property', optionalAuth, async (req, res, next) => {
   }
 });
 
-// STR analysis endpoint - placeholder for now
-router.post('/str', verifyToken, async (req, res, next) => {
-  try {
-    const { propertyData, location } = req.body;
-    
-    if (!propertyData || !location) {
-      throw new APIError('Property data and location are required', 400);
-    }
-    
-    // Add to STR queue when implemented
-    const job = await addJobWithProgress('str', 'analyze-str', {
-      propertyData,
-      location,
-      userId: req.userId
-    });
-    
-    res.json({
-      success: true,
-      jobId: job.id,
-      message: 'STR analysis started',
-      statusUrl: `/api/jobs/${job.id}/status`
-    });
-    
-  } catch (error) {
-    next(error);
-  }
-});
+// Mount STR analysis routes
+const strRoutes = require('./analysis/str');
+router.use('/str', strRoutes);
 
 // Comparables search endpoint
 router.post('/comparables', verifyToken, async (req, res, next) => {
