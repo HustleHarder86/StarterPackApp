@@ -2,6 +2,8 @@ const admin = require('firebase-admin');
 const { requireAuth } = require('../../utils/auth.js');
 const { airbnbScraper } = require('../../utils/airbnb-scraper.js');
 const { calculateSTRMetrics, filterComparables } = require('../../utils/str-calculations.js');
+const { analyzeSTRPotential } = require('../../utils/calculators/str.js');
+const { STRRegulationChecker } = require('../../utils/str-regulations.js');
 
 // Initialize Firebase Admin
 if (!admin.apps.length) {
@@ -88,41 +90,110 @@ module.exports = async function handler(req, res) {
         throw new Error('No comparable properties found in the area');
       }
       
-      // Calculate STR metrics from comparables
-      strMetrics = calculateSTRMetrics(filteredComparables, propertyData);
+      // Get LTR rent estimate for comparison (from property data or previous analysis)
+      const ltrRent = propertyData.estimatedRent || propertyData.monthlyRent || 0;
       
-      // Add management costs (typically 20% for STR)
-      const managementFeeRate = 0.20;
-      const netMonthlyRevenue = strMetrics.monthlyRevenue * (1 - managementFeeRate);
-      const netAnnualRevenue = strMetrics.annualRevenue * (1 - managementFeeRate);
+      // Check STR regulations for the city
+      console.log('Checking STR regulations...');
+      const regulationChecker = new STRRegulationChecker(process.env.PERPLEXITY_API_KEY);
+      const regulations = await regulationChecker.checkRegulations(
+        propertyData.address?.city || 'Toronto',
+        propertyData.address?.province || 'Ontario'
+      );
       
-      // Build comprehensive response
-      const strAnalysis = {
-        avgNightlyRate: strMetrics.avgNightlyRate,
-        medianNightlyRate: strMetrics.medianNightlyRate,
-        occupancyRate: strMetrics.occupancyRate,
-        monthlyRevenue: strMetrics.monthlyRevenue,
-        annualRevenue: strMetrics.annualRevenue,
-        netMonthlyRevenue: Math.round(netMonthlyRevenue),
-        netAnnualRevenue: Math.round(netAnnualRevenue),
-        managementFeeRate,
-        priceRange: strMetrics.priceRange,
-        comparables: filteredComparables.slice(0, 5).map(comp => ({
-          id: comp.id,
-          title: comp.title,
-          price: comp.price,
-          bedrooms: comp.bedrooms,
-          propertyType: comp.property_type,
-          url: comp.url,
-          rating: comp.rating,
-          reviewsCount: comp.reviewsCount
-        })),
+      // Generate compliance advice
+      const complianceAdvice = regulationChecker.generateComplianceAdvice(regulations);
+      
+      // Use comprehensive STR analysis
+      const strAnalysis = analyzeSTRPotential(
+        propertyData,
+        filteredComparables,
+        { ltrRent }
+      );
+      
+      // Format comparables for response
+      const formattedComparables = strAnalysis.comparables.map(comp => ({
+        id: comp.id,
+        title: comp.title,
+        nightlyRate: comp.price || comp.nightly_price,
+        bedrooms: comp.bedrooms,
+        bathrooms: comp.bathrooms,
+        propertyType: comp.property_type || comp.propertyType,
+        distance: comp.distance,
+        occupancyRate: comp.occupancy_rate || comp.occupancy || 0.70,
+        similarityScore: comp.similarityScore,
+        rating: comp.rating,
+        reviewCount: comp.reviewsCount || comp.review_count,
+        imageUrl: comp.image_url || comp.thumbnail,
+        airbnbUrl: comp.url,
+        monthlyRevenue: Math.round((comp.price || comp.nightly_price) * 30.4 * (comp.occupancy_rate || 0.70))
+      }));
+      
+      // Build enhanced response with all analysis data
+      const enhancedAnalysis = {
+        // Core metrics
+        avgNightlyRate: strAnalysis.avgNightlyRate,
+        occupancyRate: strAnalysis.occupancyRate,
+        monthlyRevenue: strAnalysis.monthlyRevenue,
+        annualRevenue: strAnalysis.annualRevenue,
+        
+        // Financial analysis
+        expenses: strAnalysis.expenses,
+        netMonthlyIncome: strAnalysis.netMonthlyIncome,
+        netAnnualIncome: strAnalysis.netAnnualIncome,
+        
+        // Investment metrics
+        capRate: strAnalysis.capRate,
+        cashOnCashReturn: strAnalysis.cashOnCashReturn,
+        paybackPeriod: strAnalysis.paybackPeriod,
+        
+        // Market data
+        comparables: formattedComparables,
         comparableCount: filteredComparables.length,
-        confidence: strMetrics.confidence,
+        confidence: strAnalysis.confidence,
+        priceRange: strAnalysis.priceRange,
+        
+        // Seasonal projections
+        seasonalData: strAnalysis.seasonalData,
+        
+        // Revenue scenarios
+        scenarios: strAnalysis.scenarios,
+        
+        // LTR vs STR comparison
+        comparison: strAnalysis.comparison,
+        
+        // Recommendations
+        recommendations: strAnalysis.recommendations,
+        
+        // STR Regulations and Compliance
+        regulations: {
+          city: regulations.city,
+          province: regulations.province,
+          allowed: regulations.allowed,
+          requiresLicense: regulations.requiresLicense,
+          primaryResidenceOnly: regulations.primaryResidenceOnly,
+          maxDays: regulations.maxDays,
+          summary: regulations.summary,
+          restrictions: regulations.restrictions,
+          licenseUrl: regulations.licenseUrl || regulations.officialWebsite,
+          source: regulations.source,
+          confidence: regulations.confidence,
+          lastUpdated: regulations.lastUpdated
+        },
+        compliance: {
+          riskLevel: complianceAdvice.riskLevel,
+          recommendations: complianceAdvice.recommendations,
+          warnings: complianceAdvice.warnings,
+          compliant: complianceAdvice.compliant
+        },
+        
+        // Metadata
         dataSource: 'airbnb_scraper',
         metadata: searchResults.metadata,
         timestamp: new Date().toISOString()
       };
+      
+      strMetrics = enhancedAnalysis;
       
       // Store analysis in Firestore
       const analysisRef = await db.collection('str_analyses').add({
@@ -148,13 +219,50 @@ module.exports = async function handler(req, res) {
       fallbackMetrics.monthlyRevenue = Math.round(fallbackMetrics.avgNightlyRate * 30.4 * fallbackMetrics.occupancyRate);
       fallbackMetrics.annualRevenue = fallbackMetrics.monthlyRevenue * 12;
       
+      // Simple expense calculation for fallback
+      const totalExpenses = fallbackMetrics.annualRevenue * 0.45; // 45% expense ratio
+      
       const strAnalysis = {
-        ...fallbackMetrics,
-        netMonthlyRevenue: Math.round(fallbackMetrics.monthlyRevenue * 0.8),
-        netAnnualRevenue: Math.round(fallbackMetrics.annualRevenue * 0.8),
-        managementFeeRate: 0.20,
+        // Core metrics
+        avgNightlyRate: fallbackMetrics.avgNightlyRate,
+        occupancyRate: fallbackMetrics.occupancyRate,
+        monthlyRevenue: fallbackMetrics.monthlyRevenue,
+        annualRevenue: fallbackMetrics.annualRevenue,
+        
+        // Financial analysis (simplified)
+        expenses: {
+          monthly: { total: Math.round(totalExpenses / 12) },
+          annual: { total: Math.round(totalExpenses) },
+          percentageOfRevenue: 45
+        },
+        netMonthlyIncome: Math.round(fallbackMetrics.monthlyRevenue * 0.55),
+        netAnnualIncome: Math.round(fallbackMetrics.annualRevenue * 0.55),
+        
+        // Basic comparison (if LTR data available)
+        comparison: propertyData.estimatedRent ? {
+          ltr: {
+            monthlyNet: Math.round(propertyData.estimatedRent * 0.75),
+            annualNet: Math.round(propertyData.estimatedRent * 0.75 * 12)
+          },
+          str: {
+            monthlyNet: Math.round(fallbackMetrics.monthlyRevenue * 0.55),
+            annualNet: Math.round(fallbackMetrics.annualRevenue * 0.55)
+          },
+          recommendation: fallbackMetrics.monthlyRevenue * 0.55 > propertyData.estimatedRent * 0.75 ? 'STR' : 'LTR'
+        } : null,
+        
+        // Empty/default values for missing data
         comparables: [],
         comparableCount: 0,
+        confidence: 'low',
+        scenarios: null,
+        seasonalData: null,
+        recommendations: [{
+          type: 'warning',
+          message: 'Analysis based on estimates due to data unavailability. Actual results may vary significantly.'
+        }],
+        
+        // Metadata
         dataSource: 'estimated',
         error: 'Failed to fetch Airbnb data, using estimates',
         timestamp: new Date().toISOString()

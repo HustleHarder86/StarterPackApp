@@ -651,8 +651,8 @@ FIREBASE_CLIENT_EMAIL=firebase-adminsdk@your-project.iam.gserviceaccount.com
 FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nYour private key\n-----END PRIVATE KEY-----\n"
 
 # AI APIs
-PERPLEXITY_API_KEY=pplx-*              # Required
-OPENAI_API_KEY=sk-*                   # Optional but recommended
+PERPLEXITY_API_KEY=pplx-*              # Required for real-time regulation research
+OPENAI_API_KEY=sk-*                   # Legacy/optional (replaced by Perplexity)
 
 # Airbnb Scraper API (Required for STR analysis)
 AIRBNB_SCRAPER_API_KEY=your-key
