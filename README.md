@@ -1,5 +1,34 @@
 # StarterPackApp - Advanced Real Estate Investment Analysis Platform
 
+## 🚨 CRITICAL ARCHITECTURE RULE - READ BEFORE ANY CHANGES 🚨
+
+**THIS PROJECT USES A DUAL-DEPLOYMENT ARCHITECTURE:**
+
+### Railway API (`/railway-api/`)
+Handles ALL heavy processing and external API calls:
+- ✅ Property analysis with AI (Perplexity, OpenAI)
+- ✅ STR analysis with Airbnb data
+- ✅ PDF report generation
+- ✅ Background job processing
+- ✅ Database operations
+- ✅ External API integrations
+
+### Vercel (`/`)
+Handles ONLY frontend and simple operations:
+- ✅ Static HTML/CSS/JS files
+- ✅ React components via CDN
+- ✅ Simple form submissions
+- ❌ NO external API calls
+- ❌ NO heavy processing
+- ❌ NO complex calculations
+
+**⚠️ BEFORE ADDING ANY FEATURE:**
+1. External API calls? → Put in Railway (`/railway-api/`)
+2. Heavy processing? → Put in Railway (`/railway-api/`)
+3. Just serving files? → Can use Vercel
+
+---
+
 A sophisticated real estate investment analysis SaaS platform that combines AI-powered property analysis with automated data extraction from property listings. Features both traditional rental and short-term rental (Airbnb) analysis with professional reporting.
 
 ## 🎯 Core Principle: Real Listing Data First

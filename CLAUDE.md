@@ -2,6 +2,37 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## 🚨 CRITICAL ARCHITECTURE RULE - READ BEFORE ANY CHANGES 🚨
+
+**THIS IS A DUAL-DEPLOYMENT ARCHITECTURE:**
+
+1. **Railway API** (`/railway-api/`) - For ALL heavy processing:
+   - ✅ External API calls (Perplexity, OpenAI, Airbnb, etc.)
+   - ✅ Database operations and complex queries
+   - ✅ Background jobs and queues
+   - ✅ PDF generation and file processing
+   - ✅ Any operation taking >1 second
+   - ✅ Rate-limited operations
+   - ✅ Expensive computations
+
+2. **Vercel** (`/api/`) - For ONLY simple, fast operations:
+   - ✅ Static file serving (HTML, CSS, JS)
+   - ✅ Simple form submissions (contact, lead capture)
+   - ✅ Basic data validation
+   - ❌ NO external API calls
+   - ❌ NO heavy processing
+   - ❌ NO complex calculations
+
+**BEFORE ADDING ANY FEATURE:**
+- If it calls external APIs → Put it in Railway (`/railway-api/`)
+- If it processes data → Put it in Railway (`/railway-api/`)
+- If it's just serving files → Can go in Vercel
+
+**COMMON MISTAKES TO AVOID:**
+- ❌ NEVER put API integrations in `/api/` (Vercel)
+- ❌ NEVER put heavy processing in Vercel functions
+- ❌ NEVER bypass the job queue for long operations
+
 ## ⚠️ IMPORTANT: Branch Workflow & Cleanup Policy
 
 **ALWAYS create a unique branch for each set of changes:**

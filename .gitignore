@@ -74,3 +74,15 @@ scratch/
 
 # Amy's local files
 Amys-To-Dos.md
+
+# Debug and test files (temporary)
+debug-*.js
+test-*.js
+check-*.js
+test-results-summary.md
+
+# IMPORTANT: Architecture docs should be tracked
+# These files contain critical architecture rules
+# !ARCHITECTURE.md
+# !CLAUDE.md
+# !railway-api/README.md

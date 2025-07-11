@@ -1,5 +1,21 @@
 # StarterPackApp Railway API
 
+## 🚨 ARCHITECTURE REMINDER 🚨
+
+**This Railway API handles ALL heavy processing for StarterPackApp:**
+- ✅ External API calls (Perplexity, Airbnb, OpenAI)
+- ✅ Background jobs and queues
+- ✅ PDF generation
+- ✅ Complex calculations
+- ✅ Any operation >1 second
+
+**Vercel handles ONLY:**
+- Static files (HTML/CSS/JS)
+- Simple form submissions
+- NO external APIs!
+
+---
+
 This is the Railway-hosted backend API for StarterPackApp, handling heavy processing tasks like property analysis, STR calculations, and PDF report generation.
 
 ## Architecture
