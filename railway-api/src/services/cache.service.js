@@ -186,10 +186,16 @@ const rateLimiter = {
   }
 };
 
+// Simple wrapper functions for backwards compatibility
+const getCached = async (key) => cache.get(key);
+const setCached = async (key, value, ttl) => cache.set(key, value, ttl);
+
 module.exports = {
   redisClient,
   publisher,
   subscriber,
   cache,
-  rateLimiter
+  rateLimiter,
+  getCached,
+  setCached
 };

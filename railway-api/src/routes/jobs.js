@@ -1,24 +1,44 @@
 const express = require('express');
 const router = express.Router();
 const { optionalAuth } = require('../middleware/auth');
-const { getJobStatus } = require('../services/queue.service');
 const { APIError } = require('../middleware/errorHandler');
 const logger = require('../services/logger.service');
+const fallbackQueue = require('../services/queue-fallback.service');
+
+// Try to load queue service
+let queueService;
+try {
+  queueService = require('../services/queue.service');
+} catch (error) {
+  logger.warn('Queue service not available, using fallback');
+  queueService = null;
+}
 
 // Get job status
 router.get('/:jobId/status', optionalAuth, async (req, res, next) => {
   try {
     const { jobId } = req.params;
     
-    // Determine queue name from job ID prefix or default to analysis
-    let queueName = 'analysis';
-    if (jobId.includes('-str-')) {
-      queueName = 'str';
-    } else if (jobId.includes('-report-')) {
-      queueName = 'report';
-    }
+    let status;
     
-    const status = await getJobStatus(queueName, jobId);
+    // Check if it's a fallback job first
+    if (jobId.startsWith('fallback-')) {
+      status = await fallbackQueue.getJobStatus(jobId);
+    } else if (queueService) {
+      // Determine queue name from job ID prefix or default to analysis
+      let queueName = 'analysis';
+      if (jobId.includes('-str-')) {
+        queueName = 'str';
+      } else if (jobId.includes('-report-')) {
+        queueName = 'report';
+      }
+      
+      const { getJobStatus } = queueService;
+      status = await getJobStatus(queueName, jobId);
+    } else {
+      // No queue service available
+      throw new APIError('Job queue service not available', 503);
+    }
     
     if (!status) {
       throw new APIError('Job not found', 404);

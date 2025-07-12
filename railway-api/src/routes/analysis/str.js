@@ -2,13 +2,23 @@ const express = require('express');
 const router = express.Router();
 const { verifyToken } = require('../../middleware/auth');
 const { APIError } = require('../../middleware/errorHandler');
-const { addJobWithProgress } = require('../../services/queue.service');
 const logger = require('../../services/logger.service');
 const { getCached, setCached } = require('../../services/cache.service');
 const { airbnbScraper } = require('../../services/airbnb-scraper.service');
 const { analyzeSTRPotential } = require('../../utils/calculators/str');
 const { STRRegulationChecker } = require('../../utils/str-regulations');
 const { db } = require('../../services/firebase.service');
+const fallbackQueue = require('../../services/queue-fallback.service');
+
+// Try to load queue service, fallback if Redis not available
+let queueService;
+try {
+  queueService = require('../../services/queue.service');
+  logger.info('Using Redis queue service');
+} catch (error) {
+  logger.warn('Redis not available, using fallback queue service');
+  queueService = null;
+}
 
 // Main STR analysis endpoint
 router.post('/analyze', verifyToken, async (req, res, next) => {
@@ -56,17 +66,39 @@ router.post('/analyze', verifyToken, async (req, res, next) => {
     }
     
     // Add to job queue for processing
-    const job = await addJobWithProgress('str-analysis', 'analyze-str', {
-      propertyId,
-      propertyData,
-      userId: req.userId,
-      userTier: userData.subscriptionTier,
-      strTrialUsed: userData.strTrialUsed || 0
-    });
+    let job;
+    
+    if (!queueService || !fallbackQueue.isRedisAvailable()) {
+      // Use fallback processing when Redis not available
+      logger.warn('Using fallback processing for STR analysis');
+      
+      // Import worker logic
+      const strWorkerLogic = require('../../workers/str-analysis.worker.logic');
+      
+      job = await fallbackQueue.addJob('str-analysis', 'analyze-str', {
+        propertyId,
+        propertyData,
+        userId: req.userId,
+        userTier: userData.subscriptionTier,
+        strTrialUsed: userData.strTrialUsed || 0
+      }, strWorkerLogic.processSTRAnalysis);
+      
+    } else {
+      // Use normal Redis queue
+      const { addJobWithProgress } = queueService;
+      job = await addJobWithProgress('str-analysis', 'analyze-str', {
+        propertyId,
+        propertyData,
+        userId: req.userId,
+        userTier: userData.subscriptionTier,
+        strTrialUsed: userData.strTrialUsed || 0
+      });
+    }
     
     logger.info('STR analysis job created', { 
       jobId: job.id,
-      propertyId 
+      propertyId,
+      usingFallback: !queueService || !fallbackQueue.isRedisAvailable()
     });
     
     res.json({
