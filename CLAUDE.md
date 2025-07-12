@@ -33,6 +33,18 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - ❌ NEVER put heavy processing in Vercel functions
 - ❌ NEVER bypass the job queue for long operations
 
+## 📌 CURRENT STATUS - JANUARY 11, 2025
+
+**STR Analysis System**: ✅ Complete and working in fallback mode
+**Redis**: ⚠️ Service added to Railway but needs connection (see `/docs/redis-setup-railway.md`)
+**Next Steps**: Connect Redis variables, then load frontend components
+
+**Branch**: `claude/deploy-str-analysis-20250111_155342` (ready to merge after Redis connection)
+
+See `/tasks/current-status-jan-11-2025.md` for full details.
+
+---
+
 ## ⚠️ IMPORTANT: Branch Workflow & Cleanup Policy
 
 **ALWAYS create a unique branch for each set of changes:**
