@@ -3,6 +3,21 @@ const config = require('../config');
 const { redisUrl } = require('../config/redis');
 const logger = require('./logger.service');
 
+// Check if Redis is available
+if (!redisUrl) {
+  logger.error('Redis URL not configured - queue service will not be available');
+  // Export empty module to prevent crashes
+  module.exports = {
+    queues: {},
+    queueEvents: {},
+    addJobWithProgress: async () => { throw new Error('Queue service not available - Redis not configured'); },
+    getJobStatus: async () => { throw new Error('Queue service not available - Redis not configured'); },
+    updateJobProgress: async () => { throw new Error('Queue service not available - Redis not configured'); },
+    checkQueueHealth: async () => ({ error: 'Redis not configured' })
+  };
+  return;
+}
+
 // BullMQ Redis configuration
 logger.debug('Initializing BullMQ with Redis connection');
 

@@ -1,32 +1,21 @@
-// Get Redis URL with minimal logging
+const { getRailwayRedisConfig } = require('./railway-redis');
+
+// Get Redis URL with enhanced Railway support
 function getRedisUrl() {
-  
-  // Try multiple possible env var names
-  const possibleRedisVars = [
-    'REDIS_URL',
-    'REDIS_PRIVATE_URL', 
-    'REDIS_PUBLIC_URL',
-    'RAILWAY_REDIS_URL',
-    'REDISCLOUD_URL',
-    'REDISTOGO_URL'
-  ];
-  
-  let redisUrl = null;
-  
-  for (const varName of possibleRedisVars) {
-    if (process.env[varName]) {
-      redisUrl = process.env[varName];
-      break;
-    }
+  // First try Railway-specific configuration
+  const railwayUrl = getRailwayRedisConfig();
+  if (railwayUrl) {
+    return railwayUrl;
   }
   
   // Fallback to localhost if no Redis URL found
-  if (!redisUrl) {
-    console.error('WARNING: No Redis URL found in environment, using localhost');
-    redisUrl = 'redis://localhost:6379';
-  }
+  console.error('WARNING: No Redis URL found in environment, using localhost');
+  console.log('Available environment variables:', Object.keys(process.env).filter(k => 
+    k.includes('REDIS') || k.includes('redis') || k.includes('RAILWAY')
+  ));
   
-  return redisUrl;
+  // For now, return null to force fallback mode instead of trying localhost
+  return null;
 }
 
 // Export the Redis URL
