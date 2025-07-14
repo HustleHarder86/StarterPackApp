@@ -7,20 +7,23 @@ if (process.env.NODE_ENV !== 'production') {
 
 const logger = require('./services/logger.service');
 
-// Import workers
-const analysisWorker = require('./workers/analysis.worker');
-const strAnalysisWorker = require('./workers/str-analysis.worker');
-
 logger.info('Starting workers...');
 
-// Workers are automatically started when imported
-// Add health checks
-setInterval(() => {
-  logger.info('Worker health check', {
-    analysisWorker: analysisWorker.isRunning() ? 'running' : 'stopped',
-    strAnalysisWorker: strAnalysisWorker.isRunning() ? 'running' : 'stopped'
-  });
-}, 60000); // Every minute
+// Import workers after a delay to ensure config is loaded
+setTimeout(() => {
+  const analysisWorker = require('./workers/analysis.worker');
+  const strAnalysisWorker = require('./workers/str-analysis.worker');
+  
+  logger.info('Workers loaded');
+  
+  // Add health checks
+  setInterval(() => {
+    logger.info('Worker health check', {
+      analysisWorker: analysisWorker.isRunning() ? 'running' : 'stopped',
+      strAnalysisWorker: strAnalysisWorker.isRunning() ? 'running' : 'stopped'
+    });
+  }, 60000); // Every minute
+}, 2000); // Wait 2 seconds for config to load
 
 // Graceful shutdown
 process.on('SIGTERM', async () => {

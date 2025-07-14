@@ -1,19 +1,27 @@
 const { Worker } = require('bullmq');
 const config = require('../config');
-const { redisUrl } = require('../config/redis');
 const logger = require('../services/logger.service');
-const { updateJobProgress } = require('../services/queue.service');
-const { cache } = require('../services/cache.service');
-const { trackAPIUsage } = require('../services/firebase.service');
 
-// Import the analysis logic (we'll create this next)
-const { analyzePropertyLogic } = require('../services/property-analysis.service');
+// Delay worker creation to ensure Redis config is loaded
+let analysisWorker = null;
 
-// Worker Redis configuration
-logger.debug('Initializing analysis worker with Redis connection');
+function createWorker() {
+  const { redisUrl } = require('../config/redis');
+  
+  if (!redisUrl) {
+    logger.error('Cannot create analysis worker - Redis URL not configured');
+    return null;
+  }
+  
+  logger.info('Creating analysis worker with Redis URL:', redisUrl.substring(0, 20) + '...');
+  
+  const { updateJobProgress } = require('../services/queue.service');
+  const { cache } = require('../services/cache.service');
+  const { trackAPIUsage } = require('../services/firebase.service');
+  const { analyzePropertyLogic } = require('../services/property-analysis.service');
 
-// Create the worker
-const analysisWorker = new Worker(
+  // Create the worker
+  return new Worker(
   'property-analysis',
   async (job) => {
     const { propertyData, userId, userEmail, userName, requestType, propertyAddress } = job.data;
@@ -96,28 +104,45 @@ const analysisWorker = new Worker(
       duration: 60000 // Max 10 jobs per minute
     }
   }
-);
-
-// Worker event handlers
-analysisWorker.on('completed', (job) => {
-  logger.info('Analysis job completed', { jobId: job.id });
-});
-
-analysisWorker.on('failed', (job, err) => {
-  logger.error('Analysis job failed', {
-    jobId: job.id,
-    error: err.message
+  );
+  
+  // Worker event handlers
+  worker.on('completed', (job) => {
+    logger.info('Analysis job completed', { jobId: job.id });
   });
-});
 
-analysisWorker.on('error', (err) => {
-  logger.error('Analysis worker error', { error: err.message });
-});
+  worker.on('failed', (job, err) => {
+    logger.error('Analysis job failed', {
+      jobId: job.id,
+      error: err.message
+    });
+  });
+
+  worker.on('error', (err) => {
+    logger.error('Analysis worker error', { error: err.message });
+  });
+  
+  return worker;
+}
+
+// Initialize worker with delay
+setTimeout(() => {
+  analysisWorker = createWorker();
+  if (analysisWorker) {
+    logger.info('Analysis worker created successfully');
+  }
+}, 1000); // Wait 1 second for Redis config to load
 
 // Graceful shutdown
 process.on('SIGTERM', async () => {
-  logger.info('Shutting down analysis worker...');
-  await analysisWorker.close();
+  if (analysisWorker) {
+    logger.info('Shutting down analysis worker...');
+    await analysisWorker.close();
+  }
 });
 
-module.exports = analysisWorker;
+// Export a getter function instead of the worker directly
+module.exports = {
+  get worker() { return analysisWorker; },
+  isRunning: () => analysisWorker && analysisWorker.isRunning()
+};
