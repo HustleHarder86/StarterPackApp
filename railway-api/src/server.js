@@ -58,13 +58,14 @@ app.get('/', (req, res) => {
   res.json({
     service: 'StarterPackApp Railway API',
     status: 'operational',
-    version: '1.0.0',
+    version: '1.0.1',
     endpoints: {
       health: '/health',
       analysis: '/api/analysis/*',
       jobs: '/api/jobs/*',
       reports: '/api/reports/*'
-    }
+    },
+    deployment: new Date().toISOString()
   });
 });
 
