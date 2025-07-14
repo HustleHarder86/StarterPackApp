@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Redis Connection Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        .result {
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>Redis Connection Test</h1>
+    
+    <button onclick="testRedis()">Test Redis Connection</button>
+    
+    <div id="results"></div>
+    
+    <script>
+        const RAILWAY_API_URL = 'https://starterpack-railway-api-production.up.railway.app';
+        
+        async function testRedis() {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '<div class="result info">Testing Redis connection...</div>';
+            
+            try {
+                // Test 1: Check health endpoint
+                const healthResponse = await fetch(`${RAILWAY_API_URL}/health`);
+                const healthData = await healthResponse.json();
+                
+                let healthHtml = '<div class="result ' + (healthData.redis === 'connected' ? 'success' : 'error') + '">';
+                healthHtml += '<h3>Health Check:</h3>';
+                healthHtml += '<p>Redis Status: ' + (healthData.redis || 'Not available') + '</p>';
+                healthHtml += '</div>';
+                resultsDiv.innerHTML += healthHtml;
+                
+                // Test 2: Submit a test STR analysis
+                const testProperty = {
+                    address: '123 Test St, Toronto, ON',
+                    price: 500000,
+                    bedrooms: 2,
+                    bathrooms: 2,
+                    propertyType: 'condo',
+                    coordinates: {
+                        lat: 43.6532,
+                        lng: -79.3832
+                    }
+                };
+                
+                const strResponse = await fetch(`${RAILWAY_API_URL}/api/str-analysis/analyze`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ property: testProperty })
+                });
+                
+                const strData = await strResponse.json();
+                
+                let strHtml = '<div class="result ' + (strData.success ? 'success' : 'error') + '">';
+                strHtml += '<h3>STR Analysis Test:</h3>';
+                strHtml += '<p>Job ID: ' + (strData.jobId || 'No job ID') + '</p>';
+                
+                // Check if it's using fallback mode
+                if (strData.jobId && strData.jobId.startsWith('fallback-')) {
+                    strHtml += '<p style="color: orange;">⚠️ Using fallback mode (Redis not connected)</p>';
+                } else if (strData.jobId) {
+                    strHtml += '<p style="color: green;">✅ Using Redis queue (Redis connected!)</p>';
+                }
+                
+                strHtml += '<p>Status: ' + (strData.status || 'Unknown') + '</p>';
+                strHtml += '</div>';
+                resultsDiv.innerHTML += strHtml;
+                
+                // If we got a job ID, check the status
+                if (strData.jobId) {
+                    setTimeout(async () => {
+                        const statusResponse = await fetch(`${RAILWAY_API_URL}/api/str-analysis/status/${strData.jobId}`);
+                        const statusData = await statusResponse.json();
+                        
+                        let statusHtml = '<div class="result info">';
+                        statusHtml += '<h3>Job Status:</h3>';
+                        statusHtml += '<p>Status: ' + statusData.status + '</p>';
+                        statusHtml += '<p>Progress: ' + (statusData.progress || 0) + '%</p>';
+                        statusHtml += '</div>';
+                        resultsDiv.innerHTML += statusHtml;
+                    }, 2000);
+                }
+                
+            } catch (error) {
+                resultsDiv.innerHTML += '<div class="result error"><h3>Error:</h3><p>' + error.message + '</p></div>';
+            }
+        }
+    </script>
+</body>
+</html>

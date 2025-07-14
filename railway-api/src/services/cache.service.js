@@ -11,8 +11,14 @@ let subscriber;
 // Connect all clients
 async function connectRedis() {
   try {
+    // Check if we have a valid Redis URL
+    if (!redisUrl) {
+      logger.warn('No Redis URL configured - running without Redis (fallback mode)');
+      return;
+    }
+    
     // Use the centralized Redis configuration
-    logger.debug('Connecting to Redis...');
+    logger.debug('Connecting to Redis with URL:', redisUrl.substring(0, 20) + '...');
     
     // Create Redis clients here with explicit URL
     redisClient = Redis.createClient({

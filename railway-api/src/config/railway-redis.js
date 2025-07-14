@@ -1,8 +1,21 @@
 // Railway-specific Redis configuration
 function getRailwayRedisConfig() {
+  console.log('getRailwayRedisConfig - checking for Redis configuration...');
+  console.log('Environment check:');
+  console.log('  RAILWAY_ENVIRONMENT:', process.env.RAILWAY_ENVIRONMENT || 'not set');
+  console.log('  NODE_ENV:', process.env.NODE_ENV || 'not set');
+  console.log('  REDIS_URL exists:', !!process.env.REDIS_URL);
+  
+  // Check for standard REDIS_URL first (Railway's standard pattern)
+  if (process.env.REDIS_URL) {
+    console.log('Found REDIS_URL environment variable');
+    console.log('REDIS_URL prefix:', process.env.REDIS_URL.substring(0, 30) + '...');
+    return process.env.REDIS_URL;
+  }
+  
   // Railway provides Redis connection details as separate environment variables
   if (process.env.RAILWAY_ENVIRONMENT) {
-    console.log('Running in Railway environment');
+    console.log('Running in Railway environment, checking for individual Redis variables...');
     
     // Check for Railway's Redis variables
     const redisVars = {
@@ -32,12 +45,6 @@ function getRailwayRedisConfig() {
       console.log('Built Railway Redis URL from components');
       return redisUrl;
     }
-  }
-  
-  // Check for standard REDIS_URL
-  if (process.env.REDIS_URL) {
-    console.log('Using REDIS_URL environment variable');
-    return process.env.REDIS_URL;
   }
   
   // Check for other common Redis URL variables
