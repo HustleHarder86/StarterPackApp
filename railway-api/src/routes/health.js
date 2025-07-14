@@ -5,6 +5,25 @@ const logger = require('../services/logger.service');
 const { redisClient } = require('../services/cache.service');
 const { checkQueueHealth } = require('../services/queue.service');
 
+// Debug endpoint for environment variables
+router.get('/env', (req, res) => {
+  const redisVars = {};
+  Object.keys(process.env).forEach(key => {
+    if (key.includes('REDIS') || key.includes('redis') || key.includes('RAILWAY')) {
+      redisVars[key] = key.includes('PASSWORD') || key.includes('SECRET') 
+        ? '***REDACTED***' 
+        : process.env[key];
+    }
+  });
+  
+  res.json({
+    nodeEnv: process.env.NODE_ENV,
+    railwayEnvironment: process.env.RAILWAY_ENVIRONMENT,
+    hasRedisUrl: !!process.env.REDIS_URL,
+    redisRelatedVars: redisVars
+  });
+});
+
 // Detailed health check
 router.get('/', async (req, res) => {
   const health = {
