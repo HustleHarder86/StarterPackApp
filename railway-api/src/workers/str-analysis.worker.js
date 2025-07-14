@@ -1,12 +1,24 @@
 const { Worker } = require('bullmq');
 const logger = require('../services/logger.service');
-const { redis } = require('../config/redis');
+const { redisUrl } = require('../config/redis');
 const { db, admin } = require('../services/firebase.service');
 const { setCached } = require('../services/cache.service');
 const { airbnbScraper } = require('../services/airbnb-scraper.service');
 const { analyzeSTRPotential } = require('../utils/calculators/str');
 const { STRRegulationChecker } = require('../utils/str-regulations');
 const { filterComparables } = require('../utils/str-calculations');
+
+// Check if Redis URL is available before creating worker
+if (!redisUrl) {
+  logger.error('Cannot create STR analysis worker - Redis URL not configured');
+  module.exports = {
+    get worker() { return null; },
+    isRunning: () => false
+  };
+  return;
+}
+
+logger.info('Creating STR analysis worker with Redis URL:', redisUrl.substring(0, 20) + '...');
 
 const strAnalysisWorker = new Worker(
   'str-analysis',
@@ -208,7 +220,9 @@ const strAnalysisWorker = new Worker(
     }
   },
   {
-    connection: redis,
+    connection: {
+      url: redisUrl
+    },
     concurrency: 2,
     removeOnComplete: { count: 100 },
     removeOnFail: { count: 50 }
@@ -255,4 +269,11 @@ strAnalysisWorker.on('failed', (job, error) => {
   });
 });
 
-module.exports = strAnalysisWorker;
+strAnalysisWorker.on('error', (err) => {
+  logger.error('STR analysis worker error', { error: err.message });
+});
+
+module.exports = {
+  get worker() { return strAnalysisWorker; },
+  isRunning: () => strAnalysisWorker && strAnalysisWorker.isRunning()
+};

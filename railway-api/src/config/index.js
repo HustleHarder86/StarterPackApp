@@ -30,9 +30,9 @@ const config = {
     }
   },
   
-  // Redis
+  // Redis (deprecated - use config/redis.js instead)
   redis: {
-    url: process.env.REDIS_URL || 'redis://localhost:6379',
+    url: process.env.REDIS_URL || null,
     options: {
       maxRetriesPerRequest: 3,
       enableReadyCheck: false
