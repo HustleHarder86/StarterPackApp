@@ -6,7 +6,7 @@
   },
   "deploy": {
     "runtime": "nodejs",
-    "startCommand": "./start.sh",
+    "startCommand": "node start-production.js",
     "healthcheckPath": "/health",
     "healthcheckTimeout": 30,
     "restartPolicyType": "ON_FAILURE",
