@@ -31,6 +31,16 @@ app.use(helmet({
 // CORS
 app.use(corsMiddleware);
 
+// Log all OPTIONS requests for debugging
+app.options('*', (req, res, next) => {
+  logger.debug('OPTIONS request received', {
+    path: req.path,
+    origin: req.headers.origin,
+    headers: req.headers
+  });
+  next();
+});
+
 // Body parsing
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));

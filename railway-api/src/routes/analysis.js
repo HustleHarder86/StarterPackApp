@@ -5,6 +5,24 @@ const { APIError } = require('../middleware/errorHandler');
 const logger = require('../services/logger.service');
 const { analyzePropertyLogic } = require('../services/property-analysis.service');
 
+// Health check for analysis endpoints
+router.get('/health', (req, res) => {
+  res.json({
+    status: 'operational',
+    endpoints: ['/property', '/str/analyze', '/str/comparables'],
+    timestamp: new Date().toISOString()
+  });
+});
+
+// Handle OPTIONS for /property endpoint explicitly
+router.options('/property', (req, res) => {
+  res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
+  res.header('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.header('Access-Control-Allow-Credentials', 'true');
+  res.sendStatus(200);
+});
+
 // Property analysis endpoint - Direct processing (no queues)
 router.post('/property', optionalAuth, async (req, res, next) => {
   try {
