@@ -15,6 +15,8 @@ const app = express();
 // Trust proxy (Railway runs behind a proxy)
 app.set('trust proxy', true);
 
+// Force redeploy - 2025-07-15 19:42
+
 // Request ID middleware
 app.use((req, res, next) => {
   req.id = req.headers['x-request-id'] || uuidv4();

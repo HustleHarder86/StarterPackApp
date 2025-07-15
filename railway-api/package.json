@@ -1,6 +1,6 @@
 {
   "name": "starterpack-railway-api",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Railway API server for StarterPackApp - handles heavy processing tasks",
   "main": "src/server.js",
   "scripts": {
