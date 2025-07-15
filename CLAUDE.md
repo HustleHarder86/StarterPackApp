@@ -31,17 +31,23 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 **COMMON MISTAKES TO AVOID:**
 - ❌ NEVER put API integrations in `/api/` (Vercel)
 - ❌ NEVER put heavy processing in Vercel functions
-- ❌ NEVER bypass the job queue for long operations
+- ❌ NEVER assume Redis/queues exist (removed as of Jan 15, 2025)
 
-## 📌 CURRENT STATUS - JANUARY 11, 2025
+## 📌 CURRENT STATUS - JANUARY 15, 2025
 
-**STR Analysis System**: ✅ Complete and working in fallback mode
-**Redis**: ⚠️ Service added to Railway but needs connection (see `/docs/redis-setup-railway.md`)
-**Next Steps**: Connect Redis variables, then load frontend components
+### Major Architecture Change: Redis Removal
+**Decision**: Removed Redis/BullMQ entirely for simplification
+**Reason**: Redis connection issues were blocking STR analysis functionality. The queue-based architecture was overengineered for our needs.
 
-**Branch**: `claude/deploy-str-analysis-20250111_155342` (ready to merge after Redis connection)
+**Current Architecture**:
+- ✅ Direct API calls (no queues)
+- ✅ Simple in-memory caching
+- ✅ Synchronous processing
+- ✅ CORS fixed for production domains
 
-See `/tasks/current-status-jan-11-2025.md` for full details.
+**STR Analysis**: Ready for testing once Airbnb API credentials are added to Railway
+
+See `/tasks/redis-removal-jan-15-2025.md` for full details of the architectural changes.
 
 ---
 

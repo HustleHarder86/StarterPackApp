@@ -6,6 +6,8 @@
 
 This project uses a **DUAL-DEPLOYMENT ARCHITECTURE** that MUST be followed:
 
+⚠️ **UPDATE (January 15, 2025)**: Redis and job queues have been removed. See "Simplified Architecture" section below.
+
 ## Deployment Separation
 
 ### 1. Railway API (`/railway-api/`) - Heavy Processing Backend
@@ -27,9 +29,9 @@ This project uses a **DUAL-DEPLOYMENT ARCHITECTURE** that MUST be followed:
 
 **TECH STACK**:
 - Express.js server
-- BullMQ for job queues
-- Redis for caching
-- Workers for background processing
+- ~~BullMQ for job queues~~ (Removed Jan 15, 2025)
+- ~~Redis for caching~~ (Replaced with in-memory cache)
+- ~~Workers for background processing~~ (Direct processing now)
 
 ### 2. Vercel (`/api/`) - Simple Frontend Functions
 
@@ -69,26 +71,27 @@ This project uses a **DUAL-DEPLOYMENT ARCHITECTURE** that MUST be followed:
    const pdf = await generatePDF(data);
    ```
 
-3. **Bypass the job queue for long operations**
+3. **~~Bypass the job queue for long operations~~** (Job queues removed)
    ```javascript
-   // ❌ WRONG - Use job queue!
+   // ✅ NOW CORRECT - Direct processing
    // File: /railway-api/routes/analysis.js
-   const analysis = await runComplexAnalysis(data); // Takes 30+ seconds
+   const analysis = await runComplexAnalysis(data); // Railway has 5min timeout
    ```
 
 ### ✅ CORRECT Approach:
 1. **External APIs go in Railway**
    ```javascript
-   // ✅ CORRECT
-   // File: /railway-api/src/routes/analysis/str.js
-   const job = await addJobWithProgress('str-analysis', 'analyze-str', data);
+   // ✅ CORRECT (Updated - no queues)
+   // File: /railway-api/src/routes/analysis/str-direct.js
+   const result = await airbnbScraper.searchComparables(data);
+   return res.json({ success: true, data: result });
    ```
 
-2. **Use job queue for heavy processing**
+2. **~~Use job queue for heavy processing~~** (Direct processing now)
    ```javascript
-   // ✅ CORRECT
-   // File: /railway-api/src/workers/report.worker.js
-   const pdf = await generatePDF(jobData);
+   // ✅ CORRECT (Updated)
+   // File: /railway-api/src/routes/reports.js
+   const pdf = await generatePDF(data); // Direct, no queues
    ```
 
 3. **Simple forms can use Vercel**
@@ -128,7 +131,7 @@ StarterPackApp/
 │   │   │   ├── analysis/    # Property & STR analysis
 │   │   │   ├── reports/     # PDF generation
 │   │   │   └── ...
-│   │   ├── workers/         # Background job processors
+│   │   ├── ~~workers/~~     # (Removed - direct processing now)
 │   │   ├── services/        # Business logic & integrations
 │   │   └── utils/           # Helpers & calculators
 │   └── package.json
@@ -147,6 +150,7 @@ StarterPackApp/
 
 ## API Communication Flow
 
+### Current (Simplified - Jan 2025)
 ```
 User Browser
     ↓
@@ -156,11 +160,16 @@ JavaScript (config.js)
     ↓
 Railway API (Heavy Processing)
     ↓
-Job Queue (BullMQ)
-    ↓
-Worker Process
-    ↓
 External APIs (Perplexity, Airbnb, etc.)
+```
+
+### Previous (With Queues - Removed)
+```
+~~User Browser~~
+    ~~↓~~
+~~Job Queue (BullMQ)~~
+    ~~↓~~
+~~Worker Process~~
 ```
 
 ## Environment Variables
@@ -173,7 +182,7 @@ AIRBNB_SCRAPER_API_KEY=
 OPENAI_API_KEY=
 
 # Infrastructure
-REDIS_URL=
+# REDIS_URL= (Removed - using in-memory cache)
 FIREBASE_*=
 ```
 
@@ -220,27 +229,45 @@ export default async function handler(req, res) {
 }
 ```
 
-**✅ RIGHT WAY**:
+**✅ RIGHT WAY (Updated - Direct Processing)**:
 ```javascript
 // /railway-api/src/routes/analysis/new-ai.js
 router.post('/analyze', async (req, res) => {
-  const job = await addJobWithProgress('ai-analysis', 'process', req.body);
-  res.json({ jobId: job.id, statusUrl: `/api/jobs/${job.id}/status` });
-});
-
-// /railway-api/src/workers/ai-analysis.worker.js
-const worker = new Worker('ai-analysis', async (job) => {
-  const result = await callOpenAI(job.data);  // ✅ In background worker!
-  return result;
+  try {
+    // Direct processing - Railway has 5 minute timeout
+    const result = await callOpenAI(req.body);
+    res.json({ success: true, data: result });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 ```
+
+## Simplified Architecture (January 2025)
+
+### What Changed
+- **Removed**: Redis, BullMQ, worker processes
+- **Added**: Simple in-memory cache, direct API processing
+- **Reason**: Redis connection issues, overengineered for current needs
+
+### Current Processing Model
+- All API calls are synchronous (no queues)
+- Railway has 5-minute timeout (plenty for our APIs)
+- In-memory cache for temporary storage
+- Direct response to frontend (no job polling)
+
+### Benefits
+- Simpler to debug and maintain
+- Faster response times (no queue overhead)
+- Fewer dependencies and failure points
+- Lower operational complexity
 
 ## Final Checklist
 
 Before committing ANY code:
 
 - [ ] External API calls are in Railway?
-- [ ] Heavy processing uses job queues?
+- [ ] ~~Heavy processing uses job queues?~~ (Direct processing now)
 - [ ] Vercel only has simple operations?
 - [ ] Frontend uses Railway endpoints for analysis?
 - [ ] No API keys in Vercel environment?
@@ -250,3 +277,5 @@ Before committing ANY code:
 ---
 
 *This architecture ensures scalability, prevents timeouts, and keeps costs manageable by using each platform for its strengths.*
+
+*Updated January 15, 2025: Simplified to remove Redis/queues after operational issues.*
