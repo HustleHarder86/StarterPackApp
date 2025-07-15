@@ -1,7 +1,7 @@
 const axios = require('axios');
 const config = require('../config');
 const logger = require('./logger.service');
-const { cache } = require('./cache.service');
+const { cache } = require('./simple-cache.service');
 const { createAnalysis, createProperty } = require('./firebase.service');
 const { 
   calculateAccurateExpenses, 

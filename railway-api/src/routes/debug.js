@@ -85,16 +85,12 @@ router.get('/health', async (req, res) => {
     }
   };
   
-  try {
-    const { redisClient } = require('../services/cache.service');
-    if (redisClient) {
-      health.redis.configured = true;
-      const ping = await redisClient.ping();
-      health.redis.connected = ping === 'PONG';
-    }
-  } catch (error) {
-    health.redis.error = error.message;
-  }
+  // Redis removed - using simple cache now
+  health.redis = {
+    configured: false,
+    connected: false,
+    message: 'Redis removed - using in-memory cache'
+  };
   
   res.json(health);
 });
