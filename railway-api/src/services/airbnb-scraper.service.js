@@ -4,7 +4,9 @@ const logger = require('./logger.service');
 class AirbnbScraperService {
   constructor() {
     this.apiKey = process.env.AIRBNB_SCRAPER_API_KEY;
-    this.apiUrl = process.env.AIRBNB_SCRAPER_API_URL || 'https://api.apify.com/v2';
+    // Ensure base URL doesn't have trailing slash and is just the base API
+    this.apiUrl = (process.env.AIRBNB_SCRAPER_API_URL || 'https://api.apify.com/v2').replace(/\/$/, '');
+    // The actor you're using
     this.actorId = 'tri_angle/new-fast-airbnb-scraper';
     this.maxResults = 50; // Cost control
     this.timeout = 15000; // 15 second timeout
@@ -34,9 +36,11 @@ class AirbnbScraperService {
       maxResults: this.maxResults
     });
 
-    // Build input parameters
+    // Build input parameters - format varies by actor
+    // Most actors use locationQuery instead of location
     const input = {
-      location,
+      locationQuery: `${location}, Canada`, // More explicit location
+      location: location,
       minBedrooms: Math.max(1, bedrooms - 1),
       maxBedrooms: bedrooms + 1,
       minBathrooms: Math.max(1, bathrooms - 0.5),
@@ -47,13 +51,22 @@ class AirbnbScraperService {
       children: 0,
       infants: 0,
       pets: 0,
+      propertyType: this.getPropertyTypes(propertyType),
       propertyTypes: this.getPropertyTypes(propertyType),
       currency: 'CAD',
       includeDataFromHosts: true,
+      maxListings: this.maxResults,
       maxResults: this.maxResults,
       checkIn: this.getCheckInDate(),
-      checkOut: this.getCheckOutDate()
+      checkOut: this.getCheckOutDate(),
+      startUrls: [] // Some actors use this instead
     };
+    
+    logger.info('Apify input parameters', {
+      location: input.locationQuery,
+      bedrooms: `${input.minBedrooms}-${input.maxBedrooms}`,
+      actor: this.actorId
+    });
 
     try {
       // Create abort controller for timeout
@@ -63,6 +76,15 @@ class AirbnbScraperService {
 
       // Start the actor run
       const runUrl = `${this.apiUrl}/acts/${this.actorId}/runs`;
+      
+      logger.info('Calling Apify API', {
+        url: runUrl,
+        hasApiKey: !!this.apiKey,
+        apiKeyLength: this.apiKey?.length || 0,
+        apiUrl: this.apiUrl,
+        actorId: this.actorId
+      });
+      
       const runResponse = await fetch(runUrl, {
         method: 'POST',
         headers: {

@@ -107,11 +107,33 @@ router.post('/property', optionalAuth, async (req, res, next) => {
           }
           
           // Prepare property data for STR analysis
+          // Fix city extraction - propertyData.city contains "Ontario M4A1V1", need to extract actual city
+          let cityName = result.propertyDetails?.city || propertyData?.city || 'Toronto';
+          
+          // If city contains "Ontario" or postal code pattern, it's likely the wrong format
+          if (cityName && (cityName.includes('Ontario') || /[A-Z]\d[A-Z]\s?\d[A-Z]\d/.test(cityName))) {
+            // Try to extract city from the full address
+            const addressParts = propertyAddress.split(',').map(s => s.trim());
+            // Usually format is: "Street, City (Neighborhood), Province PostalCode"
+            if (addressParts.length > 1) {
+              // Extract city name, removing neighborhood in parentheses
+              cityName = addressParts[0].split('(')[0].trim();
+              // If first part looks like street (contains numbers), use second part
+              if (/^\d+/.test(cityName) && addressParts[1]) {
+                cityName = addressParts[1].split('(')[0].trim();
+              }
+            }
+            // Default to Toronto if still unclear
+            if (cityName.includes('Ontario') || /[A-Z]\d[A-Z]/.test(cityName)) {
+              cityName = 'Toronto';
+            }
+          }
+          
           const strPropertyData = {
             address: {
               street: result.propertyDetails?.address || propertyAddress,
-              city: result.propertyDetails?.city || propertyData?.city,
-              province: result.propertyDetails?.state || propertyData?.province || 'Ontario',
+              city: cityName,
+              province: 'Ontario',
               country: 'Canada'
             },
             bedrooms: result.propertyDetails?.bedrooms || propertyData?.bedrooms || 3,
