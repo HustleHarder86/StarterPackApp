@@ -12,7 +12,10 @@ const {
 
 // Helper function to extract numeric value from text
 function extractNumericValue(text, keyword) {
-  if (!text) return null;
+  if (!text || typeof text !== 'string') {
+    logger.debug('extractNumericValue: text is null or not a string', { text, keyword });
+    return null;
+  }
   
   const patterns = [
     new RegExp(`${keyword}:?\\s*\\$?([\\d,]+(?:\\.\\d+)?)`, 'i'),
@@ -21,9 +24,16 @@ function extractNumericValue(text, keyword) {
   ];
   
   for (const pattern of patterns) {
-    const match = text.match(pattern);
-    if (match) {
-      return parseFloat(match[1].replace(/,/g, ''));
+    try {
+      const match = text.match(pattern);
+      if (match && match[1]) {
+        const value = parseFloat(match[1].replace(/,/g, ''));
+        if (!isNaN(value)) {
+          return value;
+        }
+      }
+    } catch (error) {
+      logger.debug('extractNumericValue: error matching pattern', { error: error.message, pattern: pattern.toString() });
     }
   }
   
@@ -114,6 +124,12 @@ async function analyzePropertyLogic({
       address,
       estimatedValue,
       propertyData
+    });
+    
+    logger.info('Perplexity API response received', {
+      hasContent: !!perplexityResponse.content,
+      contentLength: perplexityResponse.content?.length || 0,
+      contentType: typeof perplexityResponse.content
     });
     
     await updateProgress(40, 'Analyzing rental rates...');

@@ -60,9 +60,20 @@ router.post('/property', optionalAuth, async (req, res, next) => {
       
       logger.info('Property analysis completed', { propertyAddress });
       
-      // If STR analysis is requested and we have the required data
-      if (includeStrAnalysis && result.success) {
+      // If STR analysis is requested, run it regardless of LTR success
+      if (includeStrAnalysis) {
         logger.info('STR analysis requested, triggering STR analysis');
+        
+        // If LTR failed, create a basic result structure
+        if (!result.success) {
+          logger.warn('LTR analysis failed, but continuing with STR analysis');
+          result = {
+            success: false,
+            error: result.error || 'LTR analysis failed',
+            propertyDetails: propertyData || {},
+            rental: {}
+          };
+        }
         
         try {
           // Import STR analysis dependencies
