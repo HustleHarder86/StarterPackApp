@@ -5,15 +5,24 @@ const logger = require('./logger.service');
 
 // Check if Redis is available
 if (!redisUrl) {
-  logger.error('Redis URL not configured - queue service will not be available');
-  // Export empty module to prevent crashes
+  logger.error('CRITICAL: Redis URL not configured - queue service cannot start', {
+    REDIS_URL: process.env.REDIS_URL ? 'Set but invalid' : 'Not set',
+    RAILWAY_ENVIRONMENT: process.env.RAILWAY_ENVIRONMENT || 'Not set',
+    NODE_ENV: process.env.NODE_ENV || 'Not set',
+    availableEnvVars: Object.keys(process.env).filter(k => 
+      k.includes('REDIS') || k.includes('RAILWAY')
+    ).map(k => `${k}=${k.includes('URL') || k.includes('PASSWORD') ? '[REDACTED]' : process.env[k]}`)
+  });
+  
+  // Export error module
+  const errorMsg = 'Queue service not available - Redis not configured. Check REDIS_URL in Railway environment variables.';
   module.exports = {
-    queues: {},
-    queueEvents: {},
-    addJobWithProgress: async () => { throw new Error('Queue service not available - Redis not configured'); },
-    getJobStatus: async () => { throw new Error('Queue service not available - Redis not configured'); },
-    updateJobProgress: async () => { throw new Error('Queue service not available - Redis not configured'); },
-    checkQueueHealth: async () => ({ error: 'Redis not configured' })
+    queues: null,
+    queueEvents: null,
+    addJobWithProgress: async () => { throw new Error(errorMsg); },
+    getJobStatus: async () => { throw new Error(errorMsg); },
+    updateJobProgress: async () => { throw new Error(errorMsg); },
+    checkQueueHealth: async () => ({ error: errorMsg })
   };
   return;
 }

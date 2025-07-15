@@ -8,15 +8,14 @@ const { airbnbScraper } = require('../../services/airbnb-scraper.service');
 const { analyzeSTRPotential } = require('../../utils/calculators/str');
 const { STRRegulationChecker } = require('../../utils/str-regulations');
 const { db } = require('../../services/firebase.service');
-const fallbackQueue = require('../../services/queue-fallback.service');
 
-// Try to load queue service, fallback if Redis not available
+// Try to load queue service
 let queueService;
 try {
   queueService = require('../../services/queue.service');
-  logger.info('Using Redis queue service');
+  logger.info('STR route: Redis queue service loaded successfully');
 } catch (error) {
-  logger.warn('Redis not available, using fallback queue service');
+  logger.error('STR route: Failed to load queue service', { error: error.message });
   queueService = null;
 }
 
@@ -65,41 +64,56 @@ router.post('/analyze', verifyToken, async (req, res, next) => {
       });
     }
     
+    // Check if queue service is available
+    if (!queueService || !queueService.queues || !queueService.queues.str) {
+      const debugInfo = {
+        queueServiceExists: !!queueService,
+        queuesExists: !!(queueService && queueService.queues),
+        strQueueExists: !!(queueService && queueService.queues && queueService.queues.str),
+        redisUrl: process.env.REDIS_URL ? 'Set' : 'Not set',
+        railwayEnvironment: process.env.RAILWAY_ENVIRONMENT || 'Not set',
+        nodeEnv: process.env.NODE_ENV || 'Not set'
+      };
+      
+      logger.error('STR Analysis Error: Queue service not available', debugInfo);
+      
+      return res.status(503).json({
+        success: false,
+        error: 'STR analysis service temporarily unavailable',
+        message: 'Redis connection not configured. Please check Railway deployment.',
+        debugInfo,
+        hint: 'Ensure REDIS_URL environment variable is set in Railway'
+      });
+    }
+    
     // Add to job queue for processing
     let job;
-    
-    if (!queueService || !fallbackQueue.isRedisAvailable()) {
-      // Use fallback processing when Redis not available
-      logger.warn('Using fallback processing for STR analysis');
-      
-      // Import worker logic
-      const strWorkerLogic = require('../../workers/str-analysis.worker.logic');
-      
-      job = await fallbackQueue.addJob('str-analysis', 'analyze-str', {
-        propertyId,
-        propertyData,
-        userId: req.userId,
-        userTier: userData.subscriptionTier,
-        strTrialUsed: userData.strTrialUsed || 0
-      }, strWorkerLogic.processSTRAnalysis);
-      
-    } else {
-      // Use normal Redis queue
-      const { addJobWithProgress } = queueService;
-      job = await addJobWithProgress('str-analysis', 'analyze-str', {
+    try {
+      job = await queueService.addJobWithProgress('str', 'analyze-str', {
         propertyId,
         propertyData,
         userId: req.userId,
         userTier: userData.subscriptionTier,
         strTrialUsed: userData.strTrialUsed || 0
       });
+      
+      logger.info('STR analysis job created', { 
+        jobId: job.id,
+        propertyId
+      });
+    } catch (jobError) {
+      logger.error('Failed to create STR job', { error: jobError.message });
+      
+      return res.status(500).json({
+        success: false,
+        error: 'Failed to start STR analysis',
+        message: jobError.message,
+        debugInfo: {
+          errorType: jobError.constructor.name,
+          errorMessage: jobError.message
+        }
+      });
     }
-    
-    logger.info('STR analysis job created', { 
-      jobId: job.id,
-      propertyId,
-      usingFallback: !queueService || !fallbackQueue.isRedisAvailable()
-    });
     
     res.json({
       success: true,

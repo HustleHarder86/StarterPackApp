@@ -2,8 +2,17 @@ const express = require('express');
 const router = express.Router();
 const { verifyToken, optionalAuth } = require('../middleware/auth');
 const { APIError } = require('../middleware/errorHandler');
-const { addJobWithProgress, getJobStatus } = require('../services/queue.service');
 const logger = require('../services/logger.service');
+
+// Try to load queue service
+let queueService;
+try {
+  queueService = require('../services/queue.service');
+  logger.info('Analysis route: Redis queue service loaded successfully');
+} catch (error) {
+  logger.error('Analysis route: Failed to load queue service', { error: error.message });
+  queueService = null;
+}
 
 // Property analysis endpoint - now uses job queue
 router.post('/property', optionalAuth, async (req, res, next) => {
@@ -21,15 +30,52 @@ router.post('/property', optionalAuth, async (req, res, next) => {
       hasPropertyData: !!propertyData
     });
     
+    // Check if queue service is available
+    if (!queueService || !queueService.queues || !queueService.queues.analysis) {
+      const debugInfo = {
+        queueServiceExists: !!queueService,
+        queuesExists: !!(queueService && queueService.queues),
+        analysisQueueExists: !!(queueService && queueService.queues && queueService.queues.analysis),
+        redisUrl: process.env.REDIS_URL ? 'Set' : 'Not set',
+        railwayEnvironment: process.env.RAILWAY_ENVIRONMENT || 'Not set',
+        nodeEnv: process.env.NODE_ENV || 'Not set'
+      };
+      
+      logger.error('Property Analysis Error: Queue service not available', debugInfo);
+      
+      return res.status(503).json({
+        success: false,
+        error: 'Property analysis service temporarily unavailable',
+        message: 'Redis connection not configured. Please check Railway deployment.',
+        debugInfo,
+        hint: 'Ensure REDIS_URL environment variable is set in Railway'
+      });
+    }
+    
     // Add job to queue
-    const job = await addJobWithProgress('analysis', 'analyze-property', {
-      propertyAddress,
-      propertyData,
-      userId: req.userId,
-      userEmail: req.userEmail,
-      userName: req.user?.name,
-      requestType
-    });
+    let job;
+    try {
+      job = await queueService.addJobWithProgress('analysis', 'analyze-property', {
+        propertyAddress,
+        propertyData,
+        userId: req.userId,
+        userEmail: req.userEmail,
+        userName: req.user?.name,
+        requestType
+      });
+    } catch (jobError) {
+      logger.error('Failed to create analysis job', { error: jobError.message });
+      
+      return res.status(500).json({
+        success: false,
+        error: 'Failed to start property analysis',
+        message: jobError.message,
+        debugInfo: {
+          errorType: jobError.constructor.name,
+          errorMessage: jobError.message
+        }
+      });
+    }
     
     // Return job ID for status tracking
     res.json({

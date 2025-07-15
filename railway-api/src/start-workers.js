@@ -6,8 +6,22 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 const logger = require('./services/logger.service');
+const { redisUrl } = require('./config/redis');
 
 logger.info('Starting workers...');
+
+// Check if Redis is available
+if (!redisUrl) {
+  logger.warn('Redis not configured - workers will not be started');
+  logger.info('System will run in fallback mode without background job processing');
+  
+  // Keep process alive but don't start workers
+  setInterval(() => {
+    logger.info('Worker process alive (fallback mode - no Redis)');
+  }, 60000);
+  
+  return;
+}
 
 // Import workers after a delay to ensure config is loaded
 setTimeout(() => {
