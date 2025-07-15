@@ -178,8 +178,9 @@ class StarterPackAPI {
   }
   
   // Property Analysis (Heavy - Railway)
-  async analyzeProperty(propertyData) {
-    return this.callRailwayAPI('analyzeProperty', { propertyData }, {
+  async analyzeProperty(data) {
+    // Forward all data to Railway API
+    return this.callRailwayAPI('analyzeProperty', data, {
       onProgress: (progress) => {
         console.log('Analysis progress:', progress);
       }

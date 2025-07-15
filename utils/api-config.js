@@ -6,7 +6,7 @@ const API_CONFIG = {
   railway: {
     baseUrl: window.location.hostname === 'localhost' 
       ? 'http://localhost:3001' 
-      : (window.ENV?.railwayUrl || 'https://starterpack-api.railway.app'),
+      : (window.ENV?.railwayUrl || 'https://starterpackapp-api.up.railway.app'),
     endpoints: {
       analyzeProperty: '/api/analysis/property',
       strAnalysis: '/api/analysis/str',
@@ -58,7 +58,8 @@ function shouldUseRailway() {
     }
   }
   
-  // Default to true in production, false in development
+  // Always use Railway for production or when ENV flag is set
+  // Railway handles: STR analysis, heavy processing, external APIs
   return window.location.hostname !== 'localhost' || window.ENV?.useRailway === true;
 }
 

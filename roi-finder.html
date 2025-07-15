@@ -16,6 +16,9 @@
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script crossorigin src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   
+  <!-- API Configuration -->
+  <script src="/js/config.js"></script>
+  
   <!-- Load React Components -->
   <script type="text/babel" src="/components/RentalComparisonView.jsx"></script>
   <script type="text/babel" src="/components/ClientPresentationView.jsx"></script>
@@ -2353,8 +2356,18 @@
           // Format full address
           const fullAddress = `${propertyData.address.street}, ${propertyData.address.city}, ${propertyData.address.state}, ${propertyData.address.country} ${propertyData.address.postal}`.trim();
           
+          // Determine if we need to use Railway API for STR analysis
+          const includeStrAnalysis = document.getElementById('confirm-analysis-mode').value === 'str';
+          
+          // Use Railway API for STR analysis, Vercel for regular analysis
+          const apiUrl = includeStrAnalysis 
+            ? API_CONFIG.getUrl('analyzeProperty')
+            : '/api/analyze-property';
+          
+          console.log(`Using API endpoint: ${apiUrl} (STR: ${includeStrAnalysis})`);
+          
           // Call API with property data
-          const response = await fetch('/api/analyze-property', {
+          const response = await fetch(apiUrl, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json'
@@ -2365,7 +2378,7 @@
               userEmail: currentUser.email,
               userName: currentUser.displayName,
               requestType: 'authenticated',
-              includeStrAnalysis: document.getElementById('confirm-analysis-mode').value === 'str',
+              includeStrAnalysis: includeStrAnalysis,
               // Include actual property data from extension
               propertyData: {
                 price: propertyData.price,
