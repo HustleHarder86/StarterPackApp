@@ -68,7 +68,7 @@ app.get('/', (req, res) => {
   res.json({
     service: 'StarterPackApp Railway API',
     status: 'operational',
-    version: '1.0.1',
+    version: '1.0.2', // Updated to trigger redeploy
     endpoints: {
       health: '/health',
       analysis: '/api/analysis/*',
