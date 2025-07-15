@@ -5,11 +5,7 @@
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",
-    "start:worker": "node src/start-workers.js",
-    "start:all": "npm run start & npm run start:worker",
     "dev": "nodemon src/server.js",
-    "dev:worker": "nodemon src/start-workers.js",
-    "dev:all": "npm run dev & npm run dev:worker",
     "test": "jest",
     "test:watch": "jest --watch"
   },
