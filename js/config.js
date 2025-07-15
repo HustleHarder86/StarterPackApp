@@ -3,7 +3,7 @@ const API_CONFIG = {
   // Railway API endpoints
   RAILWAY_API_URL: window.location.hostname === 'localhost' 
     ? 'http://localhost:3001' // Local Railway API
-    : 'https://starterpackapp-api.up.railway.app', // Production Railway API
+    : 'https://real-estate-app-production-ba5c.up.railway.app', // Production Railway API
   
   // API endpoints
   endpoints: {

@@ -21,7 +21,7 @@
 ### Where heavy processing goes:
 All heavy processing MUST go in the Railway API:
 - Directory: `/railway-api/src/routes/`
-- Endpoint: `https://starterpackapp-api.up.railway.app/api/*`
+- Endpoint: `https://real-estate-app-production-ba5c.up.railway.app/api/*`
 
 ### Current files (correct usage):
 - `submit-lead.js` - ✅ Simple form to Firebase

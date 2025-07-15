@@ -79,7 +79,7 @@ REDIS_URL=${{Redis.REDIS_URL}} (reference to Redis service)
 
 ### API Endpoints Ready
 
-**Railway API** (https://starterpackapp-api.up.railway.app):
+**Railway API** (https://real-estate-app-production-ba5c.up.railway.app):
 - `POST /api/analysis/str/analyze` - Main STR analysis
 - `POST /api/analysis/str/comparables` - Get Airbnb comparables
 - `POST /api/analysis/str/regulations` - Check municipal rules

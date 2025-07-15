@@ -25,7 +25,7 @@ This project uses a **DUAL-DEPLOYMENT ARCHITECTURE** that MUST be followed:
 - ✅ Webhook processing
 - ✅ Scheduled tasks/cron jobs
 
-**ENDPOINTS**: `https://starterpackapp-api.up.railway.app/api/*`
+**ENDPOINTS**: `https://real-estate-app-production-ba5c.up.railway.app/api/*`
 
 **TECH STACK**:
 - Express.js server
