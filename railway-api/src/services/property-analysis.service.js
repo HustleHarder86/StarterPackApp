@@ -360,7 +360,12 @@ async function processResearchData({ researchContent, propertyAddress, address, 
       actualCondoFees: propertyData?.condoFees
     }),
     rental: {
-      monthlyRent: extractNumericValue(researchContent, 'rent|monthly') || estimateRentalRate(estimatedValue),
+      monthlyRent: extractNumericValue(researchContent, 'rent|monthly') || 
+                   estimateRentalRate(
+                     propertyData?.price || estimatedValue,
+                     address.city,
+                     propertyData?.propertyType || 'Single Family'
+                   ),
       comparables: [] // Would extract from research content
     },
     citations: citations || []
