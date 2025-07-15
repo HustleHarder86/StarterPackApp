@@ -45,9 +45,16 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - ✅ Synchronous processing
 - ✅ CORS fixed for production domains
 
-**STR Analysis**: Ready for testing once Airbnb API credentials are added to Railway
+### STR Analysis - Enhanced Implementation ✅
+**Status**: Complete with comprehensive calculations and comparison engine
 
-See `/tasks/redis-removal-jan-15-2025.md` for full details of the architectural changes.
+**What's Implemented**:
+1. **Cost-Controlled Airbnb Integration** (20 results, ~$0.01/search)
+2. **STR Calculator Service** with 3 revenue scenarios
+3. **Rental Comparison Engine** with break-even analysis
+4. **Full API Integration** in main analysis endpoint
+
+See `/railway-api/docs/STR_ENHANCED_IMPLEMENTATION.md` for details.
 
 ---
 

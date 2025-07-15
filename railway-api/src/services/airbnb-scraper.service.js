@@ -8,16 +8,17 @@ class AirbnbScraperService {
     this.apiUrl = (process.env.AIRBNB_SCRAPER_API_URL || 'https://api.apify.com/v2').replace(/\/$/, '');
     // The actor you're using - use tilde not forward slash!
     this.actorId = 'tri_angle~new-fast-airbnb-scraper';
-    this.maxResults = 50; // Cost control
-    this.timeout = 15000; // 15 second timeout
+    this.maxResults = 20; // Cost control - limit to 20 for ~$0.01 per search
+    this.timeout = 60000; // 60 second timeout
   }
 
   /**
    * Search for comparable Airbnb listings
    * @param {Object} propertyData - Property details for matching
+   * @param {Object} options - Optional search parameters
    * @returns {Promise<Object>} Search results with listings and metadata
    */
-  async searchComparables(propertyData) {
+  async searchComparables(propertyData, options = {}) {
     if (!this.apiKey) {
       logger.error('Airbnb scraper API key not configured', {
         hasKey: !!process.env.AIRBNB_SCRAPER_API_KEY,
@@ -27,7 +28,10 @@ class AirbnbScraperService {
     }
 
     const { address, bedrooms = 2, bathrooms = 1, propertyType = 'House' } = propertyData;
-    const location = address?.city || 'Toronto';
+    // Format location with province as it worked yesterday
+    const city = address?.city || 'Toronto';
+    const province = address?.province || 'Ontario';
+    const location = `${city}, ${province}`;
 
     logger.info('Searching Airbnb comparables', {
       location,
@@ -36,24 +40,34 @@ class AirbnbScraperService {
       maxResults: this.maxResults
     });
 
-    // Build input parameters - use exact format that works manually
+    // Build simplified input - exact bedroom match, no guest calculations
     const input = {
-      checkIn: this.getCheckInDate(),
-      checkOut: this.getCheckOutDate(), // Add checkout date
+      locationQueries: [location],
+      locale: 'en-US',
       currency: 'CAD',
-      locale: 'en-CA',
-      locationQueries: [location], // Just city name
-      minBathrooms: Math.max(1, bathrooms),
-      minBedrooms: Math.max(1, bedrooms),
-      minBeds: Math.max(1, bedrooms)
+      // Price range - fixed defaults for simplicity
+      priceMin: options.priceMin || 50,
+      priceMax: options.priceMax || 500,
+      // Property specifications - exact match from listing
+      minBedrooms: bedrooms,  // Exact bedroom count, no minimum calculation
+      minBathrooms: bathrooms, // Exact bathroom count
+      // Date logic - 30 days out for check-in, 7 night stay
+      checkIn: options.checkIn || this.getCheckInDate(),
+      checkOut: options.checkOut || this.getCheckOutDate()
+      // No guest count - let Airbnb handle defaults
     };
     
+    // Only add optional parameters if explicitly provided
+    if (options.children !== undefined) input.children = options.children;
+    if (options.infants !== undefined) input.infants = options.infants;
+    if (options.pets !== undefined) input.pets = options.pets;
+    
     logger.info('Apify input parameters', {
-      locations: input.locationQueries,
-      checkIn: input.checkIn,
-      checkOut: input.checkOut,
-      maxListings: input.maxListings,
-      actor: this.actorId
+      location: location,
+      locale: input.locale,
+      maxItems: this.maxResults,
+      actor: this.actorId,
+      input: input
     });
 
     try {
@@ -63,7 +77,8 @@ class AirbnbScraperService {
       const timeoutId = setTimeout(() => controller.abort(), this.timeout);
 
       // Start the actor run
-      const runUrl = `${this.apiUrl}/acts/${this.actorId}/runs`;
+      // Add maxItems as query parameter for cost control
+      const runUrl = `${this.apiUrl}/acts/${this.actorId}/runs?maxItems=${this.maxResults}`;
       
       logger.info('Calling Apify API', {
         url: runUrl,
@@ -73,10 +88,9 @@ class AirbnbScraperService {
         actorId: this.actorId
       });
       
-      // Log the exact payload being sent
-      const payload = { input };
+      // Send input directly - maxItems is in URL query parameter
       logger.info('Apify request payload', {
-        payload: JSON.stringify(payload, null, 2)
+        payload: JSON.stringify(input, null, 2)
       });
       
       const runResponse = await fetch(runUrl, {
@@ -85,7 +99,7 @@ class AirbnbScraperService {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${this.apiKey}`
         },
-        body: JSON.stringify(payload),
+        body: JSON.stringify(input),
         signal: controller.signal
       });
 
@@ -105,9 +119,21 @@ class AirbnbScraperService {
       const results = await this.waitForResults(runId, controller);
       
       // Process and normalize results
-      const listings = this.normalizeListings(results);
+      const allListings = this.normalizeListings(results);
       
-      logger.info(`Found ${listings.length} Airbnb listings`);
+      // Ensure we respect maxResults limit for cost control
+      const listings = allListings.slice(0, this.maxResults);
+      
+      logger.info(`Found ${allListings.length} total listings, returning ${listings.length} (maxResults: ${this.maxResults})`);
+
+      // Log if no results found (but don't throw error - might just be no listings in area)
+      if (listings.length === 0) {
+        logger.warn('No Airbnb listings found in area', {
+          location,
+          input,
+          runId
+        });
+      }
 
       return {
         listings,
@@ -138,8 +164,8 @@ class AirbnbScraperService {
    * Wait for actor run to complete and return results
    */
   async waitForResults(runId, controller) {
-    const maxAttempts = 20; // Increase attempts
-    const delayMs = 2000; // Increase delay
+    const maxAttempts = 30; // Increase attempts for longer runs
+    const delayMs = 3000; // Increase delay to 3 seconds
 
     for (let attempt = 0; attempt < maxAttempts; attempt++) {
       await new Promise(resolve => setTimeout(resolve, delayMs));
@@ -198,12 +224,23 @@ class AirbnbScraperService {
                       parseFloat(item.price.toString().replace(/[^\d.]/g, ''));
       }
 
-      // Extract bedrooms and bathrooms
-      const bedrooms = item.bedrooms || item.beds || 
-                      this.extractNumber(item.name, /(\d+)\s*(?:bedroom|bd|br)/i) || 1;
+      // Extract bedrooms and bathrooms from title/name
+      const combinedText = `${item.name || ''} ${item.title || ''} ${item.additionalInfo || ''}`;
       
+      // Try multiple patterns for bedrooms
+      const bedrooms = item.bedrooms || item.beds || 
+                      this.extractNumber(combinedText, /(\d+)\s*(?:bedroom|bd|br|BR|bed)/i) ||
+                      this.extractNumber(combinedText, /(\d+)BR/i) ||
+                      (combinedText.match(/studio/i) ? 0 : 2); // Default to 2 if not found
+      
+      // Try multiple patterns for bathrooms
       const bathrooms = item.bathrooms || 
-                       this.extractNumber(item.name, /(\d+(?:\.\d)?)\s*(?:bathroom|bath|ba)/i) || 1;
+                       this.extractNumber(combinedText, /(\d+(?:\.\d)?)\s*(?:bathroom|bath|ba|BA)/i) ||
+                       this.extractNumber(combinedText, /(\d+(?:\.\d)?)BA/i) || 
+                       1; // Default to 1
+
+      // Extract room type
+      const roomType = item.roomType || item.room_type || item.property_type || 'Entire place';
 
       return {
         id: item.id || item.listing_id || Math.random().toString(36).substr(2, 9),
@@ -212,15 +249,15 @@ class AirbnbScraperService {
         nightly_price: nightlyPrice,
         bedrooms: bedrooms,
         bathrooms: bathrooms,
-        propertyType: item.room_type || item.property_type || 'Entire place',
-        rating: item.star_rating || item.rating || 4.5,
-        reviewsCount: item.reviews_count || item.number_of_reviews || 0,
+        propertyType: roomType,
+        rating: parseFloat(item.star_rating || item.rating) || 4.5,
+        reviewsCount: parseInt(item.reviews_count || item.number_of_reviews) || 0,
         occupancy_rate: 0.70, // Default occupancy
-        image_url: item.picture_url || item.thumbnail_url || item.images?.[0] || '',
+        image_url: item.images?.[0] || item.picture_url || item.thumbnail_url || '',
         url: item.url || `https://www.airbnb.ca/rooms/${item.id}`,
         location: {
-          lat: item.lat || item.latitude,
-          lng: item.lng || item.longitude
+          lat: item.coordinates?.lat || item.lat || item.latitude,
+          lng: item.coordinates?.lng || item.lng || item.longitude
         },
         amenities: item.amenities || [],
         host: {
@@ -255,11 +292,11 @@ class AirbnbScraperService {
   }
 
   /**
-   * Get check-out date (33 days from now)
+   * Get check-out date (37 days from now - 7 night stay)
    */
   getCheckOutDate() {
     const date = new Date();
-    date.setDate(date.getDate() + 33);
+    date.setDate(date.getDate() + 37);
     return date.toISOString().split('T')[0];
   }
 

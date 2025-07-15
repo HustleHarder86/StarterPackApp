@@ -80,6 +80,8 @@ router.post('/property', optionalAuth, async (req, res, next) => {
           const { db } = require('../services/firebase.service');
           const admin = require('firebase-admin');
           const { airbnbScraper } = require('../services/airbnb-scraper.service');
+          const { strCalculator } = require('../services/str-calculator.service');
+          const { rentalComparison } = require('../utils/rental-comparison');
           const { analyzeSTRPotential } = require('../utils/calculators/str');
           const { STRRegulationChecker } = require('../utils/str-regulations');
           const { filterComparables } = require('../utils/str-calculations');
@@ -140,6 +142,7 @@ router.post('/property', optionalAuth, async (req, res, next) => {
             bathrooms: result.propertyDetails?.bathrooms || propertyData?.bathrooms || 2,
             propertyType: result.propertyDetails?.propertyType || propertyData?.propertyType || 'Single Family',
             sqft: result.propertyDetails?.sqft || propertyData?.sqft,
+            price: result.propertyDetails?.price || propertyData?.price || 0,
             monthlyRent: result.rental?.monthlyRent || 0,
             estimatedRent: result.rental?.monthlyRent || 0
           };
