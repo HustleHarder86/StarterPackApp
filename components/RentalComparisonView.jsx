@@ -15,7 +15,8 @@ const RentalComparisonView = ({ analysis, propertyAddress }) => {
   const ltr = analysis.longTermRental;
   const str = analysis.strAnalysis;
   const comparison = analysis.comparison;
-  const hasSTR = str && comparison;
+  const hasSTR = str && !str.error && comparison;
+  const strError = str?.error;
 
   // Format currency
   const formatCurrency = (amount) => {
@@ -63,7 +64,7 @@ const RentalComparisonView = ({ analysis, propertyAddress }) => {
           >
             Long-Term Rental
           </button>
-          {hasSTR && (
+          {(hasSTR || strError) && (
             <button
               className={`px-6 py-3 font-medium transition-colors ${
                 activeTab === 'str' 
@@ -264,9 +265,39 @@ const RentalComparisonView = ({ analysis, propertyAddress }) => {
         )}
 
         {/* Short-Term Rental Tab */}
-        {activeTab === 'str' && hasSTR && (
+        {activeTab === 'str' && (
           <div className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Show error if STR analysis failed */}
+            {strError ? (
+              <div className="bg-amber-50 border border-amber-200 rounded-lg p-6">
+                <div className="flex items-start">
+                  <svg className="w-6 h-6 text-amber-500 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                  </svg>
+                  <div className="flex-1">
+                    <h3 className="text-lg font-semibold text-amber-800 mb-2">STR Analysis Not Available</h3>
+                    {str?.errorType === 'missing_credentials' ? (
+                      <div>
+                        <p className="text-amber-700 mb-3">{str.helpMessage || 'STR analysis requires API configuration.'}</p>
+                        {str.configRequired && (
+                          <div className="bg-amber-100 rounded p-3 mt-3">
+                            <p className="text-sm text-amber-800 font-medium">Configuration Required:</p>
+                            <p className="text-sm text-amber-700 mt-1">
+                              Add <code className="bg-amber-200 px-1 rounded">{str.configRequired.variable}</code> to {str.configRequired.platform}
+                            </p>
+                            <p className="text-sm text-amber-600 mt-1">{str.configRequired.description}</p>
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <p className="text-amber-700">{strError}</p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ) : hasSTR && (
+              <>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Income Analysis */}
               <div className="bg-gray-50 rounded-lg p-6">
                 <h3 className="text-lg font-bold mb-4">Income Analysis</h3>
@@ -321,6 +352,8 @@ const RentalComparisonView = ({ analysis, propertyAddress }) => {
                 Actual results may vary based on property amenities, management quality, and local regulations.
               </p>
             </div>
+              </>
+            )}
           </div>
         )}
 

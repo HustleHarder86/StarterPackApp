@@ -17,7 +17,11 @@ class AirbnbScraperService {
    */
   async searchComparables(propertyData) {
     if (!this.apiKey) {
-      throw new Error('Airbnb scraper API key not configured');
+      logger.error('Airbnb scraper API key not configured', {
+        hasKey: !!process.env.AIRBNB_SCRAPER_API_KEY,
+        keyLength: process.env.AIRBNB_SCRAPER_API_KEY?.length || 0
+      });
+      throw new Error('STR analysis requires Airbnb API credentials. Please add AIRBNB_SCRAPER_API_KEY to Railway environment variables.');
     }
 
     const { address, bedrooms = 2, bathrooms = 1, propertyType = 'House' } = propertyData;
