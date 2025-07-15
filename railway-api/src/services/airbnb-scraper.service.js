@@ -6,8 +6,8 @@ class AirbnbScraperService {
     this.apiKey = process.env.AIRBNB_SCRAPER_API_KEY;
     // Ensure base URL doesn't have trailing slash and is just the base API
     this.apiUrl = (process.env.AIRBNB_SCRAPER_API_URL || 'https://api.apify.com/v2').replace(/\/$/, '');
-    // The actor you're using
-    this.actorId = 'tri_angle/new-fast-airbnb-scraper';
+    // The actor you're using - use tilde not forward slash!
+    this.actorId = 'tri_angle~new-fast-airbnb-scraper';
     this.maxResults = 50; // Cost control
     this.timeout = 15000; // 15 second timeout
   }
@@ -36,35 +36,23 @@ class AirbnbScraperService {
       maxResults: this.maxResults
     });
 
-    // Build input parameters - format varies by actor
-    // Most actors use locationQuery instead of location
+    // Build input parameters - use exact format that works manually
     const input = {
-      locationQuery: `${location}, Canada`, // More explicit location
-      location: location,
-      minBedrooms: Math.max(1, bedrooms - 1),
-      maxBedrooms: bedrooms + 1,
-      minBathrooms: Math.max(1, bathrooms - 0.5),
-      maxBathrooms: bathrooms + 0.5,
-      minBeds: Math.max(1, bedrooms - 1),
-      maxBeds: bedrooms + 1,
-      adults: bedrooms * 2,
-      children: 0,
-      infants: 0,
-      pets: 0,
-      propertyType: this.getPropertyTypes(propertyType),
-      propertyTypes: this.getPropertyTypes(propertyType),
-      currency: 'CAD',
-      includeDataFromHosts: true,
-      maxListings: this.maxResults,
-      maxResults: this.maxResults,
       checkIn: this.getCheckInDate(),
-      checkOut: this.getCheckOutDate(),
-      startUrls: [] // Some actors use this instead
+      checkOut: this.getCheckOutDate(), // Add checkout date
+      currency: 'CAD',
+      locale: 'en-CA',
+      locationQueries: [location], // Just city name
+      minBathrooms: Math.max(1, bathrooms),
+      minBedrooms: Math.max(1, bedrooms),
+      minBeds: Math.max(1, bedrooms)
     };
     
     logger.info('Apify input parameters', {
-      location: input.locationQuery,
-      bedrooms: `${input.minBedrooms}-${input.maxBedrooms}`,
+      locations: input.locationQueries,
+      checkIn: input.checkIn,
+      checkOut: input.checkOut,
+      maxListings: input.maxListings,
       actor: this.actorId
     });
 
@@ -85,13 +73,19 @@ class AirbnbScraperService {
         actorId: this.actorId
       });
       
+      // Log the exact payload being sent
+      const payload = { input };
+      logger.info('Apify request payload', {
+        payload: JSON.stringify(payload, null, 2)
+      });
+      
       const runResponse = await fetch(runUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${this.apiKey}`
         },
-        body: JSON.stringify({ input }),
+        body: JSON.stringify(payload),
         signal: controller.signal
       });
 
@@ -144,8 +138,8 @@ class AirbnbScraperService {
    * Wait for actor run to complete and return results
    */
   async waitForResults(runId, controller) {
-    const maxAttempts = 10;
-    const delayMs = 1500;
+    const maxAttempts = 20; // Increase attempts
+    const delayMs = 2000; // Increase delay
 
     for (let attempt = 0; attempt < maxAttempts; attempt++) {
       await new Promise(resolve => setTimeout(resolve, delayMs));
