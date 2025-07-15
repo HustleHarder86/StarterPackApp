@@ -2,29 +2,22 @@ const express = require('express');
 const router = express.Router();
 const { db } = require('../services/firebase.service');
 const logger = require('../services/logger.service');
-const { redisClient } = require('../services/cache.service');
-const { checkQueueHealth } = require('../services/queue.service');
+const { cache } = require('../services/simple-cache.service');
 
 // Debug endpoint for environment variables
 router.get('/env', (req, res) => {
-  const redisVars = {};
-  Object.keys(process.env).forEach(key => {
-    if (key.includes('REDIS') || key.includes('redis') || key.includes('RAILWAY')) {
-      redisVars[key] = key.includes('PASSWORD') || key.includes('SECRET') 
-        ? '***REDACTED***' 
-        : process.env[key];
-    }
-  });
-  
-  res.json({
+  const envInfo = {
     nodeEnv: process.env.NODE_ENV,
     railwayEnvironment: process.env.RAILWAY_ENVIRONMENT,
-    hasRedisUrl: !!process.env.REDIS_URL,
-    redisRelatedVars: redisVars
-  });
+    hasAirbnbKey: !!process.env.AIRBNB_SCRAPER_API_KEY,
+    hasPerplexityKey: !!process.env.PERPLEXITY_API_KEY,
+    hasFirebaseConfig: !!process.env.FIREBASE_PROJECT_ID
+  };
+  
+  res.json(envInfo);
 });
 
-// Detailed health check
+// Simplified health check - no Redis
 router.get('/', async (req, res) => {
   const health = {
     status: 'healthy',
@@ -45,29 +38,8 @@ router.get('/', async (req, res) => {
     logger.error('Firebase health check failed:', error);
   }
   
-  // Check Redis connection
-  try {
-    if (redisClient.isOpen) {
-      await redisClient.ping();
-      health.checks.redis = 'connected';
-    } else {
-      health.checks.redis = 'disconnected';
-      health.status = 'degraded';
-    }
-  } catch (error) {
-    health.checks.redis = 'error';
-    health.status = 'degraded';
-    logger.error('Redis health check failed:', error);
-  }
-  
-  // Check queue health
-  try {
-    const queueHealth = await checkQueueHealth();
-    health.checks.queues = queueHealth;
-  } catch (error) {
-    health.checks.queues = 'error';
-    logger.error('Queue health check failed:', error);
-  }
+  // Check cache stats
+  health.checks.cache = cache.getStats();
   
   // Check memory usage
   const memUsage = process.memoryUsage();
@@ -83,6 +55,13 @@ router.get('/', async (req, res) => {
     health.warnings = health.warnings || [];
     health.warnings.push('High memory usage detected');
   }
+  
+  // Add API configuration status
+  health.apis = {
+    airbnb: process.env.AIRBNB_SCRAPER_API_KEY ? 'configured' : 'missing',
+    perplexity: process.env.PERPLEXITY_API_KEY ? 'configured' : 'missing',
+    firebase: process.env.FIREBASE_PROJECT_ID ? 'configured' : 'missing'
+  };
   
   res.status(health.status === 'healthy' ? 200 : 503).json(health);
 });

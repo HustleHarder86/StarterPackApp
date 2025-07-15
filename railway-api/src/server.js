@@ -75,10 +75,6 @@ app.use('/health', require('./routes/health'));
 // API routes
 app.use('/api/analysis', require('./routes/analysis'));
 app.use('/api/reports', require('./routes/reports'));
-app.use('/api/jobs', require('./routes/jobs'));
-
-// Test routes (temporary for debugging)
-app.use('/api/test/str', require('./routes/test-str'));
 
 // Only enable debug routes in development
 if (config.nodeEnv !== 'production') {

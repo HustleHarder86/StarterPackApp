@@ -3,18 +3,9 @@ const router = express.Router();
 const { verifyToken, optionalAuth } = require('../middleware/auth');
 const { APIError } = require('../middleware/errorHandler');
 const logger = require('../services/logger.service');
+const { analyzePropertyLogic } = require('../services/property-analysis.service');
 
-// Try to load queue service
-let queueService;
-try {
-  queueService = require('../services/queue.service');
-  logger.info('Analysis route: Redis queue service loaded successfully');
-} catch (error) {
-  logger.error('Analysis route: Failed to load queue service', { error: error.message });
-  queueService = null;
-}
-
-// Property analysis endpoint - now uses job queue
+// Property analysis endpoint - Direct processing (no queues)
 router.post('/property', optionalAuth, async (req, res, next) => {
   try {
     const { propertyAddress, propertyData, requestType } = req.body;
@@ -30,68 +21,52 @@ router.post('/property', optionalAuth, async (req, res, next) => {
       hasPropertyData: !!propertyData
     });
     
-    // Check if queue service is available
-    if (!queueService || !queueService.queues || !queueService.queues.analysis) {
-      const debugInfo = {
-        queueServiceExists: !!queueService,
-        queuesExists: !!(queueService && queueService.queues),
-        analysisQueueExists: !!(queueService && queueService.queues && queueService.queues.analysis),
-        redisUrl: process.env.REDIS_URL ? 'Set' : 'Not set',
-        railwayEnvironment: process.env.RAILWAY_ENVIRONMENT || 'Not set',
-        nodeEnv: process.env.NODE_ENV || 'Not set'
-      };
-      
-      logger.error('Property Analysis Error: Queue service not available', debugInfo);
-      
-      return res.status(503).json({
-        success: false,
-        error: 'Property analysis service temporarily unavailable',
-        message: 'Redis connection not configured. Please check Railway deployment.',
-        debugInfo,
-        hint: 'Ensure REDIS_URL environment variable is set in Railway'
-      });
-    }
-    
-    // Add job to queue
-    let job;
+    // Process the analysis directly
     try {
-      job = await queueService.addJobWithProgress('analysis', 'analyze-property', {
+      logger.info('Starting property analysis', { propertyAddress });
+      
+      // Run the analysis logic directly
+      const result = await analyzePropertyLogic({
         propertyAddress,
         propertyData,
         userId: req.userId,
         userEmail: req.userEmail,
         userName: req.user?.name,
-        requestType
-      });
-    } catch (jobError) {
-      logger.error('Failed to create analysis job', { error: jobError.message });
-      
-      return res.status(500).json({
-        success: false,
-        error: 'Failed to start property analysis',
-        message: jobError.message,
-        debugInfo: {
-          errorType: jobError.constructor.name,
-          errorMessage: jobError.message
+        requestType,
+        onProgress: (progress, message) => {
+          // Log progress for debugging
+          logger.debug('Analysis progress', { progress, message });
         }
       });
+      
+      logger.info('Property analysis completed', { propertyAddress });
+      
+      // Return the result directly
+      res.json({
+        success: true,
+        data: result,
+        message: 'Analysis completed'
+      });
+      
+    } catch (analysisError) {
+      logger.error('Property analysis failed', { 
+        error: analysisError.message,
+        propertyAddress 
+      });
+      
+      throw new APIError(
+        analysisError.message || 'Failed to analyze property',
+        analysisError.status || 500
+      );
     }
-    
-    // Return job ID for status tracking
-    res.json({
-      success: true,
-      jobId: job.id,
-      message: 'Analysis started',
-      statusUrl: `/api/jobs/${job.id}/status`
-    });
     
   } catch (error) {
     next(error);
   }
 });
 
-// Mount STR analysis routes
-const strRoutes = require('./analysis/str');
+// Mount STR analysis routes (direct processing)
+const strRoutes = require('./analysis/str-direct');
 router.use('/str', strRoutes);
 
 // Comparables search endpoint
