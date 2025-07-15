@@ -95,4 +95,16 @@ router.get('/health', async (req, res) => {
   res.json(health);
 });
 
+// CORS configuration check
+router.get('/cors-config', (req, res) => {
+  const config = require('../config');
+  
+  res.json({
+    corsOrigins: config.cors.origin,
+    envVar: process.env.ALLOWED_ORIGINS || 'Not set',
+    requestOrigin: req.headers.origin || 'No origin header',
+    nodeEnv: process.env.NODE_ENV
+  });
+});
+
 module.exports = router;

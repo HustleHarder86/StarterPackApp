@@ -1,5 +1,6 @@
 const cors = require('cors');
 const config = require('../config');
+const logger = require('../services/logger.service');
 
 // CORS configuration
 const corsOptions = {
@@ -9,10 +10,20 @@ const corsOptions = {
       return callback(null, true);
     }
     
+    // Log the origin and allowed origins for debugging
+    logger.debug('CORS check', {
+      requestOrigin: origin,
+      allowedOrigins: config.cors.origin
+    });
+    
     // Check if origin is in allowed list
     if (config.cors.origin.indexOf(origin) !== -1) {
       callback(null, true);
     } else {
+      logger.warn('CORS rejected origin', {
+        origin,
+        allowed: config.cors.origin
+      });
       callback(new Error('Not allowed by CORS'));
     }
   },

@@ -41,7 +41,12 @@ const config = {
   
   // CORS
   cors: {
-    origin: process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:3000'],
+    origin: process.env.ALLOWED_ORIGINS?.split(',') || [
+      'http://localhost:3000',
+      'http://localhost:5173',
+      'https://starter-pack-app.vercel.app',
+      'https://starterpackapp.com'
+    ],
     credentials: true,
     optionsSuccessStatus: 200
   },
