@@ -2,19 +2,27 @@ const { getRailwayRedisConfig } = require('./railway-redis');
 
 // Get Redis URL with enhanced Railway support
 function getRedisUrl() {
+  // Check if Redis is explicitly disabled
+  if (process.env.DISABLE_REDIS === 'true') {
+    console.log('Redis explicitly disabled via DISABLE_REDIS=true');
+    return null;
+  }
+  
   // First try Railway-specific configuration
   const railwayUrl = getRailwayRedisConfig();
   if (railwayUrl) {
     return railwayUrl;
   }
   
-  // Fallback to localhost if no Redis URL found
-  console.error('WARNING: No Redis URL found in environment, using localhost');
+  // Log warning about missing Redis
+  console.error('WARNING: No Redis URL found in environment');
   console.log('Available environment variables:', Object.keys(process.env).filter(k => 
     k.includes('REDIS') || k.includes('redis') || k.includes('RAILWAY')
   ));
+  console.log('System will run without background job processing');
+  console.log('To enable Redis, set REDIS_URL in Railway environment variables');
   
-  // For now, return null to force fallback mode instead of trying localhost
+  // Return null to disable Redis completely
   return null;
 }
 
