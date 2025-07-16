@@ -1,5 +1,29 @@
 // Property calculation utilities for accurate expense estimation
 
+// Parse bedroom/bathroom strings that may contain "X + Y" format
+function parseBedroomBathroomValue(value) {
+  if (typeof value === 'number') return value;
+  if (!value || typeof value !== 'string') return 0;
+  
+  // Check for "X + Y" format (e.g., "4 + 2" or "3.5 + 1")
+  const plusPattern = /(\d+(?:\.\d+)?)\s*\+\s*(\d+(?:\.\d+)?)/;
+  const match = value.match(plusPattern);
+  
+  if (match) {
+    const main = parseFloat(match[1]);
+    const additional = parseFloat(match[2]);
+    return main + additional;
+  }
+  
+  // Try to extract a single number
+  const singleMatch = value.match(/(\d+(?:\.\d+)?)/);
+  if (singleMatch) {
+    return parseFloat(singleMatch[1]);
+  }
+  
+  return 0;
+}
+
 // Property tax rates by Canadian cities (2024 rates)
 // Sources: Municipal websites, tax calculators, and official property tax documents
 const PROPERTY_TAX_RATES = {
@@ -586,6 +610,7 @@ function calculateAccurateExpenses(propertyData) {
 
 // Export functions using CommonJS
 module.exports = {
+  parseBedroomBathroomValue,
   calculateAccurateExpenses,
   getPropertyTaxRate,
   calculateInsurance,

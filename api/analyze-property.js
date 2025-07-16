@@ -3,6 +3,30 @@
 
 const { calculateAccurateExpenses, getPropertyTaxRate, estimateRentalRate, calculateInsurance } = require('./property-calculations.js');
 
+// Parse bedroom/bathroom strings that may contain "X + Y" format
+function parseBedroomBathroomValue(value) {
+  if (typeof value === 'number') return value;
+  if (!value || typeof value !== 'string') return 0;
+  
+  // Check for "X + Y" format (e.g., "4 + 2" or "3.5 + 1")
+  const plusPattern = /(\d+(?:\.\d+)?)\s*\+\s*(\d+(?:\.\d+)?)/;
+  const match = value.match(plusPattern);
+  
+  if (match) {
+    const main = parseFloat(match[1]);
+    const additional = parseFloat(match[2]);
+    return main + additional;
+  }
+  
+  // Try to extract a single number
+  const singleMatch = value.match(/(\d+(?:\.\d+)?)/);
+  if (singleMatch) {
+    return parseFloat(singleMatch[1]);
+  }
+  
+  return 0;
+}
+
 module.exports = async function handler(req, res) {
   // Set CORS headers
   res.setHeader('Access-Control-Allow-Credentials', true);
@@ -688,8 +712,8 @@ function buildStructuredData(extracted, propertyAddress, researchContent, citati
       estimated_value: propertyValue,
       value_date: new Date().toLocaleDateString(),
       property_type: propertyData?.propertyType || extracted.property_details?.property_type || "Single Family",
-      bedrooms: propertyData?.bedrooms || extracted.property_details?.bedrooms || 3,
-      bathrooms: propertyData?.bathrooms || extracted.property_details?.bathrooms || 2,
+      bedrooms: parseBedroomBathroomValue(propertyData?.bedrooms) || extracted.property_details?.bedrooms || 3,
+      bathrooms: parseBedroomBathroomValue(propertyData?.bathrooms) || extracted.property_details?.bathrooms || 2,
       square_feet: propertyData?.sqft || extracted.property_details?.square_feet || 1800,
       listing_status: "off-market",
       days_on_market: 0
@@ -791,8 +815,8 @@ function fallbackDataExtraction(researchContent, propertyAddress, address, citat
       estimated_value: estimatedValue,
       value_date: new Date().toLocaleDateString(),
       property_type: propertyData?.propertyType || "Single Family",
-      bedrooms: propertyData?.bedrooms || 3,
-      bathrooms: propertyData?.bathrooms || 2,
+      bedrooms: parseBedroomBathroomValue(propertyData?.bedrooms) || 3,
+      bathrooms: parseBedroomBathroomValue(propertyData?.bathrooms) || 2,
       square_feet: propertyData?.sqft || 1800,
       listing_status: "off-market"
     },

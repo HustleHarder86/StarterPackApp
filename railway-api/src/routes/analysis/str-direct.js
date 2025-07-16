@@ -10,6 +10,7 @@ const { analyzeSTRPotential } = require('../../utils/calculators/str');
 const { STRRegulationChecker } = require('../../utils/str-regulations');
 const { filterComparables } = require('../../utils/str-calculations');
 const { cache } = require('../../services/simple-cache.service');
+const { parseBedroomBathroomValue } = require('../../utils/property-calculations');
 
 // Main STR analysis endpoint - Direct processing, no queues
 router.post('/analyze', verifyToken, async (req, res, next) => {
@@ -60,18 +61,26 @@ router.post('/analyze', verifyToken, async (req, res, next) => {
     try {
       logger.info('Starting STR analysis', { propertyId });
       
+      // Parse bedroom and bathroom values that might be in "X + Y" format
+      const parsedPropertyData = {
+        ...propertyData,
+        bedrooms: parseBedroomBathroomValue(propertyData.bedrooms),
+        bathrooms: parseBedroomBathroomValue(propertyData.bathrooms)
+      };
+      
       // Search for comparables
       logger.info('Searching Airbnb with params', {
-        city: propertyData.address?.city,
-        bedrooms: propertyData.bedrooms,
-        propertyType: propertyData.propertyType
+        city: parsedPropertyData.address?.city,
+        bedrooms: parsedPropertyData.bedrooms,
+        bathrooms: parsedPropertyData.bathrooms,
+        propertyType: parsedPropertyData.propertyType
       });
       
-      const searchResults = await airbnbScraper.searchComparables(propertyData);
+      const searchResults = await airbnbScraper.searchComparables(parsedPropertyData);
       logger.info(`Found ${searchResults.listings.length} comparable listings`);
       
       // Filter comparables
-      const filteredComparables = filterComparables(searchResults.listings, propertyData);
+      const filteredComparables = filterComparables(searchResults.listings, parsedPropertyData);
       logger.info(`Filtered to ${filteredComparables.length} relevant comparables`);
       
       if (filteredComparables.length === 0) {
@@ -79,21 +88,21 @@ router.post('/analyze', verifyToken, async (req, res, next) => {
       }
       
       // Get LTR rent estimate
-      const ltrRent = propertyData.estimatedRent || propertyData.monthlyRent || 0;
+      const ltrRent = parsedPropertyData.estimatedRent || parsedPropertyData.monthlyRent || 0;
       
       // Check STR regulations
       logger.info('Checking STR regulations...');
       const regulationChecker = new STRRegulationChecker(process.env.PERPLEXITY_API_KEY);
       const regulations = await regulationChecker.checkRegulations(
-        propertyData.address?.city || 'Toronto',
-        propertyData.address?.province || 'Ontario'
+        parsedPropertyData.address?.city || 'Toronto',
+        parsedPropertyData.address?.province || 'Ontario'
       );
       
       const complianceAdvice = regulationChecker.generateComplianceAdvice(regulations);
       
       // Perform comprehensive STR analysis
       const strAnalysis = analyzeSTRPotential(
-        propertyData,
+        parsedPropertyData,
         filteredComparables,
         { ltrRent }
       );
@@ -119,7 +128,7 @@ router.post('/analyze', verifyToken, async (req, res, next) => {
       // Prepare final result
       const result = {
         propertyId,
-        address: propertyData.address,
+        address: parsedPropertyData.address,
         strAnalysis: {
           ...strAnalysis,
           comparables: formattedComparables

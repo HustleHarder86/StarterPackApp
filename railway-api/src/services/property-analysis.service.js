@@ -7,7 +7,8 @@ const {
   calculateAccurateExpenses, 
   getPropertyTaxRate, 
   estimateRentalRate, 
-  calculateInsurance 
+  calculateInsurance,
+  parseBedroomBathroomValue
 } = require('../utils/property-calculations');
 
 // Helper function to extract numeric value from text
@@ -345,8 +346,8 @@ async function processResearchData({ researchContent, propertyAddress, address, 
       state: address.state,
       estimatedValue: propertyData?.price || estimatedValue,
       propertyType: propertyData?.propertyType || 'Single Family',
-      bedrooms: propertyData?.bedrooms || extractNumericValue(researchContent, 'bedroom') || 3,
-      bathrooms: propertyData?.bathrooms || extractNumericValue(researchContent, 'bathroom') || 2,
+      bedrooms: parseBedroomBathroomValue(propertyData?.bedrooms) || extractNumericValue(researchContent, 'bedroom') || 3,
+      bathrooms: parseBedroomBathroomValue(propertyData?.bathrooms) || extractNumericValue(researchContent, 'bathroom') || 2,
       sqft: propertyData?.sqft || extractNumericValue(researchContent, 'sq|square') || 1800,
       yearBuilt: propertyData?.yearBuilt || extractNumericValue(researchContent, 'built') || 2000
     },
