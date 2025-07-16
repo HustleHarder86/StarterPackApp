@@ -271,7 +271,20 @@ function extractBedrooms() {
     });
   
   if (bedroomElement) {
-    const match = bedroomElement.textContent.match(/(\d+)/);
+    const text = bedroomElement.textContent;
+    
+    // Check for "X + Y" format (e.g., "4 + 2 bedrooms")
+    const plusMatch = text.match(/(\d+)\s*\+\s*(\d+)\s*(bed|bedroom|bdrm|br)s?/i);
+    if (plusMatch) {
+      const mainBeds = parseInt(plusMatch[1]);
+      const additionalBeds = parseInt(plusMatch[2]);
+      const totalBeds = mainBeds + additionalBeds;
+      console.log('[StarterPack] Found bedrooms in "X + Y" format:', mainBeds, '+', additionalBeds, '=', totalBeds);
+      return totalBeds;
+    }
+    
+    // Fallback to simple number extraction
+    const match = text.match(/(\d+)/);
     console.log('[StarterPack] Found bedrooms:', match ? match[1] : 'no match');
     return match ? parseInt(match[1]) : null;
   }
@@ -293,7 +306,18 @@ function extractBedrooms() {
     for (let el of elements) {
       if (el.textContent) {
         const text = el.textContent.trim();
-        // More flexible patterns
+        
+        // Check for "X + Y" format first
+        const plusMatch = text.match(/(\d+)\s*\+\s*(\d+)\s*(bed|bedroom|bdrm|br)s?\b/i);
+        if (plusMatch && text.length < 30) {
+          const mainBeds = parseInt(plusMatch[1]);
+          const additionalBeds = parseInt(plusMatch[2]);
+          const totalBeds = mainBeds + additionalBeds;
+          console.log('[StarterPack] Found bedrooms in "X + Y" format in', selector, ':', text, 'Total:', totalBeds);
+          return totalBeds;
+        }
+        
+        // More flexible patterns for regular format
         if (text.match(/\b\d+\s*(bed|bedroom|bdrm|br)s?\b/i) && text.length < 20) {
           console.log('[StarterPack] Found bedroom match in', selector, ':', text);
           const match = text.match(/(\d+)/);
@@ -325,7 +349,20 @@ function extractBathrooms() {
     });
   
   if (bathroomElement) {
-    const match = bathroomElement.textContent.match(/(\d+\.?\d*)/);
+    const text = bathroomElement.textContent;
+    
+    // Check for "X + Y" format (e.g., "2 + 1 bathrooms")
+    const plusMatch = text.match(/(\d+\.?\d*)\s*\+\s*(\d+\.?\d*)\s*(bath|bathroom|bthrm|ba)s?/i);
+    if (plusMatch) {
+      const mainBaths = parseFloat(plusMatch[1]);
+      const additionalBaths = parseFloat(plusMatch[2]);
+      const totalBaths = mainBaths + additionalBaths;
+      console.log('[StarterPack] Found bathrooms in "X + Y" format:', mainBaths, '+', additionalBaths, '=', totalBaths);
+      return totalBaths;
+    }
+    
+    // Fallback to simple number extraction
+    const match = text.match(/(\d+\.?\d*)/);
     console.log('[StarterPack] Found bathrooms:', match ? match[1] : 'no match');
     return match ? parseFloat(match[1]) : null;
   }
@@ -347,6 +384,17 @@ function extractBathrooms() {
     for (let el of elements) {
       if (el.textContent) {
         const text = el.textContent.trim();
+        
+        // Check for "X + Y" format first
+        const plusMatch = text.match(/(\d+\.?\d*)\s*\+\s*(\d+\.?\d*)\s*(bath|bathroom|bthrm|ba)s?\b/i);
+        if (plusMatch && text.length < 30) {
+          const mainBaths = parseFloat(plusMatch[1]);
+          const additionalBaths = parseFloat(plusMatch[2]);
+          const totalBaths = mainBaths + additionalBaths;
+          console.log('[StarterPack] Found bathrooms in "X + Y" format in', selector, ':', text, 'Total:', totalBaths);
+          return totalBaths;
+        }
+        
         // More flexible patterns - also match "bath" alone
         if (text.match(/\b\d+\.?\d*\s*(bath|bathroom|bthrm|ba)s?\b/i) && text.length < 20) {
           console.log('[StarterPack] Found bathroom match in', selector, ':', text);

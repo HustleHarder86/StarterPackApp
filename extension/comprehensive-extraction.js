@@ -105,8 +105,24 @@ function extractAllPropertyData() {
       else if (label.includes('building type')) data.style = value;
       else if (label.includes('storeys')) data.storeys = parseInt(value) || 0;
       else if (label.includes('square footage')) data.sqft = parseInt(value.replace(/[^0-9]/g, '')) || 0;
-      else if (label.includes('bedrooms')) data.bedrooms = parseInt(value) || 0;
-      else if (label.includes('bathrooms')) data.bathrooms = parseInt(value) || 0;
+      else if (label.includes('bedrooms')) {
+        // Handle "X + Y" format (e.g., "4 + 2")
+        const plusMatch = value.match(/(\d+)\s*\+\s*(\d+)/);
+        if (plusMatch) {
+          data.bedrooms = parseInt(plusMatch[1]) + parseInt(plusMatch[2]);
+        } else {
+          data.bedrooms = parseInt(value) || 0;
+        }
+      }
+      else if (label.includes('bathrooms')) {
+        // Handle "X + Y" format (e.g., "2 + 1")
+        const plusMatch = value.match(/(\d+\.?\d*)\s*\+\s*(\d+\.?\d*)/);
+        if (plusMatch) {
+          data.bathrooms = parseFloat(plusMatch[1]) + parseFloat(plusMatch[2]);
+        } else {
+          data.bathrooms = parseFloat(value) || 0;
+        }
+      }
       else if (label.includes('parking type')) data.parking = value;
       else if (label.includes('garage')) data.garage = value;
       else if (label.includes('basement')) data.basement = value;
