@@ -256,99 +256,28 @@ function extractAddress() {
 }
 
 function extractBedrooms() {
-  try {
-    // Try multiple approaches
-    // 1. Look for bedroom-specific elements
-    const selectors = [
-      '[class*="bedroom"]',
-      '[data-testid*="bed"]',
-      '.listingDetailsSectionContentValue'
-    ];
-    
-    for (const selector of selectors) {
-      const elements = document.querySelectorAll(selector);
-      for (const el of elements) {
-        const text = el.textContent;
-        const match = text.match(/(\d+)\s*(bed|bedroom|bdrm)/i);
-        if (match) {
-          console.log('[StarterPack] Found bedrooms:', match[1], 'in element:', el.className);
-          return parseInt(match[1]);
-        }
-      }
-    }
-    
-    // 2. Search in property details table
-    const rows = document.querySelectorAll('.propertyDetailsSectionContentRow, tr');
-    for (const row of rows) {
-      const label = row.textContent.toLowerCase();
-      if (label.includes('bedroom') || label.includes('bed')) {
-        const match = row.textContent.match(/(\d+)/);
-        if (match) {
-          console.log('[StarterPack] Found bedrooms in table:', match[1]);
-          return parseInt(match[1]);
-        }
-      }
-    }
-    
-    // 3. Last resort - search all elements for bedroom text pattern
-    const allElements = Array.from(document.querySelectorAll('*'));
-    for (const el of allElements) {
-      // Skip if element has child elements (to avoid duplicates)
-      if (el.children.length > 0) continue;
-      
-      const text = el.textContent.trim();
-      const bedroomMatch = text.match(/^(\d+)\s*(bed|bedroom|bdrm)s?$/i);
-      if (bedroomMatch) {
-        console.log('[StarterPack] Found bedrooms in text:', bedroomMatch[1]);
-        return parseInt(bedroomMatch[1]);
-      }
-    }
-    
-    console.log('[StarterPack] Could not extract bedrooms');
-  } catch (e) {
-    console.error('[StarterPack] Bedroom extraction error:', e);
+  const bedroomElement = Array.from(document.querySelectorAll('[class*="bedroom"], [data-testid*="bed"]'))
+    .find(el => el.textContent.match(/\d+\s*(bed|bedroom)/i));
+  
+  if (bedroomElement) {
+    const match = bedroomElement.textContent.match(/(\d+)/);
+    console.log('[StarterPack] Found bedrooms:', match ? match[1] : 'no match');
+    return match ? parseInt(match[1]) : null;
   }
+  console.log('[StarterPack] Could not find bedroom element');
   return null;
 }
 
 function extractBathrooms() {
-  try {
-    // Try multiple approaches
-    const selectors = [
-      '[class*="bathroom"]',
-      '[data-testid*="bath"]',
-      '.listingDetailsSectionContentValue'
-    ];
-    
-    for (const selector of selectors) {
-      const elements = document.querySelectorAll(selector);
-      for (const el of elements) {
-        const text = el.textContent;
-        const match = text.match(/(\d+\.?\d*)\s*(bath|bathroom|bthrm)/i);
-        if (match) {
-          console.log('[StarterPack] Found bathrooms:', match[1], 'in element:', el.className);
-          return parseFloat(match[1]);
-        }
-      }
-    }
-    
-    // Search in property details table
-    const rows = document.querySelectorAll('.propertyDetailsSectionContentRow, tr');
-    for (const row of rows) {
-      const label = row.textContent.toLowerCase();
-      if (label.includes('bathroom') || label.includes('bath')) {
-        const match = row.textContent.match(/(\d+\.?\d*)/);
-        if (match) {
-          console.log('[StarterPack] Found bathrooms in table:', match[1]);
-          return parseFloat(match[1]);
-        }
-      }
-    }
-    
-    console.log('[StarterPack] Could not extract bathrooms');
-  } catch (e) {
-    console.error('[StarterPack] Bathroom extraction error:', e);
+  const bathroomElement = Array.from(document.querySelectorAll('[class*="bathroom"], [data-testid*="bath"]'))
+    .find(el => el.textContent.match(/\d+\.?\d*\s*(bath|bathroom)/i));
+  
+  if (bathroomElement) {
+    const match = bathroomElement.textContent.match(/(\d+\.?\d*)/);
+    console.log('[StarterPack] Found bathrooms:', match ? match[1] : 'no match');
+    return match ? parseFloat(match[1]) : null;
   }
+  console.log('[StarterPack] Could not find bathroom element');
   return null;
 }
 
