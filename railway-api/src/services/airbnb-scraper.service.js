@@ -27,7 +27,8 @@ class AirbnbScraperService {
       throw new Error('STR analysis requires Airbnb API credentials. Please add AIRBNB_SCRAPER_API_KEY to Railway environment variables.');
     }
 
-    const { address, bedrooms = 2, bathrooms = 1, propertyType = 'House' } = propertyData;
+    // Use better defaults when data is missing
+    const { address, bedrooms = 3, bathrooms = 2, propertyType = 'House' } = propertyData;
     // Format location with province as it worked yesterday
     const city = address?.city || 'Toronto';
     const province = address?.province || 'Ontario';
@@ -49,8 +50,8 @@ class AirbnbScraperService {
       priceMin: options.priceMin || 50,
       priceMax: options.priceMax || 500,
       // Property specifications - exact match from listing
-      minBedrooms: bedrooms,  // Exact bedroom count, no minimum calculation
-      minBathrooms: bathrooms, // Exact bathroom count
+      minBedrooms: Math.max(1, bedrooms - 1),  // Search for slightly fewer bedrooms for more results
+      minBathrooms: Math.max(1, bathrooms - 0.5), // Allow half bathroom difference
       // Date logic - 30 days out for check-in, 7 night stay
       checkIn: options.checkIn || this.getCheckInDate(),
       checkOut: options.checkOut || this.getCheckOutDate()
