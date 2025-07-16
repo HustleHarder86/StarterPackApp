@@ -262,9 +262,7 @@ function extractBedrooms() {
     const selectors = [
       '[class*="bedroom"]',
       '[data-testid*="bed"]',
-      '.listingDetailsSectionContentValue',
-      'span:contains("Bed")',
-      'td:contains("Bed")'
+      '.listingDetailsSectionContentValue'
     ];
     
     for (const selector of selectors) {
@@ -292,6 +290,20 @@ function extractBedrooms() {
       }
     }
     
+    // 3. Last resort - search all elements for bedroom text pattern
+    const allElements = Array.from(document.querySelectorAll('*'));
+    for (const el of allElements) {
+      // Skip if element has child elements (to avoid duplicates)
+      if (el.children.length > 0) continue;
+      
+      const text = el.textContent.trim();
+      const bedroomMatch = text.match(/^(\d+)\s*(bed|bedroom|bdrm)s?$/i);
+      if (bedroomMatch) {
+        console.log('[StarterPack] Found bedrooms in text:', bedroomMatch[1]);
+        return parseInt(bedroomMatch[1]);
+      }
+    }
+    
     console.log('[StarterPack] Could not extract bedrooms');
   } catch (e) {
     console.error('[StarterPack] Bedroom extraction error:', e);
@@ -305,9 +317,7 @@ function extractBathrooms() {
     const selectors = [
       '[class*="bathroom"]',
       '[data-testid*="bath"]',
-      '.listingDetailsSectionContentValue',
-      'span:contains("Bath")',
-      'td:contains("Bath")'
+      '.listingDetailsSectionContentValue'
     ];
     
     for (const selector of selectors) {
