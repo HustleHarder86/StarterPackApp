@@ -4,6 +4,7 @@ const { verifyToken, optionalAuth } = require('../middleware/auth');
 const { APIError } = require('../middleware/errorHandler');
 const logger = require('../services/logger.service');
 const { analyzePropertyLogic } = require('../services/property-analysis.service');
+const { toSnakeCase } = require('../utils/case-converter');
 
 // Health check for analysis endpoints
 router.get('/health', (req, res) => {
@@ -98,10 +99,11 @@ router.post('/property', optionalAuth, async (req, res, next) => {
             
             if (!canUseSTR) {
               logger.warn('User does not have STR access', { userId: req.userId });
-              // Don't throw error, just return LTR analysis
+              // Don't throw error, just return LTR analysis with snake_case conversion
+              const snakeCaseResult = toSnakeCase(result);
               return res.json({
                 success: true,
-                data: result,
+                data: snakeCaseResult,
                 message: 'Analysis completed (STR requires Pro subscription)',
                 strAccessDenied: true
               });
@@ -281,10 +283,13 @@ router.post('/property', optionalAuth, async (req, res, next) => {
         }
       }
       
+      // Convert result to snake_case for frontend compatibility
+      const snakeCaseResult = toSnakeCase(result);
+      
       // Return the combined result
       res.json({
         success: true,
-        data: result,
+        data: snakeCaseResult,
         message: 'Analysis completed'
       });
       
