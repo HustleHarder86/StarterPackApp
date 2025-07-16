@@ -101,6 +101,13 @@ router.post('/property', optionalAuth, async (req, res, next) => {
               logger.warn('User does not have STR access', { userId: req.userId });
               // Don't throw error, just return LTR analysis with snake_case conversion
               const snakeCaseResult = toSnakeCase(result);
+              
+              // Rename 'rental' to 'long_term_rental' to match frontend expectations
+              if (snakeCaseResult.rental) {
+                snakeCaseResult.long_term_rental = snakeCaseResult.rental;
+                delete snakeCaseResult.rental;
+              }
+              
               return res.json({
                 success: true,
                 data: snakeCaseResult,
@@ -285,6 +292,59 @@ router.post('/property', optionalAuth, async (req, res, next) => {
       
       // Convert result to snake_case for frontend compatibility
       const snakeCaseResult = toSnakeCase(result);
+      
+      // Rename fields to match frontend expectations
+      if (snakeCaseResult.rental) {
+        snakeCaseResult.long_term_rental = snakeCaseResult.rental;
+        delete snakeCaseResult.rental;
+      }
+      
+      // Rename 'str_analysis' to 'short_term_rental' to match frontend
+      if (snakeCaseResult.str_analysis) {
+        snakeCaseResult.short_term_rental = snakeCaseResult.str_analysis;
+        delete snakeCaseResult.str_analysis;
+        
+        // Map field names to match frontend expectations
+        if (snakeCaseResult.short_term_rental.avg_nightly_rate !== undefined) {
+          snakeCaseResult.short_term_rental.daily_rate = snakeCaseResult.short_term_rental.avg_nightly_rate;
+        }
+        // occupancy_rate should already be correct after snake_case conversion
+        
+        // Ensure annual_revenue and annual_profit exist for calculations
+        if (snakeCaseResult.short_term_rental.annual_revenue === undefined && 
+            snakeCaseResult.short_term_rental.annual_revenue !== undefined) {
+          snakeCaseResult.short_term_rental.annual_revenue = snakeCaseResult.short_term_rental.annual_revenue;
+        }
+        if (snakeCaseResult.short_term_rental.net_annual_income !== undefined) {
+          snakeCaseResult.short_term_rental.annual_profit = snakeCaseResult.short_term_rental.net_annual_income;
+        }
+      }
+      
+      // Map metrics fields to match frontend expectations
+      if (snakeCaseResult.metrics && snakeCaseResult.metrics.total_roi !== undefined) {
+        snakeCaseResult.roi_percentage = snakeCaseResult.metrics.total_roi;
+      }
+      
+      // Map property_address from propertyAddress if it exists
+      if (snakeCaseResult.property_address === undefined && result.propertyAddress) {
+        snakeCaseResult.property_address = result.propertyAddress;
+      }
+      
+      // Map analysis_timestamp from timestamp
+      if (snakeCaseResult.analysis_timestamp === undefined && snakeCaseResult.timestamp) {
+        snakeCaseResult.analysis_timestamp = snakeCaseResult.timestamp;
+      }
+      
+      // Log the transformation for debugging
+      logger.debug('API response after transformation', {
+        hasRental: !!result.rental,
+        hasLongTermRental: !!snakeCaseResult.long_term_rental,
+        monthlyRent: snakeCaseResult.long_term_rental?.monthly_rent,
+        hasStrAnalysis: !!result.strAnalysis,
+        hasShortTermRental: !!snakeCaseResult.short_term_rental,
+        dailyRate: snakeCaseResult.short_term_rental?.daily_rate,
+        roiPercentage: snakeCaseResult.roi_percentage
+      });
       
       // Return the combined result
       res.json({
