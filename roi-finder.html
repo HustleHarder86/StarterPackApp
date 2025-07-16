@@ -1412,6 +1412,16 @@
       document.getElementById('result-rent').textContent = '$' + safeToLocaleString(analysis.long_term_rental?.monthly_rent || 0);
       document.getElementById('result-cap-rate').textContent = analysis.roi_percentage + '%';
       
+      // Update header to show analysis type
+      const resultsTitle = document.querySelector('#results-screen h1');
+      if (resultsTitle) {
+        if (analysis.short_term_rental) {
+          resultsTitle.textContent = 'Investment Analysis Results (LTR + STR)';
+        } else {
+          resultsTitle.textContent = 'Investment Analysis Results (LTR Only)';
+        }
+      }
+      
       // ROI Grade with color
       const roiGrade = document.getElementById('result-roi-score');
       let grade, color, width;
@@ -1434,6 +1444,31 @@
       const roiBar = document.getElementById('roi-bar');
       roiBar.style.backgroundColor = color;
       roiBar.style.width = width;
+      
+      // Check if STR analysis is included
+      const strContainer = document.getElementById('str-comparison-container');
+      if (analysis.short_term_rental && strContainer) {
+        console.log('STR analysis data found:', analysis.short_term_rental);
+        strContainer.style.display = 'block';
+        
+        // Mount RentalComparisonView component if available
+        if (window.RentalComparisonView && window.ReactDOM) {
+          const comparisonData = {
+            longTermRental: analysis.long_term_rental,
+            shortTermRental: analysis.short_term_rental,
+            comparison: analysis.comparison,
+            costs: analysis.costs,
+            propertyDetails: analysis.property_details
+          };
+          
+          ReactDOM.render(
+            React.createElement(RentalComparisonView, { data: comparisonData }),
+            strContainer
+          );
+        }
+      } else {
+        if (strContainer) strContainer.style.display = 'none';
+      }
       
       // Financial breakdown - correctly interpret annual vs monthly
       const monthlyRent = analysis.long_term_rental?.monthly_rent || 0;
@@ -2312,6 +2347,19 @@
             
             console.log('[StarterPack] Form pre-filled with extension data');
             
+            // Store all extension data including image for confirmation screen
+            window.extensionPropertyData = {
+              mainImage: urlParams.get('image'),
+              mlsNumber: urlParams.get('mlsNumber'),
+              propertyType: urlParams.get('propertyType'),
+              yearBuilt: urlParams.get('yearBuilt')
+            };
+            
+            console.log('[StarterPack] Extension data stored:', {
+              hasImage: !!window.extensionPropertyData.mainImage,
+              mlsNumber: window.extensionPropertyData.mlsNumber
+            });
+            
             // Auto-analyze if requested
             if (urlParams.get('autoAnalyze') === 'true') {
               console.log('[StarterPack] Auto-analyze requested, triggering form submission');
@@ -2361,10 +2409,36 @@
           
           // Use Railway API for STR analysis, Vercel for regular analysis
           const apiUrl = includeStrAnalysis 
-            ? API_CONFIG.getUrl('analyzeProperty')
+            ? buildUrl('railway', 'analyzeProperty')
             : '/api/analyze-property';
           
           console.log(`Using API endpoint: ${apiUrl} (STR: ${includeStrAnalysis})`);
+          
+          // Prepare API request body
+          const requestBody = {
+            userId: currentUser.uid,
+            propertyAddress: fullAddress,
+            userEmail: currentUser.email,
+            userName: currentUser.displayName,
+            requestType: 'authenticated',
+            includeStrAnalysis: includeStrAnalysis,
+            // Include actual property data from extension
+            propertyData: {
+              price: propertyData.price ? parseInt(propertyData.price) : null,
+              propertyTaxes: propertyData.propertyTaxes ? parseInt(propertyData.propertyTaxes) : null,
+              bedrooms: propertyData.bedrooms ? parseInt(propertyData.bedrooms) : null,
+              bathrooms: propertyData.bathrooms ? parseFloat(propertyData.bathrooms) : null,
+              sqft: propertyData.sqft ? parseInt(propertyData.sqft) : null,
+              propertyType: propertyData.propertyType,
+              condoFees: propertyData.condoFees ? parseInt(propertyData.condoFees) : null,
+              mlsNumber: propertyData.mlsNumber,
+              city: propertyData.address.city,
+              province: propertyData.address.state
+            }
+          };
+          
+          console.log('API Request Body:', JSON.stringify(requestBody, null, 2));
+          console.log('Property data bedrooms:', propertyData.bedrooms, 'Type:', typeof propertyData.bedrooms);
           
           // Call API with property data
           const response = await fetch(apiUrl, {
@@ -2373,25 +2447,7 @@
               'Content-Type': 'application/json',
               'Authorization': `Bearer ${await currentUser.getIdToken()}`
             },
-            body: JSON.stringify({
-              userId: currentUser.uid,
-              propertyAddress: fullAddress,
-              userEmail: currentUser.email,
-              userName: currentUser.displayName,
-              requestType: 'authenticated',
-              includeStrAnalysis: includeStrAnalysis,
-              // Include actual property data from extension
-              propertyData: {
-                price: propertyData.price,
-                propertyTaxes: propertyData.propertyTaxes,
-                bedrooms: propertyData.bedrooms,
-                bathrooms: propertyData.bathrooms,
-                sqft: propertyData.sqft,
-                propertyType: propertyData.propertyType,
-                condoFees: propertyData.condoFees,
-                mlsNumber: propertyData.mlsNumber
-              }
-            })
+            body: JSON.stringify(requestBody)
           });
           
           console.log('API Response status:', response.status);
@@ -2441,58 +2497,92 @@
         e.preventDefault();
         
         const submitBtn = e.target.querySelector('button[type="submit"]');
-        const originalText = submitBtn.innerHTML;
         
-        try {
-          // Show loading state
-          submitBtn.innerHTML = `
-            <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-            Analyzing Property...
-          `;
-          submitBtn.disabled = true;
-          
-          const address = {
-            street: document.getElementById('street').value,
-            city: document.getElementById('city').value,
-            state: document.getElementById('state').value,
-            country: document.getElementById('country').value,
-            postal: document.getElementById('postal').value
-          };
-          
-          console.log('Starting analysis for address:', address);
-          
-          // Perform analysis
-          const analysis = await analyzeProperty(address);
-          
-          // Display results
-          displayResults(analysis);
-          showView('results');
-          
-          // Update user profile
-          if (userProfile && currentUser) {
-            try {
-              const db = firebase.firestore();
-              await db.collection('users').doc(currentUser.uid).update({
-                monthlyAnalysisCount: (userProfile.monthlyAnalysisCount || 0) + 1
-              });
-              userProfile.monthlyAnalysisCount = (userProfile.monthlyAnalysisCount || 0) + 1;
-              updateDashboard();
-            } catch (error) {
-              console.error('Failed to update analysis count:', error);
-            }
-          }
-          
-          // Reload analyses list
-          loadUserAnalyses();
-          
-        } catch (error) {
-          console.error('Analysis failed:', error);
-          alert('Analysis failed: ' + error.message);
-        } finally {
-          // Reset button
-          submitBtn.innerHTML = originalText;
-          submitBtn.disabled = false;
+        // Collect form data
+        const address = {
+          street: document.getElementById('street').value,
+          city: document.getElementById('city').value,
+          state: document.getElementById('state').value,
+          country: document.getElementById('country').value,
+          postal: document.getElementById('postal').value
+        };
+        
+        // Store pending property data for confirmation screen
+        window.pendingPropertyData = {
+          address,
+          price: document.getElementById('purchase-price')?.value || null,
+          propertyTaxes: document.getElementById('property-taxes')?.value || null,
+          bedrooms: document.getElementById('bedrooms')?.value || null,
+          bathrooms: document.getElementById('bathrooms')?.value || null,
+          sqft: document.getElementById('sqft')?.value || null,
+          propertyType: document.getElementById('property-type')?.value || window.extensionPropertyData?.propertyType || null,
+          condoFees: document.getElementById('condo-fees')?.value || null,
+          mlsNumber: document.getElementById('mls-number')?.value || window.extensionPropertyData?.mlsNumber || null,
+          mainImage: window.extensionPropertyData?.mainImage || null,
+          yearBuilt: window.extensionPropertyData?.yearBuilt || null
+        };
+        
+        // Update confirmation screen with property details
+        const fullAddress = `${address.street}, ${address.city}, ${address.state}, ${address.country} ${address.postal}`.trim();
+        document.getElementById('confirm-address').textContent = fullAddress;
+        
+        // Update property image if available
+        const confirmImageContainer = document.getElementById('confirm-image-container');
+        const confirmImage = document.getElementById('confirm-image');
+        if (confirmImageContainer && confirmImage && window.pendingPropertyData.mainImage) {
+          confirmImage.src = window.pendingPropertyData.mainImage;
+          confirmImageContainer.style.display = 'block';
+        } else if (confirmImageContainer) {
+          confirmImageContainer.style.display = 'none';
         }
+        
+        // Update property details in confirmation screen
+        const confirmPrice = document.getElementById('confirm-price');
+        if (confirmPrice && window.pendingPropertyData.price) {
+          confirmPrice.textContent = `$${parseInt(window.pendingPropertyData.price).toLocaleString()}`;
+        }
+        
+        const confirmBedrooms = document.getElementById('confirm-bedrooms');
+        if (confirmBedrooms && window.pendingPropertyData.bedrooms) {
+          confirmBedrooms.textContent = window.pendingPropertyData.bedrooms;
+        }
+        
+        const confirmBathrooms = document.getElementById('confirm-bathrooms');
+        if (confirmBathrooms && window.pendingPropertyData.bathrooms) {
+          confirmBathrooms.textContent = window.pendingPropertyData.bathrooms;
+        }
+        
+        const confirmSqft = document.getElementById('confirm-sqft');
+        if (confirmSqft && window.pendingPropertyData.sqft) {
+          confirmSqft.textContent = `${window.pendingPropertyData.sqft} sq ft`;
+        }
+        
+        const confirmPropertyType = document.getElementById('confirm-type');
+        if (confirmPropertyType && window.pendingPropertyData.propertyType) {
+          confirmPropertyType.textContent = window.pendingPropertyData.propertyType;
+        }
+        
+        const confirmTaxes = document.getElementById('confirm-taxes');
+        if (confirmTaxes && window.pendingPropertyData.propertyTaxes) {
+          confirmTaxes.textContent = `$${parseInt(window.pendingPropertyData.propertyTaxes).toLocaleString()}/year`;
+        }
+        
+        const confirmCondoFees = document.getElementById('confirm-condo-fees');
+        const confirmCondoSection = document.getElementById('confirm-condo-section');
+        if (confirmCondoFees && confirmCondoSection && window.pendingPropertyData.condoFees) {
+          confirmCondoFees.textContent = `$${parseInt(window.pendingPropertyData.condoFees).toLocaleString()}`;
+          confirmCondoSection.style.display = 'block';
+        } else if (confirmCondoSection) {
+          confirmCondoSection.style.display = 'none';
+        }
+        
+        const confirmMls = document.getElementById('confirm-mls');
+        if (confirmMls && window.pendingPropertyData.mlsNumber) {
+          confirmMls.textContent = window.pendingPropertyData.mlsNumber;
+        }
+        
+        // Show confirmation screen instead of analyzing directly
+        showView('confirmation');
       });
 
       // Results screen buttons
