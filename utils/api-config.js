@@ -6,7 +6,7 @@ const API_CONFIG = {
   railway: {
     baseUrl: window.location.hostname === 'localhost' 
       ? 'http://localhost:3001' 
-      : (window.ENV?.railwayUrl || 'https://real-estate-app-production-ba5c.up.railway.app'),
+      : (window.ENV?.railwayUrl || 'https://starterpackapp-production.up.railway.app'),
     endpoints: {
       analyzeProperty: '/api/analysis/property',
       strAnalysis: '/api/analysis/str',
