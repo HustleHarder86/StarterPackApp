@@ -256,14 +256,55 @@ function extractAddress() {
 }
 
 function extractBedrooms() {
-  const bedroomElement = Array.from(document.querySelectorAll('[class*="bedroom"], [data-testid*="bed"]'))
-    .find(el => el.textContent.match(/\d+\s*(bed|bedroom)/i));
+  console.log('[StarterPack] Starting bedroom extraction...');
+  
+  // Debug: Log all elements found with bedroom-related classes
+  const elements = document.querySelectorAll('[class*="bedroom"], [data-testid*="bed"]');
+  console.log('[StarterPack] Found', elements.length, 'elements with bedroom classes');
+  
+  // Try to find any element containing bedroom info
+  const bedroomElement = Array.from(elements)
+    .find(el => {
+      const text = el.textContent;
+      console.log('[StarterPack] Checking element:', el.className, 'Text:', text.substring(0, 50));
+      return text.match(/\d+\s*(bed|bedroom)/i);
+    });
   
   if (bedroomElement) {
     const match = bedroomElement.textContent.match(/(\d+)/);
     console.log('[StarterPack] Found bedrooms:', match ? match[1] : 'no match');
     return match ? parseInt(match[1]) : null;
   }
+  
+  // Try a broader search - look for any element with bedroom text
+  console.log('[StarterPack] Trying broader search...');
+  
+  // Try different selector patterns
+  const additionalSelectors = [
+    'span', 'div', 'td', 'li', 'p',
+    '[class*="detail"]',
+    '[class*="spec"]',
+    '[class*="feature"]',
+    '[class*="listing"]'
+  ];
+  
+  for (let selector of additionalSelectors) {
+    const elements = document.querySelectorAll(selector);
+    for (let el of elements) {
+      if (el.textContent) {
+        const text = el.textContent.trim();
+        // More flexible patterns
+        if (text.match(/\b\d+\s*(bed|bedroom|bdrm|br)s?\b/i) && text.length < 20) {
+          console.log('[StarterPack] Found bedroom match in', selector, ':', text);
+          const match = text.match(/(\d+)/);
+          if (match) {
+            return parseInt(match[1]);
+          }
+        }
+      }
+    }
+  }
+  
   console.log('[StarterPack] Could not find bedroom element');
   return null;
 }
