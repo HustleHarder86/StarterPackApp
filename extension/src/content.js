@@ -310,14 +310,55 @@ function extractBedrooms() {
 }
 
 function extractBathrooms() {
-  const bathroomElement = Array.from(document.querySelectorAll('[class*="bathroom"], [data-testid*="bath"]'))
-    .find(el => el.textContent.match(/\d+\.?\d*\s*(bath|bathroom)/i));
+  console.log('[StarterPack] Starting bathroom extraction...');
+  
+  // Debug: Log all elements found with bathroom-related classes
+  const elements = document.querySelectorAll('[class*="bathroom"], [data-testid*="bath"]');
+  console.log('[StarterPack] Found', elements.length, 'elements with bathroom classes');
+  
+  // Try to find any element containing bathroom info
+  const bathroomElement = Array.from(elements)
+    .find(el => {
+      const text = el.textContent;
+      console.log('[StarterPack] Checking bathroom element:', el.className, 'Text:', text.substring(0, 50));
+      return text.match(/\d+\.?\d*\s*(bath|bathroom)/i);
+    });
   
   if (bathroomElement) {
     const match = bathroomElement.textContent.match(/(\d+\.?\d*)/);
     console.log('[StarterPack] Found bathrooms:', match ? match[1] : 'no match');
     return match ? parseFloat(match[1]) : null;
   }
+  
+  // Try a broader search - look for any element with bathroom text
+  console.log('[StarterPack] Trying broader bathroom search...');
+  
+  // Try different selector patterns
+  const additionalSelectors = [
+    'span', 'div', 'td', 'li', 'p',
+    '[class*="detail"]',
+    '[class*="spec"]',
+    '[class*="feature"]',
+    '[class*="listing"]'
+  ];
+  
+  for (let selector of additionalSelectors) {
+    const elements = document.querySelectorAll(selector);
+    for (let el of elements) {
+      if (el.textContent) {
+        const text = el.textContent.trim();
+        // More flexible patterns - also match "bath" alone
+        if (text.match(/\b\d+\.?\d*\s*(bath|bathroom|bthrm|ba)s?\b/i) && text.length < 20) {
+          console.log('[StarterPack] Found bathroom match in', selector, ':', text);
+          const match = text.match(/(\d+\.?\d*)/);
+          if (match) {
+            return parseFloat(match[1]);
+          }
+        }
+      }
+    }
+  }
+  
   console.log('[StarterPack] Could not find bathroom element');
   return null;
 }
