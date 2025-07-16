@@ -51,7 +51,7 @@ class AirbnbScraperService {
       priceMax: options.priceMax || 500,
       // Property specifications - exact match from listing
       minBedrooms: Math.max(1, bedrooms - 1),  // Search for slightly fewer bedrooms for more results
-      minBathrooms: Math.max(1, bathrooms - 0.5), // Allow half bathroom difference
+      minBathrooms: Math.max(1, Math.floor(bathrooms - 0.5)), // Allow half bathroom difference, ensure integer
       // Date logic - 30 days out for check-in, 7 night stay
       checkIn: options.checkIn || this.getCheckInDate(),
       checkOut: options.checkOut || this.getCheckOutDate()
