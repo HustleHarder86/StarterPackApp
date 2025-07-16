@@ -140,6 +140,14 @@ router.post('/property', optionalAuth, async (req, res, next) => {
             }
           }
           
+          // Debug logging to trace bedroom data issue
+          logger.debug('Property data sources for STR analysis', {
+            resultPropertyDetails: result.propertyDetails,
+            propertyDataFromRequest: propertyData,
+            bedroomsFromResult: result.propertyDetails?.bedrooms,
+            bedroomsFromPropertyData: propertyData?.bedrooms
+          });
+          
           const strPropertyData = {
             address: {
               street: result.propertyDetails?.address || propertyAddress,
@@ -155,6 +163,12 @@ router.post('/property', optionalAuth, async (req, res, next) => {
             monthlyRent: result.rental?.monthlyRent || 0,
             estimatedRent: result.rental?.monthlyRent || 0
           };
+          
+          logger.info('STR property data prepared', {
+            bedrooms: strPropertyData.bedrooms,
+            bathrooms: strPropertyData.bathrooms,
+            propertyType: strPropertyData.propertyType
+          });
           
           // Check cache first
           const cacheKey = `str:${propertyAddress}:${JSON.stringify(strPropertyData.address)}`;
