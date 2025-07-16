@@ -38,7 +38,10 @@ router.post('/property', optionalAuth, async (req, res, next) => {
       propertyAddress,
       userId: req.userId,
       hasPropertyData: !!propertyData,
-      includeStrAnalysis: !!includeStrAnalysis
+      includeStrAnalysis: !!includeStrAnalysis,
+      propertyDataBedrooms: propertyData?.bedrooms,
+      propertyDataBathrooms: propertyData?.bathrooms,
+      propertyDataKeys: propertyData ? Object.keys(propertyData) : []
     });
     
     // Process the analysis directly
@@ -141,6 +144,15 @@ router.post('/property', optionalAuth, async (req, res, next) => {
           }
           
           // Debug logging to trace bedroom data issue
+          logger.info('LTR Analysis result structure', {
+            hasPropertyDetails: !!result.propertyDetails,
+            hasRental: !!result.rental,
+            propertyDetailsKeys: result.propertyDetails ? Object.keys(result.propertyDetails) : [],
+            bedrooms: result.propertyDetails?.bedrooms,
+            bathrooms: result.propertyDetails?.bathrooms,
+            monthlyRent: result.rental?.monthlyRent
+          });
+          
           logger.debug('Property data sources for STR analysis', {
             resultPropertyDetails: result.propertyDetails,
             propertyDataFromRequest: propertyData,
