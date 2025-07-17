@@ -2415,16 +2415,11 @@
           
           const includeStrAnalysis = modeElement && modeElement.value === 'str';
           
-          // Use Railway API for STR analysis, Vercel for regular analysis
-          let apiUrl;
-          if (includeStrAnalysis) {
-            // Fallback to hardcoded URL if buildUrl isn't available
-            apiUrl = window.buildUrl ? 
-              buildUrl('railway', 'analyzeProperty') : 
-              'https://starterpackapp-production.up.railway.app/api/analysis/property';
-          } else {
-            apiUrl = '/api/analyze-property';
-          }
+          // Always use Railway API for all analysis (no timeout limits)
+          // Railway can handle both LTR and STR without timing out
+          const apiUrl = window.buildUrl ? 
+            buildUrl('railway', 'analyzeProperty') : 
+            'https://starterpackapp-production.up.railway.app/api/analysis/property';
           
           console.log(`Using API endpoint: ${apiUrl} (STR: ${includeStrAnalysis})`);
           
@@ -2446,8 +2441,21 @@
               propertyType: propertyData.propertyType,
               condoFees: propertyData.condoFees ? parseInt(propertyData.condoFees) : null,
               mlsNumber: propertyData.mlsNumber,
-              city: propertyData.address.city,
-              province: propertyData.address.state
+              // Parse city correctly - if city contains postal code, extract actual city from full address
+              city: (() => {
+                let city = propertyData.address.city;
+                // Check if city contains postal code pattern (e.g., "Ontario L5A1E1")
+                if (city && /[A-Z]\d[A-Z]\s?\d[A-Z]\d/.test(city)) {
+                  // Extract city from full address (e.g., "2092 SAVA CRESCENTMississauga (Cooksville)")
+                  const addressParts = fullAddress.split(',');
+                  if (addressParts.length > 1) {
+                    // Second part should be city, remove any neighborhood in parentheses
+                    city = addressParts[1].trim().split('(')[0].trim();
+                  }
+                }
+                return city || 'Toronto'; // Default to Toronto if parsing fails
+              })(),
+              province: propertyData.address.state || 'Ontario'
             }
           };
           

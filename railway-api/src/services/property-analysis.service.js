@@ -239,7 +239,8 @@ ALWAYS include source URLs in format: SOURCE: [URL]`
         headers: {
           'Authorization': `Bearer ${perplexityApiKey}`,
           'Content-Type': 'application/json'
-        }
+        },
+        timeout: 60000 // 60 second timeout
       }
     );
     
@@ -253,6 +254,17 @@ ALWAYS include source URLs in format: SOURCE: [URL]`
     };
     
   } catch (error) {
+    if (error.code === 'ECONNABORTED' || error.code === 'ETIMEDOUT') {
+      logger.warn('Perplexity API timeout after 60 seconds', { propertyAddress });
+      // Return a fallback response on timeout
+      return {
+        content: `Property research timed out. Using estimated values for ${propertyAddress}.`,
+        apiCosts: { totalCost: 0 },
+        citations: [],
+        timedOut: true
+      };
+    }
+    
     if (error.response) {
       const status = error.response.status;
       const errorData = error.response.data;
