@@ -19,7 +19,13 @@ module.exports = defineConfig({
     video: 'retain-on-failure',
     
     // Default test user credentials
-    storageState: 'tests/e2e/.auth/user.json',
+    // storageState: 'tests/e2e/.auth/user.json', // Commented out for visual tests
+  },
+  
+  // Extended timeout for visual tests that call real APIs
+  timeout: 90 * 1000, // 90 seconds per test
+  expect: {
+    timeout: 65 * 1000 // 65 seconds for assertions (API can take up to 60s)
   },
 
   projects: [
@@ -32,7 +38,7 @@ module.exports = defineConfig({
     {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
-      dependencies: ['setup'],
+      // dependencies: ['setup'], // Commented out for visual tests
     },
 
     {

@@ -120,6 +120,279 @@
     /* Colors */
     .positive { color: #10b981; }
     .negative { color: #ef4444; }
+    
+    /* IMPROVEMENT 1: Visual Hierarchy */
+    .property-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+      color: white;
+      font-size: 0.875rem;
+      font-weight: 500;
+      border-radius: 9999px;
+      margin-left: 1rem;
+    }
+    
+    /* IMPROVEMENT 2: Number Formatting */
+    .currency-positive {
+      color: #10b981;
+      font-weight: 600;
+    }
+    
+    .currency-negative {
+      color: #ef4444;
+      font-weight: 600;
+    }
+    
+    .currency-neutral {
+      color: #1f2937;
+      font-weight: 600;
+    }
+    
+    /* IMPROVEMENT 3: Mobile Responsiveness */
+    @media (max-width: 640px) {
+      .analysis-mode-selector {
+        flex-direction: column;
+      }
+      
+      .analysis-mode-selector label {
+        width: 100%;
+        margin-bottom: 0.5rem;
+      }
+      
+      .stat-card {
+        padding: 16px;
+      }
+      
+      .metric-card {
+        padding: 16px;
+      }
+      
+      .property-badge {
+        margin-left: 0;
+        margin-top: 0.5rem;
+        display: block;
+        width: fit-content;
+      }
+    }
+    
+    /* IMPROVEMENT 4: Loading State */
+    .progress-indicator {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      max-width: 400px;
+      margin: 2rem auto;
+    }
+    
+    .progress-step {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem;
+      background: white;
+      border-radius: 0.5rem;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+    }
+    
+    .progress-step.active {
+      background: #eff6ff;
+      border: 2px solid #3b82f6;
+    }
+    
+    .progress-step.completed {
+      background: #f0fdf4;
+      border: 2px solid #10b981;
+    }
+    
+    .progress-icon {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: bold;
+      flex-shrink: 0;
+    }
+    
+    .progress-step.pending .progress-icon {
+      background: #e5e7eb;
+      color: #6b7280;
+    }
+    
+    .progress-step.active .progress-icon {
+      background: #3b82f6;
+      color: white;
+      animation: pulse 2s infinite;
+    }
+    
+    .progress-step.completed .progress-icon {
+      background: #10b981;
+      color: white;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.1); opacity: 0.8; }
+    }
+    
+    .progress-text {
+      flex: 1;
+    }
+    
+    .progress-title {
+      font-weight: 600;
+      color: #1f2937;
+      font-size: 0.875rem;
+    }
+    
+    .progress-subtitle {
+      font-size: 0.75rem;
+      color: #6b7280;
+      margin-top: 0.125rem;
+    }
+    
+    .progress-time {
+      font-size: 0.75rem;
+      color: #9ca3af;
+      flex-shrink: 0;
+    }
+    
+    /* IMPROVEMENT 5: Regulation Alert Banner */
+    .regulation-alert {
+      background: linear-gradient(135deg, #fef3c7, #fde68a);
+      border: 2px solid #f59e0b;
+      border-radius: 0.75rem;
+      padding: 1rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 4px 6px rgba(245, 158, 11, 0.1);
+    }
+    
+    .regulation-alert-icon {
+      width: 24px;
+      height: 24px;
+      flex-shrink: 0;
+    }
+    
+    /* Comparable Properties Gallery */
+    .comparable-gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-top: 1rem;
+    }
+    
+    .comparable-card {
+      background: white;
+      border-radius: 0.75rem;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+    
+    .comparable-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+    
+    .comparable-image {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+    }
+    
+    .comparable-details {
+      padding: 1rem;
+    }
+    
+    .comparable-price {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #1f2937;
+    }
+    
+    .comparable-stats {
+      display: flex;
+      gap: 1rem;
+      margin-top: 0.5rem;
+      font-size: 0.875rem;
+      color: #6b7280;
+    }
+    
+    /* Confidence Badge */
+    .confidence-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+    
+    .confidence-high {
+      background: #d1fae5;
+      color: #047857;
+    }
+    
+    .confidence-medium {
+      background: #fef3c7;
+      color: #b45309;
+    }
+    
+    .confidence-low {
+      background: #fee2e2;
+      color: #b91c1c;
+    }
+    
+    /* Scenario Analysis */
+    .scenario-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    
+    .scenario-card {
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 0.5rem;
+      padding: 1rem;
+      text-align: center;
+    }
+    
+    .scenario-occupancy {
+      font-size: 1.25rem;
+      font-weight: bold;
+      color: #3b82f6;
+    }
+    
+    .scenario-revenue {
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: #1f2937;
+      margin-top: 0.5rem;
+    }
+    
+    .scenario-income {
+      font-size: 0.875rem;
+      color: #6b7280;
+      margin-top: 0.25rem;
+    }
+    
+    /* Disclaimer Box */
+    .disclaimer-box {
+      background: #f3f4f6;
+      border-left: 4px solid #6b7280;
+      padding: 1rem;
+      margin-top: 2rem;
+      font-size: 0.875rem;
+      color: #4b5563;
+    }
   </style>
   
   <!-- API Configuration -->
@@ -128,7 +401,7 @@
       isProduction: window.location.hostname !== 'localhost',
       railwayUrl: window.location.hostname === 'localhost' 
         ? 'http://localhost:3001' 
-        : 'https://starterpackapp-production.up.railway.app',
+        : 'https://real-estate-app-production-ba5c.up.railway.app',
       enableProgressTracking: true,
       useRailway: true
     };
@@ -144,10 +417,69 @@
 </head>
 <body class="bg-gray-50">
   <!-- Loading Screen -->
-  <div id="loading-screen" class="min-h-screen flex items-center justify-center">
-    <div class="text-center">
-      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-      <p id="loading-message" class="mt-4 text-gray-600">Loading ROI Finder...</p>
+  <div id="loading-screen" class="min-h-screen flex items-center justify-center bg-gray-50">
+    <div class="text-center max-w-lg">
+      <!-- Spinner -->
+      <div class="animate-spin rounded-full h-16 w-16 border-b-4 border-blue-600 mx-auto mb-6"></div>
+      
+      <!-- Main title -->
+      <h2 class="text-2xl font-bold text-gray-900 mb-2" id="loading-title">Loading ROI Finder...</h2>
+      <p class="text-gray-600 mb-8" id="loading-address"></p>
+      
+      <!-- Progress Steps (hidden by default, shown during analysis) -->
+      <div class="progress-indicator" id="progress-indicator" style="display: none;">
+        <div class="progress-step completed" id="step-1">
+          <div class="progress-icon">✓</div>
+          <div class="progress-text">
+            <div class="progress-title">Property data extracted</div>
+            <div class="progress-subtitle">Ready for analysis</div>
+          </div>
+          <div class="progress-time">0s</div>
+        </div>
+        
+        <div class="progress-step active" id="step-2">
+          <div class="progress-icon">2</div>
+          <div class="progress-text">
+            <div class="progress-title">Researching market rates</div>
+            <div class="progress-subtitle">Analyzing rental comparables via AI</div>
+          </div>
+          <div class="progress-time" id="step-2-time">5s</div>
+        </div>
+        
+        <div class="progress-step pending" id="step-3">
+          <div class="progress-icon">3</div>
+          <div class="progress-text">
+            <div class="progress-title">Calculating financial metrics</div>
+            <div class="progress-subtitle">ROI, cap rate, cash flow analysis</div>
+          </div>
+          <div class="progress-time" id="step-3-time">-</div>
+        </div>
+        
+        <div class="progress-step pending" id="step-4">
+          <div class="progress-icon">4</div>
+          <div class="progress-text">
+            <div class="progress-title">Generating recommendations</div>
+            <div class="progress-subtitle">AI-powered investment insights</div>
+          </div>
+          <div class="progress-time" id="step-4-time">-</div>
+        </div>
+        
+        <!-- STR-specific step (hidden by default) -->
+        <div class="progress-step pending" id="step-str" style="display: none;">
+          <div class="progress-icon">5</div>
+          <div class="progress-text">
+            <div class="progress-title">Finding Airbnb comparables</div>
+            <div class="progress-subtitle">Analyzing short-term rental market</div>
+          </div>
+          <div class="progress-time" id="step-str-time">-</div>
+        </div>
+      </div>
+      
+      <!-- Time estimate -->
+      <div class="mt-8 text-sm text-gray-500" id="time-estimate" style="display: none;">
+        <p>This analysis typically takes 30-60 seconds</p>
+        <p class="mt-1">Powered by Perplexity AI for real-time market data</p>
+      </div>
     </div>
   </div>
 
@@ -299,20 +631,34 @@
       </div>
 
       <div class="bg-white rounded-2xl shadow-xl p-8">
-        <!-- Analysis Mode Selector -->
+        <!-- Analysis Mode Selector - Mobile Responsive -->
         <div class="mb-6">
-          <div class="flex rounded-lg bg-gray-100 p-1">
-            <button type="button" id="ltr-mode-btn" class="flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all duration-200 bg-white text-gray-900 shadow-sm">
-              Traditional Rental (LTR)
+          <label class="block text-sm font-medium text-gray-700 mb-3">Analysis Type</label>
+          <div class="analysis-mode-selector flex gap-3">
+            <button type="button" id="ltr-mode-btn" class="flex-1 p-4 border-2 rounded-lg cursor-pointer transition bg-white text-gray-900 border-blue-500 hover:shadow-md">
+              <div class="text-center">
+                <div class="text-2xl mb-2">🏠</div>
+                <div class="font-semibold">Long-Term Rental</div>
+                <div class="text-xs text-gray-600 mt-1">Traditional monthly</div>
+              </div>
             </button>
-            <button type="button" id="str-mode-btn" class="flex-1 py-2 px-4 rounded-md text-sm font-medium text-gray-500 transition-all duration-200">
-              Short-Term Rental (STR)
+            
+            <button type="button" id="str-mode-btn" class="flex-1 p-4 border-2 rounded-lg cursor-pointer transition border-gray-300 hover:shadow-md">
+              <div class="text-center">
+                <div class="text-2xl mb-2">🏖️</div>
+                <div class="font-semibold">Short-Term Rental</div>
+                <div class="text-xs text-gray-600 mt-1">Airbnb analysis</div>
+                <div class="inline-block mt-1 px-2 py-0.5 bg-green-100 text-green-700 text-xs font-medium rounded-full">Pro</div>
+              </div>
             </button>
           </div>
           <p class="text-xs text-gray-500 mt-2 text-center" id="str-trial-info">
             <!-- Trial info will be populated here -->
           </p>
         </div>
+        
+        <!-- Hidden input for analysis mode -->
+        <input type="hidden" id="analysis-mode" value="ltr" />
         
         <form id="property-form">
           <div class="space-y-6">
@@ -494,23 +840,28 @@
 
     <!-- Results Content -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <!-- Property Info -->
+      <!-- Property Info - Enhanced Visual Hierarchy -->
       <div class="bg-white rounded-lg shadow mb-6">
         <div class="px-6 py-4 border-b border-gray-200">
-          <h2 class="text-lg font-semibold text-gray-900">Property Information</h2>
-        </div>
-        <div class="p-6">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="flex items-start justify-between">
             <div>
-              <p class="text-sm text-gray-600">Address</p>
-              <p class="font-semibold" id="result-address">-</p>
+              <div class="flex items-center gap-3 flex-wrap">
+                <h2 class="text-3xl font-bold text-gray-900" id="result-address-header">123 Main St, Toronto, ON</h2>
+                <span class="property-badge" id="property-type-badge">Condo</span>
+              </div>
+              <p class="text-gray-600 mt-2">
+                <span id="result-bedrooms-bathrooms">6 Bedrooms • 3.5 Bathrooms</span> • 
+                <span id="result-sqft">2,100 sq ft</span>
+              </p>
             </div>
-            <div>
-              <p class="text-sm text-gray-600">Analysis Date</p>
-              <p class="font-semibold" id="result-date">-</p>
+            <div class="text-right">
+              <div class="text-sm text-gray-500">Analysis Date</div>
+              <div class="font-semibold" id="result-date">-</div>
             </div>
           </div>
-          <div id="property-details-extra" class="mt-4 grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+        </div>
+        <div class="p-6">
+          <div id="property-details-extra" class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
             <!-- Extra property details will be added here -->
           </div>
         </div>
@@ -547,6 +898,73 @@
       <!-- STR Comparison Section -->
       <div id="str-comparison-container" class="mb-8" style="display: none;">
         <!-- RentalComparisonView component will be mounted here -->
+      </div>
+      
+      <!-- Regulation Alert Banner (STR only) -->
+      <div id="regulation-alert-container" class="regulation-alert" style="display: none;">
+        <div class="flex items-start gap-3">
+          <svg class="regulation-alert-icon text-amber-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+          <div class="flex-1">
+            <h4 class="font-semibold text-amber-900 mb-1">Important Regulatory Notice</h4>
+            <p class="text-amber-800 text-sm" id="regulation-summary">-</p>
+            <div class="mt-2 space-y-1" id="regulation-warnings">
+              <!-- Warnings will be populated here -->
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Visual Comparison Chart -->
+      <div id="visual-comparison-section" class="bg-white rounded-lg shadow mb-8" style="display: none;">
+        <div class="px-6 py-4 border-b border-gray-200">
+          <h3 class="text-lg font-semibold text-gray-900">LTR vs STR Revenue Comparison</h3>
+          <div class="confidence-badge mt-2" id="confidence-badge">
+            <span>Confidence Level</span>
+          </div>
+        </div>
+        <div class="p-6">
+          <div class="chart-container" style="height: 400px;">
+            <canvas id="revenueComparisonChart"></canvas>
+          </div>
+          <div class="mt-4 text-center">
+            <p class="text-sm text-gray-600">Based on <span id="comparable-count">0</span> comparable properties</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Scenario Analysis -->
+      <div id="scenario-analysis-section" class="bg-white rounded-lg shadow mb-8" style="display: none;">
+        <div class="px-6 py-4 border-b border-gray-200">
+          <h3 class="text-lg font-semibold text-gray-900">Occupancy Scenario Analysis</h3>
+          <p class="text-sm text-gray-600 mt-1">Revenue projections at different occupancy rates</p>
+        </div>
+        <div class="p-6">
+          <div class="scenario-grid" id="scenario-grid">
+            <!-- Scenarios will be populated here -->
+          </div>
+          <div class="mt-6">
+            <p class="text-sm font-semibold text-gray-700">Break-even Analysis</p>
+            <p class="text-sm text-gray-600 mt-1">
+              Minimum occupancy needed to match LTR income: 
+              <span class="font-bold text-blue-600" id="breakeven-occupancy">-</span>
+            </p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Comparable Properties Gallery -->
+      <div id="comparable-gallery-section" class="bg-white rounded-lg shadow mb-8" style="display: none;">
+        <div class="px-6 py-4 border-b border-gray-200">
+          <h3 class="text-lg font-semibold text-gray-900">Comparable Airbnb Properties</h3>
+          <p class="text-sm text-gray-600 mt-1">Similar properties in your area</p>
+        </div>
+        <div class="p-6">
+          <div class="comparable-gallery" id="comparable-gallery">
+            <!-- Comparables will be populated here -->
+          </div>
+        </div>
       </div>
 
       <!-- Charts Section -->
@@ -769,6 +1187,18 @@
         </div>
       </div>
 
+      <!-- Disclaimer Box -->
+      <div class="disclaimer-box">
+        <h4 class="font-semibold text-gray-700 mb-2">Important Disclaimers</h4>
+        <ul class="space-y-1 text-sm">
+          <li>• STR revenue projections are based on current market data and may vary due to seasonality, market conditions, and property management.</li>
+          <li>• Actual results depend on many factors including property condition, amenities, pricing strategy, and guest reviews.</li>
+          <li>• Regulatory compliance is your responsibility. Rules can change - always verify current regulations with local authorities.</li>
+          <li>• This analysis is for informational purposes only and should not be considered financial or legal advice.</li>
+          <li>• We recommend consulting with real estate professionals, accountants, and legal advisors before making investment decisions.</li>
+        </ul>
+      </div>
+      
       <!-- Actions -->
       <div class="mt-8 flex justify-center gap-4">
         <button id="new-analysis-from-results" class="btn-primary">
@@ -822,6 +1252,36 @@
       }
       return Number(value).toLocaleString();
     }
+    
+    // IMPROVEMENT 2: Consistent currency formatting
+    function formatCurrency(amount, showSign = false, alwaysShowSign = false) {
+      const num = parseFloat(amount) || 0;
+      const isNegative = num < 0;
+      const absNum = Math.abs(num);
+      
+      // Format with Canadian dollar symbol
+      let formatted = `C$${absNum.toLocaleString('en-CA', { 
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0 
+      })}`;
+      
+      // Add sign if needed
+      if (isNegative) {
+        formatted = `-${formatted}`;
+      } else if ((showSign && num > 0) || alwaysShowSign) {
+        formatted = `+${formatted}`;
+      }
+      
+      return formatted;
+    }
+    
+    // CSS class helper for consistent coloring
+    function getCurrencyClass(amount) {
+      const num = parseFloat(amount) || 0;
+      if (num > 0) return 'currency-positive';
+      if (num < 0) return 'currency-negative';
+      return 'currency-neutral';
+    }
 
     // Global state
     let currentUser = null;
@@ -832,6 +1292,140 @@
     let currentAnalysis = null;
     let originalAnalysis = null;
     let editMode = false;
+    
+    // IMPROVEMENT 4: Progress tracking for loading state
+    let analysisStartTime = null;
+    let progressInterval = null;
+    
+    function startProgressTracking() {
+      analysisStartTime = Date.now();
+      let currentStep = 2;
+      
+      // Show progress indicator
+      document.getElementById('progress-indicator').style.display = 'flex';
+      document.getElementById('time-estimate').style.display = 'block';
+      
+      // Update time every second
+      progressInterval = setInterval(() => {
+        const elapsed = Math.floor((Date.now() - analysisStartTime) / 1000);
+        
+        // Update current step time
+        const currentTimeEl = document.getElementById(`step-${currentStep}-time`);
+        if (currentTimeEl) {
+          currentTimeEl.textContent = `${elapsed}s`;
+        }
+        
+        // Check if STR mode
+        const isSTR = document.getElementById('confirm-analysis-mode')?.value === 'str' || 
+                      document.getElementById('analysis-mode')?.value === 'str';
+        
+        // Progress through steps based on time
+        if (elapsed > 15 && currentStep === 2) {
+          completeStep(2);
+          activateStep(3);
+          currentStep = 3;
+        } else if (elapsed > 25 && currentStep === 3) {
+          completeStep(3);
+          activateStep(4);
+          currentStep = 4;
+        } else if (elapsed > 35 && currentStep === 4 && isSTR) {
+          completeStep(4);
+          // Activate STR step if in STR mode
+          const strStep = document.getElementById('step-str');
+          if (strStep && strStep.style.display !== 'none') {
+            activateStep('str');
+            currentStep = 'str';
+          }
+        }
+      }, 1000);
+    }
+    
+    function completeStep(stepNum) {
+      const step = document.getElementById(`step-${stepNum}`);
+      if (step) {
+        step.classList.remove('active', 'pending');
+        step.classList.add('completed');
+        step.querySelector('.progress-icon').textContent = '✓';
+      }
+    }
+    
+    function activateStep(stepNum) {
+      const step = document.getElementById(`step-${stepNum}`);
+      if (step) {
+        step.classList.remove('pending', 'completed');
+        step.classList.add('active');
+        const elapsed = Math.floor((Date.now() - analysisStartTime) / 1000);
+        document.getElementById(`step-${stepNum}-time`).textContent = `${elapsed}s`;
+      }
+    }
+    
+    function stopProgressTracking() {
+      if (progressInterval) {
+        clearInterval(progressInterval);
+        progressInterval = null;
+      }
+      // Complete all steps
+      for (let i = 1; i <= 4; i++) {
+        completeStep(i);
+      }
+    }
+    
+    function showLoadingWithProgress(propertyData) {
+      // Update loading screen with property info
+      document.getElementById('loading-title').textContent = 'Analyzing Property Investment';
+      
+      // Check if STR mode is enabled
+      const isSTR = document.getElementById('confirm-analysis-mode')?.value === 'str' || 
+                    document.getElementById('analysis-mode')?.value === 'str';
+      
+      if (propertyData) {
+        const addressEl = document.getElementById('loading-address');
+        if (addressEl && propertyData.address) {
+          addressEl.textContent = `${propertyData.address.street}, ${propertyData.address.city}, ${propertyData.address.state}`;
+        }
+        
+        // Update step 1 with property details
+        const step1Subtitle = document.querySelector('#step-1 .progress-subtitle');
+        if (step1Subtitle) {
+          const bedrooms = propertyData.bedrooms || '?';
+          const bathrooms = propertyData.bathrooms || '?';
+          const sqft = propertyData.sqft ? `${propertyData.sqft.toLocaleString()} sq ft` : 'Size unknown';
+          step1Subtitle.textContent = `${bedrooms} bedrooms, ${bathrooms} bathrooms, ${sqft}`;
+        }
+      }
+      
+      // Show/hide STR step based on mode
+      const strStep = document.getElementById('step-str');
+      if (strStep) {
+        strStep.style.display = isSTR ? 'flex' : 'none';
+      }
+      
+      // Update time estimate based on mode
+      const timeEstimate = document.getElementById('time-estimate');
+      if (timeEstimate) {
+        timeEstimate.style.display = 'block';
+        timeEstimate.innerHTML = isSTR ? 
+          '<p>This analysis typically takes 30-60 seconds</p><p class="mt-1">Finding comparable Airbnb properties in your area...</p>' :
+          '<p>This analysis typically takes 20-30 seconds</p><p class="mt-1">Powered by Perplexity AI for real-time market data</p>';
+      }
+      
+      // Reset all steps
+      document.querySelectorAll('.progress-step').forEach((step, index) => {
+        step.classList.remove('active', 'completed');
+        step.classList.add(index === 0 ? 'completed' : index === 1 ? 'active' : 'pending');
+        const icon = step.querySelector('.progress-icon');
+        if (icon) {
+          icon.textContent = index === 0 ? '✓' : (index + 1).toString();
+        }
+      });
+      
+      // Show loading screen with progress indicator visible
+      showView('loading');
+      document.getElementById('progress-indicator').style.display = 'flex';
+      
+      // Start progress tracking
+      startProgressTracking();
+    }
 
     // Initialize app
     async function initApp() {
@@ -1081,17 +1675,40 @@
       }
     }
 
+    // IMPROVEMENT 2: Consistent currency formatting function
+    function formatCurrency(amount, showSign = false, alwaysShowSign = false) {
+      const num = parseFloat(amount) || 0;
+      const isNegative = num < 0;
+      const absNum = Math.abs(num);
+      
+      // Format with Canadian dollar symbol
+      let formatted = new Intl.NumberFormat('en-CA', {
+        style: 'currency',
+        currency: 'CAD',
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+      }).format(absNum);
+      
+      // Add sign if needed
+      if (isNegative) {
+        formatted = `-${formatted}`;
+      } else if ((showSign && num > 0) || alwaysShowSign) {
+        formatted = `+${formatted}`;
+      }
+      
+      return formatted;
+    }
+    
+    // CSS class helper for consistent coloring
+    function getCurrencyClass(amount) {
+      const num = parseFloat(amount) || 0;
+      if (num > 0) return 'currency-positive';
+      if (num < 0) return 'currency-negative';
+      return 'currency-neutral';
+    }
+    
     // Show property confirmation screen
     function showPropertyConfirmation(propertyData) {
-      // Format currency
-      const formatCurrency = (value) => {
-        return new Intl.NumberFormat('en-CA', {
-          style: 'currency',
-          currency: 'CAD',
-          minimumFractionDigits: 0,
-          maximumFractionDigits: 0
-        }).format(value);
-      };
       
       // Format address
       const fullAddress = `${propertyData.address.street}, ${propertyData.address.city}, ${propertyData.address.state} ${propertyData.address.postal}`;
@@ -1393,8 +2010,42 @@
       currentAnalysis = JSON.parse(JSON.stringify(analysis)); // Deep copy
       originalAnalysis = JSON.parse(JSON.stringify(analysis)); // Store original for reset
       
-      // Property info
-      document.getElementById('result-address').textContent = analysis.property_address || 'Unknown';
+      // IMPROVEMENT 1: Enhanced property header
+      const addressHeader = document.getElementById('result-address-header');
+      if (addressHeader) {
+        // Extract city and province only for cleaner display
+        const fullAddress = analysis.property_address || '';
+        const parts = fullAddress.split(',');
+        const displayAddress = parts.length >= 2 ? 
+          `${parts[0].trim()}, ${parts[1].trim()}` : 
+          fullAddress;
+        addressHeader.textContent = displayAddress;
+      }
+      
+      // Property type badge
+      const typeBadge = document.getElementById('property-type-badge');
+      if (typeBadge && analysis.property_details?.property_type) {
+        typeBadge.textContent = analysis.property_details.property_type;
+        typeBadge.style.display = 'inline-block';
+      }
+      
+      // Bedrooms and bathrooms with detail
+      const bedroomBathroom = document.getElementById('result-bedrooms-bathrooms');
+      if (bedroomBathroom) {
+        const bedrooms = analysis.property_details?.bedrooms || 0;
+        const bathrooms = analysis.property_details?.bathrooms || 0;
+        bedroomBathroom.textContent = `${bedrooms} Bedrooms • ${bathrooms} Bathrooms`;
+      }
+      
+      // Square footage
+      const sqftEl = document.getElementById('result-sqft');
+      if (sqftEl && analysis.property_details?.square_feet) {
+        sqftEl.textContent = `${analysis.property_details.square_feet.toLocaleString()} sq ft`;
+      } else if (sqftEl && analysis.property_details?.sqft) {
+        sqftEl.textContent = `${analysis.property_details.sqft.toLocaleString()} sq ft`;
+      }
+      
+      // Analysis date
       document.getElementById('result-date').textContent = new Date(analysis.analysis_timestamp || analysis.createdAt?.toDate()).toLocaleDateString();
       
       // Extra property details
@@ -1408,9 +2059,9 @@
         `;
       }
       
-      // Key metrics
-      document.getElementById('result-value').textContent = '$' + safeToLocaleString(analysis.property_details?.estimated_value || 0);
-      document.getElementById('result-rent').textContent = '$' + safeToLocaleString(analysis.long_term_rental?.monthly_rent || 0);
+      // Key metrics with IMPROVEMENT 2: Consistent currency formatting
+      document.getElementById('result-value').textContent = formatCurrency(analysis.property_details?.estimated_value || 0);
+      document.getElementById('result-rent').textContent = formatCurrency(analysis.long_term_rental?.monthly_rent || 0) + '/mo';
       document.getElementById('result-cap-rate').textContent = analysis.roi_percentage + '%';
       
       // Update header to show analysis type
@@ -1502,38 +2153,40 @@
       const annualMaintenance = analysis.costs?.maintenance_annual || 0;
       const monthlyHoa = analysis.costs?.hoa_monthly || 0;
       
-      // Monthly Income
-      document.getElementById('breakdown-income').textContent = '$' + safeToLocaleString(monthlyRent);
+      // Monthly Income with IMPROVEMENT 2: Consistent currency formatting
+      document.getElementById('breakdown-income').textContent = formatCurrency(monthlyRent);
       
-      // Monthly Expenses  
-      document.getElementById('breakdown-mortgage').textContent = '$' + safeToLocaleString(mortgagePayment);
+      // Monthly Expenses with IMPROVEMENT 2: Consistent currency formatting
+      document.getElementById('breakdown-mortgage').textContent = formatCurrency(mortgagePayment);
       
       // Property Taxes - show monthly with annual reference
-      document.getElementById('breakdown-taxes').textContent = '$' + safeToLocaleString(monthlyTaxes);
+      document.getElementById('breakdown-taxes').textContent = formatCurrency(monthlyTaxes);
       const actualTaxAnnual = taxAnnual > propertyValue * 0.02 ? monthlyTaxes * 12 : taxAnnual;
-      document.getElementById('breakdown-taxes-annual').textContent = '($' + safeToLocaleString(actualTaxAnnual) + '/year)';
+      document.getElementById('breakdown-taxes-annual').textContent = '(' + formatCurrency(actualTaxAnnual) + '/year)';
       
       // Insurance - show monthly with annual reference  
-      document.getElementById('breakdown-insurance').textContent = '$' + safeToLocaleString(monthlyInsurance);
+      document.getElementById('breakdown-insurance').textContent = formatCurrency(monthlyInsurance);
       const actualInsuranceAnnual = insuranceAnnual > propertyValue * 0.01 ? monthlyInsurance * 12 : insuranceAnnual;
-      document.getElementById('breakdown-insurance-annual').textContent = '($' + safeToLocaleString(actualInsuranceAnnual) + '/year)';
+      document.getElementById('breakdown-insurance-annual').textContent = '(' + formatCurrency(actualInsuranceAnnual) + '/year)';
       
       // HOA - monthly only
-      document.getElementById('breakdown-hoa').textContent = '$' + safeToLocaleString(monthlyHoa);
+      document.getElementById('breakdown-hoa').textContent = formatCurrency(monthlyHoa);
       
       // Maintenance - this is actually annual, show monthly equivalent
       const monthlyMaintenance = Math.round(annualMaintenance / 12);
-      document.getElementById('breakdown-maintenance').textContent = '$' + safeToLocaleString(monthlyMaintenance);
-      document.getElementById('breakdown-maintenance-annual').textContent = '($' + safeToLocaleString(annualMaintenance) + '/year)';
+      document.getElementById('breakdown-maintenance').textContent = formatCurrency(monthlyMaintenance);
+      document.getElementById('breakdown-maintenance-annual').textContent = '(' + formatCurrency(annualMaintenance) + '/year)';
       
       // Property Management - default to 0% since most people self-manage
       const managementFee = 0; // Default to 0 instead of 8%
-      document.getElementById('breakdown-management').textContent = '$' + safeToLocaleString(managementFee);
+      document.getElementById('breakdown-management').textContent = formatCurrency(managementFee);
       document.getElementById('breakdown-management-rate').textContent = '(0% - self managed)';
       
       // Calculate net income (monthly) with corrected amounts
       const netIncome = monthlyRent - mortgagePayment - monthlyTaxes - monthlyInsurance - monthlyHoa - monthlyMaintenance - managementFee;
-      document.getElementById('breakdown-net-income').textContent = '$' + safeToLocaleString(netIncome);
+      const netIncomeEl = document.getElementById('breakdown-net-income');
+      netIncomeEl.textContent = formatCurrency(netIncome, true);
+      netIncomeEl.className = getCurrencyClass(netIncome) + ' font-bold text-lg';
       
       // Initialize edit fields with current values (correcting the data structure)
       document.getElementById('edit-income').value = monthlyRent;
@@ -1544,16 +2197,16 @@
       document.getElementById('edit-maintenance').value = annualMaintenance; // This one is actually annual
       document.getElementById('edit-management').value = 0; // Default to 0%
       
-      // Rental strategies
-      document.getElementById('ltr-rent').textContent = '$' + safeToLocaleString(analysis.long_term_rental?.monthly_rent || 0);
-      document.getElementById('ltr-noi').textContent = '$' + safeToLocaleString(analysis.long_term_rental?.annual_profit || 0);
+      // Rental strategies with IMPROVEMENT 2: Consistent currency formatting
+      document.getElementById('ltr-rent').textContent = formatCurrency(analysis.long_term_rental?.monthly_rent || 0) + '/mo';
+      document.getElementById('ltr-noi').textContent = formatCurrency(analysis.long_term_rental?.annual_profit || 0) + '/yr';
       const ltrCapRate = ((analysis.long_term_rental?.annual_profit || 0) / (analysis.property_details?.estimated_value || 1) * 100).toFixed(2);
       document.getElementById('ltr-cap').textContent = ltrCapRate + '%';
       document.getElementById('ltr-roi').textContent = ltrCapRate + '%';
       
-      document.getElementById('str-rate').textContent = '$' + (analysis.short_term_rental?.daily_rate || 0);
+      document.getElementById('str-rate').textContent = formatCurrency(analysis.short_term_rental?.daily_rate || 0) + '/night';
       document.getElementById('str-occupancy').textContent = (analysis.short_term_rental?.occupancy_rate || 0) + '%';
-      document.getElementById('str-revenue').textContent = '$' + safeToLocaleString(analysis.short_term_rental?.annual_revenue || 0);
+      document.getElementById('str-revenue').textContent = formatCurrency(analysis.short_term_rental?.annual_revenue || 0) + '/yr';
       const strROI = ((analysis.short_term_rental?.annual_profit || 0) / (analysis.property_details?.estimated_value || 1) * 100).toFixed(2);
       document.getElementById('str-roi').textContent = strROI + '%';
       
@@ -1579,8 +2232,211 @@
       // Mount STR comparison view if data exists
       mountRentalComparisonView(analysis);
       
+      // Display new STR components if STR data exists
+      if (analysis.short_term_rental || analysis.strAnalysis) {
+        displaySTREnhancements(analysis);
+      }
+      
       // Store analysis ID if available
       currentAnalysisId = analysis.id || analysis._id || null;
+    }
+    
+    // Display STR enhancements
+    function displaySTREnhancements(analysis) {
+      const strData = analysis.short_term_rental || analysis.strAnalysis;
+      if (!strData) return;
+      
+      // Show regulation alert
+      if (analysis.regulations) {
+        const alertContainer = document.getElementById('regulation-alert-container');
+        if (alertContainer) {
+          alertContainer.style.display = 'block';
+          document.getElementById('regulation-summary').textContent = analysis.regulations.summary || 'Check local STR regulations';
+          
+          const warningsContainer = document.getElementById('regulation-warnings');
+          warningsContainer.innerHTML = '';
+          if (analysis.regulations.compliance_advice?.warnings) {
+            analysis.regulations.compliance_advice.warnings.forEach(warning => {
+              const div = document.createElement('div');
+              div.className = 'text-sm text-amber-700';
+              div.innerHTML = `• ${warning}`;
+              warningsContainer.appendChild(div);
+            });
+          }
+        }
+      }
+      
+      // Create revenue comparison chart
+      createRevenueComparisonChart(analysis);
+      
+      // Display scenario analysis
+      displayScenarioAnalysis(analysis);
+      
+      // Display comparable properties gallery
+      displayComparableGallery(strData.comparables || []);
+      
+      // Set confidence level
+      setConfidenceLevel(strData.comparables?.length || 0);
+    }
+    
+    // Create revenue comparison chart
+    function createRevenueComparisonChart(analysis) {
+      const container = document.getElementById('visual-comparison-section');
+      if (!container) return;
+      
+      container.style.display = 'block';
+      
+      const ctx = document.getElementById('revenueComparisonChart').getContext('2d');
+      const ltrRevenue = analysis.long_term_rental?.monthly_rent || 0;
+      const strRevenue = analysis.short_term_rental?.monthly_revenue || 0;
+      
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ['Long-Term Rental', 'Short-Term Rental'],
+          datasets: [{
+            label: 'Monthly Revenue',
+            data: [ltrRevenue, strRevenue],
+            backgroundColor: ['rgba(59, 130, 246, 0.8)', 'rgba(16, 185, 129, 0.8)'],
+            borderColor: ['rgba(59, 130, 246, 1)', 'rgba(16, 185, 129, 1)'],
+            borderWidth: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  return formatCurrency(context.raw) + '/month';
+                }
+              }
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                callback: function(value) {
+                  return formatCurrency(value);
+                }
+              }
+            }
+          }
+        }
+      });
+      
+      // Update comparable count
+      const comparableCount = analysis.short_term_rental?.comparables?.length || 0;
+      document.getElementById('comparable-count').textContent = comparableCount;
+    }
+    
+    // Display scenario analysis
+    function displayScenarioAnalysis(analysis) {
+      const container = document.getElementById('scenario-analysis-section');
+      if (!container) return;
+      
+      container.style.display = 'block';
+      
+      const strData = analysis.short_term_rental;
+      const nightlyRate = strData.avg_nightly_rate || 0;
+      const expenses = strData.expenses?.monthly?.total || 0;
+      const ltrIncome = analysis.long_term_rental?.monthly_rent || 0;
+      
+      // Calculate scenarios
+      const scenarios = [
+        { occupancy: 0.5, label: '50%' },
+        { occupancy: 0.6, label: '60%' },
+        { occupancy: 0.7, label: '70% (Expected)' },
+        { occupancy: 0.8, label: '80%' },
+        { occupancy: 0.9, label: '90%' }
+      ];
+      
+      const gridContainer = document.getElementById('scenario-grid');
+      gridContainer.innerHTML = '';
+      
+      scenarios.forEach(scenario => {
+        const monthlyRevenue = nightlyRate * 30 * scenario.occupancy;
+        const netIncome = monthlyRevenue - expenses;
+        
+        const card = document.createElement('div');
+        card.className = 'scenario-card';
+        card.innerHTML = `
+          <div class="scenario-occupancy">${scenario.label}</div>
+          <div class="scenario-revenue">${formatCurrency(monthlyRevenue)}</div>
+          <div class="scenario-income">Net: ${formatCurrency(netIncome, true)}</div>
+        `;
+        gridContainer.appendChild(card);
+      });
+      
+      // Calculate break-even occupancy
+      const breakEvenOccupancy = ltrIncome / (nightlyRate * 30);
+      document.getElementById('breakeven-occupancy').textContent = `${(breakEvenOccupancy * 100).toFixed(0)}%`;
+    }
+    
+    // Display comparable properties gallery
+    function displayComparableGallery(comparables) {
+      const container = document.getElementById('comparable-gallery-section');
+      if (!container || !comparables || comparables.length === 0) return;
+      
+      container.style.display = 'block';
+      
+      const gallery = document.getElementById('comparable-gallery');
+      gallery.innerHTML = '';
+      
+      // Show top 6 comparables
+      comparables.slice(0, 6).forEach(comp => {
+        const card = document.createElement('div');
+        card.className = 'comparable-card';
+        card.onclick = () => window.open(comp.airbnb_url, '_blank');
+        
+        card.innerHTML = `
+          <img src="${comp.image_url?.url || '/assets/placeholder.jpg'}" alt="${comp.title}" class="comparable-image">
+          <div class="comparable-details">
+            <h4 class="font-semibold text-gray-900 mb-1 line-clamp-2">${comp.title}</h4>
+            <div class="comparable-price">${formatCurrency(comp.nightly_rate)}/night</div>
+            <div class="comparable-stats">
+              <span>${comp.bedrooms}BR/${comp.bathrooms}BA</span>
+              <span>•</span>
+              <span>${(comp.occupancy_rate * 100).toFixed(0)}% Occ</span>
+              <span>•</span>
+              <span>⭐ ${comp.rating}</span>
+            </div>
+            <div class="mt-2 text-sm text-gray-600">
+              Monthly Revenue: ${formatCurrency(comp.monthly_revenue)}
+            </div>
+          </div>
+        `;
+        gallery.appendChild(card);
+      });
+    }
+    
+    // Set confidence level based on comparable count
+    function setConfidenceLevel(comparableCount) {
+      const badge = document.getElementById('confidence-badge');
+      if (!badge) return;
+      
+      let level, className;
+      if (comparableCount >= 15) {
+        level = 'High Confidence';
+        className = 'confidence-high';
+      } else if (comparableCount >= 8) {
+        level = 'Medium Confidence';
+        className = 'confidence-medium';
+      } else {
+        level = 'Low Confidence';
+        className = 'confidence-low';
+      }
+      
+      badge.className = `confidence-badge ${className}`;
+      badge.innerHTML = `
+        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+        </svg>
+        <span>${level} (${comparableCount} comparables)</span>
+      `;
     }
 
     // Create charts
@@ -2201,10 +3057,10 @@
           document.getElementById('analysis-mode').value = 'ltr';
           
           // Update button styles
-          ltrModeBtn.classList.add('bg-white', 'text-gray-900', 'shadow-sm');
-          ltrModeBtn.classList.remove('text-gray-500');
-          strModeBtn.classList.remove('bg-white', 'text-gray-900', 'shadow-sm');
-          strModeBtn.classList.add('text-gray-500');
+          ltrModeBtn.classList.add('border-blue-500', 'bg-white');
+          ltrModeBtn.classList.remove('border-gray-300', 'bg-gray-50');
+          strModeBtn.classList.remove('border-green-500', 'bg-white');
+          strModeBtn.classList.add('border-gray-300', 'bg-gray-50');
           
           // Update trial info
           updateStrTrialInfo();
@@ -2395,15 +3251,14 @@
       
       document.getElementById('confirm-analysis-btn').addEventListener('click', async function() {
         try {
-          // Show loading screen
-          document.getElementById('loading-message').textContent = 'Analyzing investment potential...';
-          showView('loading');
-          
-          // Get the stored property data
+          // Get the stored property data first
           const propertyData = window.pendingPropertyData;
           if (!propertyData) {
             throw new Error('No property data found');
           }
+          
+          // Show loading screen with progress tracking
+          showLoadingWithProgress(propertyData);
           
           // Format full address
           const fullAddress = `${propertyData.address.street}, ${propertyData.address.city}, ${propertyData.address.state}, ${propertyData.address.country} ${propertyData.address.postal}`.trim();
@@ -2419,7 +3274,7 @@
           // Railway can handle both LTR and STR without timing out
           const apiUrl = window.buildUrl ? 
             buildUrl('railway', 'analyzeProperty') : 
-            'https://starterpackapp-production.up.railway.app/api/analysis/property';
+            'https://real-estate-app-production-ba5c.up.railway.app/api/analysis/property';
           
           console.log(`Using API endpoint: ${apiUrl} (STR: ${includeStrAnalysis})`);
           
@@ -2484,6 +3339,9 @@
           console.log('Analysis result:', result);
           
           if (result.success && result.data) {
+            // Stop progress tracking
+            stopProgressTracking();
+            
             // Display results
             displayResults(result.data);
             showView('results');
@@ -2497,6 +3355,9 @@
             throw new Error(result.error || 'Analysis failed');
           }
         } catch (error) {
+          // Stop progress tracking on error
+          stopProgressTracking();
+          
           console.error('Analysis error:', error);
           console.error('Error details:', {
             message: error.message,
@@ -2657,6 +3518,52 @@
         });
       }
 
+      // LTR/STR mode buttons in property form
+      const ltrModeBtn = document.getElementById('ltr-mode-btn');
+      const strModeBtn = document.getElementById('str-mode-btn');
+      const analysisModeInput = document.getElementById('analysis-mode');
+      
+      if (ltrModeBtn && strModeBtn && analysisModeInput) {
+        ltrModeBtn.addEventListener('click', function() {
+          analysisModeInput.value = 'ltr';
+          ltrModeBtn.classList.add('border-blue-500');
+          strModeBtn.classList.remove('border-blue-500');
+          strModeBtn.classList.add('border-gray-300');
+          updateStrTrialInfo();
+        });
+        
+        strModeBtn.addEventListener('click', function() {
+          analysisModeInput.value = 'str';
+          strModeBtn.classList.add('border-blue-500');
+          ltrModeBtn.classList.remove('border-blue-500');
+          ltrModeBtn.classList.add('border-gray-300');
+          updateStrTrialInfo();
+        });
+      }
+      
+      // LTR/STR mode buttons in confirmation screen
+      const confirmLtrBtn = document.getElementById('confirm-ltr-mode-btn');
+      const confirmStrBtn = document.getElementById('confirm-str-mode-btn');
+      const confirmModeInput = document.getElementById('confirm-analysis-mode');
+      
+      if (confirmLtrBtn && confirmStrBtn && confirmModeInput) {
+        confirmLtrBtn.addEventListener('click', function() {
+          confirmModeInput.value = 'ltr';
+          confirmLtrBtn.classList.add('border-blue-500');
+          confirmStrBtn.classList.remove('border-blue-500');
+          confirmStrBtn.classList.add('border-gray-300');
+          updateConfirmStrTrialInfo();
+        });
+        
+        confirmStrBtn.addEventListener('click', function() {
+          confirmModeInput.value = 'str';
+          confirmStrBtn.classList.add('border-blue-500');
+          confirmLtrBtn.classList.remove('border-blue-500');
+          confirmLtrBtn.classList.add('border-gray-300');
+          updateConfirmStrTrialInfo();
+        });
+      }
+      
       // Initialize the app
       initApp();
     });

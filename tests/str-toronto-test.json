@@ -1,0 +1,18 @@
+{
+  "propertyAddress": "123 King Street West, Toronto, ON M5V 3G7",
+  "userEmail": "test@example.com",
+  "userName": "Test User",
+  "requestType": "authenticated",
+  "includeStrAnalysis": true,
+  "propertyData": {
+    "price": 750000,
+    "propertyTaxes": 4500,
+    "bedrooms": 3,
+    "bathrooms": 1,
+    "sqft": 1200,
+    "propertyType": "Condo",
+    "condoFees": 450,
+    "city": "Toronto",
+    "province": "Ontario"
+  }
+}

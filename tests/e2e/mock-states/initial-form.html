@@ -1,0 +1,106 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ROI Finder - Property Analysis</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .gradient-bg {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    .card {
+      background: white;
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body class="bg-gray-50">
+  <!-- Header -->
+  <header class="gradient-bg text-white py-4">
+    <div class="container mx-auto px-4">
+      <h1 class="text-2xl font-bold">StarterPack ROI Finder</h1>
+      <p class="text-sm opacity-90">Professional Real Estate Investment Analysis</p>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="container mx-auto px-4 py-8">
+    <div class="max-w-4xl mx-auto">
+      <!-- Form Card -->
+      <div class="card mb-8">
+        <h2 class="text-2xl font-bold mb-6">Analyze Property Investment</h2>
+        
+        <form id="analysis-form">
+          <!-- Property Address -->
+          <div class="mb-6">
+            <label for="property-address" class="block text-sm font-medium text-gray-700 mb-2">
+              Property Address
+            </label>
+            <input 
+              type="text" 
+              id="property-address" 
+              placeholder="Enter property address (e.g., 123 Main St, Toronto, ON)"
+              class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none transition"
+            />
+          </div>
+
+          <!-- Analysis Mode Selection -->
+          <div class="mb-6">
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              Analysis Type
+            </label>
+            <div class="grid grid-cols-2 gap-4">
+              <label class="relative">
+                <input type="radio" name="analysis-mode" value="ltr" id="analysis-mode-ltr" checked class="peer sr-only">
+                <div class="p-4 border-2 rounded-lg cursor-pointer transition peer-checked:border-blue-500 peer-checked:bg-blue-50">
+                  <div class="font-semibold">Long-Term Rental (LTR)</div>
+                  <div class="text-sm text-gray-600">Traditional monthly rental analysis</div>
+                </div>
+              </label>
+              
+              <label class="relative">
+                <input type="radio" name="analysis-mode" value="str" id="analysis-mode-str" class="peer sr-only">
+                <div class="p-4 border-2 rounded-lg cursor-pointer transition peer-checked:border-green-500 peer-checked:bg-green-50">
+                  <div class="font-semibold">Short-Term Rental (STR)</div>
+                  <div class="text-sm text-gray-600">Airbnb potential analysis</div>
+                  <div class="text-xs text-green-600 mt-1">Pro Feature</div>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <!-- Submit Button -->
+          <button 
+            type="submit" 
+            id="analyze-property-btn"
+            class="w-full bg-gradient-to-r from-blue-500 to-green-500 text-white font-semibold py-3 px-6 rounded-lg hover:shadow-lg transition transform hover:-translate-y-0.5"
+          >
+            Analyze Property
+          </button>
+        </form>
+      </div>
+
+      <!-- Info Cards -->
+      <div class="grid md:grid-cols-2 gap-6">
+        <div class="card">
+          <h3 class="font-semibold text-lg mb-2">🏠 Property Data</h3>
+          <p class="text-gray-600 text-sm">
+            Install our browser extension to automatically extract property data from Realtor.ca listings
+          </p>
+        </div>
+        
+        <div class="card">
+          <h3 class="font-semibold text-lg mb-2">📊 AI-Powered Analysis</h3>
+          <p class="text-gray-600 text-sm">
+            Get market insights and rental estimates powered by Perplexity AI
+          </p>
+        </div>
+      </div>
+    </div>
+  </main>
+</body>
+</html>

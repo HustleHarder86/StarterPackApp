@@ -1,0 +1,172 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Property Analysis Results</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-50">
+  <!-- Header -->
+  <header class="bg-white shadow-sm">
+    <div class="container mx-auto px-4 py-4">
+      <div class="flex justify-between items-center">
+        <h1 class="text-xl font-bold">Property Analysis Results</h1>
+        <button class="text-blue-600 hover:underline">← Back to Form</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Results -->
+  <main class="container mx-auto px-4 py-8">
+    <div class="max-w-6xl mx-auto">
+      <!-- Property Overview -->
+      <div class="bg-white rounded-lg shadow mb-6 p-6">
+        <h2 class="text-2xl font-bold mb-4">123 Main St, Toronto, ON M5V 3A8</h2>
+        
+        <div class="grid md:grid-cols-4 gap-4">
+          <div class="text-center p-4 bg-gray-50 rounded">
+            <div class="text-3xl font-bold text-green-600">$850,000</div>
+            <div class="text-sm text-gray-600">Purchase Price</div>
+          </div>
+          <div class="text-center p-4 bg-gray-50 rounded">
+            <div class="text-3xl font-bold">6</div>
+            <div class="text-sm text-gray-600">Bedrooms (4 + 2)</div>
+          </div>
+          <div class="text-center p-4 bg-gray-50 rounded">
+            <div class="text-3xl font-bold">3.5</div>
+            <div class="text-sm text-gray-600">Bathrooms</div>
+          </div>
+          <div class="text-center p-4 bg-gray-50 rounded">
+            <div class="text-3xl font-bold">2,100</div>
+            <div class="text-sm text-gray-600">Sq Ft</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Financial Metrics -->
+      <div class="grid md:grid-cols-2 gap-6 mb-6">
+        <!-- Cash Flow Analysis -->
+        <div class="bg-white rounded-lg shadow p-6">
+          <h3 class="text-xl font-semibold mb-4">Monthly Cash Flow</h3>
+          
+          <div class="space-y-3">
+            <div class="flex justify-between py-2 border-b">
+              <span>Rental Income</span>
+              <span class="font-semibold text-green-600">+$3,800</span>
+            </div>
+            <div class="flex justify-between py-2 border-b">
+              <span>Mortgage Payment</span>
+              <span class="text-red-600">-$2,850</span>
+            </div>
+            <div class="flex justify-between py-2 border-b">
+              <span>Property Tax</span>
+              <span class="text-red-600">-$458</span>
+            </div>
+            <div class="flex justify-between py-2 border-b">
+              <span>Insurance</span>
+              <span class="text-red-600">-$125</span>
+            </div>
+            <div class="flex justify-between py-2 border-b">
+              <span>HOA/Maintenance</span>
+              <span class="text-red-600">-$200</span>
+            </div>
+            <div class="flex justify-between py-3 text-lg font-bold">
+              <span>Net Cash Flow</span>
+              <span class="text-green-600">+$167</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Key Metrics -->
+        <div class="bg-white rounded-lg shadow p-6">
+          <h3 class="text-xl font-semibold mb-4">Investment Metrics</h3>
+          
+          <div class="grid grid-cols-2 gap-4">
+            <div class="text-center p-4 bg-blue-50 rounded">
+              <div class="text-2xl font-bold text-blue-600">5.2%</div>
+              <div class="text-sm text-gray-600">Cap Rate</div>
+            </div>
+            <div class="text-center p-4 bg-green-50 rounded">
+              <div class="text-2xl font-bold text-green-600">8.1%</div>
+              <div class="text-sm text-gray-600">Cash on Cash</div>
+            </div>
+            <div class="text-center p-4 bg-purple-50 rounded">
+              <div class="text-2xl font-bold text-purple-600">12.3%</div>
+              <div class="text-sm text-gray-600">Total ROI</div>
+            </div>
+            <div class="text-center p-4 bg-orange-50 rounded">
+              <div class="text-2xl font-bold text-orange-600">$5,490</div>
+              <div class="text-sm text-gray-600">Annual Tax</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Charts -->
+      <div class="grid md:grid-cols-2 gap-6 mb-6">
+        <div class="bg-white rounded-lg shadow p-6">
+          <h3 class="text-xl font-semibold mb-4">Monthly Expense Breakdown</h3>
+          <canvas id="expense-chart" width="400" height="300"></canvas>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow p-6">
+          <h3 class="text-xl font-semibold mb-4">5-Year Cash Flow Projection</h3>
+          <canvas id="cashflow-chart" width="400" height="300"></canvas>
+        </div>
+      </div>
+
+      <!-- AI Recommendations -->
+      <div class="bg-white rounded-lg shadow p-6">
+        <h3 class="text-xl font-semibold mb-4">AI-Powered Recommendations</h3>
+        
+        <div class="space-y-3">
+          <div class="flex items-start">
+            <span class="text-green-500 mr-2">✓</span>
+            <p><strong>Positive Cash Flow:</strong> This property generates immediate positive cash flow of $167/month, making it a stable investment.</p>
+          </div>
+          <div class="flex items-start">
+            <span class="text-yellow-500 mr-2">⚠</span>
+            <p><strong>Consider STR Potential:</strong> Similar properties in this area earn $250-350/night on Airbnb. Consider short-term rental for higher returns.</p>
+          </div>
+          <div class="flex items-start">
+            <span class="text-blue-500 mr-2">ℹ</span>
+            <p><strong>Tax Optimization:</strong> The $5,490 annual property tax is accurately reflected from the listing data, ensuring precise calculations.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // Mock chart data
+    const expenseCtx = document.getElementById('expense-chart').getContext('2d');
+    new Chart(expenseCtx, {
+      type: 'doughnut',
+      data: {
+        labels: ['Mortgage', 'Property Tax', 'Insurance', 'HOA/Maint', 'Other'],
+        datasets: [{
+          data: [2850, 458, 125, 200, 100],
+          backgroundColor: ['#3B82F6', '#10B981', '#F59E0B', '#8B5CF6', '#EF4444']
+        }]
+      }
+    });
+
+    const cashflowCtx = document.getElementById('cashflow-chart').getContext('2d');
+    new Chart(cashflowCtx, {
+      type: 'line',
+      data: {
+        labels: ['Year 1', 'Year 2', 'Year 3', 'Year 4', 'Year 5'],
+        datasets: [{
+          label: 'Cumulative Cash Flow',
+          data: [2004, 4108, 6312, 8616, 11020],
+          borderColor: '#10B981',
+          tension: 0.1
+        }]
+      }
+    });
+  </script>
+</body>
+</html>

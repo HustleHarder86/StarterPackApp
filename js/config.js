@@ -1,61 +1,33 @@
-// API Configuration for StarterPackApp
-const API_CONFIG = {
-  // Railway API endpoints
-  RAILWAY_API_URL: window.location.hostname === 'localhost' 
-    ? 'http://localhost:3001' // Local Railway API
-    : 'https://real-estate-app-production-ba5c.up.railway.app', // Production Railway API
-  
-  // API endpoints
-  endpoints: {
-    // Property Analysis (Railway)
-    analyzeProperty: '/api/analysis/property',
-    
-    // STR Analysis (Railway)
-    strAnalyze: '/api/analysis/str/analyze',
-    strComparables: '/api/analysis/str/comparables',
-    strRegulations: '/api/analysis/str/regulations',
-    
-    // Job Status (Railway)
-    jobStatus: '/api/jobs/{jobId}/status',
-    
-    // Reports (Railway)
-    generateReport: '/api/reports/generate',
-    downloadReport: '/api/reports/download/{reportId}',
-    
-    // Legacy endpoints (Vercel - for backward compatibility)
-    submitLead: '/api/submit-lead',
-    submitContact: '/api/submit-contact'
-  },
-  
-  // Helper function to build full URL
-  getUrl: function(endpoint, params = {}) {
-    let url = this.endpoints[endpoint];
-    
-    // Replace path parameters
-    Object.keys(params).forEach(key => {
-      url = url.replace(`{${key}}`, params[key]);
-    });
-    
-    // Use Railway API for analysis endpoints
-    if (endpoint.includes('analyze') || endpoint.includes('str') || 
-        endpoint.includes('job') || endpoint.includes('report')) {
-      return this.RAILWAY_API_URL + url;
-    }
-    
-    // Use current origin for legacy Vercel endpoints
-    return url;
-  },
-  
-  // Helper function for authenticated requests
-  authHeaders: function(token) {
-    return {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
-    };
-  }
+// Note: API_CONFIG is now defined in /utils/api-config.js
+// This file contains other configuration settings
+
+// Helper function for authenticated requests
+function authHeaders(token) {
+  return {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${token}`
+  };
+}
+
+// Firebase configuration (loaded from environment)
+const firebaseConfig = window.ENV?.firebase || {
+  apiKey: "your-api-key",
+  authDomain: "your-auth-domain",
+  projectId: "your-project-id",
+  storageBucket: "your-storage-bucket",
+  messagingSenderId: "your-sender-id",
+  appId: "your-app-id"
+};
+
+// Feature flags
+const features = {
+  strAnalysis: true,
+  pdfReports: true,
+  subscriptions: true,
+  extensionIntegration: true
 };
 
 // Export for use in modules
 if (typeof module !== 'undefined' && module.exports) {
-  module.exports = API_CONFIG;
+  module.exports = { authHeaders, firebaseConfig, features };
 }

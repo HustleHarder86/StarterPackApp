@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced STR Analysis UI Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .regulation-alert {
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            border: 2px solid #f59e0b;
+            border-radius: 0.75rem;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 6px rgba(245, 158, 11, 0.1);
+        }
+        
+        .confidence-high {
+            background: #d1fae5;
+            color: #047857;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        
+        .comparable-card {
+            background: white;
+            border-radius: 0.75rem;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .comparable-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        .scenario-card {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            text-align: center;
+        }
+        
+        .scenario-card.active {
+            border: 2px solid #10b981;
+            background: #f0fdf4;
+        }
+        
+        .disclaimer-box {
+            background: #f3f4f6;
+            border-left: 4px solid #6b7280;
+            padding: 1rem;
+            margin-top: 2rem;
+            font-size: 0.875rem;
+            color: #4b5563;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+        
+        .progress-step {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            background: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .progress-step.active {
+            background: #eff6ff;
+            border: 2px solid #3b82f6;
+        }
+        
+        .progress-step.completed {
+            background: #f0fdf4;
+            border: 2px solid #10b981;
+        }
+        
+        .progress-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+        
+        .progress-step.active .progress-icon {
+            background: #3b82f6;
+            color: white;
+            animation: pulse 2s infinite;
+        }
+        
+        .progress-step.completed .progress-icon {
+            background: #10b981;
+            color: white;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <!-- Loading State Demo -->
+    <div class="min-h-screen flex items-center justify-center p-4" id="loading-screen">
+        <div class="text-center max-w-lg">
+            <div class="animate-spin rounded-full h-16 w-16 border-b-4 border-blue-600 mx-auto mb-6"></div>
+            
+            <h2 class="text-2xl font-bold text-gray-900 mb-2">Analyzing Property Investment</h2>
+            <p class="text-gray-600 mb-8">123 King Street West, Toronto, ON</p>
+            
+            <div class="space-y-3 max-w-md mx-auto">
+                <div class="progress-step completed">
+                    <div class="progress-icon">✓</div>
+                    <div class="flex-1 text-left">
+                        <div class="font-semibold text-sm">Property data extracted</div>
+                        <div class="text-xs text-gray-600">3 bedrooms, 1 bathroom, 1,200 sq ft</div>
+                    </div>
+                    <div class="text-xs text-gray-500">2s</div>
+                </div>
+                
+                <div class="progress-step completed">
+                    <div class="progress-icon">✓</div>
+                    <div class="flex-1 text-left">
+                        <div class="font-semibold text-sm">Researching market rates</div>
+                        <div class="text-xs text-gray-600">Analyzing rental comparables via AI</div>
+                    </div>
+                    <div class="text-xs text-gray-500">12s</div>
+                </div>
+                
+                <div class="progress-step completed">
+                    <div class="progress-icon">✓</div>
+                    <div class="flex-1 text-left">
+                        <div class="font-semibold text-sm">Calculating financial metrics</div>
+                        <div class="text-xs text-gray-600">ROI, cap rate, cash flow analysis</div>
+                    </div>
+                    <div class="text-xs text-gray-500">18s</div>
+                </div>
+                
+                <div class="progress-step completed">
+                    <div class="progress-icon">✓</div>
+                    <div class="flex-1 text-left">
+                        <div class="font-semibold text-sm">Generating recommendations</div>
+                        <div class="text-xs text-gray-600">AI-powered investment insights</div>
+                    </div>
+                    <div class="text-xs text-gray-500">22s</div>
+                </div>
+                
+                <div class="progress-step active">
+                    <div class="progress-icon">5</div>
+                    <div class="flex-1 text-left">
+                        <div class="font-semibold text-sm">Finding Airbnb comparables</div>
+                        <div class="text-xs text-gray-600">Analyzing short-term rental market</div>
+                    </div>
+                    <div class="text-xs text-gray-500">28s</div>
+                </div>
+            </div>
+            
+            <div class="mt-8 text-sm text-gray-500">
+                <p>This analysis typically takes 30-60 seconds</p>
+                <p class="mt-1">Finding comparable Airbnb properties in your area...</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Results Screen Demo -->
+    <div class="min-h-screen p-8" id="results-screen" style="display: none;">
+        <div class="max-w-7xl mx-auto">
+            <h1 class="text-3xl font-bold mb-6">Investment Analysis Results (LTR + STR)</h1>
+            
+            <!-- Regulation Alert -->
+            <div class="regulation-alert">
+                <div class="flex items-start gap-3">
+                    <svg class="w-6 h-6 text-amber-700 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                    <div>
+                        <h4 class="font-semibold text-amber-900 mb-1">Important Regulatory Notice</h4>
+                        <p class="text-amber-800 text-sm">STR allowed in primary residence only, max 180 days/year, license required</p>
+                        <div class="mt-2 text-sm text-amber-700">
+                            • STR only allowed in primary residence - investment properties may not qualify
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Revenue Comparison Chart -->
+            <div class="bg-white rounded-lg shadow mb-6">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h3 class="text-lg font-semibold text-gray-900">LTR vs STR Revenue Comparison</h3>
+                    <div class="confidence-high mt-2">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                        </svg>
+                        <span>High Confidence (20 comparables)</span>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <canvas id="revenueChart" height="300"></canvas>
+                    <div class="mt-4 text-center text-sm text-gray-600">
+                        Based on 20 comparable properties
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Scenario Analysis -->
+            <div class="bg-white rounded-lg shadow mb-6">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h3 class="text-lg font-semibold text-gray-900">Occupancy Scenario Analysis</h3>
+                    <p class="text-sm text-gray-600 mt-1">Revenue projections at different occupancy rates</p>
+                </div>
+                <div class="p-6">
+                    <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+                        <div class="scenario-card">
+                            <div class="text-xl font-bold text-blue-600">50%</div>
+                            <div class="font-semibold">C$6,645</div>
+                            <div class="text-sm text-gray-600">Net: C$451</div>
+                        </div>
+                        <div class="scenario-card">
+                            <div class="text-xl font-bold text-blue-600">60%</div>
+                            <div class="font-semibold">C$7,974</div>
+                            <div class="text-sm text-gray-600">Net: C$1,780</div>
+                        </div>
+                        <div class="scenario-card active">
+                            <div class="text-xl font-bold text-green-600">70%</div>
+                            <div class="font-semibold">C$9,303</div>
+                            <div class="text-sm text-green-600">Net: C$3,109</div>
+                        </div>
+                        <div class="scenario-card">
+                            <div class="text-xl font-bold text-blue-600">80%</div>
+                            <div class="font-semibold">C$10,632</div>
+                            <div class="text-sm text-gray-600">Net: C$4,438</div>
+                        </div>
+                        <div class="scenario-card">
+                            <div class="text-xl font-bold text-blue-600">90%</div>
+                            <div class="font-semibold">C$11,961</div>
+                            <div class="text-sm text-gray-600">Net: C$5,767</div>
+                        </div>
+                    </div>
+                    <div class="mt-6 p-4 bg-blue-50 rounded-lg">
+                        <p class="text-sm font-semibold text-gray-700">Break-even Analysis</p>
+                        <p class="text-sm text-gray-600 mt-1">
+                            Minimum occupancy needed to match LTR income: 
+                            <span class="font-bold text-blue-600">20%</span>
+                        </p>
+                        <p class="text-xs text-gray-500 mt-1">Your expected occupancy (70%) is 50% above break-even!</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Comparable Properties Gallery -->
+            <div class="bg-white rounded-lg shadow mb-6">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h3 class="text-lg font-semibold text-gray-900">Comparable Airbnb Properties</h3>
+                    <p class="text-sm text-gray-600 mt-1">Similar properties in your area</p>
+                </div>
+                <div class="p-6">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="comparable-card">
+                            <img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1276485531634428203/original/1396cd7c-cc31-439c-b819-aa79619e5307.jpeg" 
+                                 alt="Property" class="w-full h-48 object-cover">
+                            <div class="p-4">
+                                <h4 class="font-semibold text-gray-900 mb-1 line-clamp-2">3 bdr home + bsmt in Swansea/High Park</h4>
+                                <div class="text-2xl font-bold text-gray-900 my-2">C$458/night</div>
+                                <div class="flex gap-2 text-sm text-gray-600">
+                                    <span>3BR/1BA</span>
+                                    <span>•</span>
+                                    <span>70% Occ</span>
+                                    <span>•</span>
+                                    <span>⭐ 4.5</span>
+                                </div>
+                                <div class="mt-2 text-sm font-semibold text-green-600">
+                                    Monthly Revenue: C$9,746
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="comparable-card">
+                            <img src="https://via.placeholder.com/300x200/3b82f6/ffffff?text=2BR+Downtown" 
+                                 alt="Property" class="w-full h-48 object-cover">
+                            <div class="p-4">
+                                <h4 class="font-semibold text-gray-900 mb-1 line-clamp-2">Breathtaking 2 BR Apt & 2 Free Prk, Downtown 5 min</h4>
+                                <div class="text-2xl font-bold text-gray-900 my-2">C$494/night</div>
+                                <div class="flex gap-2 text-sm text-gray-600">
+                                    <span>2BR/1BA</span>
+                                    <span>•</span>
+                                    <span>70% Occ</span>
+                                    <span>•</span>
+                                    <span>⭐ 4.5</span>
+                                </div>
+                                <div class="mt-2 text-sm font-semibold text-green-600">
+                                    Monthly Revenue: C$10,512
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="comparable-card">
+                            <img src="https://via.placeholder.com/300x200/10b981/ffffff?text=Chic+Townhouse" 
+                                 alt="Property" class="w-full h-48 object-cover">
+                            <div class="p-4">
+                                <h4 class="font-semibold text-gray-900 mb-1 line-clamp-2">Brand New Chic Townhouse in Toronto (Yonge)</h4>
+                                <div class="text-2xl font-bold text-gray-900 my-2">C$413/night</div>
+                                <div class="flex gap-2 text-sm text-gray-600">
+                                    <span>2BR/1BA</span>
+                                    <span>•</span>
+                                    <span>70% Occ</span>
+                                    <span>•</span>
+                                    <span>⭐ 4.5</span>
+                                </div>
+                                <div class="mt-2 text-sm font-semibold text-green-600">
+                                    Monthly Revenue: C$8,789
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Disclaimer Box -->
+            <div class="disclaimer-box">
+                <h4 class="font-semibold text-gray-700 mb-2">Important Disclaimers</h4>
+                <ul class="space-y-1 text-sm">
+                    <li>• STR revenue projections are based on current market data and may vary due to seasonality, market conditions, and property management.</li>
+                    <li>• Actual results depend on many factors including property condition, amenities, pricing strategy, and guest reviews.</li>
+                    <li>• Regulatory compliance is your responsibility. Rules can change - always verify current regulations with local authorities.</li>
+                    <li>• This analysis is for informational purposes only and should not be considered financial or legal advice.</li>
+                    <li>• We recommend consulting with real estate professionals, accountants, and legal advisors before making investment decisions.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Toggle between loading and results after 3 seconds
+        setTimeout(() => {
+            document.getElementById('loading-screen').style.display = 'none';
+            document.getElementById('results-screen').style.display = 'block';
+            
+            // Create revenue comparison chart
+            const ctx = document.getElementById('revenueChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Long-Term Rental', 'Short-Term Rental'],
+                    datasets: [{
+                        label: 'Monthly Revenue',
+                        data: [2640, 9427],
+                        backgroundColor: ['rgba(59, 130, 246, 0.8)', 'rgba(16, 185, 129, 0.8)'],
+                        borderColor: ['rgba(59, 130, 246, 1)', 'rgba(16, 185, 129, 1)'],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return 'C$' + context.raw.toLocaleString() + '/month';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return 'C$' + value.toLocaleString();
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }, 3000);
+    </script>
+</body>
+</html>
