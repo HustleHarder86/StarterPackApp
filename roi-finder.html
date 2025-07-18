@@ -3518,28 +3518,7 @@
         });
       }
 
-      // LTR/STR mode buttons in property form
-      const ltrModeBtn = document.getElementById('ltr-mode-btn');
-      const strModeBtn = document.getElementById('str-mode-btn');
-      const analysisModeInput = document.getElementById('analysis-mode');
-      
-      if (ltrModeBtn && strModeBtn && analysisModeInput) {
-        ltrModeBtn.addEventListener('click', function() {
-          analysisModeInput.value = 'ltr';
-          ltrModeBtn.classList.add('border-blue-500');
-          strModeBtn.classList.remove('border-blue-500');
-          strModeBtn.classList.add('border-gray-300');
-          updateStrTrialInfo();
-        });
-        
-        strModeBtn.addEventListener('click', function() {
-          analysisModeInput.value = 'str';
-          strModeBtn.classList.add('border-blue-500');
-          ltrModeBtn.classList.remove('border-blue-500');
-          ltrModeBtn.classList.add('border-gray-300');
-          updateStrTrialInfo();
-        });
-      }
+      // Note: LTR/STR mode buttons are already handled above in the analysis mode toggle section
       
       // LTR/STR mode buttons in confirmation screen
       const confirmLtrBtn = document.getElementById('confirm-ltr-mode-btn');
