@@ -547,9 +547,48 @@ Extract into this JSON format:
     const db = admin.firestore();
     const analysisId = `analysis_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     
+    // Create or update property record first
+    let propertyId = null;
+    if (userId) {
+      try {
+        propertyId = `property_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        
+        const propertyRecord = {
+          userId: userId,
+          address: {
+            street: address?.street || '',
+            city: address?.city || '',
+            state: address?.state || address?.province || '',
+            postal: address?.postal || address?.postalCode || ''
+          },
+          price: propertyData?.price || structuredData?.property_details?.estimated_value || 0,
+          propertyTaxes: propertyData?.propertyTaxes || structuredData?.costs?.property_tax_annual || 0,
+          condoFees: propertyData?.condoFees || structuredData?.costs?.hoa_monthly || 0,
+          bedrooms: propertyData?.bedrooms || structuredData?.property_details?.bedrooms || 0,
+          bathrooms: propertyData?.bathrooms || structuredData?.property_details?.bathrooms || 0,
+          sqft: propertyData?.sqft || structuredData?.property_details?.square_feet || 0,
+          propertyType: propertyData?.propertyType || structuredData?.property_details?.property_type || 'Unknown',
+          mlsNumber: propertyData?.mlsNumber || '',
+          yearBuilt: propertyData?.yearBuilt || structuredData?.property_details?.year_built || null,
+          mainImage: propertyData?.mainImage || '',
+          dataSource: 'analysis',
+          createdAt: admin.firestore.FieldValue.serverTimestamp(),
+          lastAnalyzed: admin.firestore.FieldValue.serverTimestamp(),
+          externalId: propertyData?.mlsNumber || analysisId
+        };
+        
+        await db.collection('properties').doc(propertyId).set(propertyRecord);
+        console.log('Property created/updated:', propertyId);
+      } catch (error) {
+        console.error('Failed to create property:', error);
+        // Continue without propertyId if property creation fails
+      }
+    }
+    
     const analysisData = {
       ...structuredData,
       userId: userId || null,
+      propertyId: propertyId, // CRITICAL: Link analysis to property
       userName: userName || null,
       userEmail: userEmail || null,
       propertyAddress,

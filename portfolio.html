@@ -291,9 +291,9 @@
         });
 
         // Load analyses for these properties
+        const analysesByProperty = {};
+        
         if (propertyIds.length > 0) {
-          const analysesByProperty = {};
-          
           // Split into chunks of 10 for Firestore 'in' query limitation
           for (let i = 0; i < propertyIds.length; i += 10) {
             const chunk = propertyIds.slice(i, i + 10);
@@ -306,13 +306,60 @@
               analysesByProperty[analysis.propertyId] = analysis;
             });
           }
+        }
+        
+        // FALLBACK: Load orphaned analyses (analyses without propertyId) for existing users
+        try {
+          const orphanedAnalysesSnapshot = await db.collection('analyses')
+            .where('userId', '==', currentUser.uid)
+            .where('propertyId', '==', null)
+            .orderBy('createdAt', 'desc')
+            .limit(10)
+            .get();
+          
+          // Create pseudo-properties for orphaned analyses
+          orphanedAnalysesSnapshot.forEach(doc => {
+            const analysis = doc.data();
+            
+            // Create a temporary property record for this analysis
+            const pseudoProperty = {
+              id: `orphaned_${doc.id}`,
+              userId: currentUser.uid,
+              address: {
+                street: analysis.property_address || 'Unknown Address',
+                city: '',
+                state: '',
+                postal: ''
+              },
+              price: analysis.property_details?.estimated_value || 0,
+              propertyTaxes: analysis.costs?.property_tax_annual || 0,
+              condoFees: analysis.costs?.hoa_monthly || 0,
+              bedrooms: analysis.property_details?.bedrooms || 0,
+              bathrooms: analysis.property_details?.bathrooms || 0,
+              sqft: analysis.property_details?.square_feet || 0,
+              propertyType: analysis.property_details?.property_type || 'Unknown',
+              dataSource: 'orphaned_analysis',
+              createdAt: analysis.createdAt,
+              lastAnalyzed: analysis.createdAt,
+              analysis: analysis
+            };
+            
+            properties.push(pseudoProperty);
+          });
+        } catch (error) {
+          console.warn('Could not load orphaned analyses:', error);
+        }
 
-          // Merge analysis data with properties
-          properties = properties.map(property => ({
+        // Merge analysis data with regular properties
+        properties = properties.map(property => {
+          if (property.dataSource === 'orphaned_analysis') {
+            return property; // Already has analysis attached
+          }
+          return {
             ...property,
             analysis: analysesByProperty[property.id] || null
-          }));
-        }
+          };
+        });
 
         filteredProperties = [...properties];
         updateMetrics();
