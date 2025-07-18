@@ -127,6 +127,223 @@ When working on tasks in this project, follow this structured workflow:
 - **Verification before action**: Always get plan approval before implementation
 - **Comprehensive documentation**: Maintain clear records in `todo.md`
 
+## 🧪 MANDATORY TESTING REQUIREMENTS
+
+**CRITICAL**: NEVER push code without comprehensive testing. Every bug fix, feature, or change MUST be thoroughly tested before pushing to prevent regressions and reduce manual testing burden.
+
+### Pre-Push Testing Checklist
+
+**BEFORE ANY GIT PUSH, Claude MUST:**
+
+1. ✅ **Create comprehensive tests** for the specific functionality being changed
+2. ✅ **Run automated test suite** to catch regressions
+3. ✅ **Test end-to-end user workflows** affected by changes
+4. ✅ **Verify JavaScript syntax** and console errors are resolved
+5. ✅ **Test cross-browser compatibility** (Chrome, Firefox, Safari)
+6. ✅ **Validate API integrations** and data flow
+7. ✅ **Check mobile responsiveness** for UI changes
+8. ✅ **Test error handling** and edge cases
+
+### Testing Categories Required
+
+#### 1. **Syntax & Runtime Testing**
+```bash
+# Always run before pushing
+node tests/validate-javascript-syntax.js
+npm run test:lint
+npm run test:syntax
+```
+
+#### 2. **End-to-End Workflow Testing**
+```bash
+# Test critical user journeys
+npm run test:e2e
+npx playwright test tests/e2e/critical-workflows.spec.js
+```
+
+#### 3. **API Integration Testing**
+```bash
+# Test all API endpoints affected
+npm run test:api
+node tests/api/test-all-endpoints.js
+```
+
+#### 4. **Browser Extension Testing**
+```bash
+# Test extension integration
+npm run test:extension
+node tests/extension/test-data-flow.js
+```
+
+### Mandatory Test Creation for Common Scenarios
+
+When making changes, Claude MUST create tests for:
+
+#### **JavaScript/Frontend Changes**
+- ✅ **Syntax validation** - No console errors or undefined variables
+- ✅ **DOM element interaction** - All buttons, forms, inputs work
+- ✅ **State management** - Variables maintain correct values
+- ✅ **Event handling** - Click, submit, change events function
+- ✅ **Responsive behavior** - Mobile, tablet, desktop layouts
+- ✅ **Cross-browser compatibility** - Chrome, Firefox, Safari
+
+#### **API/Backend Changes**
+- ✅ **Endpoint functionality** - All HTTP methods work correctly
+- ✅ **Data validation** - Input sanitization and validation
+- ✅ **Error handling** - Proper error responses and fallbacks
+- ✅ **Authentication** - User session and permission validation
+- ✅ **Rate limiting** - API limits respected and handled
+- ✅ **External API integration** - Perplexity, Railway, Airbnb APIs
+
+#### **Browser Extension Changes**
+- ✅ **Data extraction** - All property fields captured correctly
+- ✅ **Data transmission** - Extension → web app communication
+- ✅ **Error handling** - Graceful degradation for missing data
+- ✅ **Cross-site compatibility** - Works on all Realtor.ca listing types
+
+#### **UI/UX Changes**
+- ✅ **Visual consistency** - Styling matches design system
+- ✅ **Loading states** - Progress indicators during async operations
+- ✅ **Error states** - User-friendly error messages
+- ✅ **Success states** - Clear feedback for completed actions
+- ✅ **Accessibility** - Screen reader and keyboard navigation
+
+### Deep Testing Requirements
+
+#### **Bug Fixes Must Include:**
+1. **Root cause analysis** - Test that identifies the original issue
+2. **Regression tests** - Verify the bug doesn't reoccur
+3. **Edge case testing** - Test boundary conditions and error scenarios
+4. **Integration testing** - Verify fix doesn't break related functionality
+
+#### **Feature Additions Must Include:**
+1. **Happy path testing** - Normal user workflow works perfectly
+2. **Error path testing** - Graceful handling of failures
+3. **Performance testing** - No significant slowdowns introduced
+4. **Security testing** - No new vulnerabilities introduced
+
+### Automated Testing Tools Available
+
+#### **Frontend Testing**
+- **Playwright** - End-to-end browser automation
+- **Jest** - Unit testing for JavaScript functions
+- **Visual regression** - Screenshot comparison testing
+- **Syntax validation** - JavaScript error detection
+
+#### **API Testing**
+- **Custom scripts** - API endpoint testing
+- **Integration tests** - Full workflow validation
+- **Mock testing** - External API simulation
+
+#### **Browser Extension Testing**
+- **Content script testing** - Data extraction validation
+- **Communication testing** - Extension ↔ web app data flow
+- **Cross-site testing** - Multiple Realtor.ca listing types
+
+### Test Documentation Requirements
+
+For EVERY change, Claude MUST create:
+
+1. **Test Summary** (`tests/[feature]-test-summary.md`)
+   - What was tested
+   - Test results
+   - Any issues found and resolved
+   - Coverage analysis
+
+2. **Test Scripts** (`tests/e2e/[feature]-test.spec.js`)
+   - Automated test files
+   - Edge case scenarios
+   - Regression prevention
+
+3. **Manual Test Checklist** (`tests/manual/[feature]-checklist.md`)
+   - Step-by-step validation
+   - Visual inspection points
+   - User experience verification
+
+### Test Coverage Standards
+
+- **Critical workflows**: 100% coverage (auth, analyze button, data flow)
+- **Core features**: 90% coverage (STR analysis, reporting, calculations)
+- **UI components**: 80% coverage (forms, buttons, displays)
+- **Edge cases**: 70% coverage (error handling, data validation)
+
+### Failure Protocol
+
+**If tests fail:**
+1. ❌ **DO NOT PUSH** until all tests pass
+2. 🔍 **Investigate root cause** of failures
+3. 🛠️ **Fix underlying issues** not just symptoms
+4. 🧪 **Re-run full test suite** to verify fixes
+5. 📝 **Document what was found and fixed**
+
+### Testing Command Reference
+
+```bash
+# Quick validation (run before every push)
+npm run test:quick
+
+# Comprehensive testing (run for major changes)
+npm run test:comprehensive
+
+# Specific testing by category
+npm run test:syntax      # JavaScript syntax checking
+npm run test:e2e         # End-to-end workflows
+npm run test:api         # API endpoint testing
+npm run test:visual      # Visual regression testing
+npm run test:mobile      # Mobile responsiveness
+npm run test:extension   # Browser extension testing
+
+# Generate test reports
+npm run test:report      # Comprehensive test report
+npm run analyze:coverage # Code coverage analysis
+```
+
+### Examples of Comprehensive Testing
+
+**Example 1: Fixing JavaScript Bug**
+```bash
+# 1. Create test that reproduces the bug
+node tests/reproduce-bug.js
+
+# 2. Fix the issue
+# ... make code changes ...
+
+# 3. Verify fix with comprehensive testing
+npm run test:syntax
+npm run test:e2e
+npm run test:integration
+
+# 4. Create regression test
+# ... add test to prevent future occurrence ...
+
+# 5. Only then push to GitHub
+git push origin branch-name
+```
+
+**Example 2: Adding New Feature**
+```bash
+# 1. Create feature tests first (TDD approach)
+# ... create comprehensive test suite ...
+
+# 2. Implement feature
+# ... build functionality ...
+
+# 3. Verify all tests pass
+npm run test:comprehensive
+
+# 4. Test edge cases and error scenarios
+npm run test:edge-cases
+
+# 5. Performance and security validation
+npm run test:performance
+npm run test:security
+
+# 6. Only then push to GitHub
+git push origin branch-name
+```
+
+**Remember: Testing is not optional. It's a mandatory part of the development process that prevents user-facing bugs and reduces manual testing burden.**
+
 ## Project Overview
 
 **StarterPackApp** is an advanced real estate investment analysis SaaS platform that helps investors make data-driven decisions. The platform combines traditional rental analysis with short-term rental (Airbnb) projections, automated property data extraction via browser extension, and professional reporting capabilities.
