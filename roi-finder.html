@@ -1785,8 +1785,7 @@
           document.getElementById('confirmation-screen').style.display = 'flex';
           // Reset to LTR mode by default
           document.getElementById('confirm-analysis-mode').value = 'ltr';
-          const confirmLtrBtn = document.getElementById('confirm-ltr-mode-btn');
-          const confirmStrBtn = document.getElementById('confirm-str-mode-btn');
+          // Use the globally declared button references
           if (confirmLtrBtn && confirmStrBtn) {
             confirmLtrBtn.classList.add('bg-white', 'text-gray-900', 'shadow-sm');
             confirmLtrBtn.classList.remove('text-gray-500');
@@ -3488,22 +3487,21 @@
         showView('dashboard');
       });
 
-      // Edit financials button - with error checking
-      const editBtn = document.getElementById('edit-financials-btn');
-      if (editBtn) {
+      // Edit and Reset financials buttons - with error checking
+      const editFinancialsBtn = document.getElementById('edit-financials-btn');
+      if (editFinancialsBtn) {
         console.log('Edit button found and adding listener');
-        editBtn.addEventListener('click', function() {
+        editFinancialsBtn.addEventListener('click', function() {
           toggleEditMode();
         });
       } else {
         console.error('Edit button NOT found in DOM!');
       }
 
-      // Reset financials button - with error checking
-      const resetBtn = document.getElementById('reset-financials-btn');
-      if (resetBtn) {
+      const resetFinancialsBtn = document.getElementById('reset-financials-btn');
+      if (resetFinancialsBtn) {
         console.log('Reset button found and adding listener');
-        resetBtn.addEventListener('click', function() {
+        resetFinancialsBtn.addEventListener('click', function() {
           resetToOriginal();
         });
       } else {
@@ -3520,28 +3518,7 @@
 
       // Note: LTR/STR mode buttons are already handled above in the analysis mode toggle section
       
-      // LTR/STR mode buttons in confirmation screen
-      const confirmLtrBtn = document.getElementById('confirm-ltr-mode-btn');
-      const confirmStrBtn = document.getElementById('confirm-str-mode-btn');
-      const confirmModeInput = document.getElementById('confirm-analysis-mode');
-      
-      if (confirmLtrBtn && confirmStrBtn && confirmModeInput) {
-        confirmLtrBtn.addEventListener('click', function() {
-          confirmModeInput.value = 'ltr';
-          confirmLtrBtn.classList.add('border-blue-500');
-          confirmStrBtn.classList.remove('border-blue-500');
-          confirmStrBtn.classList.add('border-gray-300');
-          updateConfirmStrTrialInfo();
-        });
-        
-        confirmStrBtn.addEventListener('click', function() {
-          confirmModeInput.value = 'str';
-          confirmStrBtn.classList.add('border-blue-500');
-          confirmLtrBtn.classList.remove('border-blue-500');
-          confirmLtrBtn.classList.add('border-gray-300');
-          updateConfirmStrTrialInfo();
-        });
-      }
+      // Note: Confirmation screen buttons are already handled above in the main setup section
       
       // Initialize the app
       initApp();
