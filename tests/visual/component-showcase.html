@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Component Showcase - Visual Testing</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../styles/design-system.css">
+</head>
+<body class="bg-gray-50 p-8">
+    
+    <div class="max-w-6xl mx-auto space-y-12">
+        
+        <!-- Header -->
+        <div class="text-center">
+            <h1 class="text-4xl font-bold text-gray-900 mb-4">Component Showcase</h1>
+            <p class="text-gray-600">Visual testing for all design system components</p>
+        </div>
+
+        <!-- Cards Showcase -->
+        <div class="card-showcase">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">Cards</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                
+                <!-- Basic Card -->
+                <div class="card">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Basic Card</h3>
+                    <p class="text-gray-600">Standard card with default styling and padding.</p>
+                </div>
+                
+                <!-- Elevated Card -->
+                <div class="card card-elevated">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Elevated Card</h3>
+                    <p class="text-gray-600">Card with enhanced shadow and hover effects.</p>
+                </div>
+                
+                <!-- Interactive Card -->
+                <div class="card card-interactive">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Interactive Card</h3>
+                    <p class="text-gray-600">Card with interactive hover and click effects.</p>
+                </div>
+                
+                <!-- Small Card -->
+                <div class="card card-sm">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Small Card</h3>
+                    <p class="text-gray-600">Compact card with reduced padding.</p>
+                </div>
+                
+                <!-- Large Card -->
+                <div class="card card-lg">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Large Card</h3>
+                    <p class="text-gray-600">Spacious card with increased padding.</p>
+                </div>
+                
+                <!-- Property Card Example -->
+                <div class="card card-elevated border-l-4 border-primary">
+                    <div class="flex items-start justify-between mb-4">
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-900 mb-1">123 Main Street</h3>
+                            <p class="text-gray-600">Toronto, ON • $850,000</p>
+                        </div>
+                        <img src="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=64&h=64&fit=crop" 
+                             alt="Property" class="w-16 h-16 rounded-lg object-cover">
+                    </div>
+                    <p class="text-gray-600">Property card with image and details.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Badges Showcase -->
+        <div class="badge-showcase">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">Badges</h2>
+            <div class="space-y-6">
+                
+                <!-- Status Badges -->
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-3">Status Badges</h3>
+                    <div class="flex flex-wrap gap-3">
+                        <span class="badge badge-success">✓ RECOMMENDED</span>
+                        <span class="badge badge-warning">⚠ CAUTION</span>
+                        <span class="badge badge-danger">✗ NOT RECOMMENDED</span>
+                        <span class="badge badge-info">ℹ INFO</span>
+                    </div>
+                </div>
+                
+                <!-- Performance Badges -->
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-3">Performance Badges</h3>
+                    <div class="flex flex-wrap gap-3">
+                        <span class="badge badge-success">TOP PERFORMER</span>
+                        <span class="badge badge-info">BEST MATCH</span>
+                        <span class="badge badge-warning">GOOD VALUE</span>
+                        <span class="badge bg-gray-500 text-white">AVERAGE</span>
+                    </div>
+                </div>
+                
+                <!-- Live Data Badge -->
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-3">Live Data Badge</h3>
+                    <div class="flex flex-wrap gap-3">
+                        <span class="badge badge-live-data">
+                            <div class="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+                            LIVE DATA
+                        </span>
+                        <span class="badge badge-airbnb">AIRBNB DATA</span>
+                    </div>
+                </div>
+                
+                <!-- Size Variants -->
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-3">Size Variants</h3>
+                    <div class="flex flex-wrap items-center gap-3">
+                        <span class="badge badge-success text-xs px-2 py-1">Small</span>
+                        <span class="badge badge-success">Default</span>
+                        <span class="badge badge-success text-sm px-4 py-2">Large</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Buttons Showcase -->
+        <div class="button-showcase">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">Buttons</h2>
+            <div class="space-y-6">
+                
+                <!-- Primary Buttons -->
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-3">Primary Buttons</h3>
+                    <div class="flex flex-wrap gap-3">
+                        <button class="btn btn-primary btn-sm">
+                            <span class="w-4 h-4">💾</span>
+                            <span>Small Primary</span>
+                        </button>
+                        <button class="btn btn-primary">
+                            <span class="w-5 h-5">📊</span>
+                            <span>Default Primary</span>
+                        </button>
+                        <button class="btn btn-primary btn-lg">
+                            <span class="w-6 h-6">🔍</span>
+                            <span>Large Primary</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Secondary Buttons -->
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-3">Secondary Buttons</h3>
+                    <div class="flex flex-wrap gap-3">
+                        <button class="btn btn-secondary">Cancel</button>
+                        <button class="btn btn-secondary">
+                            <span class="w-5 h-5">⚙️</span>
+                            <span>Settings</span>
+                        </button>
+                        <button class="btn btn-secondary" disabled>Disabled</button>
+                    </div>
+                </div>
+                
+                <!-- Success Buttons -->
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-3">Success Buttons</h3>
+                    <div class="flex flex-wrap gap-3">
+                        <button class="btn btn-success">Save Changes</button>
+                        <button class="btn btn-success">
+                            <span class="w-5 h-5">✓</span>
+                            <span>Confirm</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Danger Buttons -->
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-3">Danger Buttons</h3>
+                    <div class="flex flex-wrap gap-3">
+                        <button class="btn bg-danger text-white hover:bg-danger-dark">Delete</button>
+                        <button class="btn bg-danger text-white hover:bg-danger-dark">
+                            <span class="w-5 h-5">🗑️</span>
+                            <span>Remove</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Outline Buttons -->
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-3">Outline Buttons</h3>
+                    <div class="flex flex-wrap gap-3">
+                        <button class="btn border-2 border-primary text-primary hover:bg-primary hover:text-white">
+                            Outline Primary
+                        </button>
+                        <button class="btn border-2 border-gray-300 text-gray-700 hover:bg-gray-100">
+                            Outline Secondary
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Loading Button -->
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-3">Loading State</h3>
+                    <div class="flex flex-wrap gap-3">
+                        <button class="btn btn-primary opacity-75">
+                            <div class="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full"></div>
+                            <span>Loading...</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Metric Badges Showcase -->
+        <div class="metric-showcase">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">Metric Badges</h2>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                
+                <div class="bg-white rounded-lg p-4 text-center border border-gray-200">
+                    <div class="text-2xl font-bold text-green-600 mb-1">8.7/10</div>
+                    <div class="text-sm text-gray-600">Investment Score</div>
+                </div>
+                
+                <div class="bg-white rounded-lg p-4 text-center border border-gray-200">
+                    <div class="text-2xl font-bold text-blue-600 mb-1">$5,400</div>
+                    <div class="text-sm text-gray-600">Monthly Revenue</div>
+                </div>
+                
+                <div class="bg-white rounded-lg p-4 text-center border border-gray-200">
+                    <div class="text-2xl font-bold text-purple-600 mb-1">12.4%</div>
+                    <div class="text-sm text-gray-600">Annual ROI</div>
+                </div>
+                
+                <div class="bg-white rounded-lg p-4 text-center border border-gray-200">
+                    <div class="text-2xl font-bold text-orange-600 mb-1">+47%↗</div>
+                    <div class="text-sm text-gray-600">Revenue Advantage</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Color Palette -->
+        <div class="color-palette">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">Color Palette</h2>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                
+                <!-- Primary Colors -->
+                <div class="space-y-2">
+                    <h3 class="text-sm font-semibold text-gray-700">Primary</h3>
+                    <div class="w-full h-16 bg-primary rounded-lg flex items-center justify-center">
+                        <span class="text-white font-medium">#667eea</span>
+                    </div>
+                </div>
+                
+                <!-- Success Colors -->
+                <div class="space-y-2">
+                    <h3 class="text-sm font-semibold text-gray-700">Success</h3>
+                    <div class="w-full h-16 bg-success rounded-lg flex items-center justify-center">
+                        <span class="text-white font-medium">#10b981</span>
+                    </div>
+                </div>
+                
+                <!-- Warning Colors -->
+                <div class="space-y-2">
+                    <h3 class="text-sm font-semibold text-gray-700">Warning</h3>
+                    <div class="w-full h-16 bg-warning rounded-lg flex items-center justify-center">
+                        <span class="text-white font-medium">#f59e0b</span>
+                    </div>
+                </div>
+                
+                <!-- Danger Colors -->
+                <div class="space-y-2">
+                    <h3 class="text-sm font-semibold text-gray-700">Danger</h3>
+                    <div class="w-full h-16 bg-danger rounded-lg flex items-center justify-center">
+                        <span class="text-white font-medium">#ef4444</span>
+                    </div>
+                </div>
+                
+                <!-- Airbnb Colors -->
+                <div class="space-y-2">
+                    <h3 class="text-sm font-semibold text-gray-700">Airbnb</h3>
+                    <div class="w-full h-16 bg-airbnb rounded-lg flex items-center justify-center">
+                        <span class="text-white font-medium">#ff5a5f</span>
+                    </div>
+                </div>
+                
+                <!-- Live Data Gradient -->
+                <div class="space-y-2">
+                    <h3 class="text-sm font-semibold text-gray-700">Live Data</h3>
+                    <div class="w-full h-16 rounded-lg flex items-center justify-center" style="background: linear-gradient(135deg, #ff6b6b, #ee5a24);">
+                        <span class="text-white font-medium">Gradient</span>
+                    </div>
+                </div>
+                
+                <!-- Revenue Gradient -->
+                <div class="space-y-2">
+                    <h3 class="text-sm font-semibold text-gray-700">Revenue</h3>
+                    <div class="w-full h-16 rounded-lg flex items-center justify-center" style="background: linear-gradient(135deg, #00d4aa, #00b8a9);">
+                        <span class="text-white font-medium">Gradient</span>
+                    </div>
+                </div>
+                
+                <!-- Primary Gradient -->
+                <div class="space-y-2">
+                    <h3 class="text-sm font-semibold text-gray-700">Primary</h3>
+                    <div class="w-full h-16 rounded-lg flex items-center justify-center" style="background: linear-gradient(135deg, #667eea, #764ba2);">
+                        <span class="text-white font-medium">Gradient</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Typography Showcase -->
+        <div class="typography-showcase">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">Typography</h2>
+            <div class="space-y-4">
+                <div class="text-5xl font-bold text-gray-900">Heading 1</div>
+                <div class="text-4xl font-bold text-gray-900">Heading 2</div>
+                <div class="text-3xl font-bold text-gray-900">Heading 3</div>
+                <div class="text-2xl font-bold text-gray-900">Heading 4</div>
+                <div class="text-xl font-bold text-gray-900">Heading 5</div>
+                <div class="text-lg font-semibold text-gray-900">Body Large</div>
+                <div class="text-base text-gray-700">Body Regular</div>
+                <div class="text-sm text-gray-600">Body Small</div>
+                <div class="text-xs text-gray-500">Caption</div>
+            </div>
+        </div>
+
+        <!-- Shadows Showcase -->
+        <div class="shadows-showcase">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">Shadows</h2>
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-6">
+                <div class="bg-white p-4 rounded-lg shadow-xs">
+                    <div class="text-sm font-semibold text-gray-900">Shadow XS</div>
+                    <div class="text-xs text-gray-600">Subtle shadow</div>
+                </div>
+                <div class="bg-white p-4 rounded-lg shadow-sm">
+                    <div class="text-sm font-semibold text-gray-900">Shadow SM</div>
+                    <div class="text-xs text-gray-600">Small shadow</div>
+                </div>
+                <div class="bg-white p-4 rounded-lg shadow-md">
+                    <div class="text-sm font-semibold text-gray-900">Shadow MD</div>
+                    <div class="text-xs text-gray-600">Medium shadow</div>
+                </div>
+                <div class="bg-white p-4 rounded-lg shadow-lg">
+                    <div class="text-sm font-semibold text-gray-900">Shadow LG</div>
+                    <div class="text-xs text-gray-600">Large shadow</div>
+                </div>
+                <div class="bg-white p-4 rounded-lg shadow-xl">
+                    <div class="text-sm font-semibold text-gray-900">Shadow XL</div>
+                    <div class="text-xs text-gray-600">Extra large shadow</div>
+                </div>
+                <div class="bg-white p-4 rounded-lg shadow-2xl">
+                    <div class="text-sm font-semibold text-gray-900">Shadow 2XL</div>
+                    <div class="text-xs text-gray-600">Maximum shadow</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Animation Showcase -->
+        <div class="animation-showcase">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">Animations</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="card p-6 text-center">
+                    <div class="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                    <div class="text-sm font-semibold text-gray-900">Spin Animation</div>
+                </div>
+                <div class="card p-6 text-center">
+                    <div class="w-8 h-8 bg-primary rounded-full animate-pulse mx-auto mb-4"></div>
+                    <div class="text-sm font-semibold text-gray-900">Pulse Animation</div>
+                </div>
+                <div class="card p-6 text-center animate-slide-in">
+                    <div class="w-8 h-8 bg-success rounded-full mx-auto mb-4"></div>
+                    <div class="text-sm font-semibold text-gray-900">Slide In Animation</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>

@@ -1,0 +1,29 @@
+{
+  "deploymentId": "deploy-1752891303962",
+  "version": "2.0.0",
+  "deployedAt": "2025-07-19T02:15:04.008Z",
+  "components": {
+    "ui": [
+      "Card",
+      "Badge",
+      "Button",
+      "LoadingSpinner",
+      "ProgressIndicator"
+    ],
+    "analysis": [
+      "InvestmentVerdict",
+      "AirbnbListings",
+      "FinancialSummary"
+    ],
+    "modules": [
+      "ComponentLoader"
+    ]
+  },
+  "features": {
+    "airbnbHeroSection": true,
+    "mobileFirst": true,
+    "componentArchitecture": true,
+    "designSystem": true
+  },
+  "backup": "backups/deploy-1752891303962"
+}

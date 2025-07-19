@@ -1,0 +1,3761 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ROI Finder - StarterPack</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <!-- React for components -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  
+  <!-- Firebase Configuration -->
+  <script src="/js/config.js"></script>
+  
+  <!-- Load React Components -->
+  <script type="text/babel" src="/components/RentalComparisonView.jsx"></script>
+  <script type="text/babel" src="/components/ClientPresentationView.jsx"></script>
+  
+  <style>
+    /* Loading animation */
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    .animate-spin {
+      animation: spin 1s linear infinite;
+    }
+    
+    /* Button styles */
+    .btn-primary {
+      background: linear-gradient(135deg, #3b82f6, #10b981);
+      color: white;
+      padding: 16px 32px;
+      border: none;
+      border-radius: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 0 auto;
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+    }
+    
+    .btn-secondary {
+      background: #6b7280;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .btn-secondary:hover {
+      background: #4b5563;
+    }
+    
+    /* Form styles */
+    .form-input {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid #e5e7eb;
+      border-radius: 8px;
+      font-size: 16px;
+      transition: all 0.3s ease;
+    }
+    
+    .form-input:focus {
+      outline: none;
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+    
+    /* Card styles */
+    .card {
+      background: white;
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      margin-bottom: 24px;
+    }
+    
+    .stat-card {
+      background: white;
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    
+    .metric-card {
+      background: linear-gradient(135deg, #f3f4f6, #ffffff);
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 24px;
+      text-align: center;
+    }
+    
+    /* Chart container */
+    .chart-container {
+      position: relative;
+      height: 300px;
+      margin: 20px 0;
+    }
+    
+    /* Colors */
+    .positive { color: #10b981; }
+    .negative { color: #ef4444; }
+    
+    /* IMPROVEMENT 1: Visual Hierarchy */
+    .property-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+      color: white;
+      font-size: 0.875rem;
+      font-weight: 500;
+      border-radius: 9999px;
+      margin-left: 1rem;
+    }
+    
+    /* IMPROVEMENT 2: Number Formatting */
+    .currency-positive {
+      color: #10b981;
+      font-weight: 600;
+    }
+    
+    .currency-negative {
+      color: #ef4444;
+      font-weight: 600;
+    }
+    
+    .currency-neutral {
+      color: #1f2937;
+      font-weight: 600;
+    }
+    
+    /* IMPROVEMENT 3: Mobile Responsiveness */
+    @media (max-width: 640px) {
+      .analysis-mode-selector {
+        flex-direction: column;
+      }
+      
+      .analysis-mode-selector label {
+        width: 100%;
+        margin-bottom: 0.5rem;
+      }
+      
+      .stat-card {
+        padding: 16px;
+      }
+      
+      .metric-card {
+        padding: 16px;
+      }
+      
+      .property-badge {
+        margin-left: 0;
+        margin-top: 0.5rem;
+        display: block;
+        width: fit-content;
+      }
+    }
+    
+    /* IMPROVEMENT 4: Loading State */
+    .progress-indicator {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      max-width: 400px;
+      margin: 2rem auto;
+    }
+    
+    .progress-step {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem;
+      background: white;
+      border-radius: 0.5rem;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+    }
+    
+    .progress-step.active {
+      background: #eff6ff;
+      border: 2px solid #3b82f6;
+    }
+    
+    .progress-step.completed {
+      background: #f0fdf4;
+      border: 2px solid #10b981;
+    }
+    
+    .progress-icon {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: bold;
+      flex-shrink: 0;
+    }
+    
+    .progress-step.pending .progress-icon {
+      background: #e5e7eb;
+      color: #6b7280;
+    }
+    
+    .progress-step.active .progress-icon {
+      background: #3b82f6;
+      color: white;
+      animation: pulse 2s infinite;
+    }
+    
+    .progress-step.completed .progress-icon {
+      background: #10b981;
+      color: white;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.1); opacity: 0.8; }
+    }
+    
+    .progress-text {
+      flex: 1;
+    }
+    
+    .progress-title {
+      font-weight: 600;
+      color: #1f2937;
+      font-size: 0.875rem;
+    }
+    
+    .progress-subtitle {
+      font-size: 0.75rem;
+      color: #6b7280;
+      margin-top: 0.125rem;
+    }
+    
+    .progress-time {
+      font-size: 0.75rem;
+      color: #9ca3af;
+      flex-shrink: 0;
+    }
+    
+    /* IMPROVEMENT 5: Regulation Alert Banner */
+    .regulation-alert {
+      background: linear-gradient(135deg, #fef3c7, #fde68a);
+      border: 2px solid #f59e0b;
+      border-radius: 0.75rem;
+      padding: 1rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 4px 6px rgba(245, 158, 11, 0.1);
+    }
+    
+    .regulation-alert-icon {
+      width: 24px;
+      height: 24px;
+      flex-shrink: 0;
+    }
+    
+    /* Comparable Properties Gallery */
+    .comparable-gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-top: 1rem;
+    }
+    
+    .comparable-card {
+      background: white;
+      border-radius: 0.75rem;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+    
+    .comparable-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+    
+    .comparable-image {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+    }
+    
+    .comparable-details {
+      padding: 1rem;
+    }
+    
+    .comparable-price {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #1f2937;
+    }
+    
+    .comparable-stats {
+      display: flex;
+      gap: 1rem;
+      margin-top: 0.5rem;
+      font-size: 0.875rem;
+      color: #6b7280;
+    }
+    
+    /* Confidence Badge */
+    .confidence-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+    
+    .confidence-high {
+      background: #d1fae5;
+      color: #047857;
+    }
+    
+    .confidence-medium {
+      background: #fef3c7;
+      color: #b45309;
+    }
+    
+    .confidence-low {
+      background: #fee2e2;
+      color: #b91c1c;
+    }
+    
+    /* Scenario Analysis */
+    .scenario-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    
+    .scenario-card {
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 0.5rem;
+      padding: 1rem;
+      text-align: center;
+    }
+    
+    .scenario-occupancy {
+      font-size: 1.25rem;
+      font-weight: bold;
+      color: #3b82f6;
+    }
+    
+    .scenario-revenue {
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: #1f2937;
+      margin-top: 0.5rem;
+    }
+    
+    .scenario-income {
+      font-size: 0.875rem;
+      color: #6b7280;
+      margin-top: 0.25rem;
+    }
+    
+    /* Disclaimer Box */
+    .disclaimer-box {
+      background: #f3f4f6;
+      border-left: 4px solid #6b7280;
+      padding: 1rem;
+      margin-top: 2rem;
+      font-size: 0.875rem;
+      color: #4b5563;
+    }
+  </style>
+  
+  <!-- API Configuration -->
+  <script>
+    window.ENV = {
+      isProduction: window.location.hostname !== 'localhost',
+      railwayUrl: window.location.hostname === 'localhost' 
+        ? 'http://localhost:3001' 
+        : 'https://real-estate-app-production-ba5c.up.railway.app',
+      enableProgressTracking: true,
+      useRailway: true
+    };
+    console.log('ENV configured:', window.ENV);
+  </script>
+  
+  <!-- Load API Client -->
+  <script src="/utils/api-config.js"></script>
+  <script src="/utils/api-client.js"></script>
+  
+  <!-- Load Progress Modal Component -->
+  <script type="text/babel" src="/components/ProgressModal.jsx"></script>
+</head>
+<body class="bg-gray-50">
+  <!-- Loading Screen -->
+  <div id="loading-screen" class="min-h-screen flex items-center justify-center bg-gray-50">
+    <div class="text-center max-w-lg">
+      <!-- Spinner -->
+      <div class="animate-spin rounded-full h-16 w-16 border-b-4 border-blue-600 mx-auto mb-6"></div>
+      
+      <!-- Main title -->
+      <h2 class="text-2xl font-bold text-gray-900 mb-2" id="loading-title">Loading ROI Finder...</h2>
+      <p class="text-gray-600 mb-8" id="loading-address"></p>
+      
+      <!-- Progress Steps (hidden by default, shown during analysis) -->
+      <div class="progress-indicator" id="progress-indicator" style="display: none;">
+        <div class="progress-step completed" id="step-1">
+          <div class="progress-icon">✓</div>
+          <div class="progress-text">
+            <div class="progress-title">Property data extracted</div>
+            <div class="progress-subtitle">Ready for analysis</div>
+          </div>
+          <div class="progress-time">0s</div>
+        </div>
+        
+        <div class="progress-step active" id="step-2">
+          <div class="progress-icon">2</div>
+          <div class="progress-text">
+            <div class="progress-title">Researching market rates</div>
+            <div class="progress-subtitle">Analyzing rental comparables via AI</div>
+          </div>
+          <div class="progress-time" id="step-2-time">5s</div>
+        </div>
+        
+        <div class="progress-step pending" id="step-3">
+          <div class="progress-icon">3</div>
+          <div class="progress-text">
+            <div class="progress-title">Calculating financial metrics</div>
+            <div class="progress-subtitle">ROI, cap rate, cash flow analysis</div>
+          </div>
+          <div class="progress-time" id="step-3-time">-</div>
+        </div>
+        
+        <div class="progress-step pending" id="step-4">
+          <div class="progress-icon">4</div>
+          <div class="progress-text">
+            <div class="progress-title">Generating recommendations</div>
+            <div class="progress-subtitle">AI-powered investment insights</div>
+          </div>
+          <div class="progress-time" id="step-4-time">-</div>
+        </div>
+        
+        <!-- STR-specific step (hidden by default) -->
+        <div class="progress-step pending" id="step-str" style="display: none;">
+          <div class="progress-icon">5</div>
+          <div class="progress-text">
+            <div class="progress-title">Finding Airbnb comparables</div>
+            <div class="progress-subtitle">Analyzing short-term rental market</div>
+          </div>
+          <div class="progress-time" id="step-str-time">-</div>
+        </div>
+      </div>
+      
+      <!-- Time estimate -->
+      <div class="mt-8 text-sm text-gray-500" id="time-estimate" style="display: none;">
+        <p>This analysis typically takes 30-60 seconds</p>
+        <p class="mt-1">Powered by Perplexity AI for real-time market data</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Progress Modal Container -->
+  <div id="progress-modal-container"></div>
+
+  <!-- Auth Screen -->
+  <div id="auth-screen" class="min-h-screen bg-gradient-to-br from-blue-50 to-green-50 flex items-center justify-center p-6" style="display: none;">
+    <div class="max-w-md w-full">
+      <div class="text-center mb-8">
+        <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-500 to-green-500 rounded-full mb-4">
+          <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+          </svg>
+        </div>
+        <h1 class="text-3xl font-bold text-gray-900 mb-2" id="auth-title">Welcome Back</h1>
+        <p class="text-gray-600" id="auth-subtitle">Sign in to access your property analyses</p>
+      </div>
+
+      <div class="bg-white rounded-2xl shadow-xl p-8">
+        <form id="auth-form">
+          <div class="space-y-6">
+            <div id="name-field" style="display: none;">
+              <label class="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
+              <input type="text" id="name" class="form-input" placeholder="John Doe" />
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
+              <input type="email" id="email" class="form-input" placeholder="john@example.com" required />
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+              <input type="password" id="password" class="form-input" placeholder="••••••••" required minlength="6" />
+            </div>
+
+            <div id="auth-error" class="bg-red-50 text-red-600 p-3 rounded-lg text-sm" style="display: none;"></div>
+
+            <button type="submit" class="btn-primary w-full">
+              <span id="auth-button-text">Sign In</span>
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+          </div>
+        </form>
+
+        <div class="mt-6 text-center">
+          <p class="text-gray-600">
+            <span id="auth-switch-text">Don't have an account? </span>
+            <button id="auth-switch" class="text-blue-600 hover:text-blue-800 font-semibold">Sign Up</button>
+          </p>
+        </div>
+
+        <div class="mt-6 pt-6 border-t border-gray-200">
+          <a href="index.html" class="text-sm text-blue-600 hover:text-blue-800 flex items-center justify-center gap-1">
+            ← Back to Homepage
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dashboard -->
+  <div id="dashboard-screen" class="min-h-screen bg-gray-50" style="display: none;">
+    <!-- Header -->
+    <div class="bg-white shadow-sm">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center py-4">
+          <div class="flex items-center gap-4">
+            <h1 class="text-2xl font-bold text-gray-900">StarterPack</h1>
+            <span class="text-sm text-gray-500">Dashboard</span>
+          </div>
+          <nav class="hidden md:flex gap-6">
+            <a href="/roi-finder.html" class="text-blue-600 font-medium">Dashboard</a>
+            <a href="/portfolio.html" class="text-gray-600 hover:text-gray-900">Portfolio</a>
+            <a href="/reports.html" class="text-gray-600 hover:text-gray-900">Reports</a>
+            <a href="/blog.html" class="text-gray-600 hover:text-gray-900">Blog</a>
+            <a href="/realtor-settings.html" class="text-gray-600 hover:text-gray-900">Branding</a>
+          </nav>
+          <div class="flex items-center gap-4">
+            <span class="text-sm text-gray-700" id="user-email"></span>
+            <button id="sign-out-btn" class="flex items-center gap-2 text-gray-600 hover:text-gray-900">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+              </svg>
+              Sign Out
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <!-- Stats -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div class="stat-card">
+          <p class="text-sm text-gray-600">Analyses Used</p>
+          <p class="text-2xl font-bold text-gray-900" id="analysis-count">0 / 3</p>
+        </div>
+        <div class="stat-card">
+          <p class="text-sm text-gray-600">Subscription</p>
+          <p class="text-2xl font-bold text-gray-900" id="subscription-tier">Trial</p>
+        </div>
+        <div class="stat-card">
+          <p class="text-sm text-gray-600">Total Analyses</p>
+          <p class="text-2xl font-bold text-gray-900" id="total-analyses">0</p>
+        </div>
+      </div>
+
+      <!-- New Analysis Button -->
+      <div class="text-center mb-8">
+        <button id="new-analysis-btn" class="btn-primary">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+          </svg>
+          New Property Analysis
+        </button>
+        <p class="text-xs text-gray-500 mt-2" id="debug-text">Ready to analyze properties</p>
+      </div>
+
+      <!-- Recent Analyses -->
+      <div class="bg-white rounded-lg shadow">
+        <div class="px-6 py-4 border-b border-gray-200">
+          <h2 class="text-lg font-semibold text-gray-900">Recent Analyses</h2>
+        </div>
+        <div id="analyses-list" class="divide-y divide-gray-200">
+          <div class="px-6 py-12 text-center text-gray-500">
+            No analyses yet. Click "New Property Analysis" to get started!
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Property Input Form -->
+  <div id="property-form-screen" class="min-h-screen bg-gradient-to-br from-blue-50 to-green-50 flex items-center justify-center p-6" style="display: none;">
+    <div class="max-w-md w-full">
+      <div class="text-center mb-8">
+        <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-500 to-green-500 rounded-full mb-4">
+          <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+          </svg>
+        </div>
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">Property ROI Analyzer</h1>
+        <p class="text-gray-600">Get AI-powered investment analysis for any property worldwide</p>
+      </div>
+
+      <div class="bg-white rounded-2xl shadow-xl p-8">
+        <!-- Analysis Mode Selector - Mobile Responsive -->
+        <div class="mb-6">
+          <label class="block text-sm font-medium text-gray-700 mb-3">Analysis Type</label>
+          <div class="analysis-mode-selector flex gap-3">
+            <button type="button" id="ltr-mode-btn" class="flex-1 p-4 border-2 rounded-lg cursor-pointer transition bg-white text-gray-900 border-blue-500 hover:shadow-md">
+              <div class="text-center">
+                <div class="text-2xl mb-2">🏠</div>
+                <div class="font-semibold">Long-Term Rental</div>
+                <div class="text-xs text-gray-600 mt-1">Traditional monthly</div>
+              </div>
+            </button>
+            
+            <button type="button" id="str-mode-btn" class="flex-1 p-4 border-2 rounded-lg cursor-pointer transition border-gray-300 hover:shadow-md">
+              <div class="text-center">
+                <div class="text-2xl mb-2">🏖️</div>
+                <div class="font-semibold">Short-Term Rental</div>
+                <div class="text-xs text-gray-600 mt-1">Airbnb analysis</div>
+                <div class="inline-block mt-1 px-2 py-0.5 bg-green-100 text-green-700 text-xs font-medium rounded-full">Pro</div>
+              </div>
+            </button>
+          </div>
+          <p class="text-xs text-gray-500 mt-2 text-center" id="str-trial-info">
+            <!-- Trial info will be populated here -->
+          </p>
+        </div>
+        
+        <!-- Hidden input for analysis mode -->
+        <input type="hidden" id="analysis-mode" value="ltr" />
+        
+        <form id="property-form">
+          <div class="space-y-6">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Street Address *</label>
+              <input type="text" id="street" class="form-input" placeholder="123 Main Street" required />
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">City *</label>
+                <input type="text" id="city" class="form-input" placeholder="Toronto" required />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">State/Province *</label>
+                <input type="text" id="state" class="form-input" placeholder="Ontario" required />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Country *</label>
+                <input type="text" id="country" class="form-input" placeholder="Canada" required />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Postal/Zip Code</label>
+                <input type="text" id="postal" class="form-input" placeholder="M5V 3A8" />
+              </div>
+            </div>
+
+            <!-- Hidden field to track selected mode -->
+            <input type="hidden" id="analysis-mode" value="ltr" />
+
+            <button type="submit" class="btn-primary w-full">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+              </svg>
+              Analyze Property
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+          </div>
+        </form>
+
+        <div class="mt-6 pt-4 border-t border-gray-200 flex justify-between">
+          <button id="back-to-dashboard" class="text-sm text-blue-600 hover:text-blue-800 flex items-center gap-1">
+            ← Back to Dashboard
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Property Confirmation Screen -->
+  <div id="confirmation-screen" class="min-h-screen bg-gradient-to-br from-blue-50 to-green-50 flex items-center justify-center p-6" style="display: none;">
+    <div class="max-w-2xl w-full">
+      <div class="card bg-white">
+        <div class="text-center mb-6">
+          <div class="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-4">
+            <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+            </svg>
+          </div>
+          <h2 class="text-2xl font-bold text-gray-900 mb-2">Confirm Property Analysis</h2>
+          <p class="text-gray-600">Review the property details before we analyze the investment potential</p>
+        </div>
+        
+        <div class="space-y-4">
+          <!-- Analysis Mode Selector -->
+          <div class="mb-4">
+            <div class="flex rounded-lg bg-gray-100 p-1">
+              <button type="button" id="confirm-ltr-mode-btn" class="flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all duration-200 bg-white text-gray-900 shadow-sm">
+                Traditional Rental (LTR)
+              </button>
+              <button type="button" id="confirm-str-mode-btn" class="flex-1 py-2 px-4 rounded-md text-sm font-medium text-gray-500 transition-all duration-200">
+                Short-Term Rental (STR)
+              </button>
+            </div>
+            <div id="confirm-str-trial-info" class="mt-2 text-sm text-center"></div>
+          </div>
+          
+          <!-- Property Image -->
+          <div id="confirm-image-container" class="rounded-lg overflow-hidden mb-4" style="display: none;">
+            <img id="confirm-image" src="" alt="Property" class="w-full h-64 object-cover">
+          </div>
+          
+          <!-- Property Address -->
+          <div class="bg-gray-50 rounded-lg p-4">
+            <h3 class="text-sm font-medium text-gray-700 mb-2">Property Address</h3>
+            <p id="confirm-address" class="text-lg font-semibold text-gray-900"></p>
+          </div>
+          
+          <!-- Property Details Grid -->
+          <div class="grid grid-cols-2 gap-4">
+            <div class="bg-gray-50 rounded-lg p-4">
+              <h3 class="text-sm font-medium text-gray-700 mb-1">Listing Price</h3>
+              <p id="confirm-price" class="text-xl font-bold text-green-600"></p>
+            </div>
+            <div class="bg-gray-50 rounded-lg p-4">
+              <h3 class="text-sm font-medium text-gray-700 mb-1">Property Taxes</h3>
+              <p id="confirm-taxes" class="text-xl font-bold text-gray-900"></p>
+            </div>
+            <div class="bg-gray-50 rounded-lg p-4">
+              <h3 class="text-sm font-medium text-gray-700 mb-1">Bedrooms</h3>
+              <p id="confirm-bedrooms" class="text-xl font-bold text-gray-900"></p>
+            </div>
+            <div class="bg-gray-50 rounded-lg p-4">
+              <h3 class="text-sm font-medium text-gray-700 mb-1">Bathrooms</h3>
+              <p id="confirm-bathrooms" class="text-xl font-bold text-gray-900"></p>
+            </div>
+            <div class="bg-gray-50 rounded-lg p-4">
+              <h3 class="text-sm font-medium text-gray-700 mb-1">Square Feet</h3>
+              <p id="confirm-sqft" class="text-xl font-bold text-gray-900"></p>
+            </div>
+            <div class="bg-gray-50 rounded-lg p-4">
+              <h3 class="text-sm font-medium text-gray-700 mb-1">Property Type</h3>
+              <p id="confirm-type" class="text-xl font-bold text-gray-900"></p>
+            </div>
+          </div>
+          
+          <!-- Condo Fees (if applicable) -->
+          <div id="confirm-condo-section" class="bg-yellow-50 rounded-lg p-4" style="display: none;">
+            <h3 class="text-sm font-medium text-yellow-800 mb-1">Monthly Condo Fees</h3>
+            <p id="confirm-condo-fees" class="text-xl font-bold text-yellow-800"></p>
+          </div>
+          
+          <!-- MLS Number -->
+          <div class="text-center text-sm text-gray-500">
+            MLS® Number: <span id="confirm-mls" class="font-medium"></span>
+          </div>
+        </div>
+        
+        <!-- Hidden input for analysis mode -->
+        <input type="hidden" id="confirm-analysis-mode" value="ltr" />
+        
+        <!-- Action Buttons -->
+        <div class="flex gap-4 mt-8">
+          <button id="cancel-analysis-btn" class="flex-1 btn-secondary">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+            </svg>
+            Cancel
+          </button>
+          <button id="confirm-analysis-btn" class="flex-1 btn-primary">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+            </svg>
+            Analyze Investment
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Analysis Results Screen -->
+  <div id="results-screen" class="min-h-screen bg-gray-50" style="display: none;">
+    <!-- Header -->
+    <div class="bg-white shadow-sm">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center py-4">
+          <div class="flex items-center gap-4">
+            <h1 class="text-2xl font-bold text-gray-900">Property Analysis Results</h1>
+          </div>
+          <nav class="hidden md:flex gap-6">
+            <a href="/roi-finder.html" class="text-gray-600 hover:text-gray-900">Dashboard</a>
+            <a href="/portfolio.html" class="text-gray-600 hover:text-gray-900">Portfolio</a>
+            <a href="/reports.html" class="text-gray-600 hover:text-gray-900">Reports</a>
+            <a href="/realtor-settings.html" class="text-gray-600 hover:text-gray-900">Branding</a>
+          </nav>
+          <div class="flex items-center gap-4">
+            <button id="back-to-dashboard-results" class="flex items-center gap-2 text-gray-600 hover:text-gray-900">
+              ← Back to Dashboard
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Results Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <!-- Property Info - Enhanced Visual Hierarchy -->
+      <div class="bg-white rounded-lg shadow mb-6">
+        <div class="px-6 py-4 border-b border-gray-200">
+          <div class="flex items-start justify-between">
+            <div>
+              <div class="flex items-center gap-3 flex-wrap">
+                <h2 class="text-3xl font-bold text-gray-900" id="result-address-header">123 Main St, Toronto, ON</h2>
+                <span class="property-badge" id="property-type-badge">Condo</span>
+              </div>
+              <p class="text-gray-600 mt-2">
+                <span id="result-bedrooms-bathrooms">6 Bedrooms • 3.5 Bathrooms</span> • 
+                <span id="result-sqft">2,100 sq ft</span>
+              </p>
+            </div>
+            <div class="text-right">
+              <div class="text-sm text-gray-500">Analysis Date</div>
+              <div class="font-semibold" id="result-date">-</div>
+            </div>
+          </div>
+        </div>
+        <div class="p-6">
+          <div id="property-details-extra" class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+            <!-- Extra property details will be added here -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Key Metrics -->
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+        <div class="metric-card">
+          <p class="text-sm text-gray-600">Market Value</p>
+          <p class="text-2xl font-bold text-gray-900" id="result-value">-</p>
+          <p class="text-xs text-gray-500 mt-1">Based on comparables</p>
+        </div>
+        <div class="metric-card">
+          <p class="text-sm text-gray-600">Monthly Rent</p>
+          <p class="text-2xl font-bold positive" id="result-rent">-</p>
+          <p class="text-xs text-gray-500 mt-1">Market rate</p>
+        </div>
+        <div class="metric-card">
+          <p class="text-sm text-gray-600">Cap Rate</p>
+          <p class="text-2xl font-bold text-green-600" id="result-cap-rate">-</p>
+          <p class="text-xs text-gray-500 mt-1">Net operating income</p>
+        </div>
+        <div class="metric-card">
+          <p class="text-sm text-gray-600">ROI Score</p>
+          <p class="text-4xl font-bold" id="result-roi-score">-</p>
+          <div class="mt-2">
+            <div class="w-full bg-gray-200 rounded-full h-2">
+              <div id="roi-bar" class="h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STR Comparison Section -->
+      <div id="str-comparison-container" class="mb-8" style="display: none;">
+        <!-- RentalComparisonView component will be mounted here -->
+      </div>
+      
+      <!-- Regulation Alert Banner (STR only) -->
+      <div id="regulation-alert-container" class="regulation-alert" style="display: none;">
+        <div class="flex items-start gap-3">
+          <svg class="regulation-alert-icon text-amber-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+          <div class="flex-1">
+            <h4 class="font-semibold text-amber-900 mb-1">Important Regulatory Notice</h4>
+            <p class="text-amber-800 text-sm" id="regulation-summary">-</p>
+            <div class="mt-2 space-y-1" id="regulation-warnings">
+              <!-- Warnings will be populated here -->
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Visual Comparison Chart -->
+      <div id="visual-comparison-section" class="bg-white rounded-lg shadow mb-8" style="display: none;">
+        <div class="px-6 py-4 border-b border-gray-200">
+          <h3 class="text-lg font-semibold text-gray-900">LTR vs STR Revenue Comparison</h3>
+          <div class="confidence-badge mt-2" id="confidence-badge">
+            <span>Confidence Level</span>
+          </div>
+        </div>
+        <div class="p-6">
+          <div class="chart-container" style="height: 400px;">
+            <canvas id="revenueComparisonChart"></canvas>
+          </div>
+          <div class="mt-4 text-center">
+            <p class="text-sm text-gray-600">Based on <span id="comparable-count">0</span> comparable properties</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Scenario Analysis -->
+      <div id="scenario-analysis-section" class="bg-white rounded-lg shadow mb-8" style="display: none;">
+        <div class="px-6 py-4 border-b border-gray-200">
+          <h3 class="text-lg font-semibold text-gray-900">Occupancy Scenario Analysis</h3>
+          <p class="text-sm text-gray-600 mt-1">Revenue projections at different occupancy rates</p>
+        </div>
+        <div class="p-6">
+          <div class="scenario-grid" id="scenario-grid">
+            <!-- Scenarios will be populated here -->
+          </div>
+          <div class="mt-6">
+            <p class="text-sm font-semibold text-gray-700">Break-even Analysis</p>
+            <p class="text-sm text-gray-600 mt-1">
+              Minimum occupancy needed to match LTR income: 
+              <span class="font-bold text-blue-600" id="breakeven-occupancy">-</span>
+            </p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Comparable Properties Gallery -->
+      <div id="comparable-gallery-section" class="bg-white rounded-lg shadow mb-8" style="display: none;">
+        <div class="px-6 py-4 border-b border-gray-200">
+          <h3 class="text-lg font-semibold text-gray-900">Comparable Airbnb Properties</h3>
+          <p class="text-sm text-gray-600 mt-1">Similar properties in your area</p>
+        </div>
+        <div class="p-6">
+          <div class="comparable-gallery" id="comparable-gallery">
+            <!-- Comparables will be populated here -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Charts Section -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <!-- Cash Flow Chart -->
+        <div class="bg-white rounded-xl shadow-lg p-6 cursor-pointer hover:shadow-xl transition-shadow" onclick="openChartDetails('cashFlow')">
+          <h3 class="text-lg font-semibold text-gray-900 mb-2">Monthly Cash Flow Analysis</h3>
+          <p class="text-sm text-gray-600 mb-4">Click for detailed breakdown</p>
+          <div class="chart-container">
+            <canvas id="cashFlowChart"></canvas>
+          </div>
+        </div>
+
+        <!-- ROI Comparison Chart -->
+        <div class="bg-white rounded-xl shadow-lg p-6 cursor-pointer hover:shadow-xl transition-shadow" onclick="openChartDetails('roiComparison')">
+          <h3 class="text-lg font-semibold text-gray-900 mb-2">Investment Strategy Comparison</h3>
+          <p class="text-sm text-gray-600 mb-4">Click for detailed breakdown</p>
+          <div class="chart-container">
+            <canvas id="roiComparisonChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Detailed Analysis -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Financial Breakdown -->
+        <div class="bg-white rounded-lg shadow">
+          <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center" style="background-color: #f3f4f6; min-height: 60px;">
+            <h3 class="text-lg font-semibold text-gray-900">Income & Expenses Breakdown</h3>
+            <div class="flex gap-2" style="background-color: #e5e7eb; padding: 4px; border-radius: 8px;">
+              <button id="edit-financials-btn" class="px-3 py-1 text-sm bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors" style="display: block !important; visibility: visible !important;">
+                Edit Values
+              </button>
+              <button id="reset-financials-btn" class="px-3 py-1 text-sm bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors" style="display: none;">
+                Reset to Original
+              </button>
+            </div>
+          </div>
+          <div class="p-6">
+            <div class="space-y-4">
+              <!-- Monthly Income -->
+              <div class="bg-green-50 p-3 rounded-lg border border-green-200 mb-4">
+                <h4 class="text-sm font-semibold text-green-800 mb-2">Monthly Income</h4>
+                <div class="flex justify-between items-center">
+                  <span class="text-gray-700">Gross Rental Income</span>
+                  <div>
+                    <span class="font-semibold text-green-700" id="breakdown-income">-</span>
+                    <input type="number" id="edit-income" class="hidden w-24 text-right px-2 py-1 border rounded text-sm font-semibold" step="100" min="0">
+                  </div>
+                </div>
+              </div>
+
+              <!-- Monthly Expenses -->
+              <div class="bg-red-50 p-3 rounded-lg border border-red-200 mb-4">
+                <h4 class="text-sm font-semibold text-red-800 mb-3">Monthly Expenses</h4>
+                <div class="space-y-2">
+                  <div class="flex justify-between items-center">
+                    <span class="text-gray-700">Mortgage Payment</span>
+                    <div>
+                      <span class="font-semibold text-red-700" id="breakdown-mortgage">$0</span>
+                      <input type="number" id="edit-mortgage" class="hidden w-24 text-right px-2 py-1 border rounded text-sm font-semibold" step="100" min="0" value="0">
+                    </div>
+                  </div>
+                  <div class="flex justify-between items-center">
+                    <span class="text-gray-700">Property Taxes</span>
+                    <div class="flex flex-col items-end">
+                      <span class="font-semibold text-red-700" id="breakdown-taxes">-</span>
+                      <span class="text-xs text-gray-500" id="breakdown-taxes-annual">($0/year)</span>
+                      <input type="number" id="edit-taxes" class="hidden w-24 text-right px-2 py-1 border rounded text-sm font-semibold" step="100" min="0" placeholder="Monthly amount">
+                    </div>
+                  </div>
+                  <div class="flex justify-between items-center">
+                    <span class="text-gray-700">Insurance</span>
+                    <div class="flex flex-col items-end">
+                      <span class="font-semibold text-red-700" id="breakdown-insurance">-</span>
+                      <span class="text-xs text-gray-500" id="breakdown-insurance-annual">($0/year)</span>
+                      <input type="number" id="edit-insurance" class="hidden w-24 text-right px-2 py-1 border rounded text-sm font-semibold" step="100" min="0" placeholder="Monthly amount">
+                    </div>
+                  </div>
+                  <div class="flex justify-between items-center">
+                    <span class="text-gray-700">HOA/Condo Fees</span>
+                    <div>
+                      <span class="font-semibold text-red-700" id="breakdown-hoa">-</span>
+                      <input type="number" id="edit-hoa" class="hidden w-24 text-right px-2 py-1 border rounded text-sm font-semibold" step="50" min="0">
+                    </div>
+                  </div>
+                  <div class="flex justify-between items-center">
+                    <span class="text-gray-700">Maintenance</span>
+                    <div class="flex flex-col items-end">
+                      <span class="font-semibold text-red-700" id="breakdown-maintenance">-</span>
+                      <span class="text-xs text-gray-500" id="breakdown-maintenance-annual">($0/year)</span>
+                      <input type="number" id="edit-maintenance" class="hidden w-24 text-right px-2 py-1 border rounded text-sm font-semibold" step="100" min="0" placeholder="Annual amount">
+                    </div>
+                  </div>
+                  <div class="flex justify-between items-center">
+                    <span class="text-gray-700">Property Management</span>
+                    <div class="flex flex-col items-end">
+                      <span class="font-semibold text-red-700" id="breakdown-management">-</span>
+                      <span class="text-xs text-gray-500" id="breakdown-management-rate">(8% of rent)</span>
+                      <input type="number" id="edit-management" class="hidden w-24 text-right px-2 py-1 border rounded text-sm font-semibold" step="0.5" min="0" max="20" placeholder="Percentage">
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="border-t pt-2">
+                <div class="flex justify-between">
+                  <span class="font-semibold text-gray-900">Net Operating Income (Monthly)</span>
+                  <span class="font-bold text-green-600" id="breakdown-net-income">-</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Investment Analysis -->
+        <div class="bg-white rounded-lg shadow">
+          <div class="px-6 py-4 border-b border-gray-200">
+            <h3 class="text-lg font-semibold text-gray-900">Rental Strategy Analysis</h3>
+          </div>
+          <div class="p-6">
+            <div class="space-y-4">
+              <!-- Long-term Rental -->
+              <div class="border rounded-lg p-4">
+                <h4 class="font-medium text-gray-900 mb-2">Long-term Rental</h4>
+                <div class="grid grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <span class="text-gray-600">Monthly Rent:</span>
+                    <span class="font-semibold ml-2" id="ltr-rent">-</span>
+                  </div>
+                  <div>
+                    <span class="text-gray-600">Annual NOI:</span>
+                    <span class="font-semibold ml-2" id="ltr-noi">-</span>
+                  </div>
+                  <div>
+                    <span class="text-gray-600">Cap Rate:</span>
+                    <span class="font-semibold ml-2" id="ltr-cap">-</span>
+                  </div>
+                  <div>
+                    <span class="text-gray-600">ROI:</span>
+                    <span class="font-semibold ml-2" id="ltr-roi">-</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Short-term Rental -->
+              <div class="border rounded-lg p-4">
+                <h4 class="font-medium text-gray-900 mb-2">Short-term Rental (Airbnb)</h4>
+                <div class="grid grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <span class="text-gray-600">Daily Rate:</span>
+                    <span class="font-semibold ml-2" id="str-rate">-</span>
+                  </div>
+                  <div>
+                    <span class="text-gray-600">Occupancy:</span>
+                    <span class="font-semibold ml-2" id="str-occupancy">-</span>
+                  </div>
+                  <div>
+                    <span class="text-gray-600">Annual Revenue:</span>
+                    <span class="font-semibold ml-2" id="str-revenue">-</span>
+                  </div>
+                  <div>
+                    <span class="text-gray-600">ROI:</span>
+                    <span class="font-semibold ml-2" id="str-roi">-</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Recommendation -->
+            <div class="mt-6 p-4 bg-blue-50 rounded-lg">
+              <h4 class="font-semibold text-blue-900 mb-1">Recommendation</h4>
+              <p class="text-sm text-blue-800" id="investment-recommendation">-</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Market Data (if available) -->
+      <div id="market-data-section" class="mt-8 bg-white rounded-lg shadow" style="display: none;">
+        <div class="px-6 py-4 border-b border-gray-200">
+          <h3 class="text-lg font-semibold text-gray-900">Market Analysis</h3>
+        </div>
+        <div class="p-6">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
+            <div>
+              <p class="text-gray-600">Average Days on Market</p>
+              <p class="font-semibold" id="days-on-market">-</p>
+            </div>
+            <div>
+              <p class="text-gray-600">Annual Appreciation</p>
+              <p class="font-semibold" id="appreciation-rate">-</p>
+            </div>
+            <div>
+              <p class="text-gray-600">Comparable Sales</p>
+              <p class="font-semibold" id="comparable-count">-</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Data Sources -->
+      <div class="mt-8 bg-white rounded-lg border border-gray-200 shadow-sm">
+        <div class="px-6 py-4 border-b border-gray-200 bg-gray-50 rounded-t-lg">
+          <h3 class="text-lg font-semibold text-gray-900 flex items-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+            </svg>
+            Data Sources & Research
+          </h3>
+        </div>
+        <div class="p-6">
+          <div class="space-y-3">
+            <div id="sources-container" class="space-y-2">
+              <!-- Sources will be populated dynamically -->
+            </div>
+            <div class="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+              <p class="text-sm text-blue-800"><strong>Note:</strong> All data is researched in real-time using AI-powered market analysis and publicly available sources.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Disclaimer Box -->
+      <div class="disclaimer-box">
+        <h4 class="font-semibold text-gray-700 mb-2">Important Disclaimers</h4>
+        <ul class="space-y-1 text-sm">
+          <li>• STR revenue projections are based on current market data and may vary due to seasonality, market conditions, and property management.</li>
+          <li>• Actual results depend on many factors including property condition, amenities, pricing strategy, and guest reviews.</li>
+          <li>• Regulatory compliance is your responsibility. Rules can change - always verify current regulations with local authorities.</li>
+          <li>• This analysis is for informational purposes only and should not be considered financial or legal advice.</li>
+          <li>• We recommend consulting with real estate professionals, accountants, and legal advisors before making investment decisions.</li>
+        </ul>
+      </div>
+      
+      <!-- Actions -->
+      <div class="mt-8 flex justify-center gap-4">
+        <button id="new-analysis-from-results" class="btn-primary">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+          </svg>
+          Analyze Another Property
+        </button>
+        <button id="save-analysis" class="btn-secondary">
+          Save Analysis
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chart Details Modal -->
+  <div id="chart-details-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 z-50 hidden">
+    <div class="flex items-center justify-center min-h-screen px-4">
+      <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-screen overflow-y-auto">
+        <div class="px-6 py-4 border-b border-gray-200">
+          <div class="flex justify-between items-center">
+            <h3 id="modal-title" class="text-lg font-semibold text-gray-900">Chart Details</h3>
+            <button onclick="closeChartDetails()" class="text-gray-400 hover:text-gray-600">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+        <div class="p-6">
+          <div id="modal-content">
+            <!-- Content will be populated dynamically -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
+
+  <script>
+    console.log('Script starting...');
+
+    // Helper function for safe number formatting
+    function safeToLocaleString(value, defaultValue = 0) {
+      if (value === null || value === undefined || isNaN(value)) {
+        return defaultValue.toLocaleString();
+      }
+      return Number(value).toLocaleString();
+    }
+    
+    // IMPROVEMENT 2: Consistent currency formatting
+    function formatCurrency(amount, showSign = false, alwaysShowSign = false) {
+      const num = parseFloat(amount) || 0;
+      const isNegative = num < 0;
+      const absNum = Math.abs(num);
+      
+      // Format with Canadian dollar symbol
+      let formatted = `C$${absNum.toLocaleString('en-CA', { 
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0 
+      })}`;
+      
+      // Add sign if needed
+      if (isNegative) {
+        formatted = `-${formatted}`;
+      } else if ((showSign && num > 0) || alwaysShowSign) {
+        formatted = `+${formatted}`;
+      }
+      
+      return formatted;
+    }
+    
+    // CSS class helper for consistent coloring
+    function getCurrencyClass(amount) {
+      const num = parseFloat(amount) || 0;
+      if (num > 0) return 'currency-positive';
+      if (num < 0) return 'currency-negative';
+      return 'currency-neutral';
+    }
+
+    // Global state
+    let currentUser = null;
+    let userProfile = null;
+    let currentView = 'loading';
+    let authMode = 'signin';
+    let charts = {};
+    let currentAnalysis = null;
+    let originalAnalysis = null;
+    let editMode = false;
+    
+    // IMPROVEMENT 4: Progress tracking for loading state
+    let analysisStartTime = null;
+    let progressInterval = null;
+    
+    function startProgressTracking() {
+      analysisStartTime = Date.now();
+      let currentStep = 2;
+      
+      // Show progress indicator
+      document.getElementById('progress-indicator').style.display = 'flex';
+      document.getElementById('time-estimate').style.display = 'block';
+      
+      // Update time every second
+      progressInterval = setInterval(() => {
+        const elapsed = Math.floor((Date.now() - analysisStartTime) / 1000);
+        
+        // Update current step time
+        const currentTimeEl = document.getElementById(`step-${currentStep}-time`);
+        if (currentTimeEl) {
+          currentTimeEl.textContent = `${elapsed}s`;
+        }
+        
+        // Check if STR mode
+        const isSTR = document.getElementById('confirm-analysis-mode')?.value === 'str' || 
+                      document.getElementById('analysis-mode')?.value === 'str';
+        
+        // Progress through steps based on time
+        if (elapsed > 15 && currentStep === 2) {
+          completeStep(2);
+          activateStep(3);
+          currentStep = 3;
+        } else if (elapsed > 25 && currentStep === 3) {
+          completeStep(3);
+          activateStep(4);
+          currentStep = 4;
+        } else if (elapsed > 35 && currentStep === 4 && isSTR) {
+          completeStep(4);
+          // Activate STR step if in STR mode
+          const strStep = document.getElementById('step-str');
+          if (strStep && strStep.style.display !== 'none') {
+            activateStep('str');
+            currentStep = 'str';
+          }
+        }
+      }, 1000);
+    }
+    
+    function completeStep(stepNum) {
+      const step = document.getElementById(`step-${stepNum}`);
+      if (step) {
+        step.classList.remove('active', 'pending');
+        step.classList.add('completed');
+        step.querySelector('.progress-icon').textContent = '✓';
+      }
+    }
+    
+    function activateStep(stepNum) {
+      const step = document.getElementById(`step-${stepNum}`);
+      if (step) {
+        step.classList.remove('pending', 'completed');
+        step.classList.add('active');
+        const elapsed = Math.floor((Date.now() - analysisStartTime) / 1000);
+        document.getElementById(`step-${stepNum}-time`).textContent = `${elapsed}s`;
+      }
+    }
+    
+    function stopProgressTracking() {
+      if (progressInterval) {
+        clearInterval(progressInterval);
+        progressInterval = null;
+      }
+      // Complete all steps
+      for (let i = 1; i <= 4; i++) {
+        completeStep(i);
+      }
+    }
+    
+    function showLoadingWithProgress(propertyData) {
+      // Update loading screen with property info
+      document.getElementById('loading-title').textContent = 'Analyzing Property Investment';
+      
+      // Check if STR mode is enabled
+      const isSTR = document.getElementById('confirm-analysis-mode')?.value === 'str' || 
+                    document.getElementById('analysis-mode')?.value === 'str';
+      
+      if (propertyData) {
+        const addressEl = document.getElementById('loading-address');
+        if (addressEl && propertyData.address) {
+          addressEl.textContent = `${propertyData.address.street}, ${propertyData.address.city}, ${propertyData.address.state}`;
+        }
+        
+        // Update step 1 with property details
+        const step1Subtitle = document.querySelector('#step-1 .progress-subtitle');
+        if (step1Subtitle) {
+          const bedrooms = propertyData.bedrooms || '?';
+          const bathrooms = propertyData.bathrooms || '?';
+          const sqft = propertyData.sqft ? `${propertyData.sqft.toLocaleString()} sq ft` : 'Size unknown';
+          step1Subtitle.textContent = `${bedrooms} bedrooms, ${bathrooms} bathrooms, ${sqft}`;
+        }
+      }
+      
+      // Show/hide STR step based on mode
+      const strStep = document.getElementById('step-str');
+      if (strStep) {
+        strStep.style.display = isSTR ? 'flex' : 'none';
+      }
+      
+      // Update time estimate based on mode
+      const timeEstimate = document.getElementById('time-estimate');
+      if (timeEstimate) {
+        timeEstimate.style.display = 'block';
+        timeEstimate.innerHTML = isSTR ? 
+          '<p>This analysis typically takes 30-60 seconds</p><p class="mt-1">Finding comparable Airbnb properties in your area...</p>' :
+          '<p>This analysis typically takes 20-30 seconds</p><p class="mt-1">Powered by Perplexity AI for real-time market data</p>';
+      }
+      
+      // Reset all steps
+      document.querySelectorAll('.progress-step').forEach((step, index) => {
+        step.classList.remove('active', 'completed');
+        step.classList.add(index === 0 ? 'completed' : index === 1 ? 'active' : 'pending');
+        const icon = step.querySelector('.progress-icon');
+        if (icon) {
+          icon.textContent = index === 0 ? '✓' : (index + 1).toString();
+        }
+      });
+      
+      // Show loading screen with progress indicator visible
+      showView('loading');
+      document.getElementById('progress-indicator').style.display = 'flex';
+      
+      // Start progress tracking
+      startProgressTracking();
+    }
+
+    // Initialize app
+    async function initApp() {
+      try {
+        console.log('Initializing app...');
+        
+        // Load Firebase config
+        const response = await fetch('/api/config');
+        const config = await response.json();
+        console.log('Config loaded:', config);
+        
+        // Initialize Firebase
+        firebase.initializeApp(config.firebase);
+        console.log('Firebase initialized');
+        
+        // Set up auth listener
+        firebase.auth().onAuthStateChanged(async (user) => {
+          console.log('Auth state changed:', user);
+          if (user) {
+            currentUser = user;
+            console.log('[StarterPack] User logged in:', user.email, user.uid);
+            
+            userProfile = await loadUserProfile(user.uid);
+            console.log('[StarterPack] User profile loaded:', userProfile);
+            
+            // Always store auth token in localStorage for extension access
+            try {
+              console.log('[StarterPack] Getting ID token...');
+              const token = await user.getIdToken();
+              console.log('[StarterPack] Got token:', token ? 'Yes' : 'No', 'Length:', token ? token.length : 0);
+              
+              localStorage.setItem('starterpack_auth_token', token);
+              localStorage.setItem('starterpack_user', JSON.stringify({
+                uid: user.uid,
+                email: user.email,
+                displayName: user.displayName
+              }));
+              console.log('[StarterPack] Auth token stored in localStorage');
+              
+              // Verify storage
+              const storedToken = localStorage.getItem('starterpack_auth_token');
+              console.log('[StarterPack] Verified token in localStorage:', storedToken ? 'Yes' : 'No');
+            } catch (error) {
+              console.error('[StarterPack] Failed to store auth token:', error);
+            }
+            
+            // Send auth token to extension if present
+            const urlParams = new URLSearchParams(window.location.search);
+            const fromExtension = urlParams.get('extension');
+            if (fromExtension === 'true') {
+              try {
+                const token = await user.getIdToken();
+                // Send message to extension
+                if (window.opener) {
+                  window.opener.postMessage({
+                    type: 'AUTH_TOKEN_UPDATE',
+                    token: token,
+                    user: {
+                      uid: user.uid,
+                      email: user.email,
+                      displayName: user.displayName
+                    }
+                  }, '*');
+                }
+              } catch (error) {
+                console.error('Failed to send token to extension:', error);
+              }
+            }
+            
+            // Check if viewing a specific analysis
+            const viewId = urlParams.get('view');
+            if (viewId) {
+                await loadAnalysisById(viewId);
+              } else {
+                // Check if coming from extension
+                const urlParams = new URLSearchParams(window.location.search);
+                const isFromExtension = urlParams.get('fromExtension') === 'true';
+                
+                if (isFromExtension) {
+                  console.log('[StarterPack] Coming from extension, preparing confirmation');
+                  
+                  // Parse city to remove province if included
+                  let city = urlParams.get('city') || '';
+                  if (city.includes(',')) {
+                    city = city.split(',')[0].trim();
+                  }
+                  
+                  // Construct address object from URL params
+                  const address = {
+                    street: urlParams.get('street') || '',
+                    city: city,
+                    state: urlParams.get('state') || '',
+                    country: urlParams.get('country') || 'Canada',
+                    postal: urlParams.get('postal') || ''
+                  };
+                  
+                  // Construct property data
+                  const propertyData = {
+                    address: address,
+                    price: parseInt(urlParams.get('price')) || 0,
+                    bedrooms: parseInt(urlParams.get('bedrooms')) || 0,
+                    bathrooms: parseFloat(urlParams.get('bathrooms')) || 0,
+                    sqft: parseInt(urlParams.get('sqft')) || 0,
+                    propertyTaxes: parseInt(urlParams.get('taxes')) || 0,
+                    condoFees: parseInt(urlParams.get('condoFees')) || 0,
+                    mlsNumber: urlParams.get('mlsNumber') || '',
+                    propertyType: urlParams.get('propertyType') || '',
+                    mainImage: urlParams.get('image') || null
+                  };
+                  
+                  // Store property data for later use
+                  window.pendingPropertyData = propertyData;
+                  
+                  console.log('[StarterPack] Property data from extension:', propertyData);
+                  console.log('[StarterPack] Image URL from params:', propertyData.mainImage);
+                  
+                  // Show property confirmation screen
+                  showPropertyConfirmation(propertyData);
+                } else {
+                  showView('dashboard');
+                  loadUserAnalyses();
+                }
+              }
+          } else {
+            currentUser = null;
+            userProfile = null;
+            showView('auth');
+          }
+        });
+        
+      } catch (error) {
+        console.error('Init error:', error);
+        alert('Failed to initialize app: ' + error.message);
+      }
+    }
+
+    // Load user profile
+    async function loadUserProfile(userId) {
+      try {
+        const db = firebase.firestore();
+        const doc = await db.collection('users').doc(userId).get();
+        
+        if (doc.exists) {
+          return { id: doc.id, ...doc.data() };
+        } else {
+          // Create new profile
+          const newProfile = {
+            email: firebase.auth().currentUser.email,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+            subscriptionStatus: 'trial',
+            subscriptionTier: 'trial',
+            monthlyAnalysisCount: 0,
+            monthlyAnalysisLimit: 3,
+            trialEndsAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+          };
+          
+          await db.collection('users').doc(userId).set(newProfile);
+          return { id: userId, ...newProfile };
+        }
+      } catch (error) {
+        console.error('Profile load error:', error);
+        return null;
+      }
+    }
+
+    // Load user analyses
+    async function loadUserAnalyses() {
+      try {
+        const db = firebase.firestore();
+        const snapshot = await db.collection('analyses')
+          .where('userId', '==', currentUser.uid)
+          .orderBy('createdAt', 'desc')
+          .limit(10)
+          .get();
+        
+        const analyses = [];
+        snapshot.forEach(doc => {
+          analyses.push({ id: doc.id, ...doc.data() });
+        });
+        
+        // Update dashboard
+        document.getElementById('total-analyses').textContent = analyses.length;
+        
+        // Display analyses list
+        const listEl = document.getElementById('analyses-list');
+        if (analyses.length > 0) {
+          listEl.innerHTML = analyses.map(analysis => `
+            <div class="px-6 py-4 hover:bg-gray-50 cursor-pointer" onclick="viewAnalysis('${analysis.id}')">
+              <div class="flex justify-between items-center">
+                <div>
+                  <p class="font-medium text-gray-900">${analysis.property_address || 'Unknown Address'}</p>
+                  <p class="text-sm text-gray-500">ROI: ${analysis.roi_percentage}% • ${new Date(analysis.analysis_timestamp || analysis.createdAt?.toDate()).toLocaleDateString()}</p>
+                </div>
+                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
+              </div>
+            </div>
+          `).join('');
+        }
+      } catch (error) {
+        console.error('Load analyses error:', error);
+      }
+    }
+
+    // View analysis
+    async function viewAnalysis(analysisId) {
+      try {
+        const db = firebase.firestore();
+        const doc = await db.collection('analyses').doc(analysisId).get();
+        
+        if (doc.exists) {
+          const analysis = doc.data();
+          displayResults(analysis);
+          showView('results');
+        }
+      } catch (error) {
+        console.error('View analysis error:', error);
+        alert('Failed to load analysis');
+      }
+    }
+    
+    // Load specific analysis by property ID
+    async function loadAnalysisById(propertyId) {
+      try {
+        const db = firebase.firestore();
+        
+        // Get the latest analysis for this property
+        const analysisSnapshot = await db.collection('analyses')
+          .where('propertyId', '==', propertyId)
+          .where('userId', '==', currentUser.uid)
+          .orderBy('createdAt', 'desc')
+          .limit(1)
+          .get();
+        
+        if (!analysisSnapshot.empty) {
+          const analysis = analysisSnapshot.docs[0].data();
+          displayResults(analysis);
+          showView('results');
+        } else {
+          console.error('No analysis found for this property');
+          showView('dashboard');
+        }
+      } catch (error) {
+        console.error('Error loading analysis:', error);
+        showView('dashboard');
+      }
+    }
+
+    // IMPROVEMENT 2: Consistent currency formatting function
+    function formatCurrency(amount, showSign = false, alwaysShowSign = false) {
+      const num = parseFloat(amount) || 0;
+      const isNegative = num < 0;
+      const absNum = Math.abs(num);
+      
+      // Format with Canadian dollar symbol
+      let formatted = new Intl.NumberFormat('en-CA', {
+        style: 'currency',
+        currency: 'CAD',
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+      }).format(absNum);
+      
+      // Add sign if needed
+      if (isNegative) {
+        formatted = `-${formatted}`;
+      } else if ((showSign && num > 0) || alwaysShowSign) {
+        formatted = `+${formatted}`;
+      }
+      
+      return formatted;
+    }
+    
+    // CSS class helper for consistent coloring
+    function getCurrencyClass(amount) {
+      const num = parseFloat(amount) || 0;
+      if (num > 0) return 'currency-positive';
+      if (num < 0) return 'currency-negative';
+      return 'currency-neutral';
+    }
+    
+    // Show property confirmation screen
+    function showPropertyConfirmation(propertyData) {
+      
+      // Format address
+      const fullAddress = `${propertyData.address.street}, ${propertyData.address.city}, ${propertyData.address.state} ${propertyData.address.postal}`;
+      document.getElementById('confirm-address').textContent = fullAddress;
+      
+      // Set property details
+      document.getElementById('confirm-price').textContent = formatCurrency(propertyData.price);
+      document.getElementById('confirm-taxes').textContent = propertyData.propertyTaxes ? 
+        `${formatCurrency(propertyData.propertyTaxes)}/year` : 'Not available';
+      document.getElementById('confirm-bedrooms').textContent = propertyData.bedrooms || 'N/A';
+      document.getElementById('confirm-bathrooms').textContent = propertyData.bathrooms || 'N/A';
+      document.getElementById('confirm-sqft').textContent = propertyData.sqft ? 
+        `${safeToLocaleString(propertyData.sqft)} sq ft` : 'Not available';
+      document.getElementById('confirm-type').textContent = propertyData.propertyType || 'Residential';
+      document.getElementById('confirm-mls').textContent = propertyData.mlsNumber || 'N/A';
+      
+      // Show condo fees if applicable
+      if (propertyData.condoFees && propertyData.condoFees > 0) {
+        document.getElementById('confirm-condo-section').style.display = 'block';
+        document.getElementById('confirm-condo-fees').textContent = `${formatCurrency(propertyData.condoFees)}/month`;
+      } else {
+        document.getElementById('confirm-condo-section').style.display = 'none';
+      }
+      
+      // Show property image if available
+      if (propertyData.mainImage) {
+        document.getElementById('confirm-image-container').style.display = 'block';
+        document.getElementById('confirm-image').src = propertyData.mainImage;
+      } else {
+        document.getElementById('confirm-image-container').style.display = 'none';
+      }
+      
+      // Show confirmation screen
+      showView('confirmation');
+    }
+    
+    // Show specific view
+    function showView(viewName) {
+      console.log('Showing view:', viewName);
+      
+      // Hide all screens
+      document.getElementById('loading-screen').style.display = 'none';
+      document.getElementById('auth-screen').style.display = 'none';
+      document.getElementById('dashboard-screen').style.display = 'none';
+      document.getElementById('property-form-screen').style.display = 'none';
+      document.getElementById('confirmation-screen').style.display = 'none';
+      document.getElementById('results-screen').style.display = 'none';
+      
+      // Show target screen
+      switch(viewName) {
+        case 'auth':
+          document.getElementById('auth-screen').style.display = 'flex';
+          updateAuthMode();
+          break;
+        case 'dashboard':
+          document.getElementById('dashboard-screen').style.display = 'block';
+          updateDashboard();
+          break;
+        case 'property-form':
+          document.getElementById('property-form-screen').style.display = 'flex';
+          // Reset to LTR mode by default
+          document.getElementById('analysis-mode').value = 'ltr';
+          const ltrBtn = document.getElementById('ltr-mode-btn');
+          const strBtn = document.getElementById('str-mode-btn');
+          if (ltrBtn && strBtn) {
+            ltrBtn.classList.add('bg-white', 'text-gray-900', 'shadow-sm');
+            ltrBtn.classList.remove('text-gray-500');
+            strBtn.classList.remove('bg-white', 'text-gray-900', 'shadow-sm');
+            strBtn.classList.add('text-gray-500');
+          }
+          updateStrTrialInfo();
+          break;
+        case 'confirmation':
+          document.getElementById('confirmation-screen').style.display = 'flex';
+          // Reset to LTR mode by default
+          document.getElementById('confirm-analysis-mode').value = 'ltr';
+          // Use the globally declared button references
+          if (confirmLtrBtn && confirmStrBtn) {
+            confirmLtrBtn.classList.add('bg-white', 'text-gray-900', 'shadow-sm');
+            confirmLtrBtn.classList.remove('text-gray-500');
+            confirmStrBtn.classList.remove('bg-white', 'text-gray-900', 'shadow-sm');
+            confirmStrBtn.classList.add('text-gray-500');
+          }
+          updateConfirmStrTrialInfo();
+          break;
+        case 'results':
+          document.getElementById('results-screen').style.display = 'block';
+          break;
+        default:
+          document.getElementById('loading-screen').style.display = 'flex';
+      }
+      
+      currentView = viewName;
+    }
+
+    // Update auth mode
+    function updateAuthMode() {
+      const isSignUp = authMode === 'signup';
+      
+      document.getElementById('auth-title').textContent = isSignUp ? 'Create Account' : 'Welcome Back';
+      document.getElementById('auth-subtitle').textContent = isSignUp 
+        ? 'Start your 7-day free trial with 3 analyses'
+        : 'Sign in to access your property analyses';
+      document.getElementById('name-field').style.display = isSignUp ? 'block' : 'none';
+      document.getElementById('auth-button-text').textContent = isSignUp ? 'Create Account' : 'Sign In';
+      document.getElementById('auth-switch-text').textContent = isSignUp 
+        ? 'Already have an account? ' 
+        : "Don't have an account? ";
+      document.getElementById('auth-switch').textContent = isSignUp ? 'Sign In' : 'Sign Up';
+    }
+
+    // Update dashboard
+    function updateDashboard() {
+      if (currentUser) {
+        document.getElementById('user-email').textContent = currentUser.email;
+      }
+      
+      if (userProfile) {
+        document.getElementById('analysis-count').textContent = 
+          `${userProfile.monthlyAnalysisCount || 0} / ${userProfile.monthlyAnalysisLimit || 3}`;
+        document.getElementById('subscription-tier').textContent = 
+          (userProfile.subscriptionTier || 'Trial').charAt(0).toUpperCase() + (userProfile.subscriptionTier || 'trial').slice(1);
+      }
+    }
+
+    // Update STR trial info
+    function updateStrTrialInfo() {
+      const infoEl = document.getElementById('str-trial-info');
+      if (!userProfile) return;
+      
+      const currentMode = document.getElementById('analysis-mode').value;
+      
+      if (currentMode === 'ltr') {
+        infoEl.innerHTML = '<span class="text-gray-600">Traditional long-term rental analysis</span>';
+        return;
+      }
+      
+      if (userProfile.subscriptionTier === 'pro' || userProfile.subscriptionTier === 'enterprise') {
+        infoEl.innerHTML = '<span class="text-green-600">✓ STR analysis included with your Pro subscription</span>';
+      } else {
+        const trialsUsed = userProfile.strTrialUsed || 0;
+        const trialsRemaining = Math.max(0, 5 - trialsUsed);
+        
+        if (trialsRemaining > 0) {
+          infoEl.innerHTML = `<span class="text-blue-600">Free trial: ${trialsRemaining} STR analyses remaining</span>`;
+        } else {
+          infoEl.innerHTML = '<span class="text-gray-600">Free STR trial expired. <a href="#" class="text-blue-600 underline">Upgrade to Pro</a> for unlimited STR analysis</span>';
+          // Switch back to LTR mode if no trials remaining
+          document.getElementById('analysis-mode').value = 'ltr';
+          document.getElementById('ltr-mode-btn').click();
+        }
+      }
+    }
+    
+    // Update STR trial info for confirmation screen
+    function updateConfirmStrTrialInfo() {
+      const infoEl = document.getElementById('confirm-str-trial-info');
+      if (!userProfile) return;
+      
+      const currentMode = document.getElementById('confirm-analysis-mode').value;
+      
+      if (currentMode === 'ltr') {
+        infoEl.innerHTML = '<span class="text-gray-600">Traditional long-term rental analysis</span>';
+        return;
+      }
+      
+      if (userProfile.subscriptionTier === 'pro' || userProfile.subscriptionTier === 'enterprise') {
+        infoEl.innerHTML = '<span class="text-green-600">✓ STR analysis included with your Pro subscription</span>';
+      } else {
+        const trialsUsed = userProfile.strTrialUsed || 0;
+        const trialsRemaining = Math.max(0, 5 - trialsUsed);
+        
+        if (trialsRemaining > 0) {
+          infoEl.innerHTML = `<span class="text-blue-600">Free trial: ${trialsRemaining} STR analyses remaining</span>`;
+        } else {
+          infoEl.innerHTML = '<span class="text-gray-600">Free STR trial expired. <a href="#" class="text-blue-600 underline">Upgrade to Pro</a> for unlimited STR analysis</span>';
+          // Switch back to LTR mode if no trials remaining
+          document.getElementById('confirm-analysis-mode').value = 'ltr';
+          document.getElementById('confirm-ltr-mode-btn').click();
+        }
+      }
+    }
+
+    // Property analysis function using Railway API
+    async function analyzeProperty(address, propertyData = null) {
+      try {
+        console.log('Starting property analysis for:', address);
+        
+        // Format address
+        const fullAddress = typeof address === 'string' ? address : 
+          `${address.street}, ${address.city}, ${address.state}, ${address.country} ${address.postal}`.trim();
+        
+        // Show progress modal
+        const modalContainer = document.getElementById('progress-modal-container');
+        let progressModal = null;
+        
+        if (window.ProgressModal && modalContainer) {
+          ReactDOM.render(
+            React.createElement(ProgressModal, {
+              isOpen: true,
+              progress: 0,
+              message: 'Starting analysis...',
+              onCancel: () => {
+                if (window.apiClient) apiClient.cancelActiveJobs();
+                ReactDOM.unmountComponentAtNode(modalContainer);
+              }
+            }),
+            modalContainer
+          );
+        }
+        
+        // Set up progress listener
+        const unsubscribe = window.apiClient ? apiClient.onProgress((data) => {
+          if (modalContainer && window.ProgressModal) {
+            ReactDOM.render(
+              React.createElement(ProgressModal, {
+                isOpen: true,
+                progress: data.progress || 0,
+                message: data.message || 'Processing...',
+                onCancel: () => {
+                  apiClient.cancelActiveJobs();
+                  ReactDOM.unmountComponentAtNode(modalContainer);
+                }
+              }),
+              modalContainer
+            );
+          }
+        }) : () => {};
+        
+        try {
+          let result;
+          
+          if (window.apiClient && window.shouldUseRailway()) {
+            // Use Railway API through the API client
+            result = await apiClient.analyzeProperty({
+              propertyAddress: fullAddress,
+              propertyData: propertyData,
+              requestType: 'authenticated',
+              includeStrAnalysis: document.getElementById('analysis-mode')?.value === 'str'
+            });
+          } else {
+            // Fallback to Vercel API
+            const response = await fetch('/api/analyze-property', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                userId: currentUser.uid,
+                propertyAddress: fullAddress,
+                userEmail: currentUser.email,
+                userName: currentUser.displayName,
+                requestType: 'authenticated',
+                includeStrAnalysis: document.getElementById('analysis-mode')?.value === 'str',
+                propertyData: propertyData
+              })
+            });
+            
+            if (!response.ok) {
+              throw new Error('Analysis API request failed');
+            }
+            
+            const apiResult = await response.json();
+            if (apiResult.success && apiResult.data) {
+              result = apiResult.data;
+            } else {
+              throw new Error(apiResult.error || 'Analysis failed');
+            }
+          }
+          
+          // Clean up
+          unsubscribe();
+          if (modalContainer) {
+            ReactDOM.unmountComponentAtNode(modalContainer);
+          }
+          
+          console.log('Analysis result:', result);
+          return result;
+          
+        } catch (error) {
+          // Clean up on error
+          unsubscribe();
+          if (modalContainer) {
+            ReactDOM.unmountComponentAtNode(modalContainer);
+          }
+          throw error;
+        }
+        
+      } catch (error) {
+        console.error('Analysis error:', error);
+        throw error;
+      }
+    }
+
+    // Display analysis results with charts
+    function displayResults(analysis) {
+      // Store analysis data
+      currentAnalysis = JSON.parse(JSON.stringify(analysis)); // Deep copy
+      originalAnalysis = JSON.parse(JSON.stringify(analysis)); // Store original for reset
+      
+      // IMPROVEMENT 1: Enhanced property header
+      const addressHeader = document.getElementById('result-address-header');
+      if (addressHeader) {
+        // Extract city and province only for cleaner display
+        const fullAddress = analysis.property_address || '';
+        const parts = fullAddress.split(',');
+        const displayAddress = parts.length >= 2 ? 
+          `${parts[0].trim()}, ${parts[1].trim()}` : 
+          fullAddress;
+        addressHeader.textContent = displayAddress;
+      }
+      
+      // Property type badge
+      const typeBadge = document.getElementById('property-type-badge');
+      if (typeBadge && analysis.property_details?.property_type) {
+        typeBadge.textContent = analysis.property_details.property_type;
+        typeBadge.style.display = 'inline-block';
+      }
+      
+      // Bedrooms and bathrooms with detail
+      const bedroomBathroom = document.getElementById('result-bedrooms-bathrooms');
+      if (bedroomBathroom) {
+        const bedrooms = analysis.property_details?.bedrooms || 0;
+        const bathrooms = analysis.property_details?.bathrooms || 0;
+        bedroomBathroom.textContent = `${bedrooms} Bedrooms • ${bathrooms} Bathrooms`;
+      }
+      
+      // Square footage
+      const sqftEl = document.getElementById('result-sqft');
+      if (sqftEl && analysis.property_details?.square_feet) {
+        sqftEl.textContent = `${analysis.property_details.square_feet.toLocaleString()} sq ft`;
+      } else if (sqftEl && analysis.property_details?.sqft) {
+        sqftEl.textContent = `${analysis.property_details.sqft.toLocaleString()} sq ft`;
+      }
+      
+      // Analysis date
+      document.getElementById('result-date').textContent = new Date(analysis.analysis_timestamp || analysis.createdAt?.toDate()).toLocaleDateString();
+      
+      // Extra property details
+      const detailsEl = document.getElementById('property-details-extra');
+      if (analysis.property_details.bedrooms || analysis.property_details.square_feet) {
+        detailsEl.innerHTML = `
+          ${analysis.property_details.bedrooms ? `<div><span class="text-gray-600">Bedrooms:</span> <span class="font-semibold">${analysis.property_details.bedrooms}</span></div>` : ''}
+          ${analysis.property_details.bathrooms ? `<div><span class="text-gray-600">Bathrooms:</span> <span class="font-semibold">${analysis.property_details.bathrooms}</span></div>` : ''}
+          ${analysis.property_details.square_feet ? `<div><span class="text-gray-600">Square Feet:</span> <span class="font-semibold">${safeToLocaleString(analysis.property_details.square_feet)}</span></div>` : ''}
+          ${analysis.property_details.property_type ? `<div><span class="text-gray-600">Type:</span> <span class="font-semibold">${analysis.property_details.property_type}</span></div>` : ''}
+        `;
+      }
+      
+      // Key metrics with IMPROVEMENT 2: Consistent currency formatting
+      document.getElementById('result-value').textContent = formatCurrency(analysis.property_details?.estimated_value || 0);
+      document.getElementById('result-rent').textContent = formatCurrency(analysis.long_term_rental?.monthly_rent || 0) + '/mo';
+      document.getElementById('result-cap-rate').textContent = analysis.roi_percentage + '%';
+      
+      // Update header to show analysis type
+      const resultsTitle = document.querySelector('#results-screen h1');
+      if (resultsTitle) {
+        if (analysis.short_term_rental) {
+          resultsTitle.textContent = 'Investment Analysis Results (LTR + STR)';
+        } else {
+          resultsTitle.textContent = 'Investment Analysis Results (LTR Only)';
+        }
+      }
+      
+      // ROI Grade with color
+      const roiGrade = document.getElementById('result-roi-score');
+      let grade, color, width;
+      const roi = parseFloat(analysis.roi_percentage);
+      
+      if (roi >= 8) {
+        grade = 'A+'; color = '#10b981'; width = '100%';
+      } else if (roi >= 6) {
+        grade = 'A'; color = '#22c55e'; width = '85%';
+      } else if (roi >= 4) {
+        grade = 'B'; color = '#3b82f6'; width = '70%';
+      } else if (roi >= 2) {
+        grade = 'C'; color = '#f59e0b'; width = '50%';
+      } else {
+        grade = 'D'; color = '#ef4444'; width = '30%';
+      }
+      
+      roiGrade.textContent = grade;
+      roiGrade.style.color = color;
+      const roiBar = document.getElementById('roi-bar');
+      roiBar.style.backgroundColor = color;
+      roiBar.style.width = width;
+      
+      // Check if STR analysis is included
+      const strContainer = document.getElementById('str-comparison-container');
+      if (analysis.short_term_rental && strContainer) {
+        console.log('STR analysis data found:', analysis.short_term_rental);
+        strContainer.style.display = 'block';
+        
+        // Mount RentalComparisonView component if available
+        if (window.RentalComparisonView && window.ReactDOM) {
+          const comparisonData = {
+            longTermRental: analysis.long_term_rental,
+            shortTermRental: analysis.short_term_rental,
+            comparison: analysis.comparison,
+            costs: analysis.costs,
+            propertyDetails: analysis.property_details
+          };
+          
+          ReactDOM.render(
+            React.createElement(RentalComparisonView, { data: comparisonData }),
+            strContainer
+          );
+        }
+      } else {
+        if (strContainer) strContainer.style.display = 'none';
+      }
+      
+      // Financial breakdown - correctly interpret annual vs monthly
+      const monthlyRent = analysis.long_term_rental?.monthly_rent || 0;
+      const mortgagePayment = analysis.costs?.mortgage_monthly || 0;
+      
+      // Determine if values are realistic annual amounts or likely monthly
+      const propertyValue = analysis.property_details?.estimated_value || 850000;
+      let monthlyTaxes, monthlyInsurance;
+      
+      // Property tax validation
+      const taxAnnual = analysis.costs?.property_tax_annual || 0;
+      if (taxAnnual > propertyValue * 0.02) {
+        // This is likely monthly, not annual
+        monthlyTaxes = taxAnnual;
+      } else {
+        // This is annual, convert to monthly
+        monthlyTaxes = Math.round(taxAnnual / 12);
+      }
+      
+      // Insurance validation  
+      const insuranceAnnual = analysis.costs?.insurance_annual || 0;
+      if (insuranceAnnual > propertyValue * 0.01) {
+        // This is likely monthly, not annual
+        monthlyInsurance = insuranceAnnual;
+      } else {
+        // This is annual, convert to monthly
+        monthlyInsurance = Math.round(insuranceAnnual / 12);
+      }
+      
+      const annualMaintenance = analysis.costs?.maintenance_annual || 0;
+      const monthlyHoa = analysis.costs?.hoa_monthly || 0;
+      
+      // Monthly Income with IMPROVEMENT 2: Consistent currency formatting
+      document.getElementById('breakdown-income').textContent = formatCurrency(monthlyRent);
+      
+      // Monthly Expenses with IMPROVEMENT 2: Consistent currency formatting
+      document.getElementById('breakdown-mortgage').textContent = formatCurrency(mortgagePayment);
+      
+      // Property Taxes - show monthly with annual reference
+      document.getElementById('breakdown-taxes').textContent = formatCurrency(monthlyTaxes);
+      const actualTaxAnnual = taxAnnual > propertyValue * 0.02 ? monthlyTaxes * 12 : taxAnnual;
+      document.getElementById('breakdown-taxes-annual').textContent = '(' + formatCurrency(actualTaxAnnual) + '/year)';
+      
+      // Insurance - show monthly with annual reference  
+      document.getElementById('breakdown-insurance').textContent = formatCurrency(monthlyInsurance);
+      const actualInsuranceAnnual = insuranceAnnual > propertyValue * 0.01 ? monthlyInsurance * 12 : insuranceAnnual;
+      document.getElementById('breakdown-insurance-annual').textContent = '(' + formatCurrency(actualInsuranceAnnual) + '/year)';
+      
+      // HOA - monthly only
+      document.getElementById('breakdown-hoa').textContent = formatCurrency(monthlyHoa);
+      
+      // Maintenance - this is actually annual, show monthly equivalent
+      const monthlyMaintenance = Math.round(annualMaintenance / 12);
+      document.getElementById('breakdown-maintenance').textContent = formatCurrency(monthlyMaintenance);
+      document.getElementById('breakdown-maintenance-annual').textContent = '(' + formatCurrency(annualMaintenance) + '/year)';
+      
+      // Property Management - default to 0% since most people self-manage
+      const managementFee = 0; // Default to 0 instead of 8%
+      document.getElementById('breakdown-management').textContent = formatCurrency(managementFee);
+      document.getElementById('breakdown-management-rate').textContent = '(0% - self managed)';
+      
+      // Calculate net income (monthly) with corrected amounts
+      const netIncome = monthlyRent - mortgagePayment - monthlyTaxes - monthlyInsurance - monthlyHoa - monthlyMaintenance - managementFee;
+      const netIncomeEl = document.getElementById('breakdown-net-income');
+      netIncomeEl.textContent = formatCurrency(netIncome, true);
+      netIncomeEl.className = getCurrencyClass(netIncome) + ' font-bold text-lg';
+      
+      // Initialize edit fields with current values (correcting the data structure)
+      document.getElementById('edit-income').value = monthlyRent;
+      document.getElementById('edit-mortgage').value = mortgagePayment;
+      document.getElementById('edit-taxes').value = monthlyTaxes; // Store as monthly since that's what it actually is
+      document.getElementById('edit-insurance').value = monthlyInsurance; // Store as monthly since that's what it actually is  
+      document.getElementById('edit-hoa').value = monthlyHoa;
+      document.getElementById('edit-maintenance').value = annualMaintenance; // This one is actually annual
+      document.getElementById('edit-management').value = 0; // Default to 0%
+      
+      // Rental strategies with IMPROVEMENT 2: Consistent currency formatting
+      document.getElementById('ltr-rent').textContent = formatCurrency(analysis.long_term_rental?.monthly_rent || 0) + '/mo';
+      document.getElementById('ltr-noi').textContent = formatCurrency(analysis.long_term_rental?.annual_profit || 0) + '/yr';
+      const ltrCapRate = ((analysis.long_term_rental?.annual_profit || 0) / (analysis.property_details?.estimated_value || 1) * 100).toFixed(2);
+      document.getElementById('ltr-cap').textContent = ltrCapRate + '%';
+      document.getElementById('ltr-roi').textContent = ltrCapRate + '%';
+      
+      document.getElementById('str-rate').textContent = formatCurrency(analysis.short_term_rental?.daily_rate || 0) + '/night';
+      document.getElementById('str-occupancy').textContent = (analysis.short_term_rental?.occupancy_rate || 0) + '%';
+      document.getElementById('str-revenue').textContent = formatCurrency(analysis.short_term_rental?.annual_revenue || 0) + '/yr';
+      const strROI = ((analysis.short_term_rental?.annual_profit || 0) / (analysis.property_details?.estimated_value || 1) * 100).toFixed(2);
+      document.getElementById('str-roi').textContent = strROI + '%';
+      
+      document.getElementById('investment-recommendation').textContent = analysis.recommendation || 'No recommendation available';
+      
+      // Market data if available
+      if (analysis.market_data) {
+        document.getElementById('market-data-section').style.display = 'block';
+        document.getElementById('days-on-market').textContent = analysis.market_data.days_on_market || 'N/A';
+        document.getElementById('appreciation-rate').textContent = (analysis.market_data.appreciation_rate || 'N/A') + '%';
+        document.getElementById('comparable-count').textContent = (analysis.market_data.comparable_sales?.length || 0) + ' properties';
+      }
+      
+      // Enhanced Data sources display
+      displayDataSources(analysis);
+      
+      // Initialize edit mode
+      initializeEditMode();
+      
+      // Create Charts
+      createCharts(analysis);
+      
+      // Mount STR comparison view if data exists
+      mountRentalComparisonView(analysis);
+      
+      // Display new STR components if STR data exists
+      if (analysis.short_term_rental || analysis.strAnalysis) {
+        displaySTREnhancements(analysis);
+      }
+      
+      // Store analysis ID if available
+      currentAnalysisId = analysis.id || analysis._id || null;
+    }
+    
+    // Display STR enhancements
+    function displaySTREnhancements(analysis) {
+      const strData = analysis.short_term_rental || analysis.strAnalysis;
+      if (!strData) return;
+      
+      // Show regulation alert
+      if (analysis.regulations) {
+        const alertContainer = document.getElementById('regulation-alert-container');
+        if (alertContainer) {
+          alertContainer.style.display = 'block';
+          document.getElementById('regulation-summary').textContent = analysis.regulations.summary || 'Check local STR regulations';
+          
+          const warningsContainer = document.getElementById('regulation-warnings');
+          warningsContainer.innerHTML = '';
+          if (analysis.regulations.compliance_advice?.warnings) {
+            analysis.regulations.compliance_advice.warnings.forEach(warning => {
+              const div = document.createElement('div');
+              div.className = 'text-sm text-amber-700';
+              div.innerHTML = `• ${warning}`;
+              warningsContainer.appendChild(div);
+            });
+          }
+        }
+      }
+      
+      // Create revenue comparison chart
+      createRevenueComparisonChart(analysis);
+      
+      // Display scenario analysis
+      displayScenarioAnalysis(analysis);
+      
+      // Display comparable properties gallery
+      displayComparableGallery(strData.comparables || []);
+      
+      // Set confidence level
+      setConfidenceLevel(strData.comparables?.length || 0);
+    }
+    
+    // Create revenue comparison chart
+    function createRevenueComparisonChart(analysis) {
+      const container = document.getElementById('visual-comparison-section');
+      if (!container) return;
+      
+      container.style.display = 'block';
+      
+      const ctx = document.getElementById('revenueComparisonChart').getContext('2d');
+      const ltrRevenue = analysis.long_term_rental?.monthly_rent || 0;
+      const strRevenue = analysis.short_term_rental?.monthly_revenue || 0;
+      
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ['Long-Term Rental', 'Short-Term Rental'],
+          datasets: [{
+            label: 'Monthly Revenue',
+            data: [ltrRevenue, strRevenue],
+            backgroundColor: ['rgba(59, 130, 246, 0.8)', 'rgba(16, 185, 129, 0.8)'],
+            borderColor: ['rgba(59, 130, 246, 1)', 'rgba(16, 185, 129, 1)'],
+            borderWidth: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  return formatCurrency(context.raw) + '/month';
+                }
+              }
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                callback: function(value) {
+                  return formatCurrency(value);
+                }
+              }
+            }
+          }
+        }
+      });
+      
+      // Update comparable count
+      const comparableCount = analysis.short_term_rental?.comparables?.length || 0;
+      document.getElementById('comparable-count').textContent = comparableCount;
+    }
+    
+    // Display scenario analysis
+    function displayScenarioAnalysis(analysis) {
+      const container = document.getElementById('scenario-analysis-section');
+      if (!container) return;
+      
+      container.style.display = 'block';
+      
+      const strData = analysis.short_term_rental;
+      const nightlyRate = strData.avg_nightly_rate || 0;
+      const expenses = strData.expenses?.monthly?.total || 0;
+      const ltrIncome = analysis.long_term_rental?.monthly_rent || 0;
+      
+      // Calculate scenarios
+      const scenarios = [
+        { occupancy: 0.5, label: '50%' },
+        { occupancy: 0.6, label: '60%' },
+        { occupancy: 0.7, label: '70% (Expected)' },
+        { occupancy: 0.8, label: '80%' },
+        { occupancy: 0.9, label: '90%' }
+      ];
+      
+      const gridContainer = document.getElementById('scenario-grid');
+      gridContainer.innerHTML = '';
+      
+      scenarios.forEach(scenario => {
+        const monthlyRevenue = nightlyRate * 30 * scenario.occupancy;
+        const netIncome = monthlyRevenue - expenses;
+        
+        const card = document.createElement('div');
+        card.className = 'scenario-card';
+        card.innerHTML = `
+          <div class="scenario-occupancy">${scenario.label}</div>
+          <div class="scenario-revenue">${formatCurrency(monthlyRevenue)}</div>
+          <div class="scenario-income">Net: ${formatCurrency(netIncome, true)}</div>
+        `;
+        gridContainer.appendChild(card);
+      });
+      
+      // Calculate break-even occupancy
+      const breakEvenOccupancy = ltrIncome / (nightlyRate * 30);
+      document.getElementById('breakeven-occupancy').textContent = `${(breakEvenOccupancy * 100).toFixed(0)}%`;
+    }
+    
+    // Display comparable properties gallery
+    function displayComparableGallery(comparables) {
+      const container = document.getElementById('comparable-gallery-section');
+      if (!container || !comparables || comparables.length === 0) return;
+      
+      container.style.display = 'block';
+      
+      const gallery = document.getElementById('comparable-gallery');
+      gallery.innerHTML = '';
+      
+      // Show top 6 comparables
+      comparables.slice(0, 6).forEach(comp => {
+        const card = document.createElement('div');
+        card.className = 'comparable-card';
+        card.onclick = () => window.open(comp.airbnb_url, '_blank');
+        
+        card.innerHTML = `
+          <img src="${comp.image_url?.url || '/assets/placeholder.jpg'}" alt="${comp.title}" class="comparable-image">
+          <div class="comparable-details">
+            <h4 class="font-semibold text-gray-900 mb-1 line-clamp-2">${comp.title}</h4>
+            <div class="comparable-price">${formatCurrency(comp.nightly_rate)}/night</div>
+            <div class="comparable-stats">
+              <span>${comp.bedrooms}BR/${comp.bathrooms}BA</span>
+              <span>•</span>
+              <span>${(comp.occupancy_rate * 100).toFixed(0)}% Occ</span>
+              <span>•</span>
+              <span>⭐ ${comp.rating}</span>
+            </div>
+            <div class="mt-2 text-sm text-gray-600">
+              Monthly Revenue: ${formatCurrency(comp.monthly_revenue)}
+            </div>
+          </div>
+        `;
+        gallery.appendChild(card);
+      });
+    }
+    
+    // Set confidence level based on comparable count
+    function setConfidenceLevel(comparableCount) {
+      const badge = document.getElementById('confidence-badge');
+      if (!badge) return;
+      
+      let level, className;
+      if (comparableCount >= 15) {
+        level = 'High Confidence';
+        className = 'confidence-high';
+      } else if (comparableCount >= 8) {
+        level = 'Medium Confidence';
+        className = 'confidence-medium';
+      } else {
+        level = 'Low Confidence';
+        className = 'confidence-low';
+      }
+      
+      badge.className = `confidence-badge ${className}`;
+      badge.innerHTML = `
+        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+        </svg>
+        <span>${level} (${comparableCount} comparables)</span>
+      `;
+    }
+
+    // Create charts
+    function createCharts(analysis) {
+      // Destroy existing charts
+      if (charts.cashFlow) charts.cashFlow.destroy();
+      if (charts.roiComparison) charts.roiComparison.destroy();
+      
+      // Cash Flow Chart
+      const cashFlowCtx = document.getElementById('cashFlowChart').getContext('2d');
+      
+      // Prepare chart data including mortgage if present
+      const monthlyIncome = analysis.long_term_rental?.monthly_rent || 0;
+      const mortgagePayment = analysis.costs?.mortgage_monthly || 0;
+      const chartLabels = ['Income'];
+      const chartData = [monthlyIncome];
+      
+      if (mortgagePayment > 0) {
+        chartLabels.push('Mortgage');
+        chartData.push(-mortgagePayment);
+      }
+      
+      chartLabels.push('Taxes', 'Insurance', 'HOA', 'Maint.', 'Mgmt.', 'Net');
+      chartData.push(
+        -Math.round((analysis.costs?.property_tax_annual || 0) / 12),
+        -Math.round((analysis.costs?.insurance_annual || 0) / 12),
+        -(analysis.costs?.hoa_monthly || 0),
+        -Math.round((analysis.costs?.maintenance_annual || 0) / 12),
+        -Math.round(monthlyIncome * 0.08),
+        monthlyIncome - mortgagePayment - Math.round((analysis.costs?.property_tax_annual || 0) / 12) - 
+        Math.round((analysis.costs?.insurance_annual || 0) / 12) - (analysis.costs?.hoa_monthly || 0) - 
+        Math.round((analysis.costs?.maintenance_annual || 0) / 12) - Math.round(monthlyIncome * 0.08)
+      );
+      
+      charts.cashFlow = new Chart(cashFlowCtx, {
+        type: 'bar',
+        data: {
+          labels: chartLabels,
+          datasets: [{
+            label: 'Monthly Cash Flow',
+            data: chartData,
+            backgroundColor: function(context) {
+              const value = context.dataset.data[context.dataIndex];
+              return value >= 0 ? 'rgba(16, 185, 129, 0.8)' : 'rgba(239, 68, 68, 0.8)';
+            }
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                callback: function(value) {
+                  return '$' + (value/1000).toFixed(0) + 'k';
+                }
+              }
+            }
+          }
+        }
+      });
+      
+      // ROI Comparison Chart
+      const roiCtx = document.getElementById('roiComparisonChart').getContext('2d');
+      charts.roiComparison = new Chart(roiCtx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Long-term Rental', 'Short-term Rental (Airbnb)', 'Traditional Investment (4%)'],
+          datasets: [{
+            data: [
+              ((analysis.long_term_rental?.annual_profit || 0) / (analysis.property_details?.estimated_value || 1) * 100).toFixed(2),
+              ((analysis.short_term_rental?.annual_profit || 0) / (analysis.property_details?.estimated_value || 1) * 100).toFixed(2),
+              4
+            ],
+            backgroundColor: [
+              'rgba(59, 130, 246, 0.8)',
+              'rgba(16, 185, 129, 0.8)',
+              'rgba(156, 163, 175, 0.8)'
+            ]
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'bottom'
+            },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  return context.label + ': ' + context.parsed + '% ROI';
+                }
+              }
+            }
+          }
+        }
+      });
+    }
+
+    // Enhanced Data Sources Display
+    function displayDataSources(analysis) {
+      const sourcesContainer = document.getElementById('sources-container');
+      const sources = analysis.data_sources || analysis.research_sources || [];
+      
+      // Count sources by type
+      const sourceTypes = {
+        property: sources.filter(s => s.name?.includes('Realtor') || s.name?.includes('House') || s.name?.includes('Zolo')).length,
+        tax: sources.filter(s => s.description?.toLowerCase().includes('tax') || s.name?.includes('Government')).length,
+        insurance: sources.filter(s => s.description?.toLowerCase().includes('insurance')).length,
+        rental: sources.filter(s => s.name?.includes('Rental') || s.name?.includes('Kijiji') || s.name?.includes('Airbnb')).length
+      };
+      
+      if (sources.length > 0) {
+        // Add data transparency summary
+        let transparencySummary = `
+          <div class="mb-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+            <div class="flex items-center gap-2 mb-2">
+              <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span class="font-medium text-blue-900">Data Transparency Summary</span>
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs">
+              <div class="flex items-center gap-1">
+                <span class="${sourceTypes.property > 0 ? 'text-green-600' : 'text-gray-400'}">●</span>
+                <span>Property Data: ${sourceTypes.property > 0 ? 'Verified' : 'Estimated'}</span>
+              </div>
+              <div class="flex items-center gap-1">
+                <span class="${sourceTypes.tax > 0 ? 'text-green-600' : 'text-orange-500'}">●</span>
+                <span>Tax Rates: ${sourceTypes.tax > 0 ? 'Official' : 'Market Average'}</span>
+              </div>
+              <div class="flex items-center gap-1">
+                <span class="${sourceTypes.insurance > 0 ? 'text-green-600' : 'text-orange-500'}">●</span>
+                <span>Insurance: ${sourceTypes.insurance > 0 ? 'Provider Data' : 'Industry Average'}</span>
+              </div>
+              <div class="flex items-center gap-1">
+                <span class="${sourceTypes.rental > 0 ? 'text-green-600' : 'text-gray-400'}">●</span>
+                <span>Rentals: ${sourceTypes.rental > 0 ? 'Market Data' : 'Estimated'}</span>
+              </div>
+            </div>
+          </div>
+        `;
+        
+        sourcesContainer.innerHTML = transparencySummary + sources.map((source, index) => {
+          const hasValidUrl = source.url && source.url !== '#' && !source.url.includes('dashboard');
+          const sourceName = source.name || source.title || `Data Source ${index + 1}`;
+          const sourceDate = source.date || source.data_date || 'Recently accessed';
+          const sourceDesc = source.description || 'Research source';
+          
+          // Determine icon color based on source type
+          let iconColor = 'blue';
+          if (sourceName.includes('Government') || sourceDesc.includes('tax')) iconColor = 'green';
+          else if (sourceDesc.includes('insurance')) iconColor = 'purple';
+          else if (sourceName.includes('Rental') || sourceName.includes('Airbnb')) iconColor = 'orange';
+          
+          return `
+            <div class="p-4 bg-white border border-gray-200 rounded-lg hover:shadow-sm transition-shadow">
+              <div class="flex items-start justify-between">
+                <div class="flex items-start gap-3 flex-1">
+                  <div class="w-8 h-8 bg-${iconColor}-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                    <svg class="w-4 h-4 text-${iconColor}-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                    </svg>
+                  </div>
+                  <div class="flex-1">
+                    <p class="font-medium text-gray-900">${sourceName}</p>
+                    <p class="text-sm text-gray-600 mt-1">${sourceDesc}</p>
+                    <p class="text-xs text-gray-500 mt-1">Accessed: ${sourceDate}</p>
+                    ${hasValidUrl ? `
+                      <p class="text-xs text-gray-400 mt-1 font-mono break-all">${source.url}</p>
+                    ` : `
+                      <p class="text-xs text-orange-500 mt-1">⚠️ Source URL not captured - data from AI research</p>
+                    `}
+                  </div>
+                </div>
+                <div class="ml-4">
+                  ${hasValidUrl ? `
+                    <a href="${source.url}" target="_blank" rel="noopener noreferrer" 
+                       class="inline-flex items-center px-3 py-1 text-xs font-medium text-blue-700 bg-blue-100 rounded-full hover:bg-blue-200 transition-colors">
+                      View Source
+                      <svg class="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                      </svg>
+                    </a>
+                  ` : `
+                    <span class="inline-flex items-center px-3 py-1 text-xs font-medium text-gray-500 bg-gray-100 rounded-full">
+                      AI Research
+                    </span>
+                  `}
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      } else {
+        sourcesContainer.innerHTML = `
+          <div class="p-4 bg-yellow-50 border border-yellow-200 rounded-lg text-center">
+            <svg class="w-8 h-8 text-yellow-600 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+            </svg>
+            <p class="text-sm text-yellow-800 font-medium">Limited source data available</p>
+            <p class="text-xs text-yellow-700 mt-1">Analysis based on AI market research - source URLs may not be captured</p>
+            <p class="text-xs text-yellow-700 mt-1">For best results, verify property tax rates with local municipality</p>
+          </div>
+        `;
+      }
+    }
+
+    // Initialize Edit Mode
+    function initializeEditMode() {
+      editMode = false;
+      
+      // Check if elements exist before trying to manipulate them
+      const resetBtn = document.getElementById('reset-financials-btn');
+      if (resetBtn) {
+        resetBtn.style.display = 'none';
+      }
+      
+      // Hide all edit inputs
+      const editInputs = document.querySelectorAll('[id^="edit-"]');
+      const displayElements = document.querySelectorAll('#breakdown-income, #breakdown-mortgage, #breakdown-taxes, #breakdown-insurance, #breakdown-hoa, #breakdown-maintenance, #breakdown-management');
+      
+      editInputs.forEach(input => {
+        if (input) input.classList.add('hidden');
+      });
+      displayElements.forEach(el => {
+        if (el) el.classList.remove('hidden');
+      });
+    }
+
+    // Toggle Edit Mode
+    function toggleEditMode() {
+      editMode = !editMode;
+      const editBtn = document.getElementById('edit-financials-btn');
+      const resetBtn = document.getElementById('reset-financials-btn');
+      
+      const editInputs = document.querySelectorAll('[id^="edit-"]');
+      const displayElements = document.querySelectorAll('#breakdown-income, #breakdown-mortgage, #breakdown-taxes, #breakdown-insurance, #breakdown-hoa, #breakdown-maintenance, #breakdown-management');
+      
+      if (editMode) {
+        editBtn.textContent = 'Save Changes';
+        editBtn.className = 'px-3 py-1 text-sm bg-green-100 text-green-700 rounded-md hover:bg-green-200 transition-colors';
+        resetBtn.style.display = 'inline-block';
+        
+        editInputs.forEach(input => input.classList.remove('hidden'));
+        displayElements.forEach(el => el.classList.add('hidden'));
+        
+        // Add event listeners for real-time updates
+        editInputs.forEach(input => {
+          input.addEventListener('input', updateCalculations);
+        });
+      } else {
+        editBtn.textContent = 'Edit Values';
+        editBtn.className = 'px-3 py-1 text-sm bg-blue-100 text-blue-700 rounded-md hover:bg-blue-200 transition-colors';
+        
+        editInputs.forEach(input => input.classList.add('hidden'));
+        displayElements.forEach(el => el.classList.remove('hidden'));
+        
+        // Update the current analysis with new values
+        updateAnalysisData();
+      }
+    }
+
+    // Update Calculations
+    function updateCalculations() {
+      // Parse and validate inputs (ensure non-negative values)
+      const income = Math.max(0, parseFloat(document.getElementById('edit-income').value) || 0);
+      const mortgage = Math.max(0, parseFloat(document.getElementById('edit-mortgage').value) || 0);
+      const monthlyTaxes = Math.max(0, parseFloat(document.getElementById('edit-taxes').value) || 0); // Now monthly
+      const monthlyInsurance = Math.max(0, parseFloat(document.getElementById('edit-insurance').value) || 0); // Now monthly
+      const hoa = Math.max(0, parseFloat(document.getElementById('edit-hoa').value) || 0);
+      const annualMaintenance = Math.max(0, parseFloat(document.getElementById('edit-maintenance').value) || 0); // Still annual
+      const managementRate = Math.max(0, Math.min(100, parseFloat(document.getElementById('edit-management').value) || 0)); // 0-100%
+      
+      // Calculate monthly amounts
+      const monthlyMaintenance = Math.round(annualMaintenance / 12);
+      const managementFee = Math.round(income * (managementRate / 100));
+      
+      const netIncome = income - mortgage - monthlyTaxes - monthlyInsurance - hoa - monthlyMaintenance - managementFee;
+      
+      // Update all monthly displays
+      document.getElementById('breakdown-income').textContent = `$${safeToLocaleString(income)}`;
+      document.getElementById('breakdown-mortgage').textContent = `$${safeToLocaleString(mortgage)}`;
+      document.getElementById('breakdown-taxes').textContent = `$${safeToLocaleString(monthlyTaxes)}`;
+      document.getElementById('breakdown-taxes-annual').textContent = `($${safeToLocaleString(monthlyTaxes * 12)}/year)`;
+      document.getElementById('breakdown-insurance').textContent = `$${safeToLocaleString(monthlyInsurance)}`;
+      document.getElementById('breakdown-insurance-annual').textContent = `($${safeToLocaleString(monthlyInsurance * 12)}/year)`;
+      document.getElementById('breakdown-hoa').textContent = `$${safeToLocaleString(hoa)}`;
+      document.getElementById('breakdown-maintenance').textContent = `$${safeToLocaleString(monthlyMaintenance)}`;
+      document.getElementById('breakdown-maintenance-annual').textContent = `($${safeToLocaleString(annualMaintenance)}/year)`;
+      document.getElementById('breakdown-management').textContent = `$${safeToLocaleString(managementFee)}`;
+      const managementText = managementRate > 0 ? `(${managementRate}% of rent)` : '(0% - self managed)';
+      document.getElementById('breakdown-management-rate').textContent = managementText;
+      document.getElementById('breakdown-net-income').textContent = `$${safeToLocaleString(netIncome)}`;
+      
+      // Update charts with new data
+      if (currentAnalysis) {
+        const updatedAnalysis = { ...currentAnalysis };
+        updatedAnalysis.long_term_rental.monthly_rent = income;
+        updatedAnalysis.costs.mortgage_monthly = mortgage;
+        updatedAnalysis.costs.property_tax_annual = monthlyTaxes; // Store as-is since data structure is inconsistent
+        updatedAnalysis.costs.insurance_annual = monthlyInsurance; // Store as-is since data structure is inconsistent  
+        updatedAnalysis.costs.hoa_monthly = hoa;
+        updatedAnalysis.costs.maintenance_annual = annualMaintenance;
+        
+        createCharts(updatedAnalysis);
+      }
+    }
+
+    // Update Analysis Data
+    function updateAnalysisData() {
+      if (!currentAnalysis) return;
+      
+      currentAnalysis.long_term_rental.monthly_rent = parseFloat(document.getElementById('edit-income').value) || 0;
+      currentAnalysis.costs.mortgage_monthly = parseFloat(document.getElementById('edit-mortgage').value) || 0;
+      currentAnalysis.costs.property_tax_annual = parseFloat(document.getElementById('edit-taxes').value) || 0;
+      currentAnalysis.costs.insurance_annual = parseFloat(document.getElementById('edit-insurance').value) || 0;
+      currentAnalysis.costs.hoa_monthly = parseFloat(document.getElementById('edit-hoa').value) || 0;
+      currentAnalysis.costs.maintenance_annual = parseFloat(document.getElementById('edit-maintenance').value) || 0;
+      
+      // Recalculate derived values
+      const income = currentAnalysis.long_term_rental.monthly_rent;
+      const mortgage = currentAnalysis.costs.mortgage_monthly;
+      const annualRevenue = income * 12;
+      const annualMortgage = mortgage * 12;
+      const totalAnnualExpenses = currentAnalysis.costs.property_tax_annual + 
+                                  currentAnalysis.costs.insurance_annual + 
+                                  (currentAnalysis.costs.hoa_monthly * 12) + 
+                                  currentAnalysis.costs.maintenance_annual + 
+                                  (annualRevenue * 0.08) + annualMortgage;
+      
+      currentAnalysis.long_term_rental.annual_revenue = annualRevenue;
+      currentAnalysis.long_term_rental.annual_profit = annualRevenue - totalAnnualExpenses;
+      
+      // Update the display
+      displayResults(currentAnalysis);
+    }
+
+    // Reset to Original Values
+    function resetToOriginal() {
+      if (!originalAnalysis) return;
+      
+      currentAnalysis = JSON.parse(JSON.stringify(originalAnalysis));
+      displayResults(currentAnalysis);
+      
+      // Exit edit mode
+      if (editMode) {
+        toggleEditMode();
+      }
+    }
+
+    // Open Chart Details Modal
+    function openChartDetails(chartType) {
+      if (!currentAnalysis) return;
+      
+      const modal = document.getElementById('chart-details-modal');
+      const modalTitle = document.getElementById('modal-title');
+      const modalContent = document.getElementById('modal-content');
+      
+      if (chartType === 'cashFlow') {
+        modalTitle.textContent = 'Cash Flow Analysis - Detailed Breakdown';
+        modalContent.innerHTML = generateCashFlowDetails(currentAnalysis);
+      } else if (chartType === 'roiComparison') {
+        modalTitle.textContent = 'ROI Comparison - Detailed Analysis';
+        modalContent.innerHTML = generateROIComparisonDetails(currentAnalysis);
+      }
+      
+      modal.classList.remove('hidden');
+    }
+
+    // Close Chart Details Modal
+    function closeChartDetails() {
+      document.getElementById('chart-details-modal').classList.add('hidden');
+    }
+
+    // Generate Cash Flow Details
+    function generateCashFlowDetails(analysis) {
+      const income = analysis.long_term_rental?.monthly_rent || 0;
+      const mortgage = analysis.costs?.mortgage_monthly || 0;
+      const taxes = Math.round((analysis.costs?.property_tax_annual || 0) / 12);
+      const insurance = Math.round((analysis.costs?.insurance_annual || 0) / 12);
+      const hoa = analysis.costs?.hoa_monthly || 0;
+      const maintenance = Math.round((analysis.costs?.maintenance_annual || 0) / 12);
+      const management = Math.round(income * 0.08);
+      const net = income - mortgage - taxes - insurance - hoa - maintenance - management;
+      
+      return `
+        <div class="space-y-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-green-50 p-4 rounded-lg border border-green-200">
+              <h4 class="font-semibold text-green-800 mb-3">Monthly Income</h4>
+              <div class="space-y-2">
+                <div class="flex justify-between">
+                  <span class="text-green-700">Rental Income:</span>
+                  <span class="font-semibold text-green-800">$${safeToLocaleString(income)}</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-green-700">Percentage:</span>
+                  <span class="font-semibold text-green-800">100%</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="bg-red-50 p-4 rounded-lg border border-red-200">
+              <h4 class="font-semibold text-red-800 mb-3">Monthly Expenses</h4>
+              <div class="space-y-2 text-sm">
+                ${mortgage > 0 ? `
+                <div class="flex justify-between">
+                  <span class="text-red-700">Mortgage Payment:</span>
+                  <span class="font-semibold">$${safeToLocaleString(mortgage)} (${((mortgage/income)*100).toFixed(1)}%)</span>
+                </div>` : ''}
+                <div class="flex justify-between">
+                  <span class="text-red-700">Property Taxes:</span>
+                  <span class="font-semibold">$${safeToLocaleString(taxes)} (${((taxes/income)*100).toFixed(1)}%)</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-red-700">Insurance:</span>
+                  <span class="font-semibold">$${safeToLocaleString(insurance)} (${((insurance/income)*100).toFixed(1)}%)</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-red-700">HOA/Condo Fees:</span>
+                  <span class="font-semibold">$${safeToLocaleString(hoa)} (${((hoa/income)*100).toFixed(1)}%)</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-red-700">Maintenance:</span>
+                  <span class="font-semibold">$${safeToLocaleString(maintenance)} (${((maintenance/income)*100).toFixed(1)}%)</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-red-700">Property Management:</span>
+                  <span class="font-semibold">$${safeToLocaleString(management)} (${((management/income)*100).toFixed(1)}%)</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="bg-blue-50 p-4 rounded-lg border border-blue-200">
+            <h4 class="font-semibold text-blue-800 mb-3">Net Operating Income</h4>
+            <div class="flex justify-between items-center">
+              <span class="text-blue-700">Monthly Net Income:</span>
+              <span class="text-2xl font-bold ${net >= 0 ? 'text-green-600' : 'text-red-600'}">
+                $${safeToLocaleString(net)}
+              </span>
+            </div>
+            <div class="flex justify-between items-center mt-2">
+              <span class="text-blue-700">Annual Net Income:</span>
+              <span class="text-xl font-semibold ${net >= 0 ? 'text-green-600' : 'text-red-600'}">
+                $${safeToLocaleString(net * 12)}
+              </span>
+            </div>
+            <div class="mt-3 text-sm text-blue-700">
+              <p><strong>Cash-on-Cash ROI:</strong> ${((net * 12) / (analysis.property_details?.estimated_value || 1) * 100).toFixed(2)}%</p>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // Generate ROI Comparison Details
+    function generateROIComparisonDetails(analysis) {
+      const propertyValue = analysis.property_details?.estimated_value || 1;
+      const ltrProfit = analysis.long_term_rental?.annual_profit || 0;
+      const strProfit = analysis.short_term_rental?.annual_profit || 0;
+      const ltrROI = (ltrProfit / propertyValue * 100);
+      const strROI = (strProfit / propertyValue * 100);
+      const traditionalROI = 4;
+      
+      return `
+        <div class="space-y-6">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="bg-blue-50 p-4 rounded-lg border border-blue-200">
+              <h4 class="font-semibold text-blue-800 mb-3">Long-term Rental</h4>
+              <div class="space-y-2 text-sm">
+                <div class="flex justify-between">
+                  <span>Monthly Rent:</span>
+                  <span class="font-semibold">$${safeToLocaleString(analysis.long_term_rental?.monthly_rent || 0)}</span>
+                </div>
+                <div class="flex justify-between">
+                  <span>Annual Revenue:</span>
+                  <span class="font-semibold">$${safeToLocaleString(analysis.long_term_rental?.annual_revenue || 0)}</span>
+                </div>
+                <div class="flex justify-between">
+                  <span>Annual Profit:</span>
+                  <span class="font-semibold">$${safeToLocaleString(ltrProfit)}</span>
+                </div>
+                <div class="flex justify-between border-t pt-2">
+                  <span class="font-semibold">ROI:</span>
+                  <span class="font-bold text-blue-600">${ltrROI.toFixed(2)}%</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="bg-green-50 p-4 rounded-lg border border-green-200">
+              <h4 class="font-semibold text-green-800 mb-3">Short-term Rental</h4>
+              <div class="space-y-2 text-sm">
+                <div class="flex justify-between">
+                  <span>Daily Rate:</span>
+                  <span class="font-semibold">$${analysis.short_term_rental?.daily_rate || 0}</span>
+                </div>
+                <div class="flex justify-between">
+                  <span>Occupancy Rate:</span>
+                  <span class="font-semibold">${analysis.short_term_rental?.occupancy_rate || 0}%</span>
+                </div>
+                <div class="flex justify-between">
+                  <span>Annual Revenue:</span>
+                  <span class="font-semibold">$${safeToLocaleString(analysis.short_term_rental?.annual_revenue || 0)}</span>
+                </div>
+                <div class="flex justify-between">
+                  <span>Annual Profit:</span>
+                  <span class="font-semibold">$${safeToLocaleString(strProfit)}</span>
+                </div>
+                <div class="flex justify-between border-t pt-2">
+                  <span class="font-semibold">ROI:</span>
+                  <span class="font-bold text-green-600">${strROI.toFixed(2)}%</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+              <h4 class="font-semibold text-gray-800 mb-3">Traditional Investment</h4>
+              <div class="space-y-2 text-sm">
+                <div class="flex justify-between">
+                  <span>Investment Amount:</span>
+                  <span class="font-semibold">$${safeToLocaleString(propertyValue)}</span>
+                </div>
+                <div class="flex justify-between">
+                  <span>Annual Return:</span>
+                  <span class="font-semibold">$${safeToLocaleString(propertyValue * 0.04)}</span>
+                </div>
+                <div class="flex justify-between border-t pt-2">
+                  <span class="font-semibold">ROI:</span>
+                  <span class="font-bold text-gray-600">4.0%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+            <h4 class="font-semibold text-yellow-800 mb-2">Investment Comparison Summary</h4>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+              <div class="text-center">
+                <p class="font-semibold">Best ROI Strategy</p>
+                <p class="text-lg font-bold ${strROI > ltrROI ? 'text-green-600' : 'text-blue-600'}">
+                  ${strROI > ltrROI ? 'Short-term Rental' : 'Long-term Rental'}
+                </p>
+              </div>
+              <div class="text-center">
+                <p class="font-semibold">vs Traditional Investment</p>
+                <p class="text-lg font-bold text-green-600">
+                  +${Math.max(ltrROI, strROI, traditionalROI) - traditionalROI > 0 ? (Math.max(ltrROI, strROI) - traditionalROI).toFixed(1) : '0'}% better
+                </p>
+              </div>
+              <div class="text-center">
+                <p class="font-semibold">Annual Difference</p>
+                <p class="text-lg font-bold text-green-600">
+                  $${safeToLocaleString(Math.max(ltrProfit, strProfit) - (propertyValue * 0.04))}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // Event Listeners
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('DOM loaded, setting up event listeners...');
+
+      // Auth form
+      document.getElementById('auth-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const name = document.getElementById('name').value;
+        
+        try {
+          if (authMode === 'signup') {
+            const result = await firebase.auth().createUserWithEmailAndPassword(email, password);
+            await result.user.updateProfile({ displayName: name });
+          } else {
+            await firebase.auth().signInWithEmailAndPassword(email, password);
+          }
+        } catch (error) {
+          document.getElementById('auth-error').textContent = error.message;
+          document.getElementById('auth-error').style.display = 'block';
+        }
+      });
+
+      // Auth mode switch
+      document.getElementById('auth-switch').addEventListener('click', function() {
+        authMode = authMode === 'signin' ? 'signup' : 'signin';
+        updateAuthMode();
+        document.getElementById('auth-error').style.display = 'none';
+      });
+
+      // Sign out
+      document.getElementById('sign-out-btn').addEventListener('click', function() {
+        // Clear localStorage auth data
+        localStorage.removeItem('starterpack_auth_token');
+        localStorage.removeItem('starterpack_user');
+        console.log('[StarterPack] Cleared auth data from localStorage');
+        
+        firebase.auth().signOut();
+      });
+
+      // Analysis mode toggle buttons
+      const ltrModeBtn = document.getElementById('ltr-mode-btn');
+      const strModeBtn = document.getElementById('str-mode-btn');
+      
+      if (ltrModeBtn && strModeBtn) {
+        ltrModeBtn.addEventListener('click', function() {
+          // Switch to LTR mode
+          document.getElementById('analysis-mode').value = 'ltr';
+          
+          // Update button styles
+          ltrModeBtn.classList.add('border-blue-500', 'bg-white');
+          ltrModeBtn.classList.remove('border-gray-300', 'bg-gray-50');
+          strModeBtn.classList.remove('border-green-500', 'bg-white');
+          strModeBtn.classList.add('border-gray-300', 'bg-gray-50');
+          
+          // Update trial info
+          updateStrTrialInfo();
+        });
+        
+        strModeBtn.addEventListener('click', function() {
+          // Check if user can use STR
+          if (userProfile) {
+            const canUseSTR = userProfile.subscriptionTier === 'pro' || 
+                             userProfile.subscriptionTier === 'enterprise' || 
+                             (userProfile.strTrialUsed || 0) < 5;
+            
+            if (!canUseSTR) {
+              alert('Your free STR trial has expired. Upgrade to Pro for unlimited STR analyses.');
+              return;
+            }
+          }
+          
+          // Switch to STR mode
+          document.getElementById('analysis-mode').value = 'str';
+          
+          // Update button styles
+          strModeBtn.classList.add('bg-white', 'text-gray-900', 'shadow-sm');
+          strModeBtn.classList.remove('text-gray-500');
+          ltrModeBtn.classList.remove('bg-white', 'text-gray-900', 'shadow-sm');
+          ltrModeBtn.classList.add('text-gray-500');
+          
+          // Update trial info
+          updateStrTrialInfo();
+        });
+      }
+      
+      // Confirmation screen analysis mode toggle buttons
+      const confirmLtrBtn = document.getElementById('confirm-ltr-mode-btn');
+      const confirmStrBtn = document.getElementById('confirm-str-mode-btn');
+      
+      console.log('Setting up confirmation mode buttons:', { confirmLtrBtn, confirmStrBtn });
+      
+      if (confirmLtrBtn && confirmStrBtn) {
+        confirmLtrBtn.addEventListener('click', function() {
+          // Switch to LTR mode
+          document.getElementById('confirm-analysis-mode').value = 'ltr';
+          
+          // Update button styles
+          confirmLtrBtn.classList.add('bg-white', 'text-gray-900', 'shadow-sm');
+          confirmLtrBtn.classList.remove('text-gray-500');
+          confirmStrBtn.classList.remove('bg-white', 'text-gray-900', 'shadow-sm');
+          confirmStrBtn.classList.add('text-gray-500');
+          
+          // Update trial info
+          updateConfirmStrTrialInfo();
+        });
+        
+        confirmStrBtn.addEventListener('click', function() {
+          console.log('STR button clicked!');
+          // Check if user can use STR
+          if (userProfile) {
+            const canUseSTR = userProfile.subscriptionTier === 'pro' || 
+                             userProfile.subscriptionTier === 'enterprise' || 
+                             (userProfile.strTrialUsed || 0) < 5;
+            
+            if (!canUseSTR) {
+              alert('Your free STR trial has expired. Upgrade to Pro for unlimited STR analyses.');
+              return;
+            }
+          }
+          
+          // Switch to STR mode
+          document.getElementById('confirm-analysis-mode').value = 'str';
+          
+          // Update button styles
+          confirmStrBtn.classList.add('bg-white', 'text-gray-900', 'shadow-sm');
+          confirmStrBtn.classList.remove('text-gray-500');
+          confirmLtrBtn.classList.remove('bg-white', 'text-gray-900', 'shadow-sm');
+          confirmLtrBtn.classList.add('text-gray-500');
+          
+          // Update trial info
+          updateConfirmStrTrialInfo();
+        });
+      }
+      
+      // New analysis button
+      document.getElementById('new-analysis-btn').addEventListener('click', function() {
+        console.log('New analysis button clicked!');
+        document.getElementById('debug-text').textContent = 'Button clicked! Opening form...';
+        showView('property-form');
+        
+        // Check if we have URL parameters to pre-fill
+        const urlParams = new URLSearchParams(window.location.search);
+        const isFromExtension = urlParams.get('fromExtension') === 'true';
+        
+        if (isFromExtension) {
+          console.log('[StarterPack] Pre-filling form with extension data from dashboard');
+          
+          // Pre-fill form with URL parameters
+          setTimeout(() => {
+            // Address fields
+            if (urlParams.get('street')) {
+              const streetField = document.getElementById('street');
+              if (streetField) streetField.value = urlParams.get('street');
+            }
+            if (urlParams.get('city')) {
+              const cityField = document.getElementById('city');
+              if (cityField) cityField.value = urlParams.get('city');
+            }
+            if (urlParams.get('state')) {
+              const stateField = document.getElementById('state');
+              if (stateField) stateField.value = urlParams.get('state');
+            }
+            if (urlParams.get('country')) {
+              const countryField = document.getElementById('country');
+              if (countryField) countryField.value = urlParams.get('country') || 'Canada';
+            }
+            if (urlParams.get('postal')) {
+              const postalField = document.getElementById('postal');
+              if (postalField) postalField.value = urlParams.get('postal');
+            }
+            
+            // Property details
+            if (urlParams.get('price')) {
+              const priceField = document.getElementById('purchase-price');
+              if (priceField) priceField.value = urlParams.get('price');
+            }
+            if (urlParams.get('bedrooms')) {
+              const bedroomsField = document.getElementById('bedrooms');
+              if (bedroomsField) bedroomsField.value = urlParams.get('bedrooms');
+            }
+            if (urlParams.get('bathrooms')) {
+              const bathroomsField = document.getElementById('bathrooms');
+              if (bathroomsField) bathroomsField.value = urlParams.get('bathrooms');
+            }
+            if (urlParams.get('sqft')) {
+              const sqftField = document.getElementById('sqft');
+              if (sqftField) sqftField.value = urlParams.get('sqft');
+            }
+            if (urlParams.get('taxes')) {
+              const taxesField = document.getElementById('property-taxes');
+              if (taxesField) taxesField.value = urlParams.get('taxes');
+            }
+            if (urlParams.get('condoFees')) {
+              const condoFeesField = document.getElementById('condo-fees');
+              if (condoFeesField) condoFeesField.value = urlParams.get('condoFees');
+            }
+            
+            console.log('[StarterPack] Form pre-filled with extension data');
+            
+            // Store all extension data including image for confirmation screen
+            window.extensionPropertyData = {
+              mainImage: urlParams.get('image'),
+              mlsNumber: urlParams.get('mlsNumber'),
+              propertyType: urlParams.get('propertyType'),
+              yearBuilt: urlParams.get('yearBuilt')
+            };
+            
+            console.log('[StarterPack] Extension data stored:', {
+              hasImage: !!window.extensionPropertyData.mainImage,
+              mlsNumber: window.extensionPropertyData.mlsNumber
+            });
+            
+            // Auto-analyze if requested
+            if (urlParams.get('autoAnalyze') === 'true') {
+              console.log('[StarterPack] Auto-analyze requested, triggering form submission');
+              // Give form time to render, then trigger analysis
+              setTimeout(() => {
+                const analyzeBtn = document.querySelector('#property-form button[type="submit"]');
+                if (analyzeBtn) {
+                  analyzeBtn.click();
+                }
+              }, 1000);
+            }
+          }, 500); // Give form time to render
+        }
+      });
+
+      // Back to dashboard
+      document.getElementById('back-to-dashboard').addEventListener('click', function() {
+        showView('dashboard');
+      });
+      
+      // Confirmation screen buttons
+      document.getElementById('cancel-analysis-btn').addEventListener('click', function() {
+        // Go back to dashboard
+        showView('dashboard');
+        // Clear the URL parameters
+        const newUrl = window.location.pathname;
+        window.history.replaceState({}, document.title, newUrl);
+      });
+      
+      document.getElementById('confirm-analysis-btn').addEventListener('click', async function() {
+        try {
+          // Get the stored property data first
+          const propertyData = window.pendingPropertyData;
+          if (!propertyData) {
+            throw new Error('No property data found');
+          }
+          
+          // Show loading screen with progress tracking
+          showLoadingWithProgress(propertyData);
+          
+          // Format full address
+          const fullAddress = `${propertyData.address.street}, ${propertyData.address.city}, ${propertyData.address.state}, ${propertyData.address.country} ${propertyData.address.postal}`.trim();
+          
+          // Determine if we need to use Railway API for STR analysis
+          const modeElement = document.getElementById('confirm-analysis-mode');
+          console.log('Mode element:', modeElement);
+          console.log('Mode value:', modeElement ? modeElement.value : 'NO ELEMENT');
+          
+          const includeStrAnalysis = modeElement && modeElement.value === 'str';
+          
+          // Always use Railway API for all analysis (no timeout limits)
+          // Railway can handle both LTR and STR without timing out
+          const apiUrl = window.buildUrl ? 
+            buildUrl('railway', 'analyzeProperty') : 
+            'https://real-estate-app-production-ba5c.up.railway.app/api/analysis/property';
+          
+          console.log(`Using API endpoint: ${apiUrl} (STR: ${includeStrAnalysis})`);
+          
+          // Prepare API request body
+          const requestBody = {
+            userId: currentUser.uid,
+            propertyAddress: fullAddress,
+            userEmail: currentUser.email,
+            userName: currentUser.displayName,
+            requestType: 'authenticated',
+            includeStrAnalysis: includeStrAnalysis,
+            // Include actual property data from extension
+            propertyData: {
+              price: propertyData.price ? parseInt(propertyData.price) : null,
+              propertyTaxes: propertyData.propertyTaxes ? parseInt(propertyData.propertyTaxes) : null,
+              bedrooms: propertyData.bedrooms ? parseInt(propertyData.bedrooms) : null,
+              bathrooms: propertyData.bathrooms ? parseFloat(propertyData.bathrooms) : null,
+              sqft: propertyData.sqft ? parseInt(propertyData.sqft) : null,
+              propertyType: propertyData.propertyType,
+              condoFees: propertyData.condoFees ? parseInt(propertyData.condoFees) : null,
+              mlsNumber: propertyData.mlsNumber,
+              // Parse city correctly - if city contains postal code, extract actual city from full address
+              city: (() => {
+                let city = propertyData.address.city;
+                // Check if city contains postal code pattern (e.g., "Ontario L5A1E1")
+                if (city && /[A-Z]\d[A-Z]\s?\d[A-Z]\d/.test(city)) {
+                  // Extract city from full address (e.g., "2092 SAVA CRESCENTMississauga (Cooksville)")
+                  const addressParts = fullAddress.split(',');
+                  if (addressParts.length > 1) {
+                    // Second part should be city, remove any neighborhood in parentheses
+                    city = addressParts[1].trim().split('(')[0].trim();
+                  }
+                }
+                return city || 'Toronto'; // Default to Toronto if parsing fails
+              })(),
+              province: propertyData.address.state || 'Ontario'
+            }
+          };
+          
+          console.log('API Request Body:', JSON.stringify(requestBody, null, 2));
+          console.log('Property data bedrooms:', propertyData.bedrooms, 'Type:', typeof propertyData.bedrooms);
+          
+          // Call API with property data
+          const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${await currentUser.getIdToken()}`
+            },
+            body: JSON.stringify(requestBody)
+          });
+          
+          console.log('API Response status:', response.status);
+          
+          if (!response.ok) {
+            const errorText = await response.text();
+            console.error('API Error Response:', errorText);
+            throw new Error(`Analysis API request failed: ${response.status} - ${errorText}`);
+          }
+          
+          const result = await response.json();
+          console.log('Analysis result:', result);
+          
+          if (result.success && result.data) {
+            // Stop progress tracking
+            stopProgressTracking();
+            
+            // Display results
+            displayResults(result.data);
+            showView('results');
+            
+            // Reload user analyses to update the dashboard
+            await loadUserAnalyses();
+            
+            // Clear the stored property data
+            window.pendingPropertyData = null;
+          } else {
+            throw new Error(result.error || 'Analysis failed');
+          }
+        } catch (error) {
+          // Stop progress tracking on error
+          stopProgressTracking();
+          
+          console.error('Analysis error:', error);
+          console.error('Error details:', {
+            message: error.message,
+            stack: error.stack,
+            response: error.response
+          });
+          
+          // Check if it's a network error
+          if (error.message === 'Failed to fetch') {
+            alert('Network error: Unable to connect to the analysis service. Please check your connection and try again.');
+          } else {
+            alert('Failed to analyze property: ' + (error.message || 'Unknown error'));
+          }
+          showView('dashboard');
+        }
+      });
+
+      // Property form
+      document.getElementById('property-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const submitBtn = e.target.querySelector('button[type="submit"]');
+        
+        // Collect form data
+        const address = {
+          street: document.getElementById('street').value,
+          city: document.getElementById('city').value,
+          state: document.getElementById('state').value,
+          country: document.getElementById('country').value,
+          postal: document.getElementById('postal').value
+        };
+        
+        // Store pending property data for confirmation screen
+        window.pendingPropertyData = {
+          address,
+          price: document.getElementById('purchase-price')?.value || null,
+          propertyTaxes: document.getElementById('property-taxes')?.value || null,
+          bedrooms: document.getElementById('bedrooms')?.value || null,
+          bathrooms: document.getElementById('bathrooms')?.value || null,
+          sqft: document.getElementById('sqft')?.value || null,
+          propertyType: document.getElementById('property-type')?.value || window.extensionPropertyData?.propertyType || null,
+          condoFees: document.getElementById('condo-fees')?.value || null,
+          mlsNumber: document.getElementById('mls-number')?.value || window.extensionPropertyData?.mlsNumber || null,
+          mainImage: window.extensionPropertyData?.mainImage || null,
+          yearBuilt: window.extensionPropertyData?.yearBuilt || null
+        };
+        
+        // Update confirmation screen with property details
+        const fullAddress = `${address.street}, ${address.city}, ${address.state}, ${address.country} ${address.postal}`.trim();
+        document.getElementById('confirm-address').textContent = fullAddress;
+        
+        // Update property image if available
+        const confirmImageContainer = document.getElementById('confirm-image-container');
+        const confirmImage = document.getElementById('confirm-image');
+        if (confirmImageContainer && confirmImage && window.pendingPropertyData.mainImage) {
+          confirmImage.src = window.pendingPropertyData.mainImage;
+          confirmImageContainer.style.display = 'block';
+        } else if (confirmImageContainer) {
+          confirmImageContainer.style.display = 'none';
+        }
+        
+        // Update property details in confirmation screen
+        const confirmPrice = document.getElementById('confirm-price');
+        if (confirmPrice && window.pendingPropertyData.price) {
+          confirmPrice.textContent = `$${parseInt(window.pendingPropertyData.price).toLocaleString()}`;
+        }
+        
+        const confirmBedrooms = document.getElementById('confirm-bedrooms');
+        if (confirmBedrooms && window.pendingPropertyData.bedrooms) {
+          confirmBedrooms.textContent = window.pendingPropertyData.bedrooms;
+        }
+        
+        const confirmBathrooms = document.getElementById('confirm-bathrooms');
+        if (confirmBathrooms && window.pendingPropertyData.bathrooms) {
+          confirmBathrooms.textContent = window.pendingPropertyData.bathrooms;
+        }
+        
+        const confirmSqft = document.getElementById('confirm-sqft');
+        if (confirmSqft && window.pendingPropertyData.sqft) {
+          confirmSqft.textContent = `${window.pendingPropertyData.sqft} sq ft`;
+        }
+        
+        const confirmPropertyType = document.getElementById('confirm-type');
+        if (confirmPropertyType && window.pendingPropertyData.propertyType) {
+          confirmPropertyType.textContent = window.pendingPropertyData.propertyType;
+        }
+        
+        const confirmTaxes = document.getElementById('confirm-taxes');
+        if (confirmTaxes && window.pendingPropertyData.propertyTaxes) {
+          confirmTaxes.textContent = `$${parseInt(window.pendingPropertyData.propertyTaxes).toLocaleString()}/year`;
+        }
+        
+        const confirmCondoFees = document.getElementById('confirm-condo-fees');
+        const confirmCondoSection = document.getElementById('confirm-condo-section');
+        if (confirmCondoFees && confirmCondoSection && window.pendingPropertyData.condoFees) {
+          confirmCondoFees.textContent = `$${parseInt(window.pendingPropertyData.condoFees).toLocaleString()}`;
+          confirmCondoSection.style.display = 'block';
+        } else if (confirmCondoSection) {
+          confirmCondoSection.style.display = 'none';
+        }
+        
+        const confirmMls = document.getElementById('confirm-mls');
+        if (confirmMls && window.pendingPropertyData.mlsNumber) {
+          confirmMls.textContent = window.pendingPropertyData.mlsNumber;
+        }
+        
+        // Show confirmation screen instead of analyzing directly
+        showView('confirmation');
+      });
+
+      // Results screen buttons
+      document.getElementById('back-to-dashboard-results').addEventListener('click', function() {
+        showView('dashboard');
+      });
+
+      document.getElementById('new-analysis-from-results').addEventListener('click', function() {
+        // Clear form fields
+        document.getElementById('street').value = '';
+        document.getElementById('city').value = '';
+        document.getElementById('state').value = '';
+        document.getElementById('country').value = '';
+        document.getElementById('postal').value = '';
+        showView('property-form');
+      });
+
+      document.getElementById('save-analysis').addEventListener('click', function() {
+        alert('Analysis saved to your dashboard!');
+        showView('dashboard');
+      });
+
+      // Edit and Reset financials buttons - with error checking
+      const editFinancialsBtn = document.getElementById('edit-financials-btn');
+      if (editFinancialsBtn) {
+        console.log('Edit button found and adding listener');
+        editFinancialsBtn.addEventListener('click', function() {
+          toggleEditMode();
+        });
+      } else {
+        console.error('Edit button NOT found in DOM!');
+      }
+
+      const resetFinancialsBtn = document.getElementById('reset-financials-btn');
+      if (resetFinancialsBtn) {
+        console.log('Reset button found and adding listener');
+        resetFinancialsBtn.addEventListener('click', function() {
+          resetToOriginal();
+        });
+      } else {
+        console.error('Reset button NOT found in DOM!');
+      }
+      
+      // Back to dashboard from property form
+      const backToDashboardBtn = document.getElementById('back-to-dashboard');
+      if (backToDashboardBtn) {
+        backToDashboardBtn.addEventListener('click', function() {
+          showView('dashboard');
+        });
+      }
+
+      // Note: LTR/STR mode buttons are already handled above in the analysis mode toggle section
+      
+      // Note: Confirmation screen buttons are already handled above in the main setup section
+      
+      // Initialize the app
+      initApp();
+    });
+
+    console.log('Script setup complete');
+    // Load and mount RentalComparisonView component
+    function mountRentalComparisonView(analysisData) {
+      console.log('Mounting RentalComparisonView with data:', analysisData);
+      const container = document.getElementById('str-comparison-container');
+      if (!container) {
+        console.error('str-comparison-container not found');
+        return;
+      }
+      
+      // Check if STR data exists - handle both API response formats
+      const hasSTR = analysisData.strAnalysis || analysisData.short_term_rental;
+      console.log('Has STR data:', hasSTR);
+      
+      if (hasSTR) {
+        container.style.display = 'block';
+        
+        // Transform data to match component expectations
+        const transformedData = {
+          longTermRental: analysisData.long_term_rental || analysisData.longTermRental,
+          strAnalysis: analysisData.strAnalysis || analysisData.short_term_rental,
+          comparison: analysisData.comparison,
+          propertyDetails: analysisData.property_details || analysisData.propertyDetails
+        };
+        
+        console.log('Transformed data:', transformedData);
+        
+        // Check if React and ReactDOM are loaded
+        if (!window.React || !window.ReactDOM) {
+          console.error('React or ReactDOM not loaded');
+          return;
+        }
+        
+        // Check if component is already loaded
+        if (window.RentalComparisonView) {
+          console.log('Component already loaded, mounting...');
+          try {
+            // Component already loaded, just mount it
+            ReactDOM.render(
+              React.createElement(window.RentalComparisonView, { 
+                analysis: transformedData,
+                propertyAddress: analysisData.property_address || 'Property Analysis'
+              }),
+              container
+            );
+            console.log('Component mounted successfully');
+          } catch (error) {
+            console.error('Error mounting component:', error);
+          }
+        } else {
+          console.log('Component not loaded, loading script...');
+          // Wait for Babel to be ready
+          const checkBabelAndLoad = () => {
+            if (window.Babel) {
+              console.log('Babel is ready, loading component...');
+              // Load component script first
+              const script = document.createElement('script');
+              script.type = 'text/babel';
+              script.src = '/components/RentalComparisonView.jsx';
+              script.onload = () => {
+                console.log('Component script loaded');
+                // Give Babel time to transform the JSX
+                setTimeout(() => {
+                  if (window.RentalComparisonView) {
+                    console.log('Component available, mounting...');
+                    try {
+                      ReactDOM.render(
+                        React.createElement(window.RentalComparisonView, { 
+                          analysis: transformedData,
+                          propertyAddress: analysisData.property_address || 'Property Analysis'
+                        }),
+                        container
+                      );
+                      console.log('Component mounted successfully');
+                    } catch (error) {
+                      console.error('Error mounting component:', error);
+                    }
+                  } else {
+                    console.error('Component not available after loading script');
+                  }
+                }, 1000);
+              };
+              script.onerror = (error) => {
+                console.error('Error loading component script:', error);
+              };
+              document.body.appendChild(script);
+            } else {
+              console.log('Babel not ready, retrying...');
+              setTimeout(checkBabelAndLoad, 100);
+            }
+          };
+          checkBabelAndLoad();
+        }
+      } else {
+        container.style.display = 'none';
+        console.log('No STR data, hiding container');
+      }
+    }
+    
+    // Presentation Mode Functions
+    let isPresentationMode = false;
+    let currentAnalysisId = null;
+    
+    function togglePresentationMode() {
+      isPresentationMode = document.getElementById('presentation-mode-toggle').checked;
+      
+      if (isPresentationMode) {
+        // Show presentation view
+        document.getElementById('share-client-btn').style.display = 'flex';
+        document.getElementById('realtor-branding').style.display = 'block';
+        
+        // Set realtor info
+        if (currentUser) {
+          document.getElementById('realtor-name').textContent = currentUser.displayName || 'Your Realtor';
+          document.getElementById('realtor-contact').textContent = currentUser.email || '';
+        }
+        
+        // Mount presentation component if we have analysis data
+        if (currentAnalysis) {
+          mountClientPresentation(currentAnalysis);
+        }
+      } else {
+        // Hide presentation view
+        document.getElementById('share-client-btn').style.display = 'none';
+        document.getElementById('realtor-branding').style.display = 'none';
+        document.getElementById('client-presentation-container').style.display = 'none';
+        
+        // Show normal views
+        if (currentAnalysis) {
+          displayResults(currentAnalysis);
+        }
+      }
+    }
+    
+    function mountClientPresentation(analysisData) {
+      const container = document.getElementById('client-presentation-container');
+      if (!container) return;
+      
+      // Hide other views
+      document.getElementById('str-comparison-container').style.display = 'none';
+      document.querySelectorAll('.card').forEach(card => card.style.display = 'none');
+      
+      // Show presentation container
+      container.style.display = 'block';
+      
+      // Check if component is loaded
+      if (window.ClientPresentationView) {
+        const realtorInfo = {
+          name: currentUser?.displayName || 'Your Realtor',
+          email: currentUser?.email || '',
+          phone: currentUser?.phoneNumber || '',
+          logo: currentUser?.photoURL || null
+        };
+        
+        ReactDOM.render(
+          React.createElement(window.ClientPresentationView, {
+            analysis: analysisData,
+            propertyAddress: analysisData.property_address || 'Investment Property',
+            realtorInfo: realtorInfo,
+            clientName: null,
+            presentationMode: true
+          }),
+          container
+        );
+      } else {
+        // Load component if not already loaded
+        const script = document.createElement('script');
+        script.type = 'text/babel';
+        script.src = '/components/ClientPresentationView.jsx';
+        script.onload = () => {
+          setTimeout(() => {
+            if (window.ClientPresentationView) {
+              mountClientPresentation(analysisData);
+            }
+          }, 1000);
+        };
+        document.body.appendChild(script);
+      }
+    }
+    
+    async function shareWithClient() {
+      if (!currentAnalysisId) {
+        alert('Please run an analysis first');
+        return;
+      }
+      
+      // Prompt for client info
+      const clientName = prompt('Client name (optional):');
+      const clientEmail = prompt('Client email (optional):');
+      
+      try {
+        const response = await fetch('/api/reports/client-presentation', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${await currentUser.getIdToken()}`
+          },
+          body: JSON.stringify({
+            analysisId: currentAnalysisId,
+            clientName: clientName || null,
+            clientEmail: clientEmail || null,
+            realtorBranding: {
+              name: currentUser.displayName || 'Your Realtor',
+              email: currentUser.email,
+              phone: currentUser.phoneNumber || null,
+              logo: currentUser.photoURL || null
+            },
+            expiryDays: 7
+          })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+          // Show share modal
+          const shareUrl = result.shareUrl;
+          const modal = confirm(`Client presentation created!\n\nShare URL: ${shareUrl}\n\nCopy this link?`);
+          
+          if (modal) {
+            // Copy to clipboard
+            navigator.clipboard.writeText(shareUrl).then(() => {
+              alert('Link copied to clipboard!');
+            });
+          }
+        } else {
+          alert('Failed to create presentation: ' + result.error);
+        }
+      } catch (error) {
+        console.error('Share error:', error);
+        alert('Failed to create shareable link');
+      }
+    }
+  </script>
+</body>
+</html>

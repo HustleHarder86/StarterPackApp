@@ -1,0 +1,11 @@
+{
+  "deploymentId": "deploy-1752891303962",
+  "timestamp": "2025-07-19T02:15:03.997Z",
+  "backedUpFiles": [
+    "roi-finder.html",
+    "styles.css",
+    "package.json"
+  ],
+  "originalApp": "roi-finder.html",
+  "newApp": "roi-finder-v2.html"
+}

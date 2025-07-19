@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mockup 1: Investment Verdict Focus</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .card-elevated { box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        .card-subtle { box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+        .badge-hot { background: linear-gradient(135deg, #ff6b6b, #ee5a24); }
+        .badge-safe { background: linear-gradient(135deg, #20bf6b, #26de81); }
+        .revenue-indicator { 
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <div class="gradient-bg text-white p-6">
+        <div class="max-w-6xl mx-auto">
+            <h1 class="text-2xl font-bold mb-2">Investment Analysis Complete</h1>
+            <p class="text-blue-100">123 Main Street, Toronto, ON</p>
+            <div class="flex items-center gap-2 mt-2">
+                <span class="bg-white/20 px-3 py-1 rounded-full text-sm">2 Bedrooms</span>
+                <span class="bg-white/20 px-3 py-1 rounded-full text-sm">2 Bathrooms</span>
+                <span class="bg-white/20 px-3 py-1 rounded-full text-sm">1,200 sq ft</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="max-w-6xl mx-auto px-4 -mt-8 pb-8">
+        
+        <!-- Investment Verdict Card - PROMINENT -->
+        <div class="card-elevated bg-white rounded-2xl p-8 mb-8 border-l-4 border-green-500">
+            <div class="flex items-start justify-between mb-6">
+                <div>
+                    <div class="flex items-center gap-3 mb-2">
+                        <span class="badge-safe text-white px-4 py-2 rounded-full text-sm font-semibold">✓ RECOMMENDED</span>
+                        <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-xs font-medium">High Confidence</span>
+                    </div>
+                    <h2 class="text-3xl font-bold text-gray-900 mb-2">Short-Term Rental Strategy</h2>
+                    <p class="text-lg text-gray-600">Based on live market data and comparable properties</p>
+                </div>
+                <div class="text-right">
+                    <div class="revenue-indicator text-white px-6 py-4 rounded-xl">
+                        <div class="text-sm font-medium">Monthly Revenue Potential</div>
+                        <div class="text-2xl font-bold">$4,800 - $6,200</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="text-center p-4 bg-green-50 rounded-lg">
+                    <div class="text-2xl font-bold text-green-600">+47%</div>
+                    <div class="text-sm text-gray-600">More than long-term rental</div>
+                </div>
+                <div class="text-center p-4 bg-blue-50 rounded-lg">
+                    <div class="text-2xl font-bold text-blue-600">78%</div>
+                    <div class="text-sm text-gray-600">Average occupancy needed</div>
+                </div>
+                <div class="text-center p-4 bg-purple-50 rounded-lg">
+                    <div class="text-2xl font-bold text-purple-600">12.4%</div>
+                    <div class="text-sm text-gray-600">Projected annual ROI</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Live Airbnb Comparables - ELEVATED POSITION -->
+        <div class="card-elevated bg-white rounded-2xl p-6 mb-8">
+            <div class="flex items-center justify-between mb-6">
+                <div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-1">Live Airbnb Comparables</h3>
+                    <p class="text-gray-600 flex items-center gap-2">
+                        <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                        Real-time data from 8 similar properties nearby
+                    </p>
+                </div>
+                <span class="badge-hot text-white px-3 py-1 rounded-full text-xs font-semibold">LIVE DATA</span>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <!-- Comparable Property 1 -->
+                <div class="border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition">
+                    <img src="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=300&h=200&fit=crop" 
+                         alt="Comparable Property" class="w-full h-40 object-cover">
+                    <div class="p-4">
+                        <div class="font-semibold text-gray-900 mb-1">$185/night</div>
+                        <div class="text-sm text-gray-600 mb-2">2BR • 1.5BA • Downtown</div>
+                        <div class="text-xs text-green-600 font-medium">~$5,200/month</div>
+                        <div class="text-xs text-gray-500 mt-1">85% occupancy</div>
+                    </div>
+                </div>
+
+                <!-- Comparable Property 2 -->
+                <div class="border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition">
+                    <img src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=300&h=200&fit=crop" 
+                         alt="Comparable Property" class="w-full h-40 object-cover">
+                    <div class="p-4">
+                        <div class="font-semibold text-gray-900 mb-1">$165/night</div>
+                        <div class="text-sm text-gray-600 mb-2">2BR • 2BA • King West</div>
+                        <div class="text-xs text-green-600 font-medium">~$4,600/month</div>
+                        <div class="text-xs text-gray-500 mt-1">82% occupancy</div>
+                    </div>
+                </div>
+
+                <!-- Comparable Property 3 -->
+                <div class="border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition">
+                    <img src="https://images.unsplash.com/photo-1484154218962-a197022b5858?w=300&h=200&fit=crop" 
+                         alt="Comparable Property" class="w-full h-40 object-cover">
+                    <div class="p-4">
+                        <div class="font-semibold text-gray-900 mb-1">$220/night</div>
+                        <div class="text-sm text-gray-600 mb-2">2BR • 2BA • Luxury</div>
+                        <div class="text-xs text-green-600 font-medium">~$6,100/month</div>
+                        <div class="text-xs text-gray-500 mt-1">79% occupancy</div>
+                    </div>
+                </div>
+
+                <!-- View More -->
+                <div class="border border-dashed border-gray-300 rounded-lg flex items-center justify-center min-h-[200px] hover:border-blue-400 transition cursor-pointer">
+                    <div class="text-center text-gray-500">
+                        <div class="text-lg mb-2">📊</div>
+                        <div class="font-medium">View All 8</div>
+                        <div class="text-sm">Comparables</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Comparison Chart -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <div class="card-subtle bg-white rounded-xl p-6">
+                <h4 class="font-semibold text-gray-900 mb-4">Revenue Comparison</h4>
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+                        <span class="font-medium text-gray-700">Short-Term Rental</span>
+                        <span class="font-bold text-green-600">$5,400/mo</span>
+                    </div>
+                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <span class="font-medium text-gray-700">Long-Term Rental</span>
+                        <span class="font-bold text-gray-600">$3,200/mo</span>
+                    </div>
+                    <div class="border-t pt-3">
+                        <div class="flex items-center justify-between">
+                            <span class="font-semibold text-gray-900">Difference</span>
+                            <span class="font-bold text-green-600">+$2,200/mo</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-subtle bg-white rounded-xl p-6">
+                <h4 class="font-semibold text-gray-900 mb-4">Key Metrics</h4>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-blue-600">8.2%</div>
+                        <div class="text-sm text-gray-600">Cap Rate</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-purple-600">12.4%</div>
+                        <div class="text-sm text-gray-600">Annual ROI</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-green-600">$2,100</div>
+                        <div class="text-sm text-gray-600">Monthly Cash Flow</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-orange-600">6.2 years</div>
+                        <div class="text-sm text-gray-600">Payback Period</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <button class="gradient-bg text-white px-8 py-3 rounded-lg font-semibold hover:opacity-90 transition">
+                Save to Portfolio
+            </button>
+            <button class="border border-gray-300 text-gray-700 px-8 py-3 rounded-lg font-semibold hover:bg-gray-50 transition">
+                Generate Report
+            </button>
+            <button class="border border-blue-300 text-blue-700 px-8 py-3 rounded-lg font-semibold hover:bg-blue-50 transition">
+                Analyze Another Property
+            </button>
+        </div>
+
+    </div>
+</body>
+</html>
