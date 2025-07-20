@@ -48,7 +48,12 @@ export class FirebaseWrapper {
                 // Check localStorage for saved user
                 const savedUser = localStorage.getItem('mockUser');
                 if (savedUser) {
-                    this.currentUser = JSON.parse(savedUser);
+                    const userData = JSON.parse(savedUser);
+                    // Recreate user object with methods
+                    this.currentUser = {
+                        ...userData,
+                        getIdToken: () => Promise.resolve('mock-token-' + Date.now())
+                    };
                     setTimeout(() => callback(this.currentUser), 100);
                 } else {
                     setTimeout(() => callback(null), 100);
@@ -62,10 +67,20 @@ export class FirebaseWrapper {
                     displayName: email.split('@')[0],
                     getIdToken: () => Promise.resolve('mock-token-' + Date.now())
                 };
-                this.currentUser = mockUser;
-                localStorage.setItem('mockUser', JSON.stringify(mockUser));
-                this.authStateCallbacks.forEach(callback => callback(mockUser));
-                return { user: mockUser };
+                // Store the function reference properly
+                const userWithMethods = {
+                    ...mockUser,
+                    getIdToken: mockUser.getIdToken
+                };
+                this.currentUser = userWithMethods;
+                // Don't store functions in localStorage
+                localStorage.setItem('mockUser', JSON.stringify({
+                    uid: mockUser.uid,
+                    email: mockUser.email,
+                    displayName: mockUser.displayName
+                }));
+                this.authStateCallbacks.forEach(callback => callback(userWithMethods));
+                return { user: userWithMethods };
             },
             createUserWithEmailAndPassword: async (email, password) => {
                 // Mock sign up
@@ -79,10 +94,21 @@ export class FirebaseWrapper {
                         return Promise.resolve();
                     }
                 };
-                this.currentUser = mockUser;
-                localStorage.setItem('mockUser', JSON.stringify(mockUser));
-                this.authStateCallbacks.forEach(callback => callback(mockUser));
-                return { user: mockUser };
+                // Store the function reference properly
+                const userWithMethods = {
+                    ...mockUser,
+                    getIdToken: mockUser.getIdToken,
+                    updateProfile: mockUser.updateProfile
+                };
+                this.currentUser = userWithMethods;
+                // Don't store functions in localStorage
+                localStorage.setItem('mockUser', JSON.stringify({
+                    uid: mockUser.uid,
+                    email: mockUser.email,
+                    displayName: mockUser.displayName
+                }));
+                this.authStateCallbacks.forEach(callback => callback(userWithMethods));
+                return { user: userWithMethods };
             },
             signOut: async () => {
                 this.currentUser = null;
