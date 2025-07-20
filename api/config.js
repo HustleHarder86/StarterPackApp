@@ -22,15 +22,15 @@ export default function handler(req, res) {
   }
 
   // Only expose client-safe configuration
-  // Using hardcoded values that match portfolio.html for consistency
+  // IMPORTANT: These environment variables must be set in Vercel
   const publicConfig = {
     firebase: {
-      apiKey: process.env.VITE_FIREBASE_API_KEY || "AIzaSyBvVaw35Gzl98MOrclJaCCC0jcHzJLqkwc",
-      authDomain: process.env.VITE_FIREBASE_AUTH_DOMAIN || "rental-roi-calculator-ddce2.firebaseapp.com",
-      projectId: process.env.VITE_FIREBASE_PROJECT_ID || "rental-roi-calculator-ddce2",
-      storageBucket: process.env.VITE_FIREBASE_STORAGE_BUCKET || "rental-roi-calculator-ddce2.appspot.com",
-      messagingSenderId: process.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "1034879055851",
-      appId: process.env.VITE_FIREBASE_APP_ID || "1:1034879055851:web:2dd56a7e05a3154dcbac88"
+      apiKey: process.env.VITE_FIREBASE_API_KEY,
+      authDomain: process.env.VITE_FIREBASE_AUTH_DOMAIN,
+      projectId: process.env.VITE_FIREBASE_PROJECT_ID || process.env.FIREBASE_PROJECT_ID,
+      storageBucket: process.env.VITE_FIREBASE_STORAGE_BUCKET,
+      messagingSenderId: process.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+      appId: process.env.VITE_FIREBASE_APP_ID
     },
     stripe: {
       publishableKey: process.env.VITE_STRIPE_PUBLISHABLE_KEY
@@ -40,6 +40,25 @@ export default function handler(req, res) {
       apiUrl: process.env.VITE_API_URL || '/api'
     }
   };
+  
+  // Validate Firebase config
+  if (!publicConfig.firebase.apiKey || !publicConfig.firebase.projectId) {
+    console.error('Firebase configuration missing. Please set VITE_FIREBASE_* environment variables in Vercel.');
+    
+    // Return error response
+    return res.status(500).json({
+      error: 'Firebase configuration not properly set',
+      message: 'Please configure Firebase environment variables',
+      required: [
+        'VITE_FIREBASE_API_KEY',
+        'VITE_FIREBASE_AUTH_DOMAIN',
+        'VITE_FIREBASE_PROJECT_ID',
+        'VITE_FIREBASE_STORAGE_BUCKET',
+        'VITE_FIREBASE_MESSAGING_SENDER_ID',
+        'VITE_FIREBASE_APP_ID'
+      ]
+    });
+  }
 
   // Set cache headers (cache for 5 minutes in production)
   if (process.env.NODE_ENV === 'production') {

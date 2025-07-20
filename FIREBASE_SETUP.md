@@ -1,76 +1,32 @@
 # Firebase Setup Instructions
 
-## Current Issue
-The Firebase project `rental-roi-calculator-ddce2` appears to be deleted or the API key is invalid, causing authentication errors.
+## Current Setup
+The application uses the Firebase project `real-estate-roi-app` which is already configured in Railway. The frontend loads Firebase configuration from environment variables through the `/api/config` endpoint.
 
-## Quick Fix - Create New Firebase Project
+## Environment Variables Required
 
-1. **Go to [Firebase Console](https://console.firebase.google.com/)**
+The frontend requires Firebase client configuration to be set in Vercel environment variables. See `VERCEL_ENV_SETUP.md` for detailed instructions.
 
-2. **Create a new project** called `starterpack-app` (or any name)
+### Required Variables:
+- `VITE_FIREBASE_API_KEY`
+- `VITE_FIREBASE_AUTH_DOMAIN`
+- `VITE_FIREBASE_PROJECT_ID`
+- `VITE_FIREBASE_STORAGE_BUCKET`
+- `VITE_FIREBASE_MESSAGING_SENDER_ID`
+- `VITE_FIREBASE_APP_ID`
 
-3. **Enable Authentication**:
-   - Go to Build > Authentication
-   - Click "Get started"
-   - Enable "Email/Password" provider
-   - Save
+### Important Notes:
+- The Firebase project ID must be `real-estate-roi-app` to match Railway
+- All Firebase configuration is loaded from environment variables
+- No Firebase configuration should be hardcoded in the source code
+- The `/api/config` endpoint serves the configuration to the frontend
 
-4. **Enable Firestore Database**:
-   - Go to Build > Firestore Database
-   - Click "Create database"
-   - Choose "Start in production mode"
-   - Select a location (us-central1 recommended)
-   - Create
+## How Configuration Works
 
-5. **Get your configuration**:
-   - Go to Project Settings (gear icon)
-   - Scroll to "Your apps"
-   - Click "Add app" > Web (</> icon)
-   - Register app with nickname "StarterPack Web"
-   - Copy the configuration object
-
-6. **Update the configuration** in these files:
-   - `/api/config.js` - Update the fallback values
-   - `/roi-finder.html` - Update the fallback firebaseConfig
-   - `/roi-finder-v2.html` - Update the firebaseConfig
-   - `/portfolio.html` - Update the firebaseConfig
-   - `/reports.html` - Update the firebaseConfig
-   - `/admin-dashboard.html` - Update the firebaseConfig
-
-7. **Set environment variables** in Vercel:
-   ```
-   VITE_FIREBASE_API_KEY=your-new-api-key
-   VITE_FIREBASE_AUTH_DOMAIN=your-project.firebaseapp.com
-   VITE_FIREBASE_PROJECT_ID=your-project-id
-   VITE_FIREBASE_STORAGE_BUCKET=your-project.appspot.com
-   VITE_FIREBASE_MESSAGING_SENDER_ID=your-sender-id
-   VITE_FIREBASE_APP_ID=your-app-id
-   ```
-
-8. **For Railway (backend)**, get service account key:
-   - Go to Project Settings > Service accounts
-   - Click "Generate new private key"
-   - Download the JSON file
-   - Set these environment variables in Railway:
-   ```
-   FIREBASE_PROJECT_ID=your-project-id
-   FIREBASE_CLIENT_EMAIL=firebase-adminsdk-xxxxx@your-project.iam.gserviceaccount.com
-   FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n"
-   ```
-
-## Temporary Workaround
-
-While setting up the new Firebase project, you can use Firebase Auth Emulator locally:
-
-1. Install Firebase CLI: `npm install -g firebase-tools`
-2. Run: `firebase emulators:start --only auth,firestore`
-3. Update your local config to use:
-   ```javascript
-   if (window.location.hostname === 'localhost') {
-     auth.useEmulator('http://localhost:9099');
-     db.useEmulator('localhost', 8080);
-   }
-   ```
+1. **Frontend**: Calls `/api/config` to get Firebase configuration
+2. **API Endpoint**: Returns configuration from environment variables
+3. **Fallback**: If configuration fails, uses mock authentication (development only)
+4. **Railway Backend**: Uses the same Firebase project with service account credentials
 
 ## Authentication Flow for Extension
 

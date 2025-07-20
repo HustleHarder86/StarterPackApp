@@ -265,38 +265,49 @@
             let config;
             
             try {
-                // Try to load config from API first
+                // Always load config from API - no hardcoded values
                 const response = await fetch('/api/config');
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.message || 'Failed to load configuration');
+                }
+                
                 config = await response.json();
+                
+                // Validate required Firebase config
+                if (!config.firebase || !config.firebase.apiKey || !config.firebase.projectId) {
+                    throw new Error('Invalid Firebase configuration received from server');
+                }
+                
+                // Initialize Firebase
+                firebase.initializeApp(config.firebase);
+                auth = firebase.auth();
+                db = firebase.firestore();
+                
+                // Enable persistence for offline support
+                await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+                
+                console.log('Firebase initialized successfully with project:', config.firebase.projectId);
+                return true;
+                
             } catch (error) {
-                console.warn('Failed to load config from API, using fallback');
-                config = {
-                    firebase: {
-                        apiKey: "AIzaSyBvVaw35Gzl98MOrclJaCCC0jcHzJLqkwc",
-                        authDomain: "rental-roi-calculator-ddce2.firebaseapp.com",
-                        projectId: "rental-roi-calculator-ddce2",
-                        storageBucket: "rental-roi-calculator-ddce2.appspot.com",
-                        messagingSenderId: "1034879055851",
-                        appId: "1:1034879055851:web:2dd56a7e05a3154dcbac88"
-                    }
-                };
-            }
-            
-            // Initialize with wrapper (will use mock if Firebase fails)
-            await firebaseWrapper.initialize(config.firebase);
-            auth = firebaseWrapper.getAuth();
-            db = firebaseWrapper.getDb();
-            
-            if (firebaseWrapper.isUsingMock()) {
-                console.warn('⚠️ Using mock Firebase. See FIREBASE_SETUP.md for proper configuration.');
-                // Show a non-blocking warning to the user
+                console.error('Failed to initialize Firebase:', error);
+                
+                // Use wrapper with mock fallback
+                console.warn('Using Firebase wrapper with mock fallback');
+                await firebaseWrapper.initialize({});
+                auth = firebaseWrapper.getAuth();
+                db = firebaseWrapper.getDb();
+                
+                // Show error message
                 const warning = document.createElement('div');
-                warning.className = 'fixed top-0 left-0 right-0 bg-yellow-100 border-b border-yellow-400 text-yellow-700 px-4 py-3 text-center';
-                warning.innerHTML = 'Development Mode: Using mock authentication. <a href="/FIREBASE_SETUP.md" class="underline">Configure Firebase</a>';
+                warning.className = 'fixed top-0 left-0 right-0 bg-red-100 border-b border-red-400 text-red-700 px-4 py-3 text-center';
+                warning.innerHTML = `Firebase configuration error: ${error.message}. Please contact support.`;
                 document.body.prepend(warning);
+                
+                return true;
             }
-            
-            return true;
         }
         
         // Global application state
