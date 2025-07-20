@@ -347,29 +347,35 @@
                 this.showLoading('Analyzing property...');
                 
                 try {
-                    const response = await fetch('/api/analyze-property.js', {
+                    // Use Railway API for heavy processing (per architecture)
+                    const railwayUrl = 'https://real-estate-app-production-ba5c.up.railway.app/api/analysis/property';
+                    
+                    const response = await fetch(railwayUrl, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
                             'Authorization': `Bearer ${await window.appState.currentUser.getIdToken()}`
                         },
                         body: JSON.stringify({
-                            propertyData,
-                            userId: window.appState.currentUser.uid
+                            propertyAddress: propertyData.address,
+                            propertyData: propertyData,
+                            requestType: 'authenticated',
+                            includeStrAnalysis: true
                         })
                     });
                     
                     if (!response.ok) {
-                        throw new Error('Analysis failed');
+                        throw new Error(`Analysis failed: ${response.statusText}`);
                     }
                     
-                    const analysisData = await response.json();
+                    const result = await response.json();
+                    const analysisData = result.data || result;
                     window.appState.currentAnalysis = analysisData;
                     await this.renderAnalysisResults(analysisData);
                     
                 } catch (error) {
                     console.error('Analysis error:', error);
-                    this.showError('Failed to analyze property. Please try again.');
+                    this.showError(`Failed to analyze property: ${error.message}. Please try again.`);
                 }
             }
             
