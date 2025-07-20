@@ -100,6 +100,58 @@
             </div>
         </div>
 
+        <!-- Login Form -->
+        <div id="login-section" class="hidden">
+            <div class="container mx-auto p-xl">
+                <div class="card card-lg max-w-md mx-auto">
+                    <div class="text-center mb-xl">
+                        <h2 class="text-3xl font-bold text-gray-900 mb-md">Welcome Back</h2>
+                        <p class="text-gray-600">Sign in to analyze properties and save your reports</p>
+                    </div>
+                    
+                    <form id="login-form" class="space-y-lg">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-sm">Email Address</label>
+                            <input type="email" id="login-email" class="w-full p-md border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="your@email.com" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-sm">Password</label>
+                            <input type="password" id="login-password" class="w-full p-md border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="Your password" required>
+                        </div>
+                        <button type="submit" class="w-full bg-primary text-white font-semibold py-md px-xl rounded-lg hover:bg-primary-dark transition-colors">
+                            Sign In
+                        </button>
+                    </form>
+                    
+                    <div class="text-center mt-lg">
+                        <p class="text-gray-600">Don't have an account? 
+                            <button id="show-signup" class="text-primary hover:text-primary-dark font-medium">Sign up here</button>
+                        </p>
+                    </div>
+                    
+                    <div id="signup-form" class="hidden mt-lg">
+                        <form id="register-form" class="space-y-lg">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-sm">Full Name</label>
+                                <input type="text" id="register-name" class="w-full p-md border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="Your full name" required>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-sm">Email Address</label>
+                                <input type="email" id="register-email" class="w-full p-md border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="your@email.com" required>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-sm">Password</label>
+                                <input type="password" id="register-password" class="w-full p-md border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="Choose a password" required>
+                            </div>
+                            <button type="submit" class="w-full bg-secondary text-white font-semibold py-md px-xl rounded-lg hover:bg-secondary-dark transition-colors">
+                                Create Account
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Property Input Form -->
         <div id="property-input-section" class="hidden">
             <div class="container mx-auto p-xl">
@@ -251,7 +303,7 @@
                         await this.loadUserData();
                         this.showAppropriateView();
                     } else {
-                        window.location.href = '/login.html';
+                        this.showLoginForm();
                     }
                 });
             }
@@ -337,8 +389,13 @@
                 window.appState.isLoading = false;
             }
             
+            showLoginForm() {
+                this.hideAllViews();
+                document.getElementById('login-section').classList.remove('hidden');
+            }
+            
             hideAllViews() {
-                ['loading-state', 'property-input-section', 'analysis-results', 'error-state'].forEach(id => {
+                ['loading-state', 'login-section', 'property-input-section', 'analysis-results', 'error-state'].forEach(id => {
                     document.getElementById(id).classList.add('hidden');
                 });
             }
@@ -421,6 +478,55 @@
                         bathrooms: parseFloat(document.getElementById('property-bathrooms').value)
                     };
                     this.analyzeProperty(propertyData);
+                });
+                
+                // Login form
+                document.getElementById('login-form').addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const email = document.getElementById('login-email').value;
+                    const password = document.getElementById('login-password').value;
+                    
+                    try {
+                        await auth.signInWithEmailAndPassword(email, password);
+                        // Firebase auth state change will handle the redirect
+                    } catch (error) {
+                        alert('Login failed: ' + error.message);
+                    }
+                });
+                
+                // Show signup form
+                document.getElementById('show-signup').addEventListener('click', () => {
+                    document.getElementById('signup-form').classList.toggle('hidden');
+                });
+                
+                // Register form
+                document.getElementById('register-form').addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const name = document.getElementById('register-name').value;
+                    const email = document.getElementById('register-email').value;
+                    const password = document.getElementById('register-password').value;
+                    
+                    try {
+                        const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                        await userCredential.user.updateProfile({ displayName: name });
+                        
+                        // Create user document in Firestore
+                        await db.collection('users').doc(userCredential.user.uid).set({
+                            email: email,
+                            displayName: name,
+                            subscriptionTier: 'free',
+                            subscriptionStatus: 'active',
+                            monthlyAnalysisCount: 0,
+                            monthlyAnalysisLimit: 5,
+                            strAnalysisEnabled: false,
+                            strTrialUsed: 0,
+                            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                        });
+                        
+                        // Firebase auth state change will handle the redirect
+                    } catch (error) {
+                        alert('Registration failed: ' + error.message);
+                    }
                 });
                 
                 // Logout button
