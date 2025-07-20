@@ -127,11 +127,6 @@
                         <p class="text-gray-600">Don't have an account? 
                             <button id="show-signup" class="text-primary hover:text-primary-dark font-medium">Sign up here</button>
                         </p>
-                        <div class="mt-md">
-                            <button id="demo-mode-btn" class="text-sm text-gray-500 hover:text-gray-700 underline">
-                                Continue as Demo (Skip Login)
-                            </button>
-                        </div>
                     </div>
                     
                     <div id="signup-form" class="hidden mt-lg">
@@ -260,42 +255,48 @@
     <!-- Scripts -->
     <script type="module">
         import ComponentLoader from './js/modules/componentLoader.js';
+        import { FirebaseWrapper } from './js/firebase-wrapper.js';
         
-        // Initialize Firebase
-        const firebaseConfig = {
-            apiKey: "AIzaSyBvVaw35Gzl98MOrclJaCCC0jcHzJLqkwc",
-            authDomain: "rental-roi-calculator-ddce2.firebaseapp.com",
-            projectId: "rental-roi-calculator-ddce2",
-            storageBucket: "rental-roi-calculator-ddce2.appspot.com",
-            messagingSenderId: "1034879055851",
-            appId: "1:1034879055851:web:2dd56a7e05a3154dcbac88"
-        };
-        
-        // Initialize Firebase with error handling
+        // Initialize Firebase with wrapper
+        const firebaseWrapper = new FirebaseWrapper();
         let auth, db;
-        try {
-            firebase.initializeApp(firebaseConfig);
-            auth = firebase.auth();
-            db = firebase.firestore();
-        } catch (error) {
-            console.error('Firebase initialization failed:', error);
-            // Create mock objects for demo mode
-            auth = {
-                onAuthStateChanged: (callback) => {
-                    setTimeout(() => callback(null), 100);
-                },
-                signInWithEmailAndPassword: () => Promise.reject(new Error('Firebase unavailable')),
-                createUserWithEmailAndPassword: () => Promise.reject(new Error('Firebase unavailable')),
-                signOut: () => Promise.resolve()
-            };
-            db = {
-                collection: () => ({
-                    doc: () => ({
-                        get: () => Promise.resolve({ exists: false }),
-                        set: () => Promise.resolve()
-                    })
-                })
-            };
+        
+        async function initializeFirebase() {
+            let config;
+            
+            try {
+                // Try to load config from API first
+                const response = await fetch('/api/config');
+                config = await response.json();
+            } catch (error) {
+                console.warn('Failed to load config from API, using fallback');
+                config = {
+                    firebase: {
+                        apiKey: "AIzaSyBvVaw35Gzl98MOrclJaCCC0jcHzJLqkwc",
+                        authDomain: "rental-roi-calculator-ddce2.firebaseapp.com",
+                        projectId: "rental-roi-calculator-ddce2",
+                        storageBucket: "rental-roi-calculator-ddce2.appspot.com",
+                        messagingSenderId: "1034879055851",
+                        appId: "1:1034879055851:web:2dd56a7e05a3154dcbac88"
+                    }
+                };
+            }
+            
+            // Initialize with wrapper (will use mock if Firebase fails)
+            await firebaseWrapper.initialize(config.firebase);
+            auth = firebaseWrapper.getAuth();
+            db = firebaseWrapper.getDb();
+            
+            if (firebaseWrapper.isUsingMock()) {
+                console.warn('⚠️ Using mock Firebase. See FIREBASE_SETUP.md for proper configuration.');
+                // Show a non-blocking warning to the user
+                const warning = document.createElement('div');
+                warning.className = 'fixed top-0 left-0 right-0 bg-yellow-100 border-b border-yellow-400 text-yellow-700 px-4 py-3 text-center';
+                warning.innerHTML = 'Development Mode: Using mock authentication. <a href="/FIREBASE_SETUP.md" class="underline">Configure Firebase</a>';
+                document.body.prepend(warning);
+            }
+            
+            return true;
         }
         
         // Global application state
@@ -324,31 +325,29 @@
             }
             
             checkAuthState() {
-                // Temporary bypass for Firebase authentication issues
-                // TODO: Fix Firebase configuration and restore proper auth
-                try {
-                    auth.onAuthStateChanged(async (user) => {
-                        if (user) {
-                            window.appState.currentUser = user;
-                            document.getElementById('user-email').textContent = user.email;
-                            await this.loadUserData();
-                            this.showAppropriateView();
+                auth.onAuthStateChanged(async (user) => {
+                    if (user) {
+                        window.appState.currentUser = user;
+                        document.getElementById('user-email').textContent = user.email;
+                        await this.loadUserData();
+                        
+                        // If coming from extension with autoAnalyze, handle it
+                        const urlParams = new URLSearchParams(window.location.search);
+                        if (urlParams.get('fromExtension') === 'true' && urlParams.get('autoAnalyze') === 'true') {
+                            this.handleExtensionData();
                         } else {
-                            this.showLoginForm();
+                            this.showAppropriateView();
                         }
-                    });
-                } catch (error) {
-                    console.warn('Firebase authentication unavailable, using demo mode:', error);
-                    // Create a demo user for now
-                    window.appState.currentUser = {
-                        uid: 'demo-user',
-                        email: 'demo@starterpackapp.com',
-                        displayName: 'Demo User',
-                        getIdToken: () => Promise.resolve('demo-token')
-                    };
-                    document.getElementById('user-email').textContent = 'Demo Mode';
-                    this.showAppropriateView();
-                }
+                    } else {
+                        // Check if user is coming from extension
+                        const urlParams = new URLSearchParams(window.location.search);
+                        if (urlParams.get('fromExtension') === 'true') {
+                            // Store the current URL to redirect back after login
+                            sessionStorage.setItem('redirectAfterLogin', window.location.href);
+                        }
+                        this.showLoginForm();
+                    }
+                });
             }
             
             async loadUserData() {
@@ -363,7 +362,14 @@
             }
             
             handleUrlParameters() {
+                // Only handle non-extension URLs here
                 const urlParams = new URLSearchParams(window.location.search);
+                
+                if (urlParams.get('fromExtension') === 'true') {
+                    // Extension data will be handled after authentication
+                    return;
+                }
+                
                 const analysisId = urlParams.get('analysis');
                 const propertyData = urlParams.get('property');
                 
@@ -374,6 +380,55 @@
                 } else {
                     this.showPropertyInput();
                 }
+            }
+            
+            handleExtensionData() {
+                const urlParams = new URLSearchParams(window.location.search);
+                
+                // Build property data from URL parameters
+                const propertyData = {
+                    address: {},
+                    price: null,
+                    bedrooms: null,
+                    bathrooms: null,
+                    sqft: null,
+                    propertyType: null,
+                    yearBuilt: null,
+                    propertyTaxes: null,
+                    condoFees: null,
+                    mlsNumber: null,
+                    mainImage: null
+                };
+                
+                // Address components
+                if (urlParams.get('street')) propertyData.address.street = urlParams.get('street');
+                if (urlParams.get('city')) propertyData.address.city = urlParams.get('city');
+                if (urlParams.get('state')) propertyData.address.province = urlParams.get('state');
+                if (urlParams.get('country')) propertyData.address.country = urlParams.get('country');
+                if (urlParams.get('postal')) propertyData.address.postalCode = urlParams.get('postal');
+                
+                // Property details
+                if (urlParams.get('price')) propertyData.price = parseFloat(urlParams.get('price'));
+                if (urlParams.get('bedrooms')) propertyData.bedrooms = parseInt(urlParams.get('bedrooms'));
+                if (urlParams.get('bathrooms')) propertyData.bathrooms = parseFloat(urlParams.get('bathrooms'));
+                if (urlParams.get('sqft')) propertyData.sqft = parseInt(urlParams.get('sqft'));
+                if (urlParams.get('propertyType')) propertyData.propertyType = urlParams.get('propertyType');
+                if (urlParams.get('yearBuilt')) propertyData.yearBuilt = parseInt(urlParams.get('yearBuilt'));
+                if (urlParams.get('taxes')) propertyData.propertyTaxes = parseFloat(urlParams.get('taxes'));
+                if (urlParams.get('condoFees')) propertyData.condoFees = parseFloat(urlParams.get('condoFees'));
+                if (urlParams.get('mlsNumber')) propertyData.mlsNumber = urlParams.get('mlsNumber');
+                if (urlParams.get('image')) propertyData.mainImage = urlParams.get('image');
+                
+                // Build full address string
+                const addressParts = [];
+                if (propertyData.address.street) addressParts.push(propertyData.address.street);
+                if (propertyData.address.city) addressParts.push(propertyData.address.city);
+                if (propertyData.address.province) addressParts.push(propertyData.address.province);
+                if (propertyData.address.postalCode) addressParts.push(propertyData.address.postalCode);
+                propertyData.address = addressParts.join(', ');
+                
+                // Automatically analyze the property
+                this.analyzeProperty(propertyData);
             }
             
             async loadExistingAnalysis(analysisId) {
@@ -532,7 +587,14 @@
                     
                     try {
                         await auth.signInWithEmailAndPassword(email, password);
-                        // Firebase auth state change will handle the redirect
+                        
+                        // Check if we need to redirect back to extension data
+                        const redirectUrl = sessionStorage.getItem('redirectAfterLogin');
+                        if (redirectUrl) {
+                            sessionStorage.removeItem('redirectAfterLogin');
+                            window.location.href = redirectUrl;
+                        }
+                        // Otherwise Firebase auth state change will handle the redirect
                     } catch (error) {
                         alert('Login failed: ' + error.message);
                     }
@@ -573,19 +635,6 @@
                     }
                 });
                 
-                // Demo mode button
-                document.getElementById('demo-mode-btn').addEventListener('click', () => {
-                    // Create demo user and bypass authentication
-                    window.appState.currentUser = {
-                        uid: 'demo-user',
-                        email: 'demo@starterpackapp.com',
-                        displayName: 'Demo User',
-                        getIdToken: () => Promise.resolve('demo-token')
-                    };
-                    document.getElementById('user-email').textContent = 'Demo Mode';
-                    this.showAppropriateView();
-                });
-                
                 // Logout button
                 document.getElementById('logout-btn').addEventListener('click', () => {
                     auth.signOut();
@@ -603,7 +652,11 @@
         }
         
         // Initialize the application
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Initialize Firebase first
+            await initializeFirebase();
+            
+            // Then start the app
             new ROIFinderApp();
         });
         
