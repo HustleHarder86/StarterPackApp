@@ -1,0 +1,33 @@
+#!/bin/bash
+
+# Git pre-push hook
+# Automatically runs tests before pushing
+
+echo "🔍 Running pre-push tests..."
+
+# Run component tests
+if ! node tests/test-ui-components.js; then
+    echo ""
+    echo "❌ Tests failed! Push cancelled."
+    echo "Fix the issues and try again."
+    exit 1
+fi
+
+echo ""
+echo "✅ All automated tests passed!"
+echo ""
+echo "📋 Manual testing checklist:"
+echo "  - Test in browser: tests/browser-test.html"
+echo "  - Check roi-finder.html works correctly"
+echo "  - Verify no console errors"
+echo ""
+
+# Optional: Uncomment to require manual confirmation
+# read -p "Have you completed manual testing? (y/n) " -n 1 -r
+# echo ""
+# if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+#     echo "Push cancelled. Complete manual testing first."
+#     exit 1
+# fi
+
+exit 0

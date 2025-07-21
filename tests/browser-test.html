@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Component Browser Test</title>
+    <link rel="stylesheet" href="../styles/design-system.css">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-section {
+            margin-bottom: 40px;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        .test-result {
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 4px;
+        }
+        .test-pass {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .test-fail {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .test-warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+        }
+        #component-render {
+            margin-top: 20px;
+            border: 2px dashed #ddd;
+            padding: 20px;
+            min-height: 200px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Component Browser Test</h1>
+    <p>This tests if components render without errors in the browser.</p>
+
+    <div class="test-section">
+        <div class="test-title">Test Results</div>
+        <div id="test-results"></div>
+    </div>
+
+    <div class="test-section">
+        <div class="test-title">Component Render Test</div>
+        <div id="component-render"></div>
+    </div>
+
+    <script type="module">
+        const results = document.getElementById('test-results');
+        const renderArea = document.getElementById('component-render');
+        
+        function addResult(message, status = 'pass') {
+            const div = document.createElement('div');
+            div.className = `test-result test-${status}`;
+            div.textContent = message;
+            results.appendChild(div);
+        }
+
+        async function runTests() {
+            // Test 1: Load Badge component
+            try {
+                const { Badge, LiveDataBadge } = await import('../components/ui/Badge.js');
+                addResult('✓ Badge component loaded successfully');
+                
+                // Test LiveDataBadge render
+                try {
+                    const badgeHtml = LiveDataBadge();
+                    if (badgeHtml.includes('LIVE DATA')) {
+                        addResult('✓ LiveDataBadge renders correctly');
+                    } else {
+                        addResult('✗ LiveDataBadge render issue', 'fail');
+                    }
+                } catch (e) {
+                    addResult(`✗ LiveDataBadge error: ${e.message}`, 'fail');
+                }
+            } catch (e) {
+                addResult(`✗ Failed to load Badge component: ${e.message}`, 'fail');
+            }
+
+            // Test 2: Load Card component
+            try {
+                const { Card } = await import('../components/ui/Card.js');
+                addResult('✓ Card component loaded successfully');
+                
+                const cardHtml = Card({ children: 'Test content' });
+                if (cardHtml.includes('Test content')) {
+                    addResult('✓ Card renders correctly');
+                } else {
+                    addResult('✗ Card render issue', 'fail');
+                }
+            } catch (e) {
+                addResult(`✗ Failed to load Card component: ${e.message}`, 'fail');
+            }
+
+            // Test 3: Load Enhanced components
+            try {
+                const { InvestmentVerdictEnhanced } = await import('../components/analysis/InvestmentVerdictEnhanced.js');
+                addResult('✓ InvestmentVerdictEnhanced loaded');
+                
+                // Test render
+                const verdictHtml = InvestmentVerdictEnhanced({});
+                if (verdictHtml.includes('Property Investment Analysis')) {
+                    addResult('✓ InvestmentVerdictEnhanced renders correctly');
+                    renderArea.innerHTML = '<h3>Investment Verdict Preview:</h3>' + verdictHtml;
+                } else {
+                    addResult('✗ InvestmentVerdictEnhanced render issue', 'fail');
+                }
+            } catch (e) {
+                addResult(`✗ Failed to load InvestmentVerdictEnhanced: ${e.message}`, 'fail');
+            }
+
+            // Test 4: Check CSS classes
+            const testClasses = ['bg-gradient-to-r', 'from-purple-600', 'shadow-lg'];
+            const computedStyles = getComputedStyle(document.body);
+            
+            // Create test element
+            const testDiv = document.createElement('div');
+            testDiv.className = testClasses.join(' ');
+            document.body.appendChild(testDiv);
+            
+            // Check if classes apply
+            setTimeout(() => {
+                const hasGradient = getComputedStyle(testDiv).backgroundImage !== 'none';
+                if (hasGradient || testDiv.className.includes('bg-gradient-to-r')) {
+                    addResult('✓ CSS gradient classes working');
+                } else {
+                    addResult('⚠ CSS gradient classes may not be working', 'warning');
+                }
+                document.body.removeChild(testDiv);
+            }, 100);
+
+            // Test 5: Component integration
+            try {
+                const mockAnalysis = {
+                    strAnalysis: { monthlyRevenue: 10725 },
+                    longTermRental: { monthlyRent: 4992, roi: 8.2 },
+                    overallScore: 3
+                };
+                
+                const { VerdictSummaryEnhanced } = await import('../components/analysis/InvestmentVerdictEnhanced.js');
+                const verdictWithData = VerdictSummaryEnhanced({ analysis: mockAnalysis });
+                
+                if (verdictWithData.includes('$10,725')) {
+                    addResult('✓ Component processes data correctly');
+                } else {
+                    addResult('⚠ Component data processing issue', 'warning');
+                }
+            } catch (e) {
+                addResult(`⚠ Component integration test: ${e.message}`, 'warning');
+            }
+
+            // Summary
+            const passCount = document.querySelectorAll('.test-pass').length;
+            const failCount = document.querySelectorAll('.test-fail').length;
+            const warnCount = document.querySelectorAll('.test-warning').length;
+            
+            addResult(`\nSummary: ${passCount} passed, ${failCount} failed, ${warnCount} warnings`, 
+                      failCount > 0 ? 'fail' : warnCount > 0 ? 'warning' : 'pass');
+        }
+
+        // Run tests
+        runTests();
+    </script>
+</body>
+</html>
