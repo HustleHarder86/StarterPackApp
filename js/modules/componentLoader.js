@@ -88,11 +88,13 @@ class ComponentLoader {
         verdictModule,
         airbnbModule,
         financialModule,
+        shareModule,
         buttonModule
       ] = await Promise.all([
         this.loadComponent('components/analysis/InvestmentVerdict.js'),
         this.loadComponent('components/analysis/AirbnbListings.js'),
-        this.loadComponent('components/analysis/FinancialSummary.js'),
+        this.loadComponent('components/analysis/EnhancedFinancialSummary.js'),
+        this.loadComponent('components/ui/ShareModal.js'),
         this.loadComponent('components/ui/Button.js')
       ]);
 
@@ -100,6 +102,7 @@ class ComponentLoader {
       const verdictHtml = verdictModule.VerdictSummary({ analysis: analysisData });
       const airbnbHtml = airbnbModule.AirbnbHeroSection({ analysis: analysisData });
       const financialHtml = financialModule.FinancialSummaryFromAnalysis({ analysis: analysisData });
+      const shareModalHtml = shareModule.ShareModal();
       const actionsHtml = this.generateActionButtons(buttonModule);
 
       // Render the complete analysis layout
@@ -116,14 +119,9 @@ class ComponentLoader {
             ${airbnbHtml}
           </div>
 
-          <!-- Financial Summary -->
+          <!-- Enhanced Financial Summary with Calculator -->
           <div class="mb-2xl">
             ${financialHtml}
-          </div>
-
-          <!-- Action Buttons -->
-          <div class="mb-2xl">
-            ${actionsHtml}
           </div>
 
           <!-- Additional Analysis Sections (Collapsible) -->
@@ -144,6 +142,12 @@ class ComponentLoader {
           </div>
 
         </div>
+
+        <!-- Share Modal -->
+        ${shareModalHtml}
+
+        <!-- Share Modal Script -->
+        ${shareModule.shareModalScript}
       `;
 
       targetContainer.innerHTML = analysisLayout;
