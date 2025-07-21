@@ -35,13 +35,13 @@ export const InvestmentVerdictMockup = ({
       <div class="bg-gray-100 px-6 py-3">
         <div class="max-w-7xl mx-auto">
           <div class="flex items-center gap-4 text-sm text-gray-700">
-            <span class="font-semibold text-gray-900">$${propertyPrice.toLocaleString()}</span>
+            <span class="font-semibold text-gray-900">${propertyPrice ? `$${propertyPrice.toLocaleString()}` : 'Price N/A'}</span>
             <span>•</span>
-            <span>${bedrooms} Bedrooms</span>
+            <span>${bedrooms || 'N/A'} Bedrooms</span>
             <span>•</span>
-            <span>${bathrooms} Bathrooms</span>
+            <span>${bathrooms || 'N/A'} Bathrooms</span>
             <span>•</span>
-            <span>${sqft.toLocaleString()} sq ft</span>
+            <span>${sqft ? `${sqft.toLocaleString()} sq ft` : 'Size N/A'}</span>
             <div class="ml-auto">
               <button class="text-green-600 hover:text-green-700 text-sm font-medium">
                 Analysis Complete
@@ -96,7 +96,7 @@ export const InvestmentVerdictMockup = ({
             <!-- Monthly income box -->
             <div class="ml-8 text-right">
               <div class="text-xs text-gray-500 mb-1">Estimated Monthly Income</div>
-              <div class="text-3xl font-bold text-green-600">$${monthlyIncome.toLocaleString()}</div>
+              <div class="text-3xl font-bold ${monthlyIncome ? 'text-green-600' : 'text-gray-400'}">${monthlyIncome ? `$${monthlyIncome.toLocaleString()}` : 'N/A'}</div>
               <div class="text-sm text-gray-600 mt-1">Short-Term Rental</div>
             </div>
           </div>
@@ -107,11 +107,11 @@ export const InvestmentVerdictMockup = ({
 };
 
 export const VerdictSummaryMockup = ({ analysis }) => {
-  const propertyPrice = analysis?.property?.price || 850000;
-  const bedrooms = analysis?.property?.bedrooms || 2;
-  const bathrooms = analysis?.property?.bathrooms || 2;
-  const sqft = analysis?.property?.sqft || 1320;
-  const monthlyIncome = analysis?.strAnalysis?.monthlyRevenue || 5400;
+  const propertyPrice = analysis?.property?.price || null;
+  const bedrooms = analysis?.property?.bedrooms || null;
+  const bathrooms = analysis?.property?.bathrooms || null;
+  const sqft = analysis?.property?.sqft || null;
+  const monthlyIncome = analysis?.strAnalysis?.monthlyRevenue || null;
   const isRecommended = analysis?.overallScore >= 7;
   
   return InvestmentVerdictMockup({

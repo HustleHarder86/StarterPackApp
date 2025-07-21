@@ -50,15 +50,15 @@ export const AirbnbListingsMockup = ({
 
   // Map real comparables to the expected format
   const mappedComparables = comparables.map((comp, index) => ({
-    price: comp.price || `$${comp.avgNightlyRate || 0}/night`,
-    occupancy: comp.occupancy || `${comp.occupancyRate || 0}% booked`,
-    title: comp.title || `${comp.bedrooms || '2'}BR • ${comp.bathrooms || '2'}BA • ${comp.location || 'Similar'}`,
-    subtitle: comp.subtitle || comp.address || 'Similar property',
-    revenue: comp.revenue || `+$${comp.monthlyRevenue || 0}`,
-    potential: comp.potential || `${comp.revenueDiff || 0}% potential`,
+    price: comp.price || (comp.avgNightlyRate ? `$${comp.avgNightlyRate}/night` : 'N/A'),
+    occupancy: comp.occupancy || (comp.occupancyRate ? `${comp.occupancyRate}% booked` : 'N/A'),
+    title: comp.title || `${comp.bedrooms || 'N/A'}BR • ${comp.bathrooms || 'N/A'}BA • ${comp.location || 'Similar'}`,
+    subtitle: comp.subtitle || comp.address || 'Property details unavailable',
+    revenue: comp.revenue || (comp.monthlyRevenue ? `+$${comp.monthlyRevenue}` : 'N/A'),
+    potential: comp.potential || (comp.revenueDiff ? `${comp.revenueDiff}% potential` : 'N/A'),
     badge: index === 0 ? 'TOP PERFORMER' : index === 1 ? 'MOST SIMILAR' : 'VALUE OPTION',
     badgeColor: index === 0 ? 'green' : index === 1 ? 'blue' : 'orange',
-    rating: comp.rating || `${comp.reviewScore || '4.5'}★ (${comp.reviewCount || '50'})`,
+    rating: comp.rating || (comp.reviewScore ? `${comp.reviewScore}★ (${comp.reviewCount || 'N/A'})` : 'N/A'),
     imageUrl: comp.imageUrl || comp.image || `https://images.unsplash.com/photo-${index === 0 ? '1522708323590-d24dbb6b0267' : index === 1 ? '1560448204-e02f11c3d0e2' : '1502672260266-1c1ef2d93688'}?w=600&h=400&fit=crop`
   }));
   
@@ -115,8 +115,8 @@ export const AirbnbListingsMockup = ({
                   <p class="text-xs text-gray-500">${listing.subtitle}</p>
                 </div>
                 <div class="text-right">
-                  <div class="font-semibold text-${listing.revenue && listing.revenue.startsWith('+') ? 'green' : 'red'}-600">
-                    ${listing.revenue || '+$0'}
+                  <div class="font-semibold ${listing.revenue === 'N/A' ? 'text-gray-400' : listing.revenue && listing.revenue.startsWith('+') ? 'text-green-600' : 'text-red-600'}">
+                    ${listing.revenue || 'N/A'}
                   </div>
                   <div class="text-xs text-gray-500">vs Your Property</div>
                 </div>
@@ -125,8 +125,8 @@ export const AirbnbListingsMockup = ({
               <div class="mt-3 pt-3 border-t border-gray-100">
                 <div class="flex items-center justify-between">
                   <span class="text-xs text-gray-600">Monthly Revenue:</span>
-                  <span class="text-sm font-semibold ${listing.potential && listing.potential.includes('+') ? 'text-green-600' : listing.potential && listing.potential.includes('-') ? 'text-red-600' : 'text-gray-900'}">
-                    ${listing.potential || 'Expected range'}
+                  <span class="text-sm font-semibold ${listing.potential === 'N/A' ? 'text-gray-400' : listing.potential && listing.potential.includes('+') ? 'text-green-600' : listing.potential && listing.potential.includes('-') ? 'text-red-600' : 'text-gray-900'}">
+                    ${listing.potential || 'N/A'}
                   </span>
                 </div>
               </div>
@@ -139,20 +139,20 @@ export const AirbnbListingsMockup = ({
       <div class="mt-6 bg-gray-50 rounded-lg p-4">
         <div class="grid grid-cols-4 gap-4 text-center">
           <div>
-            <div class="text-2xl font-bold text-gray-900">$180</div>
+            <div class="text-2xl font-bold ${stats.avgRate === 'N/A' ? 'text-gray-400' : 'text-gray-900'}">${stats.avgRate || 'N/A'}</div>
             <div class="text-xs text-gray-600">Average nightly rate</div>
           </div>
           <div>
-            <div class="text-2xl font-bold text-blue-600">83%</div>
+            <div class="text-2xl font-bold ${stats.avgOccupancy === 'N/A' ? 'text-gray-400' : 'text-blue-600'}">${stats.avgOccupancy || 'N/A'}</div>
             <div class="text-xs text-gray-600">Average occupancy</div>
           </div>
           <div>
             <div class="text-sm font-medium text-gray-500 mb-1">Projected Advantage</div>
-            <div class="text-2xl font-bold text-green-600">+$2,200/mo</div>
+            <div class="text-2xl font-bold ${stats.advantage === 'N/A' ? 'text-gray-400' : 'text-green-600'}">${stats.advantage || 'N/A'}</div>
             <div class="text-xs text-gray-600">over long-term rental</div>
           </div>
           <div>
-            <div class="text-2xl font-bold text-gray-900">4.7★</div>
+            <div class="text-2xl font-bold ${stats.avgRating === 'N/A' ? 'text-gray-400' : 'text-gray-900'}">${stats.avgRating || 'N/A'}</div>
             <div class="text-xs text-gray-600">Average rating</div>
           </div>
         </div>
@@ -163,11 +163,16 @@ export const AirbnbListingsMockup = ({
 
 export const AirbnbHeroSectionMockup = ({ analysis }) => {
   const comparables = analysis?.strAnalysis?.comparables || [];
+  const strData = analysis?.strAnalysis || {};
+  
+  // Calculate stats from actual data or show N/A
   const stats = {
-    avgRate: '$180',
-    avgOccupancy: '83%',
-    advantage: '+$2,200/mo',
-    avgRating: '4.7★'
+    avgRate: strData.avgNightlyRate ? `$${strData.avgNightlyRate}` : 'N/A',
+    avgOccupancy: strData.avgOccupancy ? `${strData.avgOccupancy}%` : 'N/A',
+    advantage: strData.monthlyRevenue && analysis?.longTermRental?.monthlyRent 
+      ? `+$${(strData.monthlyRevenue - analysis.longTermRental.monthlyRent).toLocaleString()}/mo`
+      : 'N/A',
+    avgRating: strData.avgRating || 'N/A'
   };
 
   return `
