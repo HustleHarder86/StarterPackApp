@@ -1,0 +1,1084 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custom Combined Design - Best Elements</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .recommendation-gradient { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
+        .airbnb-gradient { background: linear-gradient(135deg, #FF385C 0%, #E91E63 100%); }
+        .metric-gradient { background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); }
+        .listing-card { 
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        .listing-card:hover { 
+            transform: translateY(-4px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        }
+        .revenue-chart-container {
+            height: 250px;
+            position: relative;
+        }
+        .floating-badge {
+            animation: float 3s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 280px;
+            background-color: #1f2937;
+            color: #fff;
+            text-align: left;
+            border-radius: 8px;
+            padding: 12px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -140px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 12px;
+            line-height: 1.5;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        .tooltip .tooltiptext::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #1f2937 transparent transparent transparent;
+        }
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+        .help-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 16px;
+            height: 16px;
+            background-color: #e5e7eb;
+            color: #6b7280;
+            border-radius: 50%;
+            font-size: 11px;
+            cursor: help;
+            margin-left: 4px;
+        }
+        .help-icon:hover {
+            background-color: #d1d5db;
+            color: #4b5563;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    
+    <!-- Header -->
+    <div class="bg-gradient-to-r from-purple-600 to-purple-700 text-white px-6 py-6">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex items-start justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold mb-2">Property Investment Analysis</h1>
+                    <div class="text-purple-100">123 Main Street, Toronto, ON M5V 3A8</div>
+                </div>
+                <div class="text-right">
+                    <div class="bg-gradient-to-r from-red-500 to-pink-500 text-white px-4 py-2 rounded-lg text-sm font-bold inline-flex items-center gap-2 floating-badge">
+                        <span>⚡</span>
+                        <span>LIVE DATA</span>
+                    </div>
+                    <div class="text-purple-100 text-sm mt-1">Updated 2 mins ago</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Property Details Bar -->
+    <div class="bg-white border-b border-gray-200 px-6 py-3">
+        <div class="max-w-7xl mx-auto flex items-center gap-4 text-sm text-gray-600">
+            <span class="font-semibold text-gray-900">$850,000</span>
+            <span>•</span>
+            <span>2 Bedrooms</span>
+            <span>•</span>
+            <span>2 Bathrooms</span>
+            <span>•</span>
+            <span>1,200 sq ft</span>
+            <span class="ml-auto bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-medium">Analysis Complete</span>
+        </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-6 py-8">
+        
+        <!-- Strategy Recommendation Panel (from screenshot 1) -->
+        <div class="bg-white rounded-2xl shadow-xl p-8 mb-8 border-l-4 border-green-500">
+            <div class="flex items-center justify-between mb-6">
+                <div>
+                    <div class="flex items-center gap-3 mb-3">
+                        <span class="recommendation-gradient text-white px-4 py-2 rounded-full text-sm font-bold">
+                            ✓ RECOMMENDED STRATEGY
+                        </span>
+                        <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-xs font-medium">
+                            Based on 12 comparables
+                        </span>
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-900">Short-Term Rental (Airbnb)</h2>
+                    <p class="text-gray-600 mt-1">Maximize your investment potential with STR strategy</p>
+                </div>
+                <div class="text-right">
+                    <div class="bg-green-50 px-6 py-4 rounded-xl border border-green-200">
+                        <div class="text-sm text-green-700 font-medium">Estimated Monthly Income</div>
+                        <div class="text-3xl font-bold text-green-600">$5,400</div>
+                        <div class="text-sm text-green-600">Short-Term Rental</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-gray-50 rounded-lg p-4">
+                    <div class="flex items-center gap-3 mb-2">
+                        <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+                        <span class="font-semibold text-gray-900">Revenue Potential</span>
+                    </div>
+                    <div class="text-sm text-gray-600">
+                        Market data shows consistent $5,400+ monthly revenue with 83% average occupancy
+                    </div>
+                </div>
+                
+                <div class="bg-gray-50 rounded-lg p-4">
+                    <div class="flex items-center gap-3 mb-2">
+                        <div class="w-3 h-3 bg-blue-500 rounded-full"></div>
+                        <span class="font-semibold text-gray-900">Market Demand</span>
+                    </div>
+                    <div class="text-sm text-gray-600">
+                        High tourist and business travel demand with year-round booking patterns
+                    </div>
+                </div>
+                
+                <div class="bg-gray-50 rounded-lg p-4">
+                    <div class="flex items-center gap-3 mb-2">
+                        <div class="w-3 h-3 bg-purple-500 rounded-full"></div>
+                        <span class="font-semibold text-gray-900">Risk Assessment</span>
+                    </div>
+                    <div class="text-sm text-gray-600">
+                        Low risk with stable pricing and established market presence
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Live Airbnb Market Data (from screenshot 2) -->
+        <div class="bg-white rounded-2xl p-8 mb-8 shadow-lg">
+            <div class="flex items-center justify-between mb-8">
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-900 mb-2">Live Airbnb Market Data</h2>
+                    <div class="flex items-center gap-3">
+                        <div class="flex items-center gap-2 text-green-600">
+                            <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                            <span class="text-sm font-medium">12 active listings found</span>
+                        </div>
+                        <span class="text-gray-300">•</span>
+                        <span class="text-sm text-gray-600">Updated 3 minutes ago</span>
+                    </div>
+                </div>
+                <div class="airbnb-gradient text-white px-4 py-2 rounded-lg text-sm font-semibold">
+                    REAL MARKET DATA
+                </div>
+            </div>
+
+            <!-- Featured Comparables Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+                
+                <!-- Top Performer -->
+                <div class="listing-card bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl overflow-hidden border-2 border-green-200">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=400&h=250&fit=crop" 
+                             alt="Top Performer" class="w-full h-48 object-cover">
+                        <div class="absolute top-3 left-3 bg-green-600 text-white px-3 py-1 rounded-full text-xs font-bold">
+                            TOP PERFORMER
+                        </div>
+                        <div class="absolute top-3 right-3 bg-black/60 text-white px-2 py-1 rounded text-xs">
+                            4.9★ (127)
+                        </div>
+                    </div>
+                    <div class="p-5">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-2xl font-bold text-gray-900">$220/night</span>
+                            <span class="text-green-600 font-semibold text-sm">98% booked</span>
+                        </div>
+                        <div class="text-gray-600 mb-3">
+                            <div class="font-medium">2BR • 2BA • King West</div>
+                            <div class="text-sm">Luxury amenities, downtown</div>
+                        </div>
+                        <div class="bg-white rounded-lg p-3 border">
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">Monthly Revenue:</span>
+                                <span class="font-bold text-green-600">~$6,400</span>
+                            </div>
+                            <div class="flex justify-between text-sm mt-1">
+                                <span class="text-gray-600">vs Your Property:</span>
+                                <span class="font-medium text-blue-600">+18% potential</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Most Similar -->
+                <div class="listing-card bg-white rounded-xl overflow-hidden border-2 border-blue-200">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400&h=250&fit=crop" 
+                             alt="Similar Property" class="w-full h-48 object-cover">
+                        <div class="absolute top-3 left-3 bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-bold">
+                            MOST SIMILAR
+                        </div>
+                        <div class="absolute top-3 right-3 bg-black/60 text-white px-2 py-1 rounded text-xs">
+                            4.7★ (89)
+                        </div>
+                    </div>
+                    <div class="p-5">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-2xl font-bold text-gray-900">$185/night</span>
+                            <span class="text-blue-600 font-semibold text-sm">85% booked</span>
+                        </div>
+                        <div class="text-gray-600 mb-3">
+                            <div class="font-medium">2BR • 2BA • Similar size</div>
+                            <div class="text-sm">Same neighborhood, modern</div>
+                        </div>
+                        <div class="bg-blue-50 rounded-lg p-3 border border-blue-100">
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">Monthly Revenue:</span>
+                                <span class="font-bold text-blue-600">~$5,200</span>
+                            </div>
+                            <div class="flex justify-between text-sm mt-1">
+                                <span class="text-gray-600">vs Your Property:</span>
+                                <span class="font-medium text-green-600">Expected range</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Budget Option -->
+                <div class="listing-card bg-white rounded-xl overflow-hidden border-2 border-orange-200">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1484154218962-a197022b5858?w=400&h=250&fit=crop" 
+                             alt="Budget Option" class="w-full h-48 object-cover">
+                        <div class="absolute top-3 left-3 bg-orange-600 text-white px-3 py-1 rounded-full text-xs font-bold">
+                            VALUE OPTION
+                        </div>
+                        <div class="absolute top-3 right-3 bg-black/60 text-white px-2 py-1 rounded text-xs">
+                            4.5★ (64)
+                        </div>
+                    </div>
+                    <div class="p-5">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-2xl font-bold text-gray-900">$145/night</span>
+                            <span class="text-orange-600 font-semibold text-sm">72% booked</span>
+                        </div>
+                        <div class="text-gray-600 mb-3">
+                            <div class="font-medium">2BR • 1.5BA • Compact</div>
+                            <div class="text-sm">Basic amenities, good location</div>
+                        </div>
+                        <div class="bg-gray-50 rounded-lg p-3 border">
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">Monthly Revenue:</span>
+                                <span class="font-bold text-gray-700">~$3,800</span>
+                            </div>
+                            <div class="flex justify-between text-sm mt-1">
+                                <span class="text-gray-600">vs Your Property:</span>
+                                <span class="font-medium text-red-600">-30% potential</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Market Summary Bar -->
+            <div class="bg-gray-50 rounded-lg p-6">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+                    <div>
+                        <div class="text-2xl font-bold text-gray-900">$180</div>
+                        <div class="text-sm text-gray-600">Average nightly rate</div>
+                    </div>
+                    <div>
+                        <div class="text-2xl font-bold text-blue-600">83%</div>
+                        <div class="text-sm text-gray-600">Average occupancy</div>
+                    </div>
+                    <div>
+                        <div class="text-xs text-gray-600 mb-1">Projected Advantage</div>
+                        <div class="text-2xl font-bold text-green-600">+$2,200/mo</div>
+                        <div class="text-sm text-gray-600">over long-term rental</div>
+                    </div>
+                    <div>
+                        <div class="text-2xl font-bold text-purple-600">4.7★</div>
+                        <div class="text-sm text-gray-600">Average rating</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- View All Listings -->
+            <div class="text-center mt-6">
+                <button class="airbnb-gradient text-white px-8 py-3 rounded-lg font-semibold hover:opacity-90 transition">
+                    View All 12 Comparable Listings
+                </button>
+            </div>
+        </div>
+
+        <!-- Financial Analysis Section (from screenshots 3 & 4) -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            
+            <!-- Revenue Comparison Chart -->
+            <div class="bg-white rounded-xl p-6 shadow-md">
+                <h3 class="font-bold text-gray-900 mb-4">Annual Revenue Comparison</h3>
+                <div class="revenue-chart-container">
+                    <canvas id="revenueChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Interactive Financial Calculator -->
+            <div class="bg-white rounded-xl p-6 shadow-md">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="font-bold text-gray-900">Financial Calculator</h3>
+                    <button onclick="resetCalculator()" class="text-sm text-blue-600 hover:text-blue-800">Reset to defaults</button>
+                </div>
+                
+                <!-- Revenue Section -->
+                <div class="mb-6">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="font-medium text-gray-700">Monthly Revenue</span>
+                        <div class="flex items-center">
+                            <span class="text-gray-500 mr-1">$</span>
+                            <input type="number" id="monthlyRevenue" value="5400" 
+                                   class="w-24 px-2 py-1 border border-gray-300 rounded text-right font-bold text-green-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                   onchange="updateCalculations()">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Operating Expenses Section -->
+                <div class="mb-4">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="font-medium text-gray-700">Operating Expenses</span>
+                        <span class="text-xs text-gray-500">Sources: Realtor.ca listing • Airbnb market data • AI estimates</span>
+                    </div>
+                    <div class="space-y-2 pl-4">
+                        <!-- Property Tax -->
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600">
+                                Property Tax
+                                <span class="text-xs text-green-600 ml-1" title="From Realtor.ca listing">• actual</span>
+                            </span>
+                            <div class="flex items-center">
+                                <span class="text-gray-400 text-sm mr-1">$</span>
+                                <input type="number" id="propertyTax" value="708" 
+                                       class="w-20 px-2 py-1 border border-gray-200 rounded text-right text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                       onchange="updateCalculations()">
+                            </div>
+                        </div>
+                        
+                        <!-- Insurance -->
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600">
+                                Insurance
+                                <span class="text-xs text-orange-600 ml-1" title="AI estimate based on property value">• estimated</span>
+                            </span>
+                            <div class="flex items-center">
+                                <span class="text-gray-400 text-sm mr-1">$</span>
+                                <input type="number" id="insurance" value="250" 
+                                       class="w-20 px-2 py-1 border border-gray-200 rounded text-right text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                       onchange="updateCalculations()">
+                            </div>
+                        </div>
+                        
+                        <!-- HOA/Condo Fees -->
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600">
+                                HOA/Condo Fees
+                                <span class="text-xs text-green-600 ml-1" title="From Realtor.ca listing">• actual</span>
+                            </span>
+                            <div class="flex items-center">
+                                <span class="text-gray-400 text-sm mr-1">$</span>
+                                <input type="number" id="hoaFees" value="450" 
+                                       class="w-20 px-2 py-1 border border-gray-200 rounded text-right text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                       onchange="updateCalculations()">
+                            </div>
+                        </div>
+                        
+                        <!-- Property Management -->
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600">Property Management (10%)</span>
+                            <div class="flex items-center">
+                                <span class="text-gray-400 text-sm mr-1">$</span>
+                                <input type="number" id="propertyMgmt" value="540" 
+                                       class="w-20 px-2 py-1 border border-gray-200 rounded text-right text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                       onchange="updateCalculations()">
+                            </div>
+                        </div>
+                        
+                        <!-- Utilities -->
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600">Utilities</span>
+                            <div class="flex items-center">
+                                <span class="text-gray-400 text-sm mr-1">$</span>
+                                <input type="number" id="utilities" value="200" 
+                                       class="w-20 px-2 py-1 border border-gray-200 rounded text-right text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                       onchange="updateCalculations()">
+                            </div>
+                        </div>
+                        
+                        <!-- Cleaning -->
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600">
+                                Cleaning & Turnover
+                                <span class="text-xs text-blue-600 ml-1" title="Based on Airbnb market data">• market avg</span>
+                            </span>
+                            <div class="flex items-center">
+                                <span class="text-gray-400 text-sm mr-1">$</span>
+                                <input type="number" id="cleaning" value="400" 
+                                       class="w-20 px-2 py-1 border border-gray-200 rounded text-right text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                       onchange="updateCalculations()">
+                            </div>
+                        </div>
+                        
+                        <!-- Maintenance -->
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600">Maintenance & Repairs</span>
+                            <div class="flex items-center">
+                                <span class="text-gray-400 text-sm mr-1">$</span>
+                                <input type="number" id="maintenance" value="300" 
+                                       class="w-20 px-2 py-1 border border-gray-200 rounded text-right text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                       onchange="updateCalculations()">
+                            </div>
+                        </div>
+                        
+                        <!-- Supplies -->
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600">Supplies & Amenities</span>
+                            <div class="flex items-center">
+                                <span class="text-gray-400 text-sm mr-1">$</span>
+                                <input type="number" id="supplies" value="150" 
+                                       class="w-20 px-2 py-1 border border-gray-200 rounded text-right text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                       onchange="updateCalculations()">
+                            </div>
+                        </div>
+                        
+                        <!-- Platform Fees -->
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600">
+                                Platform Fees (3%)
+                                <span class="text-xs text-blue-600 ml-1" title="Airbnb host service fee">• Airbnb</span>
+                            </span>
+                            <div class="flex items-center">
+                                <span class="text-gray-400 text-sm mr-1">$</span>
+                                <input type="number" id="platformFees" value="162" 
+                                       class="w-20 px-2 py-1 border border-gray-200 rounded text-right text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                       onchange="updateCalculations()">
+                            </div>
+                        </div>
+                        
+                        <!-- Other -->
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600">Other Expenses</span>
+                            <div class="flex items-center">
+                                <span class="text-gray-400 text-sm mr-1">$</span>
+                                <input type="number" id="otherExpenses" value="140" 
+                                       class="w-20 px-2 py-1 border border-gray-200 rounded text-right text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                       onchange="updateCalculations()">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Total Expenses -->
+                    <div class="flex items-center justify-between mt-3 pt-3 border-t border-gray-200">
+                        <span class="font-medium text-gray-700">Total Expenses</span>
+                        <span id="totalExpenses" class="font-bold text-red-600">-$3,300</span>
+                    </div>
+                </div>
+
+                <!-- Summary Section -->
+                <div class="space-y-3 mt-6 pt-4 border-t-2 border-gray-200">
+                    <div class="flex justify-between items-center">
+                        <span class="font-semibold text-gray-900 flex items-center">
+                            Monthly Net Cash Flow
+                            <div class="tooltip">
+                                <span class="help-icon">?</span>
+                                <span class="tooltiptext">
+                                    <strong>Monthly Net Cash Flow</strong><br>
+                                    The amount of money left over each month after all expenses are paid.<br><br>
+                                    Formula: Monthly Revenue - Monthly Expenses<br><br>
+                                    A positive cash flow means the property generates profit each month.
+                                </span>
+                            </div>
+                        </span>
+                        <span id="netCashFlow" class="font-bold text-green-600 text-lg">+$2,100</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="font-semibold text-gray-900 flex items-center">
+                            Annual Net Income
+                            <div class="tooltip">
+                                <span class="help-icon">?</span>
+                                <span class="tooltiptext">
+                                    <strong>Annual Net Income</strong><br>
+                                    Your total profit for the year after all expenses.<br><br>
+                                    Formula: Monthly Net Cash Flow × 12<br><br>
+                                    This is the actual money you'll receive annually from the property.
+                                </span>
+                            </div>
+                        </span>
+                        <span id="annualIncome" class="font-bold text-green-600 text-lg">$25,200</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="font-semibold text-gray-900 flex items-center">
+                            Cash-on-Cash Return
+                            <div class="tooltip">
+                                <span class="help-icon">?</span>
+                                <span class="tooltiptext">
+                                    <strong>Cash-on-Cash Return</strong><br>
+                                    The annual return on your actual cash investment.<br><br>
+                                    Formula: (Annual Net Income ÷ Cash Invested) × 100<br><br>
+                                    Example: If you put $170k down and earn $25k/year, that's a 14.8% return on your cash.
+                                </span>
+                            </div>
+                        </span>
+                        <span id="cashReturn" class="font-bold text-blue-600 text-lg">14.8%</span>
+                    </div>
+                </div>
+                
+                <!-- Data Sources Legend -->
+                <div class="mt-4 p-3 bg-gray-50 rounded-lg space-y-2">
+                    <p class="text-xs text-gray-700 font-medium">Data Sources:</p>
+                    <div class="flex flex-wrap gap-3 text-xs">
+                        <span class="flex items-center gap-1">
+                            <span class="text-green-600">• actual</span>
+                            <span class="text-gray-600">From property listing</span>
+                        </span>
+                        <span class="flex items-center gap-1">
+                            <span class="text-blue-600">• market avg</span>
+                            <span class="text-gray-600">Airbnb data</span>
+                        </span>
+                        <span class="flex items-center gap-1">
+                            <span class="text-orange-600">• estimated</span>
+                            <span class="text-gray-600">AI calculation</span>
+                        </span>
+                    </div>
+                    <p class="text-xs text-gray-600 italic mt-2">💡 All values are editable - adjust to match your specific situation</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Key Metrics Grid -->
+        <div class="bg-white rounded-xl p-6 shadow-md mb-8">
+            <h3 class="font-bold text-gray-900 mb-6">Key Metrics</h3>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                <div class="text-center">
+                    <div id="capRateValue" class="text-2xl font-bold text-blue-600">8.2%</div>
+                    <div class="text-sm text-gray-600 flex items-center justify-center">
+                        Cap Rate
+                        <div class="tooltip">
+                            <span class="help-icon">?</span>
+                            <span class="tooltiptext">
+                                <strong>Capitalization Rate</strong><br>
+                                The property's annual return if purchased with cash.<br><br>
+                                Formula: (Annual Net Income ÷ Property Price) × 100<br><br>
+                                Higher cap rates indicate better cash flow relative to price. 8%+ is generally considered good.
+                            </span>
+                        </div>
+                    </div>
+                    <div id="capRateIndicator" class="mt-2 inline-flex items-center gap-1 px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">
+                        <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                        </svg>
+                        Good
+                    </div>
+                </div>
+                <div class="text-center">
+                    <div id="roiValue" class="text-2xl font-bold text-purple-600">12.4%</div>
+                    <div class="text-sm text-gray-600 flex items-center justify-center">
+                        Annual ROI
+                        <div class="tooltip">
+                            <span class="help-icon">?</span>
+                            <span class="tooltiptext">
+                                <strong>Return on Investment</strong><br>
+                                Your total annual return including equity buildup.<br><br>
+                                Includes: Cash flow + mortgage principal paydown + appreciation<br><br>
+                                12%+ ROI is excellent for real estate investments.
+                            </span>
+                        </div>
+                    </div>
+                    <div id="roiIndicator" class="mt-2 inline-flex items-center gap-1 px-2 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-medium">
+                        <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                        </svg>
+                        Excellent
+                    </div>
+                </div>
+                <div class="text-center">
+                    <div id="cashFlowValue" class="text-2xl font-bold text-green-600">$2,100</div>
+                    <div class="text-sm text-gray-600 flex items-center justify-center">
+                        Monthly Cash Flow
+                        <div class="tooltip">
+                            <span class="help-icon">?</span>
+                            <span class="tooltiptext">
+                                <strong>Monthly Cash Flow</strong><br>
+                                Net profit after all monthly expenses and mortgage.<br><br>
+                                Formula: Monthly Revenue - All Expenses - Mortgage Payment<br><br>
+                                Positive cash flow means immediate monthly profit.
+                            </span>
+                        </div>
+                    </div>
+                    <div id="cashFlowIndicator" class="mt-2 inline-flex items-center gap-1 px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">
+                        <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                        </svg>
+                        Strong
+                    </div>
+                </div>
+                <div class="text-center">
+                    <div id="breakEvenValue" class="text-2xl font-bold text-orange-600">68%</div>
+                    <div class="text-sm text-gray-600 flex items-center justify-center">
+                        Break-even Occupancy
+                        <div class="tooltip">
+                            <span class="help-icon">?</span>
+                            <span class="tooltiptext">
+                                <strong>Break-even Occupancy Rate</strong><br>
+                                Minimum occupancy needed to cover all expenses.<br><br>
+                                Formula: (Total Expenses ÷ Maximum Revenue) × 100<br><br>
+                                Lower is better - 68% means you profit even with 32% vacancy.
+                            </span>
+                        </div>
+                    </div>
+                    <div id="breakEvenIndicator" class="mt-2 inline-flex items-center gap-1 px-2 py-1 bg-yellow-100 text-yellow-700 rounded-full text-xs font-medium">
+                        <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9 7a1 1 0 112 0v4a1 1 0 11-2 0V7zm0 8a1 1 0 112 0 1 1 0 01-2 0z" clip-rule="evenodd"/>
+                        </svg>
+                        Fair
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <button class="metric-gradient text-white px-8 py-4 rounded-lg font-bold text-lg hover:opacity-90 transition">
+                💾 Save This Analysis
+            </button>
+            <button class="bg-white border-2 border-gray-300 text-gray-700 px-8 py-4 rounded-lg font-semibold hover:border-gray-400 transition">
+                📊 Generate Full Report
+            </button>
+            <button onclick="shareAnalysis()" class="bg-white border-2 border-purple-300 text-purple-700 px-8 py-4 rounded-lg font-semibold hover:border-purple-400 transition">
+                🔗 Share Analysis
+            </button>
+            <button class="bg-white border-2 border-blue-300 text-blue-700 px-8 py-4 rounded-lg font-semibold hover:border-blue-400 transition">
+                🔍 Analyze Another Property
+            </button>
+        </div>
+
+        <!-- Share Modal -->
+        <div id="shareModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div class="bg-white rounded-xl p-8 max-w-lg w-full mx-4 shadow-2xl">
+                <h3 class="text-xl font-bold text-gray-900 mb-4">Share This Analysis</h3>
+                <p class="text-gray-600 mb-4">Share this interactive analysis with anyone using the link below:</p>
+                
+                <div class="bg-gray-50 rounded-lg p-4 mb-4">
+                    <div class="flex items-center gap-2">
+                        <input type="text" id="shareUrl" readonly 
+                               class="flex-1 px-3 py-2 bg-white border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+                               value="">
+                        <button onclick="copyShareUrl()" 
+                                class="bg-purple-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-purple-700 transition">
+                            Copy
+                        </button>
+                    </div>
+                    <div id="copySuccess" class="hidden mt-2 text-green-600 text-sm">
+                        ✓ Link copied to clipboard!
+                    </div>
+                </div>
+                
+                <div class="text-sm text-gray-500 mb-6">
+                    <p class="mb-2">This link includes:</p>
+                    <ul class="list-disc list-inside space-y-1">
+                        <li>All revenue and expense values</li>
+                        <li>Property details and location</li>
+                        <li>Current calculation results</li>
+                    </ul>
+                </div>
+                
+                <div class="flex gap-3">
+                    <button onclick="closeShareModal()" 
+                            class="flex-1 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg font-medium hover:bg-gray-300 transition">
+                        Close
+                    </button>
+                    <button onclick="copyAndClose()" 
+                            class="flex-1 bg-purple-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-purple-700 transition">
+                        Copy & Close
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Revenue Comparison Chart
+        const ctx = document.getElementById('revenueChart').getContext('2d');
+        const revenueChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Short-Term Rental', 'Long-Term Rental'],
+                datasets: [{
+                    data: [64800, 38400],
+                    backgroundColor: ['#10b981', '#6b7280'],
+                    borderRadius: 8,
+                    borderSkipped: false,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            display: true,
+                            color: 'rgba(0, 0, 0, 0.05)'
+                        },
+                        ticks: {
+                            callback: function(value) {
+                                return '$' + value.toLocaleString();
+                            }
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+
+        // Default values for reset functionality
+        // In production, these would be populated from:
+        // 1. propertyData from browser extension (propertyTax, hoaFees)
+        // 2. Airbnb market data (cleaning fees, platform fees)
+        // 3. AI-calculated estimates (insurance, utilities, maintenance)
+        const defaultValues = {
+            monthlyRevenue: 5400,      // From Airbnb comparables analysis
+            propertyTax: 708,          // From Realtor.ca listing (annual $8,496 / 12)
+            insurance: 250,            // AI estimate: 0.35% of property value
+            hoaFees: 450,              // From Realtor.ca listing
+            propertyMgmt: 540,         // Calculated: 10% of revenue
+            utilities: 200,            // AI estimate based on property type
+            cleaning: 400,             // From Airbnb market data ($150/turnover)
+            maintenance: 300,          // AI estimate: 0.5% of property value
+            supplies: 150,             // From Airbnb data: 5% of revenue
+            platformFees: 162,         // Airbnb fee: 3% of revenue
+            otherExpenses: 140         // Buffer for miscellaneous
+        };
+
+        // Update calculations function
+        function updateCalculations() {
+            // Get all input values
+            const monthlyRevenue = parseFloat(document.getElementById('monthlyRevenue').value) || 0;
+            const propertyTax = parseFloat(document.getElementById('propertyTax').value) || 0;
+            const insurance = parseFloat(document.getElementById('insurance').value) || 0;
+            const hoaFees = parseFloat(document.getElementById('hoaFees').value) || 0;
+            const propertyMgmt = parseFloat(document.getElementById('propertyMgmt').value) || 0;
+            const utilities = parseFloat(document.getElementById('utilities').value) || 0;
+            const cleaning = parseFloat(document.getElementById('cleaning').value) || 0;
+            const maintenance = parseFloat(document.getElementById('maintenance').value) || 0;
+            const supplies = parseFloat(document.getElementById('supplies').value) || 0;
+            const platformFees = parseFloat(document.getElementById('platformFees').value) || 0;
+            const otherExpenses = parseFloat(document.getElementById('otherExpenses').value) || 0;
+
+            // Calculate total expenses
+            const totalExpenses = propertyTax + insurance + hoaFees + propertyMgmt + 
+                                 utilities + cleaning + maintenance + supplies + 
+                                 platformFees + otherExpenses;
+
+            // Calculate net cash flow
+            const netCashFlow = monthlyRevenue - totalExpenses;
+            const annualIncome = netCashFlow * 12;
+
+            // Calculate cash-on-cash return (assuming 20% down payment on $850,000)
+            const downPayment = 850000 * 0.20; // $170,000
+            const cashReturn = (annualIncome / downPayment) * 100;
+
+            // Update display values
+            document.getElementById('totalExpenses').textContent = '-$' + totalExpenses.toLocaleString();
+            document.getElementById('netCashFlow').textContent = (netCashFlow >= 0 ? '+$' : '-$') + Math.abs(netCashFlow).toLocaleString();
+            document.getElementById('annualIncome').textContent = '$' + annualIncome.toLocaleString();
+            document.getElementById('cashReturn').textContent = cashReturn.toFixed(1) + '%';
+
+            // Update key metrics
+            const propertyPrice = 850000; // From property details
+            const capRate = (annualIncome / propertyPrice) * 100;
+            const roi = cashReturn; // Using cash-on-cash return as ROI
+            const maxMonthlyRevenue = monthlyRevenue; // Assuming current is max
+            const breakEvenOccupancy = (totalExpenses / maxMonthlyRevenue) * 100;
+
+            document.getElementById('capRateValue').textContent = capRate.toFixed(1) + '%';
+            document.getElementById('roiValue').textContent = roi.toFixed(1) + '%';
+            document.getElementById('cashFlowValue').textContent = '$' + netCashFlow.toLocaleString();
+            document.getElementById('breakEvenValue').textContent = breakEvenOccupancy.toFixed(0) + '%';
+
+            // Update chart with annual values
+            const annualRevenue = monthlyRevenue * 12;
+            const ltrAnnualRevenue = 3200 * 12; // Long-term rental estimate
+            revenueChart.data.datasets[0].data = [annualRevenue, ltrAnnualRevenue];
+            revenueChart.update();
+
+            // Update Property Management fee based on revenue (10%)
+            if (document.activeElement.id !== 'propertyMgmt') {
+                const calculatedMgmt = Math.round(monthlyRevenue * 0.10);
+                document.getElementById('propertyMgmt').value = calculatedMgmt;
+            }
+
+            // Update Platform fees based on revenue (3%)
+            if (document.activeElement.id !== 'platformFees') {
+                const calculatedPlatform = Math.round(monthlyRevenue * 0.03);
+                document.getElementById('platformFees').value = calculatedPlatform;
+            }
+
+            // Update metric indicators
+            updateMetricIndicators();
+        }
+
+        // Reset calculator to default values
+        function resetCalculator() {
+            // Reset all input fields to default values
+            Object.entries(defaultValues).forEach(([field, value]) => {
+                document.getElementById(field).value = value;
+            });
+
+            // Update calculations with default values
+            updateCalculations();
+        }
+
+        // Function to get metric rating and color
+        function getMetricRating(metric, value) {
+            const ratings = {
+                capRate: {
+                    excellent: { min: 10, label: 'Excellent', color: 'purple' },
+                    good: { min: 8, label: 'Good', color: 'green' },
+                    fair: { min: 6, label: 'Fair', color: 'yellow' },
+                    poor: { min: 0, label: 'Poor', color: 'red' }
+                },
+                roi: {
+                    excellent: { min: 12, label: 'Excellent', color: 'purple' },
+                    good: { min: 8, label: 'Good', color: 'green' },
+                    fair: { min: 5, label: 'Fair', color: 'yellow' },
+                    poor: { min: 0, label: 'Poor', color: 'red' }
+                },
+                cashFlow: {
+                    excellent: { min: 2000, label: 'Strong', color: 'green' },
+                    good: { min: 500, label: 'Good', color: 'green' },
+                    fair: { min: 0, label: 'Fair', color: 'yellow' },
+                    poor: { min: -Infinity, label: 'Negative', color: 'red' }
+                },
+                breakEven: {
+                    excellent: { max: 60, label: 'Excellent', color: 'purple' },
+                    good: { max: 70, label: 'Good', color: 'green' },
+                    fair: { max: 80, label: 'Fair', color: 'yellow' },
+                    poor: { max: 100, label: 'Risky', color: 'red' }
+                }
+            };
+
+            const metricRatings = ratings[metric];
+            let rating = metricRatings.poor;
+
+            if (metric === 'breakEven') {
+                // For break-even, lower is better
+                if (value <= metricRatings.excellent.max) rating = metricRatings.excellent;
+                else if (value <= metricRatings.good.max) rating = metricRatings.good;
+                else if (value <= metricRatings.fair.max) rating = metricRatings.fair;
+            } else {
+                // For other metrics, higher is better
+                if (value >= metricRatings.excellent.min) rating = metricRatings.excellent;
+                else if (value >= metricRatings.good.min) rating = metricRatings.good;
+                else if (value >= metricRatings.fair.min) rating = metricRatings.fair;
+            }
+
+            return rating;
+        }
+
+        // Function to get rating icon SVG
+        function getRatingIcon(color) {
+            const icons = {
+                purple: '<path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>', // Star
+                green: '<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>', // Check
+                yellow: '<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9 7a1 1 0 112 0v4a1 1 0 11-2 0V7zm0 8a1 1 0 112 0 1 1 0 01-2 0z" clip-rule="evenodd"/>', // Info
+                red: '<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>' // X
+            };
+            return icons[color] || icons.green;
+        }
+
+        // Function to update metric indicators
+        function updateMetricIndicators() {
+            // Get current values
+            const capRate = parseFloat(document.getElementById('capRateValue').textContent);
+            const roi = parseFloat(document.getElementById('roiValue').textContent);
+            const cashFlow = parseFloat(document.getElementById('netCashFlow').textContent.replace(/[^0-9.-]/g, ''));
+            const breakEven = parseFloat(document.getElementById('breakEvenValue').textContent);
+
+            // Update each indicator
+            updateIndicator('capRateIndicator', getMetricRating('capRate', capRate));
+            updateIndicator('roiIndicator', getMetricRating('roi', roi));
+            updateIndicator('cashFlowIndicator', getMetricRating('cashFlow', cashFlow));
+            updateIndicator('breakEvenIndicator', getMetricRating('breakEven', breakEven));
+        }
+
+        // Function to update a single indicator
+        function updateIndicator(indicatorId, rating) {
+            const indicator = document.getElementById(indicatorId);
+            if (!indicator) return;
+
+            // Update colors
+            indicator.className = `mt-2 inline-flex items-center gap-1 px-2 py-1 bg-${rating.color}-100 text-${rating.color}-700 rounded-full text-xs font-medium`;
+            
+            // Update icon
+            const svg = indicator.querySelector('svg');
+            if (svg) {
+                svg.innerHTML = getRatingIcon(rating.color);
+            }
+            
+            // Update text
+            const textNode = indicator.lastChild;
+            if (textNode && textNode.nodeType === Node.TEXT_NODE) {
+                textNode.textContent = rating.label;
+            }
+        }
+
+        // Share functionality
+        function shareAnalysis() {
+            // Collect all current values
+            const analysisData = {
+                // Property details
+                address: '123 Main Street, Toronto, ON M5V 3A8',
+                price: 850000,
+                bedrooms: 2,
+                bathrooms: 2,
+                sqft: 1200,
+                
+                // Financial values
+                monthlyRevenue: document.getElementById('monthlyRevenue').value,
+                propertyTax: document.getElementById('propertyTax').value,
+                insurance: document.getElementById('insurance').value,
+                hoaFees: document.getElementById('hoaFees').value,
+                propertyMgmt: document.getElementById('propertyMgmt').value,
+                utilities: document.getElementById('utilities').value,
+                cleaning: document.getElementById('cleaning').value,
+                maintenance: document.getElementById('maintenance').value,
+                supplies: document.getElementById('supplies').value,
+                platformFees: document.getElementById('platformFees').value,
+                otherExpenses: document.getElementById('otherExpenses').value
+            };
+            
+            // Encode data in URL
+            const params = new URLSearchParams(analysisData);
+            const shareUrl = window.location.origin + window.location.pathname + '?' + params.toString();
+            
+            // Show modal with URL
+            document.getElementById('shareUrl').value = shareUrl;
+            document.getElementById('shareModal').classList.remove('hidden');
+        }
+        
+        function copyShareUrl() {
+            const shareUrl = document.getElementById('shareUrl');
+            shareUrl.select();
+            shareUrl.setSelectionRange(0, 99999); // For mobile devices
+            
+            try {
+                document.execCommand('copy');
+                document.getElementById('copySuccess').classList.remove('hidden');
+                setTimeout(() => {
+                    document.getElementById('copySuccess').classList.add('hidden');
+                }, 3000);
+            } catch (err) {
+                // Fallback for newer browsers
+                navigator.clipboard.writeText(shareUrl.value).then(() => {
+                    document.getElementById('copySuccess').classList.remove('hidden');
+                    setTimeout(() => {
+                        document.getElementById('copySuccess').classList.add('hidden');
+                    }, 3000);
+                });
+            }
+        }
+        
+        function closeShareModal() {
+            document.getElementById('shareModal').classList.add('hidden');
+        }
+        
+        function copyAndClose() {
+            copyShareUrl();
+            setTimeout(closeShareModal, 1000);
+        }
+        
+        // Load shared data from URL if present
+        function loadSharedData() {
+            const urlParams = new URLSearchParams(window.location.search);
+            
+            if (urlParams.has('monthlyRevenue')) {
+                // Load all financial values from URL
+                const fields = ['monthlyRevenue', 'propertyTax', 'insurance', 'hoaFees', 
+                               'propertyMgmt', 'utilities', 'cleaning', 'maintenance', 
+                               'supplies', 'platformFees', 'otherExpenses'];
+                
+                fields.forEach(field => {
+                    const value = urlParams.get(field);
+                    if (value) {
+                        document.getElementById(field).value = value;
+                    }
+                });
+                
+                // Update property details if present
+                if (urlParams.get('address')) {
+                    const addressElement = document.querySelector('.text-purple-100');
+                    if (addressElement) {
+                        addressElement.textContent = urlParams.get('address');
+                    }
+                }
+                
+                if (urlParams.get('price')) {
+                    const priceElement = document.querySelector('.font-semibold.text-gray-900');
+                    if (priceElement) {
+                        priceElement.textContent = '$' + parseInt(urlParams.get('price')).toLocaleString();
+                    }
+                }
+                
+                // Show a notification that shared data was loaded
+                const notification = document.createElement('div');
+                notification.className = 'fixed top-4 right-4 bg-purple-600 text-white px-6 py-3 rounded-lg shadow-lg z-50';
+                notification.innerHTML = '✓ Shared analysis loaded successfully';
+                document.body.appendChild(notification);
+                
+                setTimeout(() => {
+                    notification.remove();
+                }, 3000);
+            }
+        }
+
+        // Initialize calculations on page load
+        window.addEventListener('load', () => {
+            loadSharedData();
+            updateCalculations();
+        });
+    </script>
+
+</body>
+</html>
