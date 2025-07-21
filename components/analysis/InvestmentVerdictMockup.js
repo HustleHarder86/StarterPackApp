@@ -23,9 +23,9 @@ export const InvestmentVerdictMockup = ({
               <h1 class="text-2xl font-bold mb-1">Property Investment Analysis</h1>
               <div class="text-purple-100 text-sm">123 Main Street, Toronto, ON M5V 3A8</div>
             </div>
-            <div class="flex items-center gap-2 bg-red-500 px-3 py-1 rounded text-xs font-bold">
-              <span class="animate-pulse">⚡</span>
-              LIVE DATA
+            <div class="flex items-center gap-2 bg-gradient-to-r from-red-500 to-pink-500 px-3 py-1 rounded text-xs font-bold shadow-lg animate-pulse-glow">
+              <span class="inline-block animate-bounce-slow">⚡</span>
+              <span class="animate-fade-in-out">LIVE DATA</span>
             </div>
           </div>
         </div>

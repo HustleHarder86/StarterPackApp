@@ -78,7 +78,8 @@ export const AirbnbListingsMockup = ({
         </div>
         <div class="flex items-center gap-2">
           <span class="text-xs text-gray-500">Updated 3 minutes ago</span>
-          <span class="inline-flex items-center gap-1 px-3 py-1 bg-pink-500 text-white text-xs font-bold rounded">
+          <span class="inline-flex items-center gap-1 px-3 py-1 bg-gradient-to-r from-pink-500 to-red-500 text-white text-xs font-bold rounded shadow-md animate-pulse-subtle">
+            <span class="inline-block animate-pulse">●</span>
             REAL MARKET DATA
           </span>
         </div>
@@ -87,7 +88,7 @@ export const AirbnbListingsMockup = ({
       <!-- Listing Cards -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         ${listings.slice(0, 3).map((listing, index) => `
-          <a href="${listing.url}" target="_blank" rel="noopener noreferrer" class="block bg-white rounded-lg overflow-hidden border border-gray-200 hover:shadow-lg hover:border-gray-300 transition-all duration-200 cursor-pointer group">
+          <a href="${listing.url}" target="_blank" rel="noopener noreferrer" class="block bg-white rounded-lg overflow-hidden border border-gray-200 hover:shadow-xl hover:border-gray-300 transition-all duration-300 cursor-pointer group transform hover:-translate-y-1 hover:scale-[1.02]">
             <!-- Property Image -->
             <div class="relative h-48">
               <img src="${listing.imageUrl}" alt="${listing.title}" class="w-full h-full object-cover">
