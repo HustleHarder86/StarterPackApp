@@ -16,22 +16,38 @@ export const InteractiveFinancialCalculator = ({
   onUpdate = () => {},
   className = ''
 }) => {
-  // Default expense values
-  const defaultExpenses = {
-    propertyTax: 708,
-    insurance: 250,
-    hoaFees: 450,
-    propertyMgmt: 540,
-    utilities: 200,
-    cleaning: 400,
-    maintenance: 300,
-    supplies: 150,
-    platformFees: 162,
-    otherExpenses: 140
+  // Calculate expense values with priority for actual data
+  const expenseValues = {
+    propertyTax: (() => {
+      // Priority: 1) Actual property taxes from listing, 2) Costs from API, 3) Calculated default
+      if (propertyData?.propertyTaxes) {
+        return Math.round(propertyData.propertyTaxes / 12); // Convert annual to monthly
+      } else if (costs?.property_tax_annual) {
+        return Math.round(costs.property_tax_annual / 12);
+      } else {
+        return expenses.propertyTax || 708; // Fall back to provided or default
+      }
+    })(),
+    insurance: expenses.insurance || 250,
+    hoaFees: propertyData?.condoFees || costs?.hoa_monthly || expenses.hoaFees || 450,
+    propertyMgmt: expenses.propertyMgmt || 540,
+    utilities: costs?.utilities_monthly || expenses.utilities || 200,
+    cleaning: expenses.cleaning || 400,
+    maintenance: (() => {
+      if (costs?.maintenance_annual) {
+        return Math.round(costs.maintenance_annual / 12);
+      }
+      return expenses.maintenance || 300;
+    })(),
+    supplies: expenses.supplies || 150,
+    platformFees: expenses.platformFees || 162,
+    otherExpenses: expenses.otherExpenses || 140
   };
-
-  // Merge provided expenses with defaults
-  const expenseValues = { ...defaultExpenses, ...expenses };
+  
+  // Log for debugging
+  console.log('InteractiveFinancialCalculator - propertyData:', propertyData);
+  console.log('InteractiveFinancialCalculator - costs:', costs);
+  console.log('InteractiveFinancialCalculator - calculated expenses:', expenseValues);
   
   // Determine data sources based on what's available
   const dataSources = {
@@ -71,7 +87,12 @@ export const InteractiveFinancialCalculator = ({
       <div class="mb-lg">
         <div class="flex items-center justify-between mb-md">
           <span class="font-medium text-gray-700">Operating Expenses</span>
-          <span class="text-xs text-gray-500">Sources: Realtor.ca listing • Airbnb market data • AI estimates</span>
+          <span class="text-xs text-gray-500">
+            ${(propertyData?.propertyTaxes || propertyData?.condoFees) ? 
+              '<span class="text-green-600 font-semibold">✓ Using actual listing data</span> • ' : 
+              ''}
+            Realtor.ca listing • Airbnb market data • AI estimates
+          </span>
         </div>
         <div class="space-y-3 pl-lg">
           ${generateExpenseRow('Property Tax', 'propertyTax', expenseValues.propertyTax, dataSources.propertyTax)}
@@ -120,6 +141,18 @@ export const InteractiveFinancialCalculator = ({
             <span class="text-gray-600">AI calculation</span>
           </span>
         </div>
+        
+        ${(propertyData?.propertyTaxes || propertyData?.condoFees) ? `
+          <div class="mt-3 p-3 bg-green-50 rounded-lg">
+            <p class="text-xs text-green-800">
+              <strong>✓ Using actual data from Realtor.ca listing:</strong><br>
+              ${propertyData.propertyTaxes ? `• Property taxes: $${propertyData.propertyTaxes.toLocaleString()}/year` : ''}
+              ${propertyData.propertyTaxes && propertyData.condoFees ? '<br>' : ''}
+              ${propertyData.condoFees ? `• Condo fees: $${propertyData.condoFees.toLocaleString()}/month` : ''}
+            </p>
+          </div>
+        ` : ''}
+        
         <p class="text-xs text-gray-600 italic mt-2">💡 All values are editable - adjust to match your specific situation</p>
       </div>
     `,
