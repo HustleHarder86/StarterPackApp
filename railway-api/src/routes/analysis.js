@@ -121,27 +121,50 @@ router.post('/property', optionalAuth, async (req, res, next) => {
           }
           
           // Prepare property data for STR analysis
-          // Fix city extraction - propertyData.city contains "Ontario M4A1V1", need to extract actual city
+          // Fix city extraction from address like "1507 - 292 VERDALE CROSSINGMarkham (Unionville), Ontario L6G0H6"
           let cityName = result.propertyDetails?.city || propertyData?.city || 'Toronto';
           
-          // If city contains "Ontario" or postal code pattern, it's likely the wrong format
-          if (cityName && (cityName.includes('Ontario') || /[A-Z]\d[A-Z]\s?\d[A-Z]\d/.test(cityName))) {
-            // Try to extract city from the full address
-            const addressParts = propertyAddress.split(',').map(s => s.trim());
-            // Usually format is: "Street, City (Neighborhood), Province PostalCode"
-            if (addressParts.length > 1) {
-              // Extract city name, removing neighborhood in parentheses
-              cityName = addressParts[0].split('(')[0].trim();
-              // If first part looks like street (contains numbers), use second part
-              if (/^\d+/.test(cityName) && addressParts[1]) {
-                cityName = addressParts[1].split('(')[0].trim();
+          // Extract city from complex address format
+          if (propertyAddress) {
+            // Try various patterns to extract city name
+            // Pattern 1: Look for text between "CROSSING" or street name and province
+            const crossingMatch = propertyAddress.match(/(?:CROSSING|Street|ST|Ave|AVE|Road|RD|Drive|DR|Court|CT)([A-Za-z\s]+?)(?:\s*\(|,|\s+(?:Ontario|ON|British Columbia|BC|Alberta|AB|Quebec|QC))/i);
+            if (crossingMatch && crossingMatch[1]) {
+              cityName = crossingMatch[1].trim();
+            } else {
+              // Pattern 2: Look for city in parentheses like "(Unionville)"
+              const parenMatch = propertyAddress.match(/\(([^)]+)\)/);
+              if (parenMatch && parenMatch[1] && !parenMatch[1].match(/^\d/)) {
+                // Use the parent city, not the neighborhood
+                // For "Markham (Unionville)", we want "Markham"
+                const beforeParen = propertyAddress.substring(0, propertyAddress.indexOf('(')).trim();
+                const cityFromBefore = beforeParen.match(/([A-Za-z\s]+?)(?:\s*\(|,|\s+(?:Ontario|ON|L\d[A-Z]|M\d[A-Z]))/);
+                if (cityFromBefore && cityFromBefore[1]) {
+                  cityName = cityFromBefore[1].replace(/.*(?:CROSSING|Street|ST|Ave|AVE|Road|RD|Drive|DR|Court|CT)/i, '').trim();
+                }
+              } else {
+                // Pattern 3: Look for city before province
+                const beforeProvince = propertyAddress.match(/([A-Za-z\s]+?)(?:,?\s*(?:Ontario|ON|British Columbia|BC|Alberta|AB|Quebec|QC))/i);
+                if (beforeProvince && beforeProvince[1]) {
+                  cityName = beforeProvince[1].split(/[,(]/).pop().trim();
+                }
               }
             }
-            // Default to Toronto if still unclear
-            if (cityName.includes('Ontario') || /[A-Z]\d[A-Z]/.test(cityName)) {
+            
+            // Clean up extracted city name
+            cityName = cityName.replace(/^\d+\s*-?\s*\d*\s*/, ''); // Remove leading numbers
+            cityName = cityName.replace(/^(CROSSING|Street|ST|Ave|AVE|Road|RD|Drive|DR|Court|CT)\s*/i, ''); // Remove street suffixes
+            
+            // Default to Toronto if extraction failed
+            if (!cityName || cityName.length < 3 || /[A-Z]\d[A-Z]/.test(cityName)) {
               cityName = 'Toronto';
             }
           }
+          
+          logger.info('Extracted city name', { 
+            originalAddress: propertyAddress,
+            extractedCity: cityName 
+          });
           
           // Debug logging to trace bedroom data issue
           logger.info('LTR Analysis result structure', {
@@ -316,6 +339,17 @@ router.post('/property', optionalAuth, async (req, res, next) => {
         }
       }
       
+      // Log the result before transformation
+      logger.info('Analysis result before transformation', {
+        hasStrAnalysis: !!result.strAnalysis,
+        strAnalysisKeys: result.strAnalysis ? Object.keys(result.strAnalysis) : [],
+        monthlyRevenue: result.strAnalysis?.monthlyRevenue,
+        avgNightlyRate: result.strAnalysis?.avgNightlyRate,
+        comparablesCount: result.strAnalysis?.comparables?.length || 0,
+        hasLongTermRental: !!result.rental,
+        monthlyRent: result.rental?.monthlyRent
+      });
+      
       // Convert result to snake_case for frontend compatibility
       const snakeCaseResult = toSnakeCase(result);
       
@@ -345,6 +379,16 @@ router.post('/property', optionalAuth, async (req, res, next) => {
           snakeCaseResult.short_term_rental.annual_profit = snakeCaseResult.short_term_rental.net_annual_income;
         }
       }
+      
+      // Log the final response structure
+      logger.info('Final API response structure', {
+        hasShortTermRental: !!snakeCaseResult.short_term_rental,
+        strKeys: snakeCaseResult.short_term_rental ? Object.keys(snakeCaseResult.short_term_rental) : [],
+        monthlyRevenue: snakeCaseResult.short_term_rental?.monthly_revenue,
+        dailyRate: snakeCaseResult.short_term_rental?.daily_rate,
+        comparablesCount: snakeCaseResult.short_term_rental?.comparables?.length || 0,
+        firstComparable: snakeCaseResult.short_term_rental?.comparables?.[0]
+      });
       
       // Map metrics fields to match frontend expectations
       if (snakeCaseResult.metrics && snakeCaseResult.metrics.total_roi !== undefined) {

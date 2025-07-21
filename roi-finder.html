@@ -542,6 +542,40 @@
                     
                     const result = await response.json();
                     const analysisData = result.data || result;
+                    
+                    // Map API response fields to frontend expectations
+                    if (analysisData.short_term_rental) {
+                        analysisData.strAnalysis = analysisData.short_term_rental;
+                        
+                        // Ensure proper field mapping for comparables
+                        if (analysisData.strAnalysis.comparables) {
+                            analysisData.strAnalysis.comparables = analysisData.strAnalysis.comparables.map(comp => ({
+                                ...comp,
+                                nightly_rate: comp.nightlyRate || comp.nightly_rate || comp.price,
+                                occupancy_rate: comp.occupancyRate || comp.occupancy_rate || 0.70,
+                                monthly_revenue: comp.monthlyRevenue || comp.monthly_revenue || 0,
+                                area: comp.area || comp.neighborhood || 'Local Area'
+                            }));
+                        }
+                        
+                        // Map top-level STR fields
+                        if (analysisData.strAnalysis.daily_rate !== undefined) {
+                            analysisData.strAnalysis.avgNightlyRate = analysisData.strAnalysis.daily_rate;
+                        }
+                        if (analysisData.strAnalysis.occupancy_rate !== undefined) {
+                            analysisData.strAnalysis.occupancyRate = analysisData.strAnalysis.occupancy_rate * 100; // Convert to percentage
+                        }
+                        if (analysisData.strAnalysis.monthly_revenue !== undefined) {
+                            analysisData.strAnalysis.monthlyRevenue = analysisData.strAnalysis.monthly_revenue;
+                        }
+                    }
+                    
+                    // Map long-term rental data
+                    if (analysisData.long_term_rental) {
+                        analysisData.longTermRental = analysisData.long_term_rental;
+                    }
+                    
+                    console.log('Transformed analysis data:', analysisData);
                     window.appState.currentAnalysis = analysisData;
                     await this.renderAnalysisResults(analysisData);
                     
