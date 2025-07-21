@@ -482,12 +482,17 @@
 .bg-green-100 { background-color: #d1fae5; }
 .bg-green-500 { background-color: var(--color-success); }
 .bg-purple-100 { background-color: #e9d5ff; }
+.bg-purple-500 { background-color: #8b5cf6; }
 .bg-purple-600 { background-color: #7c3aed; }
 .bg-purple-700 { background-color: #6d28d9; }
 .bg-yellow-100 { background-color: #fef3c7; }
 .bg-red-100 { background-color: #fee2e2; }
 .bg-red-500 { background-color: var(--color-danger); }
 .bg-blue-500 { background-color: var(--color-info); }
+.bg-blue-600 { background-color: #2563eb; }
+.bg-orange-500 { background-color: var(--color-warning); }
+.bg-pink-500 { background-color: #ec4899; }
+.bg-black\/75 { background-color: rgba(0, 0, 0, 0.75); }
 
 /* Text color utilities for indicators */
 .text-white { color: var(--color-white); }
@@ -537,8 +542,11 @@
 .relative { position: relative; }
 .absolute { position: absolute; }
 .top-2 { top: 0.5rem; }
+.top-3 { top: 0.75rem; }
 .left-2 { left: 0.5rem; }
+.left-3 { left: 0.75rem; }
 .right-2 { right: 0.5rem; }
+.right-3 { right: 0.75rem; }
 
 /* Overflow utilities */
 .overflow-hidden { overflow: hidden; }
@@ -575,15 +583,21 @@
 .mb-6 { margin-bottom: 1.5rem; }
 .mb-8 { margin-bottom: 2rem; }
 .mt-1 { margin-top: 0.25rem; }
+.mt-1\.5 { margin-top: 0.375rem; }
 .mt-3 { margin-top: 0.75rem; }
 .mt-4 { margin-top: 1rem; }
 .mt-6 { margin-top: 1.5rem; }
 .-mt-4 { margin-top: -1rem; }
+.ml-8 { margin-left: 2rem; }
+.ml-auto { margin-left: auto; }
 .px-3 { padding-left: 0.75rem; padding-right: 0.75rem; }
 .px-4 { padding-left: 1rem; padding-right: 1rem; }
 .px-6 { padding-left: 1.5rem; padding-right: 1.5rem; }
+.py-1 { padding-top: 0.25rem; padding-bottom: 0.25rem; }
 .py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+.py-3 { padding-top: 0.75rem; padding-bottom: 0.75rem; }
 .py-4 { padding-top: 1rem; padding-bottom: 1rem; }
+.py-5 { padding-top: 1.25rem; padding-bottom: 1.25rem; }
 .py-6 { padding-top: 1.5rem; padding-bottom: 1.5rem; }
 .p-4 { padding: 1rem; }
 .p-6 { padding: 1.5rem; }
@@ -595,6 +609,7 @@
 /* Text size utilities */
 .text-3xl { font-size: 1.875rem; line-height: 2.25rem; }
 .text-2xl { font-size: 1.5rem; line-height: 2rem; }
+.text-xl { font-size: 1.25rem; line-height: 1.75rem; }
 
 /* Border utilities */
 .border-gray-100 { border-color: #f3f4f6; }
@@ -616,6 +631,19 @@
 /* Transition utilities */
 .transition-shadow { transition-property: box-shadow; transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); transition-duration: 150ms; }
 .hover\:shadow-lg:hover { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
+
+/* Additional text utilities for mockup */
+.text-base { font-size: var(--font-size-base); }
+.text-4xl { font-size: 2.25rem; line-height: 2.5rem; }
+.text-5xl { font-size: 3rem; line-height: 1; }
+
+/* Flex utilities */
+.flex-1 { flex: 1 1 0%; }
+.items-start { align-items: flex-start; }
+
+/* Width/Height utilities */
+.w-2 { width: 0.5rem; }
+.h-2 { height: 0.5rem; }
 
 /* Responsive Design */
 @media (min-width: 640px) {

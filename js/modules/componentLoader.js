@@ -91,16 +91,16 @@ class ComponentLoader {
         shareModule,
         buttonModule
       ] = await Promise.all([
-        this.loadComponent('components/analysis/InvestmentVerdictEnhanced.js'),
-        this.loadComponent('components/analysis/AirbnbListingsEnhanced.js'),
+        this.loadComponent('components/analysis/InvestmentVerdictMockup.js'),
+        this.loadComponent('components/analysis/AirbnbListingsMockup.js'),
         this.loadComponent('components/analysis/EnhancedFinancialSummary.js'),
         this.loadComponent('components/ui/ShareModal.js'),
         this.loadComponent('components/ui/Button.js')
       ]);
 
       // Generate component HTML
-      const verdictHtml = verdictModule.VerdictSummaryEnhanced({ analysis: analysisData });
-      const airbnbHtml = airbnbModule.AirbnbHeroSectionEnhanced({ analysis: analysisData });
+      const verdictHtml = verdictModule.VerdictSummaryMockup({ analysis: analysisData });
+      const airbnbHtml = airbnbModule.AirbnbHeroSectionMockup({ analysis: analysisData });
       const financialHtml = financialModule.FinancialSummaryFromAnalysis({ analysis: analysisData });
       const shareModalHtml = shareModule.ShareModal();
       const actionsHtml = this.generateActionButtons(buttonModule);
