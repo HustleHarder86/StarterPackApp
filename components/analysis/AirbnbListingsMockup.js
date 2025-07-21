@@ -20,7 +20,8 @@ export const AirbnbListingsMockup = ({
       badge: 'TOP PERFORMER',
       badgeColor: 'green',
       rating: '4.9★ (327)',
-      imageUrl: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=600&h=400&fit=crop'
+      imageUrl: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=600&h=400&fit=crop',
+      url: 'https://www.airbnb.com/rooms/12345678'
     },
     {
       price: '$185/night',
@@ -32,7 +33,8 @@ export const AirbnbListingsMockup = ({
       badge: 'MOST SIMILAR',
       badgeColor: 'blue',
       rating: '4.7★ (89)',
-      imageUrl: 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=600&h=400&fit=crop'
+      imageUrl: 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=600&h=400&fit=crop',
+      url: 'https://www.airbnb.com/rooms/23456789'
     },
     {
       price: '$145/night',
@@ -44,13 +46,14 @@ export const AirbnbListingsMockup = ({
       badge: 'VALUE OPTION',
       badgeColor: 'orange',
       rating: '4.5★ (156)',
-      imageUrl: 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=600&h=400&fit=crop'
+      imageUrl: 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=600&h=400&fit=crop',
+      url: 'https://www.airbnb.com/rooms/34567890'
     }
   ];
 
   // Map real comparables to the expected format
   const mappedComparables = comparables.map((comp, index) => ({
-    price: comp.price || (comp.avgNightlyRate ? `$${comp.avgNightlyRate}/night` : 'N/A'),
+    price: comp.nightlyRate ? `$${comp.nightlyRate}/night` : comp.avgNightlyRate ? `$${comp.avgNightlyRate}/night` : comp.price || 'N/A',
     occupancy: comp.occupancy || (comp.occupancyRate ? `${comp.occupancyRate}% booked` : 'N/A'),
     title: comp.title || `${comp.bedrooms || 'N/A'}BR • ${comp.bathrooms || 'N/A'}BA • ${comp.location || 'Similar'}`,
     subtitle: comp.subtitle || comp.address || 'Property details unavailable',
@@ -59,7 +62,8 @@ export const AirbnbListingsMockup = ({
     badge: index === 0 ? 'TOP PERFORMER' : index === 1 ? 'MOST SIMILAR' : 'VALUE OPTION',
     badgeColor: index === 0 ? 'green' : index === 1 ? 'blue' : 'orange',
     rating: comp.rating || (comp.reviewScore ? `${comp.reviewScore}★ (${comp.reviewCount || 'N/A'})` : 'N/A'),
-    imageUrl: comp.imageUrl || comp.image || `https://images.unsplash.com/photo-${index === 0 ? '1522708323590-d24dbb6b0267' : index === 1 ? '1560448204-e02f11c3d0e2' : '1502672260266-1c1ef2d93688'}?w=600&h=400&fit=crop`
+    imageUrl: comp.imageUrl || comp.image || `https://images.unsplash.com/photo-${index === 0 ? '1522708323590-d24dbb6b0267' : index === 1 ? '1560448204-e02f11c3d0e2' : '1502672260266-1c1ef2d93688'}?w=600&h=400&fit=crop`,
+    url: comp.url || comp.listingUrl || '#'
   }));
   
   const listings = comparables.length > 0 ? mappedComparables : defaultListings;
@@ -83,7 +87,7 @@ export const AirbnbListingsMockup = ({
       <!-- Listing Cards -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         ${listings.map((listing, index) => `
-          <div class="bg-white rounded-lg overflow-hidden border border-gray-200 hover:shadow-md transition-shadow">
+          <a href="${listing.url}" target="_blank" rel="noopener noreferrer" class="block bg-white rounded-lg overflow-hidden border border-gray-200 hover:shadow-lg hover:border-gray-300 transition-all duration-200 cursor-pointer group">
             <!-- Property Image -->
             <div class="relative h-48">
               <img src="${listing.imageUrl}" alt="${listing.title}" class="w-full h-full object-cover">
@@ -129,9 +133,12 @@ export const AirbnbListingsMockup = ({
                     ${listing.potential || 'N/A'}
                   </span>
                 </div>
+                <div class="mt-2 text-center">
+                  <span class="text-xs text-blue-600 group-hover:text-blue-800 transition-colors">View on Airbnb →</span>
+                </div>
               </div>
             </div>
-          </div>
+          </a>
         `).join('')}
       </div>
 
