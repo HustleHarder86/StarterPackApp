@@ -61,14 +61,16 @@ export const StatusBadge = ({ status, confidence = null }) => {
   `;
 };
 
-export const LiveDataBadge = ({ lastUpdated = 'just now' }) => {
+export const LiveDataBadge = ({ lastUpdated = 'just now' } = {}) => {
   return Badge({
     children: `
-      <div class="w-2 h-2 bg-white rounded-full animate-pulse"></div>
-      LIVE DATA
+      <span class="inline-flex items-center gap-2">
+        <span class="w-2 h-2 bg-white rounded-full animate-pulse"></span>
+        LIVE DATA
+      </span>
     `,
     variant: 'live-data',
-    animated: true,
+    animated: false,
     className: 'font-bold'
   });
 };
