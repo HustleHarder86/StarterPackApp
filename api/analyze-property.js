@@ -738,6 +738,8 @@ function buildStructuredData(extracted, propertyAddress, researchContent, citati
   
   const data = {
     property_address: propertyAddress, // Add this for ensureCalculations to access
+    // Include raw property data from extension for frontend to use
+    property: propertyData || {},
     data_freshness: {
       research_date: new Date().toISOString(),
       data_recency: "REAL_TIME",
@@ -755,7 +757,11 @@ function buildStructuredData(extracted, propertyAddress, researchContent, citati
       bathrooms: parseBedroomBathroomValue(propertyData?.bathrooms) || extracted.property_details?.bathrooms || 2,
       square_feet: propertyData?.sqft || extracted.property_details?.square_feet || 1800,
       listing_status: "off-market",
-      days_on_market: 0
+      days_on_market: 0,
+      // Also include raw data here for backward compatibility
+      price: propertyData?.price || propertyValue,
+      propertyTaxes: propertyData?.propertyTaxes,
+      condoFees: propertyData?.condoFees
     },
     costs: {
       property_tax_annual: accurateExpenses.property_tax_annual,

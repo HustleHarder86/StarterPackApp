@@ -47,6 +47,11 @@ export const EnhancedFinancialSummary = ({
   const propertyData = analysis.property || {};
   const costs = analysis.costs || {};
   
+  // Log what data we have for debugging
+  console.log('EnhancedFinancialSummary - propertyData:', propertyData);
+  console.log('EnhancedFinancialSummary - costs:', costs);
+  console.log('EnhancedFinancialSummary - full analysis:', analysis);
+  
   // Property tax: Use actual from listing first
   const propertyTaxAnnual = propertyData.propertyTaxes || costs.property_tax_annual || (propertyPrice * 0.01);
   
