@@ -91,54 +91,56 @@ class ComponentLoader {
         shareModule,
         buttonModule
       ] = await Promise.all([
-        this.loadComponent('components/analysis/InvestmentVerdict.js'),
-        this.loadComponent('components/analysis/AirbnbListings.js'),
+        this.loadComponent('components/analysis/InvestmentVerdictEnhanced.js'),
+        this.loadComponent('components/analysis/AirbnbListingsEnhanced.js'),
         this.loadComponent('components/analysis/EnhancedFinancialSummary.js'),
         this.loadComponent('components/ui/ShareModal.js'),
         this.loadComponent('components/ui/Button.js')
       ]);
 
       // Generate component HTML
-      const verdictHtml = verdictModule.VerdictSummary({ analysis: analysisData });
-      const airbnbHtml = airbnbModule.AirbnbHeroSection({ analysis: analysisData });
+      const verdictHtml = verdictModule.VerdictSummaryEnhanced({ analysis: analysisData });
+      const airbnbHtml = airbnbModule.AirbnbHeroSectionEnhanced({ analysis: analysisData });
       const financialHtml = financialModule.FinancialSummaryFromAnalysis({ analysis: analysisData });
       const shareModalHtml = shareModule.ShareModal();
       const actionsHtml = this.generateActionButtons(buttonModule);
 
       // Render the complete analysis layout
       const analysisLayout = `
-        <div class="container mx-auto px-lg py-xl">
+        <div class="min-h-screen bg-gray-50">
           
-          <!-- Investment Verdict - Top Priority -->
-          <div class="mb-2xl">
+          <!-- Investment Verdict - Full Width with Header -->
+          <div class="mb-6">
             ${verdictHtml}
           </div>
 
-          <!-- Airbnb Listings - HERO SECTION -->
-          <div class="mb-2xl">
-            ${airbnbHtml}
-          </div>
+          <div class="max-w-7xl mx-auto px-6">
+            <!-- Airbnb Listings - HERO SECTION -->
+            <div class="mb-8">
+              ${airbnbHtml}
+            </div>
 
-          <!-- Enhanced Financial Summary with Calculator -->
-          <div class="mb-2xl">
-            ${financialHtml}
-          </div>
+            <!-- Enhanced Financial Summary with Calculator -->
+            <div class="mb-8">
+              ${financialHtml}
+            </div>
 
-          <!-- Additional Analysis Sections (Collapsible) -->
-          <div id="detailed-analysis" class="hidden">
-            ${this.generateDetailedAnalysisPlaceholder()}
-          </div>
+            <!-- Additional Analysis Sections (Collapsible) -->
+            <div id="detailed-analysis" class="hidden">
+              ${this.generateDetailedAnalysisPlaceholder()}
+            </div>
 
-          <div class="text-center">
-            <button 
-              onclick="toggleDetailedAnalysis()"
-              class="btn btn-secondary"
-            >
-              <span id="toggle-text">Show Detailed Analysis</span>
-              <svg class="w-5 h-5 transition-transform" id="toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-              </svg>
-            </button>
+            <div class="text-center mb-8">
+              <button 
+                onclick="toggleDetailedAnalysis()"
+                class="btn btn-secondary"
+              >
+                <span id="toggle-text">Show Detailed Analysis</span>
+                <svg class="w-5 h-5 transition-transform" id="toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                </svg>
+              </button>
+            </div>
           </div>
 
         </div>

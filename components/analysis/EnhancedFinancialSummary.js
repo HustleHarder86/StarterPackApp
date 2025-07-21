@@ -180,9 +180,10 @@ export const initializeEnhancedFinancialSummary = () => {
         labels: ['Short-Term Rental', 'Long-Term Rental'],
         datasets: [{
           data: [window.analysisData.strRevenue * 12, window.analysisData.ltrRevenue * 12],
-          backgroundColor: ['#10b981', '#6b7280'],
+          backgroundColor: ['#10b981', '#9ca3af'],
           borderRadius: 8,
           borderSkipped: false,
+          barThickness: 60
         }]
       },
       options: {
