@@ -48,7 +48,21 @@ export const AirbnbListingsMockup = ({
     }
   ];
 
-  const listings = comparables.length > 0 ? comparables : defaultListings;
+  // Map real comparables to the expected format
+  const mappedComparables = comparables.map((comp, index) => ({
+    price: comp.price || `$${comp.avgNightlyRate || 0}/night`,
+    occupancy: comp.occupancy || `${comp.occupancyRate || 0}% booked`,
+    title: comp.title || `${comp.bedrooms || '2'}BR • ${comp.bathrooms || '2'}BA • ${comp.location || 'Similar'}`,
+    subtitle: comp.subtitle || comp.address || 'Similar property',
+    revenue: comp.revenue || `+$${comp.monthlyRevenue || 0}`,
+    potential: comp.potential || `${comp.revenueDiff || 0}% potential`,
+    badge: index === 0 ? 'TOP PERFORMER' : index === 1 ? 'MOST SIMILAR' : 'VALUE OPTION',
+    badgeColor: index === 0 ? 'green' : index === 1 ? 'blue' : 'orange',
+    rating: comp.rating || `${comp.reviewScore || '4.5'}★ (${comp.reviewCount || '50'})`,
+    imageUrl: comp.imageUrl || comp.image || `https://images.unsplash.com/photo-${index === 0 ? '1522708323590-d24dbb6b0267' : index === 1 ? '1560448204-e02f11c3d0e2' : '1502672260266-1c1ef2d93688'}?w=600&h=400&fit=crop`
+  }));
+  
+  const listings = comparables.length > 0 ? mappedComparables : defaultListings;
 
   return `
     <div class="${className}">
@@ -101,8 +115,8 @@ export const AirbnbListingsMockup = ({
                   <p class="text-xs text-gray-500">${listing.subtitle}</p>
                 </div>
                 <div class="text-right">
-                  <div class="font-semibold text-${listing.revenue.startsWith('+') ? 'green' : 'red'}-600">
-                    ${listing.revenue}
+                  <div class="font-semibold text-${listing.revenue && listing.revenue.startsWith('+') ? 'green' : 'red'}-600">
+                    ${listing.revenue || '+$0'}
                   </div>
                   <div class="text-xs text-gray-500">vs Your Property</div>
                 </div>
@@ -111,8 +125,8 @@ export const AirbnbListingsMockup = ({
               <div class="mt-3 pt-3 border-t border-gray-100">
                 <div class="flex items-center justify-between">
                   <span class="text-xs text-gray-600">Monthly Revenue:</span>
-                  <span class="text-sm font-semibold ${listing.potential.includes('+') ? 'text-green-600' : listing.potential.includes('-') ? 'text-red-600' : 'text-gray-900'}">
-                    ${listing.potential}
+                  <span class="text-sm font-semibold ${listing.potential && listing.potential.includes('+') ? 'text-green-600' : listing.potential && listing.potential.includes('-') ? 'text-red-600' : 'text-gray-900'}">
+                    ${listing.potential || 'Expected range'}
                   </span>
                 </div>
               </div>

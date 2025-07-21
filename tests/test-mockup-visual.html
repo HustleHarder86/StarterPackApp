@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visual Test - Mockup Components</title>
+    <link href="../styles/tailwind.min.css" rel="stylesheet">
+    <link href="../styles/design-system.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f9fafb;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        .test-status {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            color: white;
+            z-index: 1000;
+        }
+        .success { background-color: #10b981; }
+        .error { background-color: #ef4444; }
+    </style>
+</head>
+<body>
+    <div id="app"></div>
+    <div id="status" class="test-status"></div>
+
+    <script type="module">
+        const status = document.getElementById('status');
+        
+        try {
+            // Import components
+            const { VerdictSummaryMockup } = await import('../components/analysis/InvestmentVerdictMockup.js');
+            const { AirbnbHeroSectionMockup } = await import('../components/analysis/AirbnbListingsMockup.js');
+            
+            // Test data
+            const testAnalysis = {
+                property: {
+                    price: 850000,
+                    bedrooms: 2,
+                    bathrooms: 2,
+                    sqft: 1320,
+                    address: "123 Main Street, Toronto, ON M5V 3A8"
+                },
+                strAnalysis: {
+                    monthlyRevenue: 5400,
+                    comparables: []
+                },
+                overallScore: 8.5
+            };
+            
+            // Render components
+            const app = document.getElementById('app');
+            app.innerHTML = `
+                ${VerdictSummaryMockup({ analysis: testAnalysis })}
+                ${AirbnbHeroSectionMockup({ analysis: testAnalysis })}
+            `;
+            
+            // Check if key elements rendered
+            const checks = [
+                { selector: '.bg-gradient-to-r', name: 'Purple gradient header' },
+                { selector: '.bg-green-500', name: 'RECOMMENDED STRATEGY badge' },
+                { selector: '.text-2xl', name: 'Property title' },
+                { text: '$850,000', name: 'Property price' },
+                { text: '$5,400', name: 'Monthly income' },
+                { text: 'Live Airbnb Market Data', name: 'Airbnb section title' },
+                { text: 'TOP PERFORMER', name: 'Performance badge' },
+                { text: 'Average nightly rate', name: 'Stats bar' }
+            ];
+            
+            let allPassed = true;
+            const results = [];
+            
+            checks.forEach(check => {
+                let found = false;
+                if (check.selector) {
+                    found = document.querySelector(check.selector) !== null;
+                } else if (check.text) {
+                    found = document.body.textContent.includes(check.text);
+                }
+                
+                results.push(`${found ? '✅' : '❌'} ${check.name}`);
+                if (!found) allPassed = false;
+            });
+            
+            // Show status
+            if (allPassed) {
+                status.className = 'test-status success';
+                status.textContent = '✅ All visual tests passed!';
+                console.log('Visual test results:\n' + results.join('\n'));
+            } else {
+                status.className = 'test-status error';
+                status.textContent = '❌ Some visual tests failed';
+                console.error('Visual test results:\n' + results.join('\n'));
+            }
+            
+        } catch (error) {
+            status.className = 'test-status error';
+            status.textContent = '❌ Error: ' + error.message;
+            console.error('Test failed:', error);
+        }
+    </script>
+</body>
+</html>
