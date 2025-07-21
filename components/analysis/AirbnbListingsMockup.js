@@ -53,17 +53,17 @@ export const AirbnbListingsMockup = ({
 
   // Map real comparables to the expected format
   const mappedComparables = comparables.map((comp, index) => ({
-    price: comp.nightlyRate ? `$${comp.nightlyRate}/night` : comp.avgNightlyRate ? `$${comp.avgNightlyRate}/night` : comp.price || 'N/A',
-    occupancy: comp.occupancy || (comp.occupancyRate ? `${comp.occupancyRate}% booked` : 'N/A'),
-    title: comp.title || `${comp.bedrooms || 'N/A'}BR • ${comp.bathrooms || 'N/A'}BA • ${comp.location || 'Similar'}`,
-    subtitle: comp.subtitle || comp.address || 'Property details unavailable',
-    revenue: comp.revenue || (comp.monthlyRevenue ? `+$${comp.monthlyRevenue}` : 'N/A'),
-    potential: comp.potential || (comp.revenueDiff ? `${comp.revenueDiff}% potential` : 'N/A'),
+    price: comp.nightly_rate ? `$${comp.nightly_rate}/night` : comp.nightlyRate ? `$${comp.nightlyRate}/night` : comp.avgNightlyRate ? `$${comp.avgNightlyRate}/night` : comp.price || 'N/A',
+    occupancy: comp.occupancy_rate ? `${Math.round(comp.occupancy_rate * 100)}% booked` : comp.occupancyRate ? `${comp.occupancyRate}% booked` : comp.occupancy || 'N/A',
+    title: comp.title || `${comp.bedrooms || 'N/A'}BR • ${comp.bathrooms || 'N/A'}BA • ${comp.property_type || 'Similar'}`,
+    subtitle: comp.subtitle || comp.address || comp.title || 'Property details',
+    revenue: comp.monthly_revenue ? `$${comp.monthly_revenue.toLocaleString()}` : comp.monthlyRevenue ? `$${comp.monthlyRevenue}` : comp.revenue || 'N/A',
+    potential: comp.similarity_score ? `${comp.similarity_score}% match` : comp.potential || comp.revenueDiff ? `${comp.revenueDiff}% potential` : 'Similar property',
     badge: index === 0 ? 'TOP PERFORMER' : index === 1 ? 'MOST SIMILAR' : 'VALUE OPTION',
     badgeColor: index === 0 ? 'green' : index === 1 ? 'blue' : 'orange',
-    rating: comp.rating || (comp.reviewScore ? `${comp.reviewScore}★ (${comp.reviewCount || 'N/A'})` : 'N/A'),
-    imageUrl: comp.imageUrl || comp.image || `https://images.unsplash.com/photo-${index === 0 ? '1522708323590-d24dbb6b0267' : index === 1 ? '1560448204-e02f11c3d0e2' : '1502672260266-1c1ef2d93688'}?w=600&h=400&fit=crop`,
-    url: comp.url || comp.listingUrl || '#'
+    rating: comp.rating ? `${comp.rating}★` : comp.reviewScore ? `${comp.reviewScore}★ (${comp.reviewCount || 'N/A'})` : 'N/A',
+    imageUrl: comp.image_url?.url || comp.imageUrl || comp.image || `https://images.unsplash.com/photo-${index === 0 ? '1522708323590-d24dbb6b0267' : index === 1 ? '1560448204-e02f11c3d0e2' : '1502672260266-1c1ef2d93688'}?w=600&h=400&fit=crop`,
+    url: comp.airbnb_url || comp.url || comp.listingUrl || '#'
   }));
   
   const listings = comparables.length > 0 ? mappedComparables : defaultListings;
@@ -182,17 +182,18 @@ export const AirbnbListingsMockup = ({
 };
 
 export const AirbnbHeroSectionMockup = ({ analysis }) => {
-  const comparables = analysis?.strAnalysis?.comparables || [];
-  const strData = analysis?.strAnalysis || {};
+  const comparables = analysis?.strAnalysis?.comparables || analysis?.short_term_rental?.comparables || [];
+  const strData = analysis?.strAnalysis || analysis?.short_term_rental || {};
+  const ltrData = analysis?.longTermRental || analysis?.long_term_rental || {};
   
   // Calculate stats from actual data or show N/A
   const stats = {
-    avgRate: strData.avgNightlyRate ? `$${strData.avgNightlyRate}` : 'N/A',
-    avgOccupancy: strData.avgOccupancy ? `${strData.avgOccupancy}%` : 'N/A',
-    advantage: strData.monthlyRevenue && analysis?.longTermRental?.monthlyRent 
-      ? `+$${(strData.monthlyRevenue - analysis.longTermRental.monthlyRent).toLocaleString()}/mo`
+    avgRate: strData.avg_nightly_rate ? `$${strData.avg_nightly_rate}` : strData.avgNightlyRate ? `$${strData.avgNightlyRate}` : 'N/A',
+    avgOccupancy: strData.occupancy_rate ? `${Math.round(strData.occupancy_rate * 100)}%` : strData.avgOccupancy ? `${strData.avgOccupancy}%` : 'N/A',
+    advantage: (strData.monthly_revenue || strData.monthlyRevenue) && (ltrData.monthly_rent || ltrData.monthlyRent)
+      ? `+$${((strData.monthly_revenue || strData.monthlyRevenue) - (ltrData.monthly_rent || ltrData.monthlyRent)).toLocaleString()}/mo`
       : 'N/A',
-    avgRating: strData.avgRating || 'N/A'
+    avgRating: strData.avgRating || (comparables.length > 0 && comparables[0].rating ? `${comparables[0].rating}★` : 'N/A')
   };
 
   return `
