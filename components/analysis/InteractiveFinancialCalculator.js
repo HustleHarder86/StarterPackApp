@@ -11,6 +11,8 @@ export const InteractiveFinancialCalculator = ({
   expenses = {},
   propertyPrice = 850000,
   downPayment = 170000,
+  propertyData = {},
+  costs = {},
   onUpdate = () => {},
   className = ''
 }) => {
@@ -30,6 +32,20 @@ export const InteractiveFinancialCalculator = ({
 
   // Merge provided expenses with defaults
   const expenseValues = { ...defaultExpenses, ...expenses };
+  
+  // Determine data sources based on what's available
+  const dataSources = {
+    propertyTax: propertyData?.propertyTaxes ? 'actual' : (costs?.property_tax_annual ? 'market' : 'estimated'),
+    insurance: costs?.insurance_annual ? 'market' : 'estimated',
+    hoaFees: propertyData?.condoFees ? 'actual' : (costs?.hoa_monthly ? 'market' : 'estimated'),
+    propertyMgmt: 'calculated',
+    utilities: costs?.utilities_monthly ? 'market' : 'estimated',
+    cleaning: 'airbnb',
+    maintenance: costs?.maintenance_annual ? 'market' : 'estimated',
+    supplies: 'calculated',
+    platformFees: 'airbnb',
+    otherExpenses: 'estimated'
+  };
 
   return Card({
     children: `
@@ -58,16 +74,16 @@ export const InteractiveFinancialCalculator = ({
           <span class="text-xs text-gray-500">Sources: Realtor.ca listing • Airbnb market data • AI estimates</span>
         </div>
         <div class="space-y-3 pl-lg">
-          ${generateExpenseRow('Property Tax', 'propertyTax', expenseValues.propertyTax, 'actual')}
-          ${generateExpenseRow('Insurance', 'insurance', expenseValues.insurance, 'estimated')}
-          ${generateExpenseRow('HOA/Condo Fees', 'hoaFees', expenseValues.hoaFees, 'actual')}
-          ${generateExpenseRow('Property Management (10%)', 'propertyMgmt', expenseValues.propertyMgmt, 'calculated')}
-          ${generateExpenseRow('Utilities', 'utilities', expenseValues.utilities, 'estimated')}
-          ${generateExpenseRow('Cleaning & Turnover', 'cleaning', expenseValues.cleaning, 'market')}
-          ${generateExpenseRow('Maintenance & Repairs', 'maintenance', expenseValues.maintenance, 'estimated')}
-          ${generateExpenseRow('Supplies & Amenities', 'supplies', expenseValues.supplies, 'market')}
-          ${generateExpenseRow('Platform Fees (3%)', 'platformFees', expenseValues.platformFees, 'airbnb')}
-          ${generateExpenseRow('Other Expenses', 'otherExpenses', expenseValues.otherExpenses, 'estimated')}
+          ${generateExpenseRow('Property Tax', 'propertyTax', expenseValues.propertyTax, dataSources.propertyTax)}
+          ${generateExpenseRow('Insurance', 'insurance', expenseValues.insurance, dataSources.insurance)}
+          ${generateExpenseRow('HOA/Condo Fees', 'hoaFees', expenseValues.hoaFees, dataSources.hoaFees)}
+          ${generateExpenseRow('Property Management (10%)', 'propertyMgmt', expenseValues.propertyMgmt, dataSources.propertyMgmt)}
+          ${generateExpenseRow('Utilities', 'utilities', expenseValues.utilities, dataSources.utilities)}
+          ${generateExpenseRow('Cleaning & Turnover', 'cleaning', expenseValues.cleaning, dataSources.cleaning)}
+          ${generateExpenseRow('Maintenance & Repairs', 'maintenance', expenseValues.maintenance, dataSources.maintenance)}
+          ${generateExpenseRow('Supplies & Amenities', 'supplies', expenseValues.supplies, dataSources.supplies)}
+          ${generateExpenseRow('Platform Fees (3%)', 'platformFees', expenseValues.platformFees, dataSources.platformFees)}
+          ${generateExpenseRow('Other Expenses', 'otherExpenses', expenseValues.otherExpenses, dataSources.otherExpenses)}
         </div>
         
         <!-- Total Expenses -->

@@ -39,18 +39,34 @@ export const EnhancedFinancialSummary = ({
   const monthlyDifference = strRevenue - ltrRevenue;
   const annualDifference = monthlyDifference * 12;
 
-  // Extract expense data from analysis
+  // Extract expense data from analysis with proper data source priority
+  // 1. First check for actual property data from extension
+  // 2. Then use analysis costs
+  // 3. Finally fall back to calculated defaults
+  
+  const propertyData = analysis.property || {};
+  const costs = analysis.costs || {};
+  
+  // Property tax: Use actual from listing first
+  const propertyTaxAnnual = propertyData.propertyTaxes || costs.property_tax_annual || (propertyPrice * 0.01);
+  
+  // Calculate STR-specific expenses based on market data
+  const strOccupancy = analysis.strAnalysis?.occupancy_rate || analysis.short_term_rental?.occupancy_rate || 0.7;
+  const avgStayLength = 3; // Average nights per booking
+  const turnoversPerMonth = Math.round(30 * strOccupancy / avgStayLength);
+  const avgCleaningFee = 100; // Per turnover based on market data
+  
   const expenses = {
-    propertyTax: Math.round((analysis.costs?.property_tax_annual || 8496) / 12),
-    insurance: Math.round((analysis.costs?.insurance_annual || 3000) / 12),
-    hoaFees: analysis.costs?.hoa_monthly || 450,
-    propertyMgmt: Math.round(strRevenue * 0.10),
-    utilities: analysis.costs?.utilities_monthly || 200,
-    cleaning: 400, // From Airbnb market data
-    maintenance: Math.round((analysis.costs?.maintenance_annual || 3600) / 12),
-    supplies: Math.round(strRevenue * 0.05),
-    platformFees: Math.round(strRevenue * 0.03),
-    otherExpenses: 140
+    propertyTax: Math.round(propertyTaxAnnual / 12),
+    insurance: Math.round((costs.insurance_annual || propertyPrice * 0.004 * 1.25) / 12), // STR insurance is 25% higher
+    hoaFees: propertyData.condoFees || costs.hoa_monthly || 0, // Use actual condo fees or 0 for houses
+    propertyMgmt: Math.round(strRevenue * 0.10), // 10% management fee
+    utilities: costs.utilities_monthly || Math.round(200 * 1.4), // 40% higher for STR
+    cleaning: avgCleaningFee * turnoversPerMonth, // Based on turnover frequency
+    maintenance: Math.round((costs.maintenance_annual || propertyPrice * 0.015) / 12), // 1.5% for STR
+    supplies: Math.round(strRevenue * 0.04), // 4% for consumables
+    platformFees: Math.round(strRevenue * 0.03), // 3% Airbnb fee
+    otherExpenses: 150 // Internet, utilities premium, misc
   };
 
   // Store data globally for scripts
@@ -83,7 +99,9 @@ export const EnhancedFinancialSummary = ({
           monthlyRevenue: strRevenue,
           expenses: expenses,
           propertyPrice: propertyPrice,
-          downPayment: downPayment
+          downPayment: downPayment,
+          propertyData: propertyData,
+          costs: costs
         })}
       </div>
 
