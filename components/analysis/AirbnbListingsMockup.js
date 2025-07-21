@@ -74,7 +74,7 @@ export const AirbnbListingsMockup = ({
       <div class="flex items-center justify-between mb-4">
         <div class="flex items-center gap-3">
           <h3 class="text-lg font-bold text-gray-900">Live Airbnb Market Data</h3>
-          <span class="text-green-600 text-sm font-medium">● 12 active listings found</span>
+          <span class="text-green-600 text-sm font-medium">● ${listings.length || 12} active listings found</span>
         </div>
         <div class="flex items-center gap-2">
           <span class="text-xs text-gray-500">Updated 3 minutes ago</span>
@@ -86,7 +86,7 @@ export const AirbnbListingsMockup = ({
 
       <!-- Listing Cards -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        ${listings.map((listing, index) => `
+        ${listings.slice(0, 3).map((listing, index) => `
           <a href="${listing.url}" target="_blank" rel="noopener noreferrer" class="block bg-white rounded-lg overflow-hidden border border-gray-200 hover:shadow-lg hover:border-gray-300 transition-all duration-200 cursor-pointer group">
             <!-- Property Image -->
             <div class="relative h-48">
@@ -141,6 +141,19 @@ export const AirbnbListingsMockup = ({
           </a>
         `).join('')}
       </div>
+
+      <!-- View All Button -->
+      ${listings.length > 3 ? `
+        <div class="mt-4 text-center">
+          <button 
+            onclick="showAllComparables()" 
+            class="inline-flex items-center gap-2 px-6 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 hover:border-gray-400 transition-all duration-200"
+          >
+            <span>View All Comparable Listings</span>
+            <span class="text-xs text-gray-500">(${listings.length} total)</span>
+          </button>
+        </div>
+      ` : ''}
 
       <!-- Bottom Stats Bar -->
       <div class="mt-6 bg-gray-50 rounded-lg p-4">
