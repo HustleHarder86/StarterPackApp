@@ -152,6 +152,22 @@ class ComponentLoader {
 
       targetContainer.innerHTML = analysisLayout;
       this.attachEventHandlers();
+      
+      // Initialize enhanced financial summary after DOM is updated
+      setTimeout(async () => {
+        // Initialize the financial summary chart and metrics
+        if (financialModule.initializeEnhancedFinancialSummary) {
+          financialModule.initializeEnhancedFinancialSummary();
+        }
+        
+        // Import and initialize the financial calculator
+        try {
+          const { initializeFinancialCalculator } = await import('./financialCalculatorInit.js');
+          initializeFinancialCalculator();
+        } catch (error) {
+          console.error('Failed to initialize financial calculator:', error);
+        }
+      }, 100);
 
     } catch (error) {
       console.error('Failed to render analysis results:', error);

@@ -8,6 +8,16 @@ import { MetricBadge } from '../ui/Badge.js';
 import { Button } from '../ui/Button.js';
 import { InteractiveFinancialCalculator, financialCalculatorScript, financialCalculatorStyles } from './InteractiveFinancialCalculator.js';
 
+// Store analysis data globally for script access
+window.analysisData = {
+  strRevenue: 0,
+  ltrRevenue: 0,
+  monthlyExpenses: 0,
+  propertyPrice: 0,
+  downPayment: 0,
+  expenses: {}
+};
+
 export const EnhancedFinancialSummary = ({ 
   analysis = {},
   className = ''
@@ -42,6 +52,14 @@ export const EnhancedFinancialSummary = ({
     platformFees: Math.round(strRevenue * 0.03),
     otherExpenses: 140
   };
+
+  // Store data globally for scripts
+  window.analysisData.strRevenue = strRevenue;
+  window.analysisData.ltrRevenue = ltrRevenue;
+  window.analysisData.monthlyExpenses = monthlyExpenses;
+  window.analysisData.propertyPrice = propertyPrice;
+  window.analysisData.downPayment = downPayment;
+  window.analysisData.expenses = expenses;
 
   return `
     <div class="space-y-2xl">
@@ -104,151 +122,6 @@ export const EnhancedFinancialSummary = ({
       })}
     </div>
 
-    <!-- Revenue Chart Script -->
-    <script>
-      // Initialize revenue comparison chart
-      const ctx = document.getElementById('revenueChart')?.getContext('2d');
-      if (ctx) {
-        const revenueChart = new Chart(ctx, {
-          type: 'bar',
-          data: {
-            labels: ['Short-Term Rental', 'Long-Term Rental'],
-            datasets: [{
-              data: [${strRevenue * 12}, ${ltrRevenue * 12}],
-              backgroundColor: ['#10b981', '#6b7280'],
-              borderRadius: 8,
-              borderSkipped: false,
-            }]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-              legend: { display: false }
-            },
-            scales: {
-              y: {
-                beginAtZero: true,
-                grid: {
-                  display: true,
-                  color: 'rgba(0, 0, 0, 0.05)'
-                },
-                ticks: {
-                  callback: function(value) {
-                    return '$' + value.toLocaleString();
-                  }
-                }
-              },
-              x: {
-                grid: {
-                  display: false
-                }
-              }
-            }
-          }
-        });
-      }
-    </script>
-
-    <!-- Financial Calculator Script -->
-    ${financialCalculatorScript}
-
-    <!-- Metric Indicators Script -->
-    <script>
-      // Function to update metric indicators
-      function updateMetricIndicators() {
-        // Get current values
-        const capRate = parseFloat(document.getElementById('capRateValue')?.textContent || '0');
-        const roi = parseFloat(document.getElementById('roiValue')?.textContent || '0');
-        const cashFlow = parseFloat(document.getElementById('cashFlowValue')?.textContent.replace(/[^0-9.-]/g, '') || '0');
-        const breakEven = parseFloat(document.getElementById('breakEvenValue')?.textContent || '0');
-
-        // Update each indicator
-        updateIndicator('capRateIndicator', getMetricRating('capRate', capRate));
-        updateIndicator('roiIndicator', getMetricRating('roi', roi));
-        updateIndicator('cashFlowIndicator', getMetricRating('cashFlow', cashFlow));
-        updateIndicator('breakEvenIndicator', getMetricRating('breakEven', breakEven));
-      }
-
-      // Function to get metric rating
-      function getMetricRating(metric, value) {
-        const ratings = {
-          capRate: {
-            excellent: { min: 10, label: 'Excellent', color: 'purple' },
-            good: { min: 8, label: 'Good', color: 'green' },
-            fair: { min: 6, label: 'Fair', color: 'yellow' },
-            poor: { min: 0, label: 'Poor', color: 'red' }
-          },
-          roi: {
-            excellent: { min: 12, label: 'Excellent', color: 'purple' },
-            good: { min: 8, label: 'Good', color: 'green' },
-            fair: { min: 5, label: 'Fair', color: 'yellow' },
-            poor: { min: 0, label: 'Poor', color: 'red' }
-          },
-          cashFlow: {
-            excellent: { min: 2000, label: 'Strong', color: 'green' },
-            good: { min: 500, label: 'Good', color: 'green' },
-            fair: { min: 0, label: 'Fair', color: 'yellow' },
-            poor: { min: -Infinity, label: 'Negative', color: 'red' }
-          },
-          breakEven: {
-            excellent: { max: 60, label: 'Excellent', color: 'purple' },
-            good: { max: 70, label: 'Good', color: 'green' },
-            fair: { max: 80, label: 'Fair', color: 'yellow' },
-            poor: { max: 100, label: 'Risky', color: 'red' }
-          }
-        };
-
-        const metricRatings = ratings[metric];
-        let rating = metricRatings.poor;
-
-        if (metric === 'breakEven') {
-          // For break-even, lower is better
-          if (value <= metricRatings.excellent.max) rating = metricRatings.excellent;
-          else if (value <= metricRatings.good.max) rating = metricRatings.good;
-          else if (value <= metricRatings.fair.max) rating = metricRatings.fair;
-        } else {
-          // For other metrics, higher is better
-          if (value >= metricRatings.excellent.min) rating = metricRatings.excellent;
-          else if (value >= metricRatings.good.min) rating = metricRatings.good;
-          else if (value >= metricRatings.fair.min) rating = metricRatings.fair;
-        }
-
-        return rating;
-      }
-
-      // Function to update a single indicator
-      function updateIndicator(indicatorId, rating) {
-        const indicator = document.getElementById(indicatorId);
-        if (!indicator) return;
-
-        // Update colors and text
-        indicator.className = \`inline-flex items-center gap-1 px-2 py-1 bg-\${rating.color}-100 text-\${rating.color}-700 rounded-full text-xs font-medium mt-2\`;
-        indicator.innerHTML = \`
-          <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
-            \${getIndicatorIcon(rating.color)}
-          </svg>
-          \${rating.label}
-        \`;
-      }
-
-      // Function to get indicator icon
-      function getIndicatorIcon(color) {
-        const icons = {
-          purple: '<path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>',
-          green: '<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>',
-          yellow: '<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9 7a1 1 0 112 0v4a1 1 0 11-2 0V7zm0 8a1 1 0 112 0 1 1 0 01-2 0z" clip-rule="evenodd"/>',
-          red: '<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>'
-        };
-        return icons[color] || icons.green;
-      }
-
-      // Initialize indicators
-      setTimeout(() => {
-        updateMetricIndicators();
-      }, 200);
-    </script>
-
     <!-- Styles -->
     ${financialCalculatorStyles}
 
@@ -294,4 +167,60 @@ function generateMetricWithIndicator(label, value, metricType, numericValue) {
 // Export helper function to convert analysis data
 export const FinancialSummaryFromAnalysis = ({ analysis }) => {
   return EnhancedFinancialSummary({ analysis });
+};
+
+// Initialize function to be called after component is rendered
+export const initializeEnhancedFinancialSummary = () => {
+  // Initialize revenue comparison chart
+  const ctx = document.getElementById('revenueChart')?.getContext('2d');
+  if (ctx && window.Chart) {
+    const revenueChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['Short-Term Rental', 'Long-Term Rental'],
+        datasets: [{
+          data: [window.analysisData.strRevenue * 12, window.analysisData.ltrRevenue * 12],
+          backgroundColor: ['#10b981', '#6b7280'],
+          borderRadius: 8,
+          borderSkipped: false,
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            grid: {
+              display: true,
+              color: 'rgba(0, 0, 0, 0.05)'
+            },
+            ticks: {
+              callback: function(value) {
+                return '$' + value.toLocaleString();
+              }
+            }
+          },
+          x: {
+            grid: {
+              display: false
+            }
+          }
+        }
+      }
+    });
+  }
+
+  // Initialize financial calculator
+  if (typeof initializeFinancialCalculator === 'function') {
+    initializeFinancialCalculator();
+  }
+
+  // Update metric indicators
+  if (typeof updateMetricIndicators === 'function') {
+    updateMetricIndicators();
+  }
 };
