@@ -1,6 +1,6 @@
 // Authentication setup for E2E tests
-import { test as setup } from '@playwright/test';
-import path from 'path';
+const { test: setup } = require('@playwright/test');
+const path = require('path');
 
 const authFile = path.join(__dirname, '.auth/user.json');
 

@@ -45,13 +45,12 @@
     "apify-client": "^2.12.6",
     "firebase-admin": "^11.11.0",
     "openai": "^5.9.0",
-    "playwright": "^1.54.1",
     "puppeteer": "^24.11.1"
   },
   "devDependencies": {
     "@babel/core": "^7.23.0",
     "@babel/preset-env": "^7.23.0",
-    "@playwright/test": "^1.40.1",
+    "@playwright/test": "^1.53.1",
     "@types/jest": "^29.5.11",
     "babel-jest": "^29.7.0",
     "dotenv": "^16.6.1",
