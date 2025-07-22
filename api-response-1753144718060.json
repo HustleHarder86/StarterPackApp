@@ -1,0 +1,345 @@
+{
+  "success": true,
+  "data": {
+    "success": true,
+    "property_address": "123 King Street West, Toronto, ON, M5H 1A1",
+    "timestamp": "2025-07-22T00:37:47.255Z",
+    "execution_time": "26.81 seconds",
+    "api_costs": {
+      "input_tokens": 795,
+      "output_tokens": 1584,
+      "total_tokens": 2379,
+      "input_cost": "0.0020",
+      "output_cost": "0.0158",
+      "total_cost": "0.0178",
+      "model": "perplexity-sonar"
+    },
+    "property_details": {
+      "address": "123 King Street West, Toronto, ON, M5H 1A1",
+      "city": "Toronto",
+      "state": "ON",
+      "estimated_value": 850000,
+      "property_type": "Condo",
+      "bedrooms": 2,
+      "bathrooms": 1,
+      "sqft": 1200,
+      "year_built": 2015
+    },
+    "expenses": {
+      "property_tax_annual": 5185,
+      "property_tax_rate": 0.0061,
+      "insurance_annual": 2000,
+      "maintenance_annual": 4250,
+      "hoa_monthly": 600,
+      "utilities_monthly": 150,
+      "total_monthly_expenses": 1703,
+      "total_annual_expenses": 20435
+    },
+    "citations": [
+      "https://wowa.ca/calculators/property-tax",
+      "https://www.airdberlis.com/insights/publications/publication/city-of-toronto-proposed-property-tax-increases-and-key-2025-deadlines-for-property-owners",
+      "https://www.toronto.ca/services-payments/property-taxes-utilities/property-tax/property-assessment-and-appeals/",
+      "https://justo.ca/blog/toronto-property-tax-2025",
+      "https://www.mpac.ca/en"
+    ],
+    "purchase": {
+      "price": 850000,
+      "down_payment": 170000,
+      "mortgage_amount": 680000,
+      "closing_costs": 12750
+    },
+    "monthly_expenses": {
+      "mortgage": 3975,
+      "property_tax": 432,
+      "insurance": 167,
+      "maintenance": 354,
+      "utilities": 150,
+      "hoa": 600,
+      "management": 239,
+      "total": 5917
+    },
+    "cash_flow": {
+      "monthly": -2925,
+      "annual": -35100
+    },
+    "metrics": {
+      "cap_rate": "1.48",
+      "cash_on_cash_return": "-20.65",
+      "total_r_o_i": "-5.65"
+    },
+    "insights": [
+      {
+        "type": "negative",
+        "category": "cash_flow",
+        "message": "Negative cash flow of $2,925/month"
+      },
+      {
+        "type": "negative",
+        "category": "cap_rate",
+        "message": "Low cap rate of 1.48%"
+      }
+    ],
+    "metadata": {
+      "data_source": "listing_with_ai_enhancement",
+      "confidence": "high"
+    },
+    "regulations": {
+      "summary": "Short-term rentals are permitted in Ontario, but regulations are set at the municipal level. Most cities, including Toronto, require the property to be the host's primary residence, mandate registration and/or a business license, and impose annual night limits for whole-home rentals. Platforms must verify and display registration numbers, and hosts must comply with all local bylaws to avoid significant tax and legal penalties.",
+      "requirements": [],
+      "compliance_advice": {
+        "compliant": null,
+        "risk_level": "high",
+        "recommendations": [
+          "Consider this property only if you plan to live there",
+          "Budget for licensing fees and application process",
+          "Factor in time for license approval",
+          "Plan for maximum 180 rental days per year",
+          "Track rental days carefully to avoid violations"
+        ],
+        "warnings": [
+          "STR only allowed in primary residence - investment properties may not qualify"
+        ]
+      }
+    },
+    "comparison": {
+      "ltr_monthly_rent": 2992,
+      "str_monthly_revenue": 9214,
+      "monthly_difference": 6222,
+      "recommended_strategy": "STR"
+    },
+    "long_term_rental": {
+      "monthly_rent": 2992,
+      "comparables": []
+    },
+    "short_term_rental": {
+      "avg_nightly_rate": 433,
+      "occupancy_rate": 0.6999999999999997,
+      "monthly_revenue": 9214,
+      "annual_revenue": 110568,
+      "expenses": {
+        "annual": {
+          "revenue_based": {
+            "management": 22113.600000000002,
+            "cleaning": 11056.800000000001,
+            "supplies": 3317.04,
+            "platform_fees": 3317.04,
+            "marketing": 2211.36
+          },
+          "fixed": {
+            "utilities": 4320,
+            "insurance": 5750,
+            "maintenance": 12750,
+            "internet": 1200,
+            "cable": 600,
+            "licenses": 500
+          },
+          "property_specific": {
+            "property_tax": 8500,
+            "hoa_fees": 0,
+            "mortgage": 0
+          },
+          "total": 75636
+        },
+        "monthly": {
+          "revenue_based": {
+            "management": 1843,
+            "cleaning": 921,
+            "supplies": 276,
+            "platform_fees": 276,
+            "marketing": 184
+          },
+          "fixed": {
+            "utilities": 360,
+            "insurance": 479,
+            "maintenance": 1063,
+            "internet": 100,
+            "cable": 50,
+            "licenses": 42
+          },
+          "property_specific": {
+            "property_tax": 708,
+            "hoa_fees": 0,
+            "mortgage": 0
+          },
+          "total": 6303
+        },
+        "percentage_of_revenue": 68
+      },
+      "net_monthly_income": 2911,
+      "net_annual_income": 34932,
+      "cap_rate": 4.1,
+      "cash_on_cash_return": 20.5,
+      "payback_period": 24.3,
+      "comparables": [
+        {
+          "id": "1076924880137633949",
+          "title": "Chicago Luxury Long Term 30+",
+          "nightly_rate": 426,
+          "bedrooms": 2,
+          "bathrooms": 1,
+          "property_type": "entire_home",
+          "occupancy_rate": 0.7,
+          "similarity_score": 67,
+          "rating": 4.5,
+          "image_url": {
+            "url": "https://a0.muscache.com/im/pictures/miso/Hosting-1076924880137633949/original/424a39c1-bf7c-4ac6-9991-de304a683767.png",
+            "captions": []
+          },
+          "airbnb_url": "https://www.airbnb.com/rooms/1076924880137633949?locale=en-US&currency=CAD&check_in=2025-08-21&check_out=2025-08-28",
+          "monthly_revenue": 9065
+        },
+        {
+          "id": "1309641680867529146",
+          "title": "Kasa | Explore Millennium Park | River North",
+          "nightly_rate": 395,
+          "bedrooms": 2,
+          "bathrooms": 1,
+          "property_type": "entire_home",
+          "occupancy_rate": 0.7,
+          "similarity_score": 67,
+          "rating": 4.5,
+          "image_url": {
+            "url": "https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6MTMwOTY0MTY4MDg2NzUyOTE0Ng==/original/42017029-5d4c-4dc8-b8db-943aae33cf11.jpeg",
+            "captions": []
+          },
+          "airbnb_url": "https://www.airbnb.com/rooms/1309641680867529146?locale=en-US&currency=CAD&check_in=2025-08-21&check_out=2025-08-28",
+          "monthly_revenue": 8406
+        },
+        {
+          "id": "50291798",
+          "title": "Welcome to the Chi!  Close to Downtown",
+          "nightly_rate": 346,
+          "bedrooms": 2,
+          "bathrooms": 1,
+          "property_type": "entire_home",
+          "occupancy_rate": 0.7,
+          "similarity_score": 67,
+          "rating": 4.5,
+          "image_url": {
+            "url": "https://a0.muscache.com/im/pictures/miso/Hosting-50291798/original/dc6c7d20-4d2b-40a0-8cb2-df3e9da909ef.jpeg",
+            "captions": []
+          },
+          "airbnb_url": "https://www.airbnb.com/rooms/50291798?locale=en-US&currency=CAD&check_in=2025-08-21&check_out=2025-08-28",
+          "monthly_revenue": 7363
+        },
+        {
+          "id": "24598724",
+          "title": "The Noble Farmhouse, w/ Garden in West Town",
+          "nightly_rate": 348,
+          "bedrooms": 2,
+          "bathrooms": 1,
+          "property_type": "entire_home",
+          "occupancy_rate": 0.7,
+          "similarity_score": 67,
+          "rating": 4.5,
+          "image_url": {
+            "url": "https://a0.muscache.com/im/pictures/d278d098-b37a-413f-818e-03c2e4889896.jpg",
+            "captions": []
+          },
+          "airbnb_url": "https://www.airbnb.com/rooms/24598724?locale=en-US&currency=CAD&check_in=2025-08-21&check_out=2025-08-28",
+          "monthly_revenue": 7405
+        },
+        {
+          "id": "49250122",
+          "title": "The Lakefront Lookout (2BR)",
+          "nightly_rate": 446,
+          "bedrooms": 2,
+          "bathrooms": 1,
+          "property_type": "entire_home",
+          "occupancy_rate": 0.7,
+          "similarity_score": 67,
+          "rating": 4.5,
+          "image_url": {
+            "url": "https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6NDkyNTAxMjI=/original/5dc6e162-ca41-4865-8e2c-f54f67d322d3.png",
+            "captions": []
+          },
+          "airbnb_url": "https://www.airbnb.com/rooms/49250122?locale=en-US&currency=CAD&check_in=2025-08-21&check_out=2025-08-28",
+          "monthly_revenue": 9491
+        }
+      ],
+      "confidence": "high",
+      "data_points": 20,
+      "price_range": {
+        "min": 346,
+        "max": 611
+      },
+      "seasonal_data": {
+        "spring": {
+          "avg_rate": 411,
+          "occupancy": 0.6299999999999998,
+          "revenue": 23563,
+          "bookings": 57
+        },
+        "summer": {
+          "avg_rate": 498,
+          "occupancy": 0.7699999999999998,
+          "revenue": 34895,
+          "bookings": 70
+        },
+        "fall": {
+          "avg_rate": 433,
+          "occupancy": 0.6649999999999997,
+          "revenue": 26203,
+          "bookings": 61
+        },
+        "winter": {
+          "avg_rate": 390,
+          "occupancy": 0.5949999999999998,
+          "revenue": 21117,
+          "bookings": 54
+        }
+      },
+      "scenarios": {
+        "conservative": {
+          "occupancy_rate": 0.5499999999999997,
+          "nightly_rate": 368,
+          "monthly_revenue": 6154
+        },
+        "realistic": {
+          "occupancy_rate": 0.6999999999999997,
+          "nightly_rate": 433,
+          "monthly_revenue": 9214
+        },
+        "optimistic": {
+          "occupancy_rate": 0.7999999999999997,
+          "nightly_rate": 476,
+          "monthly_revenue": 11584
+        }
+      },
+      "comparison": {
+        "ltr": {
+          "monthly_gross": 2992,
+          "monthly_net": 2244,
+          "annual_net": 26928
+        },
+        "str": {
+          "monthly_gross": 9214,
+          "monthly_net": 5068,
+          "annual_net": 60812
+        },
+        "difference": {
+          "monthly": 2824,
+          "annual": 33884,
+          "percentage": 126
+        },
+        "break_even_occupancy": 31,
+        "recommendation": "STR",
+        "risk_assessment": "Low Risk - Strong occupancy cushion"
+      },
+      "recommendations": [
+        {
+          "type": "positive",
+          "message": "Premium nightly rates possible - focus on high-end amenities and presentation"
+        },
+        {
+          "type": "positive",
+          "message": "STR projected to generate 126% more income than traditional rental"
+        }
+      ],
+      "daily_rate": 433,
+      "annual_profit": 34932
+    },
+    "analysis_timestamp": "2025-07-22T00:37:47.255Z"
+  },
+  "message": "Analysis completed"
+}
