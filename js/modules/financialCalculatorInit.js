@@ -6,6 +6,7 @@
 // Default values for reset functionality
 export const defaultFinancialValues = {
   monthlyRevenue: 5400,
+  mortgage: 4200,
   propertyTax: 708,
   insurance: 250,
   hoaFees: 450,
@@ -22,6 +23,7 @@ export const defaultFinancialValues = {
 export function updateFinancialCalculations() {
   // Get all input values
   const monthlyRevenue = parseFloat(document.getElementById('monthlyRevenue')?.value) || 0;
+  const mortgage = parseFloat(document.getElementById('mortgage')?.value) || 0;
   const propertyTax = parseFloat(document.getElementById('propertyTax')?.value) || 0;
   const insurance = parseFloat(document.getElementById('insurance')?.value) || 0;
   const hoaFees = parseFloat(document.getElementById('hoaFees')?.value) || 0;
@@ -33,8 +35,8 @@ export function updateFinancialCalculations() {
   const platformFees = parseFloat(document.getElementById('platformFees')?.value) || 0;
   const otherExpenses = parseFloat(document.getElementById('otherExpenses')?.value) || 0;
 
-  // Calculate total expenses
-  const totalExpenses = propertyTax + insurance + hoaFees + propertyMgmt + 
+  // Calculate total expenses (including mortgage)
+  const totalExpenses = mortgage + propertyTax + insurance + hoaFees + propertyMgmt + 
                        utilities + cleaning + maintenance + supplies + 
                        platformFees + otherExpenses;
 

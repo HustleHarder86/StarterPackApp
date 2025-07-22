@@ -16,8 +16,18 @@ export const InteractiveFinancialCalculator = ({
   onUpdate = () => {},
   className = ''
 }) => {
+  // Calculate mortgage payment
+  const loanAmount = propertyPrice - downPayment;
+  const interestRate = 0.065 / 12; // 6.5% annual rate / 12 months
+  const loanTermMonths = 30 * 12; // 30 years
+  const mortgagePayment = costs?.mortgage_payment || Math.round(
+    loanAmount * (interestRate * Math.pow(1 + interestRate, loanTermMonths)) / 
+    (Math.pow(1 + interestRate, loanTermMonths) - 1)
+  );
+  
   // Calculate expense values with priority for actual data
   const expenseValues = {
+    mortgage: mortgagePayment,
     propertyTax: (() => {
       // Priority: 1) Actual property taxes from listing, 2) Costs from API, 3) Calculated default
       if (propertyData?.propertyTaxes) {
@@ -51,6 +61,7 @@ export const InteractiveFinancialCalculator = ({
   
   // Determine data sources based on what's available
   const dataSources = {
+    mortgage: 'calculated',
     propertyTax: propertyData?.propertyTaxes ? 'actual' : (costs?.property_tax_annual ? 'market' : 'estimated'),
     insurance: costs?.insurance_annual ? 'market' : 'estimated',
     hoaFees: propertyData?.condoFees ? 'actual' : (costs?.hoa_monthly ? 'market' : 'estimated'),
@@ -80,6 +91,19 @@ export const InteractiveFinancialCalculator = ({
                    class="w-24 px-2 py-1 border border-gray-300 rounded text-right font-bold text-green-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
                    onchange="updateFinancialCalculations()">
           </div>
+        </div>
+      </div>
+
+      <!-- Mortgage Payment Section -->
+      <div class="mb-lg">
+        <div class="flex items-center justify-between mb-md">
+          <span class="font-medium text-gray-700">Mortgage Payment</span>
+          <span class="text-xs text-gray-500">
+            20% down • 6.5% interest • 30 years
+          </span>
+        </div>
+        <div class="pl-lg">
+          ${generateExpenseRow('Monthly Mortgage', 'mortgage', expenseValues.mortgage, dataSources.mortgage)}
         </div>
       </div>
 

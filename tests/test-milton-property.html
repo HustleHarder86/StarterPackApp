@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Milton Property Analysis</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../styles/design-system.css">
+</head>
+<body class="bg-gray-50">
+    <div class="max-w-7xl mx-auto p-8">
+        <h1 class="text-2xl font-bold mb-6">Test: Milton Property Analysis</h1>
+        
+        <div class="bg-white rounded-lg shadow p-6 mb-6">
+            <h2 class="text-lg font-semibold mb-4">Property Data (from screenshot)</h2>
+            <pre class="bg-gray-100 p-4 rounded text-sm">
+{
+  "address": "71 - 1000 ASLETON BOULEVARDMilton (Willmott), Ontario L9T9L5",
+  "price": 764900,
+  "propertyTaxes": 3180,
+  "bedrooms": 4,
+  "bathrooms": 3,
+  "sqft": 1300,
+  "propertyType": "House",
+  "mlsNumber": "W12299060",
+  "mainImage": "https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=600"
+}
+            </pre>
+        </div>
+
+        <div class="bg-white rounded-lg shadow p-6 mb-6">
+            <h2 class="text-lg font-semibold mb-4">Test Results</h2>
+            <div id="test-results" class="space-y-3"></div>
+        </div>
+
+        <button onclick="runAnalysis()" class="btn btn-primary">Run Analysis Test</button>
+        
+        <div id="analysis-container" class="mt-8"></div>
+    </div>
+
+    <script type="module">
+        window.runAnalysis = async function() {
+            const resultsDiv = document.getElementById('test-results');
+            const container = document.getElementById('analysis-container');
+            
+            resultsDiv.innerHTML = '<div class="text-blue-600">Running analysis test...</div>';
+            
+            // Simulate property data from extension
+            const propertyData = {
+                address: "71 - 1000 ASLETON BOULEVARDMilton (Willmott), Ontario L9T9L5",
+                price: 764900,
+                propertyTaxes: 3180,  // Annual
+                bedrooms: 4,
+                bathrooms: 3,
+                sqft: 1300,
+                propertyType: "House",
+                mlsNumber: "W12299060",
+                mainImage: "https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=600"
+            };
+            
+            // Simulate analysis response
+            const mockAnalysisData = {
+                property_address: "71 - 1000 ASLETON BOULEVARD Milton (Willmott), Ontario L9T9L5",
+                property: propertyData,  // Include property data from extension
+                property_details: {
+                    estimated_value: propertyData.price,
+                    property_type: propertyData.propertyType,
+                    bedrooms: propertyData.bedrooms,
+                    bathrooms: propertyData.bathrooms,
+                    square_feet: propertyData.sqft,
+                    is_condo: false
+                },
+                costs: {
+                    mortgage_payment: 4200,  // Based on 20% down, 6.5% rate
+                    property_tax_annual: propertyData.propertyTaxes,  // Use actual from listing
+                    property_tax_monthly: Math.round(propertyData.propertyTaxes / 12),
+                    insurance_annual: 3060,
+                    insurance_monthly: 255,
+                    maintenance_annual: 11474,
+                    maintenance_monthly: 956,
+                    hoa_monthly: 0,  // No HOA for house
+                    utilities_monthly: 280,
+                    total_monthly: 5956,  // Including mortgage
+                    calculation_method: 'actual_data'  // Flag that we used actual data
+                },
+                long_term_rental: {
+                    monthly_rent: 4200,
+                    cash_flow: -1756,
+                    cap_rate: 0.045,
+                    roi: 0.055
+                },
+                strAnalysis: {
+                    avgNightlyRate: 185,
+                    occupancyRate: 0.75,
+                    monthlyRevenue: 9108,
+                    annualRevenue: 109296,
+                    comparables: [
+                        {
+                            title: "Beautiful 4BR House in Milton",
+                            nightlyRate: 195,
+                            bedrooms: 4,
+                            bathrooms: 3,
+                            propertyType: "House"
+                        }
+                    ]
+                },
+                comparison: {
+                    monthlyIncomeDiff: 4908,
+                    betterStrategy: 'str'
+                },
+                investment_score: 6.5,
+                recommendation: 'HOLD - Consider STR for better returns'
+            };
+            
+            // Test checklist
+            const tests = [
+                {
+                    name: "Property Tax Data",
+                    check: () => {
+                        const usesActual = mockAnalysisData.costs.property_tax_annual === propertyData.propertyTaxes;
+                        const monthlyCalc = mockAnalysisData.costs.property_tax_monthly === Math.round(propertyData.propertyTaxes / 12);
+                        return {
+                            passed: usesActual && monthlyCalc,
+                            message: usesActual ? 
+                                `✅ Using actual tax: $${propertyData.propertyTaxes}/year ($${Math.round(propertyData.propertyTaxes / 12)}/month)` :
+                                `❌ Not using actual tax data`
+                        };
+                    }
+                },
+                {
+                    name: "Mortgage Payment",
+                    check: () => {
+                        const hasMortgage = mockAnalysisData.costs.mortgage_payment && mockAnalysisData.costs.mortgage_payment > 0;
+                        return {
+                            passed: hasMortgage,
+                            message: hasMortgage ? 
+                                `✅ Mortgage included: $${mockAnalysisData.costs.mortgage_payment}/month` :
+                                `❌ Mortgage payment missing`
+                        };
+                    }
+                },
+                {
+                    name: "City Extraction",
+                    check: () => {
+                        const addressHasWillmott = mockAnalysisData.property_address.includes("Willmott");
+                        return {
+                            passed: addressHasWillmott,
+                            message: addressHasWillmott ? 
+                                `✅ City correctly shows: Milton (Willmott)` :
+                                `❌ City extraction failed`
+                        };
+                    }
+                },
+                {
+                    name: "Property Image",
+                    check: () => {
+                        const hasImage = mockAnalysisData.property?.mainImage || propertyData.mainImage;
+                        return {
+                            passed: hasImage,
+                            message: hasImage ? 
+                                `✅ Property image available: ${hasImage.substring(0, 50)}...` :
+                                `❌ Property image missing`
+                        };
+                    }
+                },
+                {
+                    name: "Total Expenses Calculation",
+                    check: () => {
+                        const expectedTotal = mockAnalysisData.costs.mortgage_payment +
+                                            mockAnalysisData.costs.property_tax_monthly +
+                                            mockAnalysisData.costs.insurance_monthly +
+                                            mockAnalysisData.costs.maintenance_monthly +
+                                            mockAnalysisData.costs.hoa_monthly +
+                                            mockAnalysisData.costs.utilities_monthly;
+                        const difference = Math.abs(mockAnalysisData.costs.total_monthly - expectedTotal);
+                        return {
+                            passed: difference < 10,
+                            message: difference < 10 ? 
+                                `✅ Total expenses correct: $${mockAnalysisData.costs.total_monthly}/month` :
+                                `❌ Total expenses incorrect: $${mockAnalysisData.costs.total_monthly} vs expected $${expectedTotal}`
+                        };
+                    }
+                }
+            ];
+            
+            // Run tests
+            let testResults = '<div class="space-y-2">';
+            tests.forEach(test => {
+                const result = test.check();
+                testResults += `
+                    <div class="flex items-center gap-2">
+                        <span class="${result.passed ? 'text-green-600' : 'text-red-600'}">${result.passed ? '✅' : '❌'}</span>
+                        <span class="font-medium">${test.name}:</span>
+                        <span class="text-sm text-gray-600">${result.message}</span>
+                    </div>
+                `;
+            });
+            testResults += '</div>';
+            
+            resultsDiv.innerHTML = testResults;
+            
+            // Load and render components
+            try {
+                const componentLoader = await import('../js/modules/componentLoader.js');
+                const loader = new componentLoader.ComponentLoader();
+                
+                // Store analysis data globally
+                window.analysisData = mockAnalysisData;
+                window.propertyData = propertyData;
+                
+                await loader.renderAnalysisResults(mockAnalysisData, 'analysis-container');
+                
+            } catch (error) {
+                container.innerHTML = `<div class="text-red-600">Error loading components: ${error.message}</div>`;
+            }
+        };
+    </script>
+</body>
+</html>

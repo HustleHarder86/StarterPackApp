@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Calculator Test - Realtor.ca Data</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../styles/design-system.css">
+</head>
+<body class="bg-gray-50">
+    <div class="max-w-7xl mx-auto p-8">
+        <h1 class="text-3xl font-bold mb-8">Simple Calculator Test - Verifying Realtor.ca Data Usage</h1>
+        
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <h2 class="text-xl font-bold mb-4">Test Property: Milton House</h2>
+            <div class="grid grid-cols-2 gap-4 mb-6">
+                <div>
+                    <strong>From Realtor.ca:</strong>
+                    <ul class="list-disc ml-5 mt-2">
+                        <li>Price: $764,900</li>
+                        <li>Property Tax: $3,180/year ($265/month)</li>
+                        <li>Type: House (no condo fees)</li>
+                        <li>4 BR / 3 BA / 1,300 sq ft</li>
+                    </ul>
+                </div>
+                <div>
+                    <strong>Expected in Calculator:</strong>
+                    <ul class="list-disc ml-5 mt-2">
+                        <li>Mortgage: ~$4,200/month</li>
+                        <li>Property Tax: $265/month (marked as "actual")</li>
+                        <li>HOA/Condo Fees: $0</li>
+                        <li>Data source: "Using actual listing data"</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <button onclick="loadCalculator()" class="btn btn-primary">Load Calculator with Test Data</button>
+            
+            <div id="test-results" class="mt-4"></div>
+        </div>
+        
+        <div id="calculator-container"></div>
+    </div>
+
+    <script>
+        async function loadCalculator() {
+            const container = document.getElementById('calculator-container');
+            const resultsDiv = document.getElementById('test-results');
+            
+            resultsDiv.innerHTML = '<div class="text-blue-600">Loading calculator...</div>';
+            
+            // Mock property data from Realtor.ca
+            const propertyData = {
+                address: "71 - 1000 ASLETON BOULEVARD Milton (Willmott), Ontario",
+                price: 764900,
+                propertyTaxes: 3180,  // Annual from Realtor.ca - this is the key value
+                bedrooms: 4,
+                bathrooms: 3,
+                sqft: 1300,
+                propertyType: "House",
+                condoFees: null,
+                mlsNumber: "W12299060"
+            };
+            
+            // Mock analysis data with proper structure
+            const mockAnalysisData = {
+                property: propertyData,
+                property_details: {
+                    estimated_value: propertyData.price,
+                    property_type: propertyData.propertyType,
+                    bedrooms: propertyData.bedrooms,
+                    bathrooms: propertyData.bathrooms,
+                    square_feet: propertyData.sqft
+                },
+                costs: {
+                    mortgage_payment: 4200,
+                    property_tax_annual: propertyData.propertyTaxes,  // Using actual
+                    property_tax_monthly: Math.round(propertyData.propertyTaxes / 12),
+                    insurance_annual: 3060,
+                    insurance_monthly: 255,
+                    maintenance_annual: 11474,
+                    maintenance_monthly: 956,
+                    hoa_monthly: 0,
+                    utilities_monthly: 280,
+                    total_monthly: 5956,
+                    calculation_method: 'actual_data'
+                },
+                strAnalysis: {
+                    monthlyRevenue: 9108
+                }
+            };
+            
+            // Store globally for component access
+            window.analysisData = mockAnalysisData;
+            window.propertyData = propertyData;
+            
+            try {
+                // Load the interactive calculator directly
+                const calculatorModule = await import('../components/analysis/InteractiveFinancialCalculator.js');
+                const { InteractiveFinancialCalculator } = calculatorModule;
+                
+                // Render calculator
+                const calculatorHtml = InteractiveFinancialCalculator({
+                    monthlyRevenue: 9108,
+                    expenses: {},
+                    propertyPrice: propertyData.price,
+                    downPayment: propertyData.price * 0.2,
+                    propertyData: propertyData,  // This should make it use actual data
+                    costs: mockAnalysisData.costs
+                });
+                
+                container.innerHTML = `
+                    <div class="bg-white rounded-lg shadow-lg p-6">
+                        <h2 class="text-2xl font-bold mb-6">Financial Calculator Output</h2>
+                        ${calculatorHtml}
+                    </div>
+                `;
+                
+                // Initialize calculator functionality
+                const initModule = await import('../js/modules/financialCalculatorInit.js');
+                initModule.initializeFinancialCalculator();
+                
+                // Wait for DOM to update
+                setTimeout(() => {
+                    // Check results
+                    const mortgageInput = document.getElementById('mortgage');
+                    const propertyTaxInput = document.getElementById('propertyTax');
+                    const hoaInput = document.getElementById('hoaFees');
+                    const totalExpenses = document.getElementById('totalExpenses');
+                    
+                    // Look for actual data indicators
+                    const allSpans = Array.from(document.querySelectorAll('span'));
+                    const hasActualIndicator = allSpans.some(span => 
+                        span.textContent.includes('actual') && 
+                        span.parentElement?.textContent.includes('Property Tax')
+                    );
+                    
+                    const hasGreenCheckmark = allSpans.some(span => 
+                        span.textContent.includes('Using actual listing data')
+                    );
+                    
+                    const results = {
+                        mortgage: mortgageInput?.value || 'NOT FOUND',
+                        propertyTax: propertyTaxInput?.value || 'NOT FOUND',
+                        hoa: hoaInput?.value || 'NOT FOUND',
+                        total: totalExpenses?.textContent || 'NOT FOUND',
+                        hasActualIndicator,
+                        hasGreenCheckmark
+                    };
+                    
+                    // Display results
+                    resultsDiv.innerHTML = `
+                        <div class="bg-gray-100 rounded p-4">
+                            <h3 class="font-bold mb-2">Test Results:</h3>
+                            <div class="space-y-1 text-sm">
+                                <div class="${results.mortgage > 0 ? 'text-green-600' : 'text-red-600'}">
+                                    Mortgage: $${results.mortgage}/month ${results.mortgage > 0 ? '✅' : '❌ MISSING'}
+                                </div>
+                                <div class="${results.propertyTax == '265' ? 'text-green-600' : 'text-red-600'}">
+                                    Property Tax: $${results.propertyTax}/month 
+                                    (expected $265) ${results.propertyTax == '265' ? '✅' : '❌'}
+                                </div>
+                                <div class="${results.hoa == '0' ? 'text-green-600' : 'text-red-600'}">
+                                    HOA/Condo Fees: $${results.hoa}/month ${results.hoa == '0' ? '✅' : '❌'}
+                                </div>
+                                <div>Total Expenses: ${results.total}</div>
+                                <div class="${results.hasActualIndicator ? 'text-green-600' : 'text-red-600'}">
+                                    Shows "actual" for property tax: ${results.hasActualIndicator ? '✅ YES' : '❌ NO'}
+                                </div>
+                                <div class="${results.hasGreenCheckmark ? 'text-green-600' : 'text-red-600'}">
+                                    Shows "Using actual listing data": ${results.hasGreenCheckmark ? '✅ YES' : '❌ NO'}
+                                </div>
+                            </div>
+                            
+                            <div class="mt-4 p-3 bg-yellow-50 rounded">
+                                <strong>Summary:</strong> The calculator 
+                                ${results.propertyTax == '265' && results.hasActualIndicator ? 
+                                    'IS correctly using the actual Realtor.ca property tax data' : 
+                                    'is NOT using the actual Realtor.ca data properly'}
+                            </div>
+                        </div>
+                    `;
+                    
+                    // Log detailed info
+                    console.log('Calculator Test Results:', results);
+                    console.log('Property Data passed:', propertyData);
+                    console.log('Costs passed:', mockAnalysisData.costs);
+                    
+                }, 1000);
+                
+            } catch (error) {
+                resultsDiv.innerHTML = `<div class="text-red-600">Error: ${error.message}</div>`;
+                console.error('Test error:', error);
+            }
+        }
+    </script>
+</body>
+</html>

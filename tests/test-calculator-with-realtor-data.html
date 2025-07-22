@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculator Test - Realtor.ca Data</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../styles/design-system.css">
+</head>
+<body class="bg-gray-50">
+    <div class="max-w-7xl mx-auto p-8">
+        <h1 class="text-3xl font-bold mb-8">Calculator Test with Realtor.ca Data</h1>
+        
+        <!-- Test Cases -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            <!-- Test Case 1: Milton Property -->
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h2 class="text-xl font-bold mb-4 text-purple-600">Test 1: Milton Property</h2>
+                <div class="space-y-2 text-sm mb-4">
+                    <div><strong>Price:</strong> $764,900</div>
+                    <div><strong>Property Tax (Realtor.ca):</strong> $3,180/year</div>
+                    <div><strong>Condo Fees:</strong> $0 (House)</div>
+                    <div><strong>Type:</strong> House, 4BR/3BA</div>
+                </div>
+                <button onclick="runTest1()" class="btn btn-primary w-full">Run Test 1</button>
+                <div id="test1-results" class="mt-4"></div>
+            </div>
+            
+            <!-- Test Case 2: Condo with HOA -->
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h2 class="text-xl font-bold mb-4 text-purple-600">Test 2: Toronto Condo</h2>
+                <div class="space-y-2 text-sm mb-4">
+                    <div><strong>Price:</strong> $850,000</div>
+                    <div><strong>Property Tax (Realtor.ca):</strong> $5,490/year</div>
+                    <div><strong>Condo Fees (Realtor.ca):</strong> $450/month</div>
+                    <div><strong>Type:</strong> Condo, 2BR/2BA</div>
+                </div>
+                <button onclick="runTest2()" class="btn btn-primary w-full">Run Test 2</button>
+                <div id="test2-results" class="mt-4"></div>
+            </div>
+        </div>
+        
+        <!-- Calculator Display Area -->
+        <div id="calculator-container" class="mt-8"></div>
+        
+        <!-- Detailed Test Results -->
+        <div id="detailed-results" class="mt-8"></div>
+    </div>
+
+    <script type="module">
+        
+        // Test helper function
+        async function runCalculatorTest(testId, propertyData, analysisData) {
+            const resultsDiv = document.getElementById(`${testId}-results`);
+            const container = document.getElementById('calculator-container');
+            const detailedDiv = document.getElementById('detailed-results');
+            
+            resultsDiv.innerHTML = '<div class="text-blue-600 animate-pulse">Running test...</div>';
+            
+            try {
+                // Clear previous calculator
+                container.innerHTML = '';
+                detailedDiv.innerHTML = '';
+                
+                // Store data globally for calculator
+                window.analysisData = analysisData;
+                window.propertyData = propertyData;
+                
+                // Load the financial calculator component
+                const { InteractiveFinancialCalculator } = await import('../components/analysis/InteractiveFinancialCalculator.js');
+                
+                // Render calculator with actual property data
+                const calculatorHtml = InteractiveFinancialCalculator({
+                    monthlyRevenue: analysisData.strAnalysis?.monthlyRevenue || 5400,
+                    expenses: {},
+                    propertyPrice: propertyData.price,
+                    downPayment: propertyData.price * 0.2,
+                    propertyData: propertyData,  // Pass actual Realtor.ca data
+                    costs: analysisData.costs    // Pass calculated costs
+                });
+                
+                container.innerHTML = `
+                    <div class="bg-white rounded-lg shadow-lg p-6">
+                        <h3 class="text-2xl font-bold mb-4">Financial Calculator Output</h3>
+                        ${calculatorHtml}
+                    </div>
+                `;
+                
+                // Initialize calculator
+                const { initializeFinancialCalculator } = await import('../js/modules/financialCalculatorInit.js');
+                await initializeFinancialCalculator();
+                
+                // Verify results
+                await new Promise(resolve => setTimeout(resolve, 500));
+                
+                // Check property tax value
+                const propertyTaxInput = document.getElementById('propertyTax');
+                const propertyTaxValue = propertyTaxInput ? parseFloat(propertyTaxInput.value) : null;
+                const expectedMonthlyTax = Math.round(propertyData.propertyTaxes / 12);
+                
+                // Check HOA/Condo fees
+                const hoaInput = document.getElementById('hoaFees');
+                const hoaValue = hoaInput ? parseFloat(hoaInput.value) : null;
+                const expectedHoa = propertyData.condoFees || 0;
+                
+                // Check mortgage
+                const mortgageInput = document.getElementById('mortgage');
+                const mortgageValue = mortgageInput ? parseFloat(mortgageInput.value) : null;
+                
+                // Check data source indicators
+                const taxSourceSpans = Array.from(document.querySelectorAll('span')).filter(
+                    span => span.textContent.includes('Property Tax')
+                );
+                const hasActualIndicator = taxSourceSpans.some(span => 
+                    span.parentElement?.textContent.includes('actual')
+                );
+                
+                // Display test results
+                const results = {
+                    propertyTax: {
+                        actual: propertyTaxValue,
+                        expected: expectedMonthlyTax,
+                        passed: Math.abs(propertyTaxValue - expectedMonthlyTax) < 5,
+                        source: hasActualIndicator ? 'actual' : 'estimated'
+                    },
+                    condoFees: {
+                        actual: hoaValue,
+                        expected: expectedHoa,
+                        passed: hoaValue === expectedHoa
+                    },
+                    mortgage: {
+                        actual: mortgageValue,
+                        hasValue: mortgageValue > 0,
+                        passed: mortgageValue > 0
+                    }
+                };
+                
+                // Update results display
+                resultsDiv.innerHTML = `
+                    <div class="space-y-2 text-sm">
+                        <div class="${results.propertyTax.passed ? 'text-green-600' : 'text-red-600'}">
+                            ${results.propertyTax.passed ? '✅' : '❌'} Property Tax: 
+                            $${results.propertyTax.actual}/mo 
+                            (expected $${results.propertyTax.expected}/mo)
+                            <span class="text-xs">[${results.propertyTax.source}]</span>
+                        </div>
+                        <div class="${results.condoFees.passed ? 'text-green-600' : 'text-red-600'}">
+                            ${results.condoFees.passed ? '✅' : '❌'} Condo Fees: 
+                            $${results.condoFees.actual}/mo 
+                            (expected $${results.condoFees.expected}/mo)
+                        </div>
+                        <div class="${results.mortgage.passed ? 'text-green-600' : 'text-red-600'}">
+                            ${results.mortgage.passed ? '✅' : '❌'} Mortgage: 
+                            $${results.mortgage.actual}/mo
+                            ${results.mortgage.hasValue ? '' : '(MISSING!)'}
+                        </div>
+                    </div>
+                `;
+                
+                // Detailed analysis
+                detailedDiv.innerHTML = `
+                    <div class="bg-gray-100 rounded-lg p-6 mt-8">
+                        <h3 class="text-xl font-bold mb-4">Detailed Analysis</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <h4 class="font-semibold mb-2">Property Data (from Realtor.ca)</h4>
+                                <pre class="bg-white p-4 rounded text-xs overflow-auto">
+${JSON.stringify(propertyData, null, 2)}
+                                </pre>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold mb-2">Calculator Values</h4>
+                                <div class="bg-white p-4 rounded space-y-2 text-sm">
+                                    <div><strong>Mortgage:</strong> $${mortgageValue || 0}/month</div>
+                                    <div><strong>Property Tax:</strong> $${propertyTaxValue || 0}/month (${results.propertyTax.source})</div>
+                                    <div><strong>Condo Fees:</strong> $${hoaValue || 0}/month</div>
+                                    <div><strong>Insurance:</strong> $${document.getElementById('insurance')?.value || 0}/month</div>
+                                    <div><strong>Maintenance:</strong> $${document.getElementById('maintenance')?.value || 0}/month</div>
+                                    <div><strong>Total Expenses:</strong> ${document.getElementById('totalExpenses')?.textContent || 'N/A'}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                return results;
+                
+            } catch (error) {
+                resultsDiv.innerHTML = `<div class="text-red-600">Error: ${error.message}</div>`;
+                console.error('Test error:', error);
+            }
+        }
+        
+        // Test 1: Milton House
+        window.runTest1 = async function() {
+            const propertyData = {
+                address: "71 - 1000 ASLETON BOULEVARD Milton (Willmott), Ontario",
+                price: 764900,
+                propertyTaxes: 3180,  // Annual from Realtor.ca
+                bedrooms: 4,
+                bathrooms: 3,
+                sqft: 1300,
+                propertyType: "House",
+                condoFees: null,  // No condo fees for house
+                mlsNumber: "W12299060"
+            };
+            
+            const analysisData = {
+                property: propertyData,
+                costs: {
+                    mortgage_payment: 4200,
+                    property_tax_annual: propertyData.propertyTaxes,
+                    property_tax_monthly: Math.round(propertyData.propertyTaxes / 12),
+                    insurance_annual: 3060,
+                    insurance_monthly: 255,
+                    maintenance_annual: 11474,
+                    hoa_monthly: 0,
+                    utilities_monthly: 280,
+                    calculation_method: 'actual_data'
+                },
+                strAnalysis: {
+                    monthlyRevenue: 9108
+                }
+            };
+            
+            await runCalculatorTest('test1', propertyData, analysisData);
+        };
+        
+        // Test 2: Toronto Condo
+        window.runTest2 = async function() {
+            const propertyData = {
+                address: "123 Main Street, Toronto, Ontario",
+                price: 850000,
+                propertyTaxes: 5490,  // Annual from Realtor.ca
+                bedrooms: 2,
+                bathrooms: 2,
+                sqft: 1100,
+                propertyType: "Condo",
+                condoFees: 450,  // Monthly from Realtor.ca
+                mlsNumber: "C5678901"
+            };
+            
+            const analysisData = {
+                property: propertyData,
+                costs: {
+                    mortgage_payment: 4673,
+                    property_tax_annual: propertyData.propertyTaxes,
+                    property_tax_monthly: Math.round(propertyData.propertyTaxes / 12),
+                    insurance_annual: 3400,
+                    insurance_monthly: 283,
+                    maintenance_annual: 8500,
+                    hoa_monthly: propertyData.condoFees,
+                    utilities_monthly: 200,
+                    calculation_method: 'actual_data'
+                },
+                strAnalysis: {
+                    monthlyRevenue: 5400
+                }
+            };
+            
+            await runCalculatorTest('test2', propertyData, analysisData);
+        };
+    </script>
+</body>
+</html>
