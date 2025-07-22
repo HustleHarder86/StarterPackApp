@@ -78,7 +78,7 @@ export const InvestmentVerdictMockup = ({
                   <div class="w-2 h-2 bg-green-500 rounded-full mt-1.5"></div>
                   <div>
                     <div class="text-sm font-semibold text-gray-900">Revenue Potential</div>
-                    <div class="text-xs text-gray-600">Market data shows consistent $5,400+ monthly revenue with 83% average occupancy</div>
+                    <div class="text-xs text-gray-600">Market data shows consistent ${monthlyIncome ? `$${monthlyIncome.toLocaleString()}+` : ''} monthly revenue with ${analysis?.strAnalysis?.occupancy_rate ? Math.round(analysis.strAnalysis.occupancy_rate * 100) : analysis?.short_term_rental?.occupancy_rate ? Math.round(analysis.short_term_rental.occupancy_rate * 100) : '83'}% average occupancy</div>
                   </div>
                 </div>
                 <div class="flex items-start gap-2">

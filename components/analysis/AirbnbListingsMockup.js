@@ -13,8 +13,8 @@ export const AirbnbListingsMockup = ({
     {
       price: '$220/night',
       occupancy: '98% booked',
-      title: '2BR • 2BA • King West',
-      subtitle: 'Luxury amenities, downtown',
+      title: '2BR • 2BA • Similar Property',
+      subtitle: 'Luxury amenities, great location',
       revenue: '+$6,400',
       potential: '+18% potential',
       badge: 'TOP PERFORMER',

@@ -260,18 +260,27 @@ const formatExpenseCategory = (category) => {
 export const FinancialSummaryFromAnalysis = ({ analysis }) => {
   if (!analysis) return '';
   
-  const strRevenue = analysis.strAnalysis?.monthlyRevenue || 0;
-  const ltrRevenue = analysis.longTermRental?.monthlyRent || 0;
-  const expenses = analysis.costs || {};
-  const monthlyExpenses = Object.values(expenses).reduce((sum, exp) => sum + (exp || 0), 0);
-  
-  return FinancialSummary({
-    strRevenue,
-    ltrRevenue,
-    monthlyExpenses,
-    netCashFlow: strRevenue - monthlyExpenses,
-    capRate: analysis.longTermRental?.capRate || 0,
-    roi: analysis.longTermRental?.roi || 0,
-    paybackPeriod: analysis.paybackPeriod || 0
+  // Import and use EnhancedFinancialSummary for better data handling
+  // This will properly pass property data and costs to the calculator
+  return import('./EnhancedFinancialSummary.js').then(module => {
+    return module.EnhancedFinancialSummary({ analysis });
+  }).catch(error => {
+    console.error('Failed to load EnhancedFinancialSummary:', error);
+    
+    // Fallback to basic summary
+    const strRevenue = analysis.strAnalysis?.monthlyRevenue || analysis.short_term_rental?.monthly_revenue || 0;
+    const ltrRevenue = analysis.longTermRental?.monthlyRent || analysis.long_term_rental?.monthly_rent || 0;
+    const expenses = analysis.costs || {};
+    const monthlyExpenses = Object.values(expenses).reduce((sum, exp) => sum + (exp || 0), 0);
+    
+    return FinancialSummary({
+      strRevenue,
+      ltrRevenue,
+      monthlyExpenses,
+      netCashFlow: strRevenue - monthlyExpenses,
+      capRate: analysis.longTermRental?.capRate || analysis.metrics?.cap_rate || 0,
+      roi: analysis.longTermRental?.roi || analysis.metrics?.total_roi || 0,
+      paybackPeriod: analysis.paybackPeriod || 0
+    });
   });
 };
