@@ -18,19 +18,37 @@ export const InvestmentVerdictMockup = ({
                          analysis?.propertyDetails?.address || 
                          '123 Main Street, Toronto, ON';
   
+  // Extract property image
+  const propertyImage = analysis?.propertyData?.mainImage || 
+                       analysis?.property?.image || 
+                       analysis?.propertyImage ||
+                       null;
+  
   return `
     <div class="relative">
-      <!-- Purple gradient header -->
-      <div class="bg-gradient-to-r from-purple-600 to-purple-700 text-white px-6 py-5">
+      <!-- Purple gradient header with property image -->
+      <div class="bg-gradient-to-r from-purple-600 to-purple-700 text-white">
         <div class="max-w-7xl mx-auto">
-          <div class="flex justify-between items-start">
-            <div>
-              <h1 class="text-2xl font-bold mb-1">Property Investment Analysis</h1>
-              <div class="text-purple-100 text-sm">${propertyAddress}</div>
-            </div>
-            <div class="flex items-center gap-2 bg-gradient-to-r from-red-500 to-pink-500 px-3 py-1 rounded text-xs font-bold shadow-lg animate-pulse-glow">
-              <span class="inline-block animate-bounce-slow">⚡</span>
-              <span class="animate-fade-in-out">LIVE DATA</span>
+          <div class="flex flex-col md:flex-row gap-6 p-6">
+            <!-- Property Image -->
+            ${propertyImage ? `
+              <div class="flex-shrink-0">
+                <img src="${propertyImage}" alt="Property" class="w-full md:w-48 h-32 md:h-32 object-cover rounded-lg shadow-xl">
+              </div>
+            ` : ''}
+            
+            <!-- Property Info -->
+            <div class="flex-grow">
+              <div class="flex justify-between items-start">
+                <div>
+                  <h1 class="text-2xl font-bold mb-1">Property Investment Analysis</h1>
+                  <div class="text-purple-100 text-sm">${propertyAddress}</div>
+                </div>
+                <div class="flex items-center gap-2 bg-gradient-to-r from-red-500 to-pink-500 px-3 py-1 rounded text-xs font-bold shadow-lg animate-pulse-glow">
+                  <span class="inline-block animate-bounce-slow">⚡</span>
+                  <span class="animate-fade-in-out">LIVE DATA</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>

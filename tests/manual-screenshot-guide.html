@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manual Screenshot Testing Guide</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .property-box {
+            background: #f0f0f0;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+            font-family: monospace;
+        }
+        .checklist {
+            margin: 20px 0;
+        }
+        .checklist-item {
+            margin: 10px 0;
+            padding: 10px;
+            background: #e8f5e9;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+        }
+        .checklist-item input[type="checkbox"] {
+            margin-right: 10px;
+        }
+        .expected {
+            background: #fff3cd;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+            border-left: 4px solid #ffc107;
+        }
+        .screenshot-box {
+            border: 2px dashed #ccc;
+            padding: 20px;
+            text-align: center;
+            margin: 10px 0;
+            background: #fafafa;
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        .error-check {
+            background: #ffebee;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+            border-left: 4px solid #f44336;
+        }
+    </style>
+</head>
+<body>
+    <h1>Manual Screenshot Testing Guide</h1>
+    <p>Use this guide to systematically test the property analysis fixes and capture screenshots for debugging.</p>
+    
+    <!-- Test 1 -->
+    <div class="test-section">
+        <h2>Test 1: Tam O'Shanter Condo (User's Example)</h2>
+        
+        <div class="property-box">
+            <strong>Property Data:</strong><br>
+            Address: 611 - 115 BONIS AVENUE, Toronto (Tam O'Shanter-Sullivan), Ontario M1T3S4<br>
+            Price: $449,900<br>
+            Property Taxes: $1,570/year<br>
+            Condo Fees: $450/month<br>
+            Size: 499 sq ft<br>
+            Type: Condo<br>
+            Bedrooms: 2, Bathrooms: 2
+        </div>
+        
+        <div class="expected">
+            <strong>Expected Results:</strong>
+            <ul>
+                <li>Property tax should show as <strong>$131/month</strong> (not $708)</li>
+                <li>Data source should show <strong>"actual"</strong> (not "estimated")</li>
+                <li>Airbnb listings should be from <strong>Tam O'Shanter area</strong> (not King West)</li>
+                <li>STR revenue should be consistent throughout (same value everywhere)</li>
+            </ul>
+        </div>
+        
+        <button onclick="openTest1()">Open ROI Finder for Test 1</button>
+        
+        <div class="checklist">
+            <h3>Testing Checklist:</h3>
+            <div class="checklist-item">
+                <input type="checkbox" id="t1-1">
+                <label for="t1-1">Screenshot 1: Take screenshot of filled form</label>
+            </div>
+            <div class="checklist-item">
+                <input type="checkbox" id="t1-2">
+                <label for="t1-2">Screenshot 2: Take screenshot of complete analysis results</label>
+            </div>
+            <div class="checklist-item">
+                <input type="checkbox" id="t1-3">
+                <label for="t1-3">Screenshot 3: Take screenshot of financial calculator showing property tax</label>
+            </div>
+            <div class="checklist-item">
+                <input type="checkbox" id="t1-4">
+                <label for="t1-4">Screenshot 4: Click "View All Comparable Listings" and screenshot modal</label>
+            </div>
+        </div>
+        
+        <div class="error-check">
+            <strong>Check for these errors:</strong>
+            <ul>
+                <li>❌ Property tax showing $708/month instead of $131</li>
+                <li>❌ Data source showing "estimated" instead of "actual"</li>
+                <li>❌ Airbnb listings showing "King West" properties</li>
+                <li>❌ Different revenue values in different sections</li>
+                <li>❌ View All button not working</li>
+            </ul>
+        </div>
+    </div>
+    
+    <!-- Test 2 -->
+    <div class="test-section">
+        <h2>Test 2: Oakville Condo</h2>
+        
+        <div class="property-box">
+            <strong>Property Data:</strong><br>
+            Address: 205 - 1071 QUEENS AVENUE, Oakville, Ontario L6H2R5<br>
+            Price: $599,900<br>
+            Property Taxes: $5,490/year<br>
+            Condo Fees: $550/month<br>
+            Size: 850 sq ft<br>
+            Type: Condo<br>
+            Bedrooms: 2, Bathrooms: 1
+        </div>
+        
+        <div class="expected">
+            <strong>Expected Results:</strong>
+            <ul>
+                <li>Property tax should show as <strong>$458/month</strong></li>
+                <li>Airbnb listings should be from <strong>Oakville</strong> (not Oregon)</li>
+                <li>City extraction should work correctly (not "NUE EOakville")</li>
+            </ul>
+        </div>
+        
+        <button onclick="openTest2()">Open ROI Finder for Test 2</button>
+        
+        <div class="checklist">
+            <h3>Testing Checklist:</h3>
+            <div class="checklist-item">
+                <input type="checkbox" id="t2-1">
+                <label for="t2-1">Screenshot 1: Complete analysis results</label>
+            </div>
+            <div class="checklist-item">
+                <input type="checkbox" id="t2-2">
+                <label for="t2-2">Screenshot 2: Airbnb listings section (check location)</label>
+            </div>
+            <div class="checklist-item">
+                <input type="checkbox" id="t2-3">
+                <label for="t2-3">Screenshot 3: Financial calculator</label>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Test 3 -->
+    <div class="test-section">
+        <h2>Test 3: Mississauga House</h2>
+        
+        <div class="property-box">
+            <strong>Property Data:</strong><br>
+            Address: 123 Main Street, Mississauga, Ontario L5B4G5<br>
+            Price: $850,000<br>
+            Property Taxes: $7,200/year<br>
+            Condo Fees: $0 (house)<br>
+            Size: 2000 sq ft<br>
+            Type: Single Family<br>
+            Bedrooms: 4, Bathrooms: 3
+        </div>
+        
+        <div class="expected">
+            <strong>Expected Results:</strong>
+            <ul>
+                <li>Property tax should show as <strong>$600/month</strong></li>
+                <li>HOA/Condo fees should show as <strong>$0</strong></li>
+                <li>Airbnb listings should be from <strong>Mississauga</strong></li>
+            </ul>
+        </div>
+        
+        <button onclick="openTest3()">Open ROI Finder for Test 3</button>
+    </div>
+    
+    <!-- Screenshot Upload Section -->
+    <div class="test-section">
+        <h2>Screenshot Collection</h2>
+        <p>After taking screenshots, you can review them here to debug issues:</p>
+        
+        <div class="screenshot-box">
+            <input type="file" id="screenshot-upload" accept="image/*" multiple onchange="displayScreenshots(event)">
+            <p>Drop screenshots here or click to upload</p>
+        </div>
+        
+        <div id="screenshot-gallery" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; margin-top: 20px;"></div>
+    </div>
+
+    <script>
+        // Test data
+        const testData = {
+            test1: {
+                address: '611 - 115 BONIS AVENUE, Toronto (Tam O\'Shanter-Sullivan), Ontario M1T3S4',
+                price: 449900,
+                propertyTaxes: 1570,
+                condoFees: 450,
+                sqft: 499,
+                propertyType: 'Condo',
+                yearBuilt: 1995,
+                bedrooms: 2,
+                bathrooms: 2
+            },
+            test2: {
+                address: '205 - 1071 QUEENS AVENUE, Oakville, Ontario L6H2R5',
+                price: 599900,
+                propertyTaxes: 5490,
+                condoFees: 550,
+                sqft: 850,
+                propertyType: 'Condo',
+                yearBuilt: 2018,
+                bedrooms: 2,
+                bathrooms: 1
+            },
+            test3: {
+                address: '123 Main Street, Mississauga, Ontario L5B4G5',
+                price: 850000,
+                propertyTaxes: 7200,
+                condoFees: 0,
+                sqft: 2000,
+                propertyType: 'Single Family',
+                yearBuilt: 2010,
+                bedrooms: 4,
+                bathrooms: 3
+            }
+        };
+        
+        function openTest(testNumber) {
+            const data = testData[`test${testNumber}`];
+            
+            // Store in sessionStorage for test injector
+            sessionStorage.setItem('extensionPropertyData', JSON.stringify(data));
+            
+            // Open ROI finder in test mode
+            window.open(`/roi-finder.html?test=true&testCase=${testNumber}`, '_blank');
+        }
+        
+        function openTest1() { openTest(1); }
+        function openTest2() { openTest(2); }
+        function openTest3() { openTest(3); }
+        
+        function displayScreenshots(event) {
+            const files = event.target.files;
+            const gallery = document.getElementById('screenshot-gallery');
+            gallery.innerHTML = '';
+            
+            Array.from(files).forEach(file => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const div = document.createElement('div');
+                    div.innerHTML = `
+                        <h4>${file.name}</h4>
+                        <img src="${e.target.result}" style="width: 100%; border: 1px solid #ddd; border-radius: 4px;">
+                        <p style="font-size: 12px; color: #666;">Click image to open full size</p>
+                    `;
+                    div.querySelector('img').onclick = () => window.open(e.target.result, '_blank');
+                    gallery.appendChild(div);
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+        
+        // Save checklist state
+        document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                localStorage.setItem(this.id, this.checked);
+            });
+            
+            // Restore state
+            if (localStorage.getItem(checkbox.id) === 'true') {
+                checkbox.checked = true;
+            }
+        });
+    </script>
+</body>
+</html>

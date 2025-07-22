@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visual Test - Property Analysis with Extension Data</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-case {
+            background: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .property-data {
+            background: #f0f0f0;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        .status {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+        }
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <h1>Visual Test - Property Analysis with Extension Data</h1>
+    
+    <div class="test-case">
+        <h2>Test Case 1: Tam O'Shanter Property (User's Example)</h2>
+        <p>This should show property tax of $131/month (not $708) and search for comparables in the correct area.</p>
+        <div class="property-data" id="property1-data"></div>
+        <button onclick="runTest1()">Run Analysis</button>
+        <div class="status" id="status1"></div>
+    </div>
+    
+    <div class="test-case">
+        <h2>Test Case 2: Oakville Property</h2>
+        <p>This should show property tax of $458/month and search Oakville (not Oregon).</p>
+        <div class="property-data" id="property2-data"></div>
+        <button onclick="runTest2()">Run Analysis</button>
+        <div class="status" id="status2"></div>
+    </div>
+    
+    <div class="test-case">
+        <h2>Test Case 3: Mississauga House</h2>
+        <p>This should show property tax of $600/month and no condo fees.</p>
+        <div class="property-data" id="property3-data"></div>
+        <button onclick="runTest3()">Run Analysis</button>
+        <div class="status" id="status3"></div>
+    </div>
+
+    <script>
+        // Test data matching user's example
+        const testProperties = {
+            property1: {
+                address: '611 - 115 BONIS AVENUE, Toronto (Tam O\'Shanter-Sullivan), Ontario M1T3S4',
+                price: 449900,
+                propertyTaxes: 1570,  // Annual - should show as $131/month
+                condoFees: 450,       // Monthly
+                sqft: 499,
+                propertyType: 'Condo',
+                yearBuilt: 1995,
+                bedrooms: 2,
+                bathrooms: 2
+            },
+            property2: {
+                address: '205 - 1071 QUEENS AVENUE, Oakville, Ontario L6H2R5',
+                price: 599900,
+                propertyTaxes: 5490,  // Annual - should show as $458/month
+                condoFees: 550,
+                sqft: 850,
+                propertyType: 'Condo',
+                yearBuilt: 2018,
+                bedrooms: 2,
+                bathrooms: 1
+            },
+            property3: {
+                address: '123 Main Street, Mississauga, Ontario L5B4G5',
+                price: 850000,
+                propertyTaxes: 7200,  // Annual - should show as $600/month
+                condoFees: 0,        // No condo fees for house
+                sqft: 2000,
+                propertyType: 'Single Family',
+                yearBuilt: 2010,
+                bedrooms: 4,
+                bathrooms: 3
+            }
+        };
+        
+        // Display property data
+        document.getElementById('property1-data').textContent = JSON.stringify(testProperties.property1, null, 2);
+        document.getElementById('property2-data').textContent = JSON.stringify(testProperties.property2, null, 2);
+        document.getElementById('property3-data').textContent = JSON.stringify(testProperties.property3, null, 2);
+        
+        function simulateAnalysis(propertyData, statusId) {
+            // Simulate browser extension injecting data
+            window.propertyData = propertyData;
+            
+            // Navigate to ROI finder with data
+            const url = `/roi-finder.html?test=true&address=${encodeURIComponent(propertyData.address)}`;
+            
+            // Store data in sessionStorage for the ROI finder to pick up
+            sessionStorage.setItem('extensionPropertyData', JSON.stringify(propertyData));
+            
+            // Update status
+            document.getElementById(statusId).className = 'status success';
+            document.getElementById(statusId).innerHTML = `
+                ✓ Property data injected<br>
+                ✓ Expected monthly tax: $${Math.round(propertyData.propertyTaxes / 12)}<br>
+                ✓ Expected condo fees: $${propertyData.condoFees || 0}<br>
+                <br>
+                <a href="${url}" target="_blank">Open ROI Finder →</a>
+            `;
+        }
+        
+        function runTest1() {
+            simulateAnalysis(testProperties.property1, 'status1');
+        }
+        
+        function runTest2() {
+            simulateAnalysis(testProperties.property2, 'status2');
+        }
+        
+        function runTest3() {
+            simulateAnalysis(testProperties.property3, 'status3');
+        }
+    </script>
+</body>
+</html>

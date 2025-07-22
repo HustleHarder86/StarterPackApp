@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mock Analysis Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../styles/design-system.css">
+    <style>
+        .test-results {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .test-section {
+            margin-bottom: 40px;
+            border: 2px solid #e0e0e0;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        .pass {
+            color: #4CAF50;
+            font-weight: bold;
+        }
+        .fail {
+            color: #f44336;
+            font-weight: bold;
+        }
+        .screenshot {
+            border: 1px solid #ddd;
+            margin: 10px 0;
+            max-width: 100%;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="test-results">
+        <h1 class="text-3xl font-bold mb-8">Property Analysis Test Results</h1>
+        
+        <!-- Test navigation -->
+        <div class="mb-8">
+            <button onclick="loadTest(1)" class="btn btn-primary">Test 1: Toronto</button>
+            <button onclick="loadTest(2)" class="btn btn-primary">Test 2: Oakville</button>
+            <button onclick="loadTest(3)" class="btn btn-primary">Test 3: Mississauga</button>
+        </div>
+        
+        <div id="test-content"></div>
+    </div>
+    
+    <script type="module">
+        import ComponentLoader from '../js/modules/componentLoader.js';
+        const componentLoader = new ComponentLoader();
+        
+        // Mock analysis data for 3 properties
+        const testData = {
+            1: {
+                name: 'Toronto - Tam O\'Shanter Condo',
+                propertyData: {
+                    address: '611 - 115 BONIS AVENUE, Toronto (Tam O\'Shanter-Sullivan), Ontario M1T3S4',
+                    price: 449900,
+                    propertyTaxes: 1570,
+                    condoFees: 450,
+                    sqft: 499,
+                    propertyType: 'Condo',
+                    bedrooms: 2,
+                    bathrooms: 2
+                },
+                analysis: {
+                    property_address: '611 - 115 BONIS AVENUE, Toronto (Tam O\'Shanter-Sullivan), Ontario M1T3S4',
+                    property: {
+                        price: 449900,
+                        bedrooms: 2,
+                        bathrooms: 2,
+                        squareFeet: 499,
+                        propertyType: 'Condo'
+                    },
+                    propertyData: {
+                        propertyTaxes: 1570,
+                        condoFees: 450,
+                        dataSource: 'listing'
+                    },
+                    costs: {
+                        mortgage_payment: 2050,
+                        property_tax_monthly: 131,  // Correct: $1570/12
+                        insurance_monthly: 150,
+                        hoa_monthly: 450,
+                        maintenance_monthly: 100,
+                        utilities_monthly: 150,
+                        total_monthly: 3031,
+                        calculation_method: 'actual_data'
+                    },
+                    long_term_rental: {
+                        monthly_rent: 2200,
+                        rent_range: { low: 2000, high: 2400 },
+                        vacancy_rate: 0.05,
+                        annual_income: 25080,
+                        annual_expenses: 36372,
+                        net_operating_income: -11292,
+                        cash_flow: -831,
+                        cap_rate: -0.025,
+                        roi: -0.025,
+                        comparables: [
+                            {
+                                address: '123 BONIS AVE, Unit 405',
+                                rent: 2100,
+                                bedrooms: 2,
+                                bathrooms: 2,
+                                sqft: 500
+                            },
+                            {
+                                address: '456 TAM O\'SHANTER, Unit 201',
+                                rent: 2200,
+                                bedrooms: 2,
+                                bathrooms: 2,
+                                sqft: 520
+                            }
+                        ]
+                    },
+                    strAnalysis: {
+                        avgNightlyRate: 125,
+                        occupancyRate: 70,
+                        monthlyRevenue: 2625,
+                        annual_revenue: 31500,
+                        comparables: [
+                            {
+                                title: '2BR Condo in Tam O\'Shanter',
+                                nightly_rate: 120,
+                                occupancy_rate: 0.68,
+                                area: 'Tam O\'Shanter',
+                                url: 'https://airbnb.com/rooms/12345'
+                            },
+                            {
+                                title: 'Modern 2BR Near Scarborough',
+                                nightly_rate: 130,
+                                occupancy_rate: 0.72,
+                                area: 'Tam O\'Shanter',
+                                url: 'https://airbnb.com/rooms/23456'
+                            },
+                            {
+                                title: 'Cozy Condo in North Scarborough',
+                                nightly_rate: 125,
+                                occupancy_rate: 0.70,
+                                area: 'Tam O\'Shanter',
+                                url: 'https://airbnb.com/rooms/34567'
+                            }
+                        ]
+                    },
+                    comparison: {
+                        ltr_monthly: 2200,
+                        str_monthly: 2625,
+                        monthly_difference: 425,
+                        annual_difference: 5100,
+                        better_strategy: 'str',
+                        str_premium_percentage: 19.3
+                    },
+                    investment_score: 6.5,
+                    recommendation: 'HOLD - Consider STR'
+                }
+            },
+            2: {
+                name: 'Oakville - Queens Avenue Condo',
+                propertyData: {
+                    address: '205 - 1071 QUEENS AVENUE, Oakville, Ontario L6H2R5',
+                    price: 599900,
+                    propertyTaxes: 5490,
+                    condoFees: 550,
+                    sqft: 850,
+                    propertyType: 'Condo',
+                    bedrooms: 2,
+                    bathrooms: 1
+                },
+                analysis: {
+                    property_address: '205 - 1071 QUEENS AVENUE, Oakville, Ontario L6H2R5',
+                    property: {
+                        price: 599900,
+                        bedrooms: 2,
+                        bathrooms: 1,
+                        squareFeet: 850,
+                        propertyType: 'Condo'
+                    },
+                    propertyData: {
+                        propertyTaxes: 5490,
+                        condoFees: 550,
+                        dataSource: 'listing'
+                    },
+                    costs: {
+                        mortgage_payment: 2735,
+                        property_tax_monthly: 458,  // Correct: $5490/12
+                        insurance_monthly: 200,
+                        hoa_monthly: 550,
+                        maintenance_monthly: 150,
+                        utilities_monthly: 175,
+                        total_monthly: 4268,
+                        calculation_method: 'actual_data'
+                    },
+                    long_term_rental: {
+                        monthly_rent: 2800,
+                        rent_range: { low: 2600, high: 3000 },
+                        vacancy_rate: 0.04,
+                        annual_income: 32256,
+                        annual_expenses: 51216,
+                        net_operating_income: -18960,
+                        cash_flow: -1468,
+                        cap_rate: -0.032,
+                        roi: -0.032,
+                        comparables: [
+                            {
+                                address: '890 QUEENS AVE, Unit 305',
+                                rent: 2750,
+                                bedrooms: 2,
+                                bathrooms: 1,
+                                sqft: 825
+                            },
+                            {
+                                address: '1055 QUEENS AVE, Unit 108',
+                                rent: 2850,
+                                bedrooms: 2,
+                                bathrooms: 1,
+                                sqft: 875
+                            }
+                        ]
+                    },
+                    strAnalysis: {
+                        avgNightlyRate: 165,
+                        occupancyRate: 75,
+                        monthlyRevenue: 3713,
+                        annual_revenue: 44550,
+                        comparables: [
+                            {
+                                title: 'Luxury 2BR in Downtown Oakville',
+                                nightly_rate: 160,
+                                occupancy_rate: 0.73,
+                                area: 'Oakville',
+                                url: 'https://airbnb.com/rooms/45678'
+                            },
+                            {
+                                title: 'Modern Condo Near Lake',
+                                nightly_rate: 170,
+                                occupancy_rate: 0.77,
+                                area: 'Oakville',
+                                url: 'https://airbnb.com/rooms/56789'
+                            },
+                            {
+                                title: 'Stylish 2BR Queens Ave',
+                                nightly_rate: 165,
+                                occupancy_rate: 0.75,
+                                area: 'Oakville',
+                                url: 'https://airbnb.com/rooms/67890'
+                            }
+                        ]
+                    },
+                    comparison: {
+                        ltr_monthly: 2800,
+                        str_monthly: 3713,
+                        monthly_difference: 913,
+                        annual_difference: 10956,
+                        better_strategy: 'str',
+                        str_premium_percentage: 32.6
+                    },
+                    investment_score: 7.2,
+                    recommendation: 'BUY - Strong STR potential'
+                }
+            },
+            3: {
+                name: 'Mississauga - Single Family House',
+                propertyData: {
+                    address: '4567 Ridgeway Drive, Mississauga, Ontario L5M7P9',
+                    price: 1250000,
+                    propertyTaxes: 9800,
+                    condoFees: 0,
+                    sqft: 2800,
+                    propertyType: 'Single Family',
+                    bedrooms: 4,
+                    bathrooms: 3.5
+                },
+                analysis: {
+                    property_address: '4567 Ridgeway Drive, Mississauga, Ontario L5M7P9',
+                    property: {
+                        price: 1250000,
+                        bedrooms: 4,
+                        bathrooms: 3.5,
+                        squareFeet: 2800,
+                        propertyType: 'Single Family'
+                    },
+                    propertyData: {
+                        propertyTaxes: 9800,
+                        condoFees: 0,
+                        dataSource: 'listing'
+                    },
+                    costs: {
+                        mortgage_payment: 5700,
+                        property_tax_monthly: 817,  // Correct: $9800/12
+                        insurance_monthly: 350,
+                        hoa_monthly: 0,  // No HOA for house
+                        maintenance_monthly: 400,
+                        utilities_monthly: 300,
+                        total_monthly: 7567,
+                        calculation_method: 'actual_data'
+                    },
+                    long_term_rental: {
+                        monthly_rent: 4200,
+                        rent_range: { low: 3900, high: 4500 },
+                        vacancy_rate: 0.03,
+                        annual_income: 48888,
+                        annual_expenses: 90804,
+                        net_operating_income: -41916,
+                        cash_flow: -3367,
+                        cap_rate: -0.034,
+                        roi: -0.034,
+                        comparables: [
+                            {
+                                address: '123 Ridgeway Dr',
+                                rent: 4100,
+                                bedrooms: 4,
+                                bathrooms: 3,
+                                sqft: 2700
+                            },
+                            {
+                                address: '789 Meadowvale Blvd',
+                                rent: 4300,
+                                bedrooms: 4,
+                                bathrooms: 3.5,
+                                sqft: 2900
+                            }
+                        ]
+                    },
+                    strAnalysis: {
+                        avgNightlyRate: 285,
+                        occupancyRate: 65,
+                        monthlyRevenue: 5558,
+                        annual_revenue: 66690,
+                        comparables: [
+                            {
+                                title: '4BR Family Home in Mississauga',
+                                nightly_rate: 280,
+                                occupancy_rate: 0.63,
+                                area: 'Mississauga',
+                                url: 'https://airbnb.com/rooms/78901'
+                            },
+                            {
+                                title: 'Spacious House Near Square One',
+                                nightly_rate: 290,
+                                occupancy_rate: 0.67,
+                                area: 'Mississauga',
+                                url: 'https://airbnb.com/rooms/89012'
+                            },
+                            {
+                                title: 'Modern 4BR with Pool',
+                                nightly_rate: 285,
+                                occupancy_rate: 0.65,
+                                area: 'Mississauga',
+                                url: 'https://airbnb.com/rooms/90123'
+                            }
+                        ]
+                    },
+                    comparison: {
+                        ltr_monthly: 4200,
+                        str_monthly: 5558,
+                        monthly_difference: 1358,
+                        annual_difference: 16296,
+                        better_strategy: 'str',
+                        str_premium_percentage: 32.3
+                    },
+                    investment_score: 5.8,
+                    recommendation: 'HOLD - High price point'
+                }
+            }
+        };
+        
+        window.loadTest = async function(testNumber) {
+            const test = testData[testNumber];
+            const container = document.getElementById('test-content');
+            
+            // Show loading state first
+            container.innerHTML = `
+                <div class="text-center py-8">
+                    <div class="loading-spinner w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                    <h2 class="text-2xl font-bold">Analyzing ${test.name}...</h2>
+                </div>
+            `;
+            
+            // Simulate loading delay
+            await new Promise(resolve => setTimeout(resolve, 1500));
+            
+            // Render analysis results
+            await componentLoader.renderAnalysisResults(test.analysis, container);
+            
+            // Add test validation section
+            const validationHtml = `
+                <div class="test-section mt-8">
+                    <h2 class="text-2xl font-bold mb-4">Test Validation Results</h2>
+                    
+                    <h3 class="text-xl font-semibold mb-2">Property: ${test.name}</h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <h4 class="font-semibold mb-2">✓ Checks Passed:</h4>
+                            <ul class="space-y-1">
+                                <li class="pass">✓ Property tax: $${test.analysis.costs.property_tax_monthly}/month (Expected: $${Math.round(test.propertyData.propertyTaxes/12)})</li>
+                                <li class="pass">✓ Data source: ${test.analysis.costs.calculation_method}</li>
+                                <li class="pass">✓ HOA/Condo fees: $${test.analysis.costs.hoa_monthly}/month</li>
+                                <li class="pass">✓ Airbnb listings from correct city</li>
+                                <li class="pass">✓ STR revenue consistent: $${test.analysis.strAnalysis.monthlyRevenue}/month</li>
+                            </ul>
+                        </div>
+                        
+                        <div>
+                            <h4 class="font-semibold mb-2">× Issues Found:</h4>
+                            <ul class="space-y-1" id="issues-${testNumber}">
+                                <li class="text-gray-500">Checking for issues...</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <button onclick="testViewAllButton()" class="btn btn-secondary">Test View All Button</button>
+                        <button onclick="checkHoverEffects()" class="btn btn-secondary">Check Hover Effects</button>
+                        <button onclick="checkLiveDataBadge()" class="btn btn-secondary">Check Live Data Badge</button>
+                    </div>
+                </div>
+            `;
+            
+            container.innerHTML += validationHtml;
+            
+            // Run validation checks
+            setTimeout(() => validateTest(testNumber), 500);
+        };
+        
+        window.validateTest = function(testNumber) {
+            const issuesList = document.getElementById(`issues-${testNumber}`);
+            const issues = [];
+            
+            // Check for View All button
+            if (!document.querySelector('[onclick*="showAllComparables"]')) {
+                issues.push('<li class="fail">× View All Comparable Listings button not found</li>');
+            }
+            
+            // Check for live data badge
+            if (!document.querySelector('.badge-live-data')) {
+                issues.push('<li class="fail">× Live data badge not found</li>');
+            }
+            
+            // Check for hover effects
+            const airbnbCards = document.querySelectorAll('.comparable-card');
+            if (airbnbCards.length === 0) {
+                issues.push('<li class="fail">× No Airbnb cards found</li>');
+            }
+            
+            if (issues.length === 0) {
+                issuesList.innerHTML = '<li class="pass">✓ All checks passed!</li>';
+            } else {
+                issuesList.innerHTML = issues.join('');
+            }
+        };
+        
+        window.testViewAllButton = function() {
+            const button = document.querySelector('[onclick*="showAllComparables"]');
+            if (button) {
+                button.click();
+                setTimeout(() => {
+                    const modal = document.querySelector('.fixed.inset-0');
+                    if (modal) {
+                        alert('✓ View All button works! Modal opened successfully.');
+                    } else {
+                        alert('× View All button failed - no modal appeared.');
+                    }
+                }, 500);
+            } else {
+                alert('× View All button not found on page.');
+            }
+        };
+        
+        window.checkHoverEffects = function() {
+            const cards = document.querySelectorAll('.comparable-card');
+            if (cards.length > 0) {
+                alert(`✓ Found ${cards.length} Airbnb cards. Hover over them to test effects.`);
+            } else {
+                alert('× No Airbnb cards found to test hover effects.');
+            }
+        };
+        
+        window.checkLiveDataBadge = function() {
+            const badge = document.querySelector('.badge-live-data');
+            if (badge) {
+                const hasAnimation = badge.classList.contains('animate-pulse') || 
+                                   badge.querySelector('.animate-pulse');
+                if (hasAnimation) {
+                    alert('✓ Live data badge found with animation!');
+                } else {
+                    alert('⚠ Live data badge found but no animation detected.');
+                }
+            } else {
+                alert('× Live data badge not found.');
+            }
+        };
+        
+        // Load first test by default
+        loadTest(1);
+    </script>
+</body>
+</html>

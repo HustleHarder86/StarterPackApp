@@ -65,12 +65,15 @@ export const LiveDataBadge = ({ lastUpdated = 'just now' } = {}) => {
   return Badge({
     children: `
       <span class="inline-flex items-center gap-2">
-        <span class="w-2 h-2 bg-white rounded-full animate-pulse"></span>
+        <span class="relative flex h-2 w-2">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
+        </span>
         LIVE DATA
       </span>
     `,
     variant: 'live-data',
-    animated: false,
+    animated: true,
     className: 'font-bold'
   });
 };

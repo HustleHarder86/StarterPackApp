@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Property Analysis Test Runner</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-card {
+            background: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .property-details {
+            background: #f0f0f0;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+            font-family: monospace;
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        .test-iframe {
+            width: 100%;
+            height: 800px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            margin-top: 20px;
+        }
+        .instructions {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .issue-list {
+            background: #ffebee;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .suggestion-list {
+            background: #f3e5f5;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        h2 {
+            color: #333;
+            border-bottom: 2px solid #4CAF50;
+            padding-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Property Analysis Test Runner</h1>
+    <p>This page helps test the property analysis tool with 3 different properties from 3 different cities.</p>
+    
+    <!-- Test 1: Toronto -->
+    <div class="test-card">
+        <h2>Test 1: Toronto - Tam O'Shanter Condo</h2>
+        
+        <div class="property-details">
+            <strong>Property Details:</strong><br>
+            Address: 611 - 115 BONIS AVENUE, Toronto (Tam O'Shanter-Sullivan), Ontario M1T3S4<br>
+            Price: $449,900<br>
+            Property Taxes: $1,570/year (should show $131/month)<br>
+            Condo Fees: $450/month<br>
+            Size: 499 sq ft<br>
+            Type: Condo<br>
+            Bedrooms: 2, Bathrooms: 2
+        </div>
+        
+        <div class="instructions">
+            <strong>📋 Testing Steps:</strong>
+            <ol>
+                <li>Click "Run Test" below</li>
+                <li>Check that property tax shows as $131/month (not $708)</li>
+                <li>Verify Airbnb listings are from Tam O'Shanter area (not King West)</li>
+                <li>Ensure STR revenue is consistent throughout</li>
+                <li>Test "View All Comparable Listings" button</li>
+                <li>Check that data source shows "actual" not "estimated"</li>
+            </ol>
+        </div>
+        
+        <button onclick="runTest1()">Run Test 1</button>
+    </div>
+    
+    <!-- Test 2: Oakville -->
+    <div class="test-card">
+        <h2>Test 2: Oakville - Queens Avenue Condo</h2>
+        
+        <div class="property-details">
+            <strong>Property Details:</strong><br>
+            Address: 205 - 1071 QUEENS AVENUE, Oakville, Ontario L6H2R5<br>
+            Price: $599,900<br>
+            Property Taxes: $5,490/year (should show $458/month)<br>
+            Condo Fees: $550/month<br>
+            Size: 850 sq ft<br>
+            Type: Condo<br>
+            Bedrooms: 2, Bathrooms: 1
+        </div>
+        
+        <div class="instructions">
+            <strong>📋 Testing Steps:</strong>
+            <ol>
+                <li>Click "Run Test" below</li>
+                <li>Check that property tax shows as $458/month</li>
+                <li>Verify Airbnb listings are from Oakville (not Oregon)</li>
+                <li>Ensure city extraction works correctly</li>
+                <li>Check all financial calculations</li>
+            </ol>
+        </div>
+        
+        <button onclick="runTest2()">Run Test 2</button>
+    </div>
+    
+    <!-- Test 3: Mississauga -->
+    <div class="test-card">
+        <h2>Test 3: Mississauga - Single Family House</h2>
+        
+        <div class="property-details">
+            <strong>Property Details:</strong><br>
+            Address: 4567 Ridgeway Drive, Mississauga, Ontario L5M7P9<br>
+            Price: $1,250,000<br>
+            Property Taxes: $9,800/year (should show $817/month)<br>
+            Condo Fees: $0 (house)<br>
+            Size: 2,800 sq ft<br>
+            Type: Single Family<br>
+            Bedrooms: 4, Bathrooms: 3.5
+        </div>
+        
+        <div class="instructions">
+            <strong>📋 Testing Steps:</strong>
+            <ol>
+                <li>Click "Run Test" below</li>
+                <li>Check that property tax shows as $817/month</li>
+                <li>Verify HOA/Condo fees show as $0</li>
+                <li>Ensure Airbnb listings are from Mississauga</li>
+                <li>Check that house-specific calculations are correct</li>
+            </ol>
+        </div>
+        
+        <button onclick="runTest3()">Run Test 3</button>
+    </div>
+    
+    <!-- Issues Found -->
+    <div class="issue-list">
+        <h2>❌ Issues to Fix</h2>
+        <ul id="issues-list">
+            <li>Property tax calculation showing wrong monthly amount</li>
+            <li>Location parsing causing wrong area searches</li>
+            <li>View All Comparable Listings button not functional</li>
+            <li>Data sources showing "estimated" instead of "actual"</li>
+            <li>Revenue inconsistency in STR summary</li>
+            <li>Enhanced loading state not showing during analysis</li>
+            <li>Live data indicator not animated</li>
+            <li>Airbnb cards missing hover effects</li>
+        </ul>
+    </div>
+    
+    <!-- Suggestions -->
+    <div class="suggestion-list">
+        <h2>💡 Improvement Suggestions</h2>
+        <ul>
+            <li>Add property image display in analysis results</li>
+            <li>Include neighborhood demographics and school ratings</li>
+            <li>Add ability to save analysis as PDF report</li>
+            <li>Implement comparison view for multiple properties</li>
+            <li>Add historical price trends chart</li>
+            <li>Include mortgage calculator with different scenarios</li>
+            <li>Add property appreciation forecast</li>
+            <li>Implement dark mode</li>
+            <li>Add tooltips explaining financial metrics</li>
+            <li>Include local market trends</li>
+            <li>Add ability to adjust assumptions</li>
+            <li>Implement portfolio tracking</li>
+            <li>Add email notifications for saved searches</li>
+            <li>Include walkability and transit scores</li>
+            <li>Add integration with property management tools</li>
+        </ul>
+    </div>
+    
+    <!-- Test Frame -->
+    <div id="test-container" style="display:none;">
+        <h2>Test Results</h2>
+        <iframe id="test-frame" class="test-iframe"></iframe>
+    </div>
+    
+    <script>
+        function runTest(testData) {
+            // Show test frame
+            document.getElementById('test-container').style.display = 'block';
+            
+            // Build URL with test data
+            const params = new URLSearchParams({
+                fromExtension: 'true',
+                autoAnalyze: 'true',
+                street: testData.address.split(',')[0].trim(),
+                city: testData.address.split(',')[1].trim(),
+                state: testData.address.split(',')[2].trim().split(' ')[0],
+                postal: testData.address.split(',')[2].trim().split(' ')[1],
+                country: 'Canada',
+                price: testData.price,
+                bedrooms: testData.bedrooms,
+                bathrooms: testData.bathrooms,
+                sqft: testData.sqft,
+                propertyType: testData.propertyType,
+                yearBuilt: testData.yearBuilt || 2000,
+                taxes: testData.propertyTaxes,
+                condoFees: testData.condoFees,
+                mlsNumber: testData.mlsNumber || 'TEST123'
+            });
+            
+            // Load in iframe
+            const iframe = document.getElementById('test-frame');
+            iframe.src = '/roi-finder.html?' + params.toString();
+            
+            // Scroll to frame
+            iframe.scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function runTest1() {
+            runTest({
+                address: '611 - 115 BONIS AVENUE, Toronto (Tam O\'Shanter-Sullivan), Ontario M1T3S4',
+                price: 449900,
+                propertyTaxes: 1570,
+                condoFees: 450,
+                sqft: 499,
+                propertyType: 'Condo',
+                yearBuilt: 1995,
+                bedrooms: 2,
+                bathrooms: 2,
+                mlsNumber: 'C8455321'
+            });
+        }
+        
+        function runTest2() {
+            runTest({
+                address: '205 - 1071 QUEENS AVENUE, Oakville, Ontario L6H2R5',
+                price: 599900,
+                propertyTaxes: 5490,
+                condoFees: 550,
+                sqft: 850,
+                propertyType: 'Condo',
+                yearBuilt: 2018,
+                bedrooms: 2,
+                bathrooms: 1,
+                mlsNumber: 'W8234567'
+            });
+        }
+        
+        function runTest3() {
+            runTest({
+                address: '4567 Ridgeway Drive, Mississauga, Ontario L5M7P9',
+                price: 1250000,
+                propertyTaxes: 9800,
+                condoFees: 0,
+                sqft: 2800,
+                propertyType: 'Single Family',
+                yearBuilt: 2015,
+                bedrooms: 4,
+                bathrooms: 3.5,
+                mlsNumber: 'W8901234'
+            });
+        }
+    </script>
+</body>
+</html>

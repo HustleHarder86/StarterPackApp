@@ -45,8 +45,10 @@
     "apify-client": "^2.12.6",
     "axios": "^1.10.0",
     "firebase-admin": "^11.11.0",
+    "jspdf": "^2.5.1",
+    "jspdf-autotable": "^3.8.1",
     "openai": "^5.9.0",
-    "puppeteer": "^24.11.1"
+    "puppeteer": "^24.14.0"
   },
   "devDependencies": {
     "@babel/core": "^7.23.0",

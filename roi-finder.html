@@ -483,10 +483,25 @@
                 }
             }
             
-            showLoading(message = 'Loading...') {
+            async showLoading(message = 'Loading...') {
                 this.hideAllViews();
-                document.getElementById('loading-state').classList.remove('hidden');
-                document.querySelector('#loading-state h2').textContent = message;
+                const loadingContainer = document.getElementById('loading-state');
+                loadingContainer.classList.remove('hidden');
+                
+                // Use enhanced loading state for analysis
+                if (message.includes('Analyzing')) {
+                    try {
+                        const { EnhancedLoadingState } = await import('./components/ui/EnhancedLoadingState.js');
+                        loadingContainer.innerHTML = EnhancedLoadingState({ message });
+                    } catch (error) {
+                        console.error('Failed to load enhanced loading state:', error);
+                        // Fallback to simple loading
+                        document.querySelector('#loading-state h2').textContent = message;
+                    }
+                } else {
+                    document.querySelector('#loading-state h2').textContent = message;
+                }
+                
                 window.appState.isLoading = true;
             }
             
@@ -750,5 +765,8 @@
         });
         
     </script>
+    
+    <!-- Test Data Injector (only loads in test mode) -->
+    <script src="/js/test-data-injector.js"></script>
 </body>
 </html>
