@@ -98,9 +98,15 @@ class ComponentLoader {
         this.loadComponent('components/ui/Button.js')
       ]);
 
-      // Generate component HTML
-      const verdictHtml = verdictModule.VerdictSummaryMockup({ analysis: analysisData });
-      const airbnbHtml = airbnbModule.AirbnbHeroSectionMockup({ analysis: analysisData });
+      // Generate component HTML with real data
+      const verdictHtml = verdictModule.VerdictSummaryMockup({ 
+        analysis: analysisData,
+        useMockData: false  // Ensure real data is used
+      });
+      const airbnbHtml = airbnbModule.AirbnbHeroSectionMockup({ 
+        analysis: analysisData,
+        useMockData: false  // Ensure real data is used
+      });
       const financialHtml = financialModule.FinancialSummaryFromAnalysis({ analysis: analysisData });
       const shareModalHtml = shareModule.ShareModal();
       const actionsHtml = this.generateActionButtons(buttonModule);

@@ -12,6 +12,11 @@ export const InvestmentVerdictMockup = ({
   isRecommended = true,
   analysis = {}
 }) => {
+  // Extract property address from analysis data
+  const propertyAddress = analysis?.property_address || analysis?.propertyAddress || 
+                         analysis?.property_details?.address || 
+                         analysis?.propertyDetails?.address || 
+                         '123 Main Street, Toronto, ON';
   
   return `
     <div class="relative">
@@ -21,7 +26,7 @@ export const InvestmentVerdictMockup = ({
           <div class="flex justify-between items-start">
             <div>
               <h1 class="text-2xl font-bold mb-1">Property Investment Analysis</h1>
-              <div class="text-purple-100 text-sm">123 Main Street, Toronto, ON M5V 3A8</div>
+              <div class="text-purple-100 text-sm">${propertyAddress}</div>
             </div>
             <div class="flex items-center gap-2 bg-gradient-to-r from-red-500 to-pink-500 px-3 py-1 rounded text-xs font-bold shadow-lg animate-pulse-glow">
               <span class="inline-block animate-bounce-slow">⚡</span>
@@ -107,12 +112,33 @@ export const InvestmentVerdictMockup = ({
 };
 
 export const VerdictSummaryMockup = ({ analysis }) => {
-  const propertyPrice = analysis?.property?.price || null;
-  const bedrooms = analysis?.property?.bedrooms || null;
-  const bathrooms = analysis?.property?.bathrooms || null;
-  const sqft = analysis?.property?.sqft || null;
-  const monthlyIncome = analysis?.strAnalysis?.monthlyRevenue || null;
-  const isRecommended = analysis?.overallScore >= 7;
+  // Handle different data structures from API response
+  const propertyPrice = analysis?.property?.price || 
+                       analysis?.property_details?.estimated_value || 
+                       analysis?.propertyDetails?.estimatedValue || 
+                       analysis?.purchase?.price || null;
+                       
+  const bedrooms = analysis?.property?.bedrooms || 
+                   analysis?.property_details?.bedrooms || 
+                   analysis?.propertyDetails?.bedrooms || null;
+                   
+  const bathrooms = analysis?.property?.bathrooms || 
+                    analysis?.property_details?.bathrooms || 
+                    analysis?.propertyDetails?.bathrooms || null;
+                    
+  const sqft = analysis?.property?.sqft || 
+               analysis?.property_details?.square_feet || 
+               analysis?.property_details?.sqft ||
+               analysis?.propertyDetails?.squareFeet || null;
+               
+  const monthlyIncome = analysis?.strAnalysis?.monthlyRevenue || 
+                        analysis?.short_term_rental?.monthly_revenue ||
+                        analysis?.str?.monthlyRevenue || null;
+                        
+  // Determine recommendation based on comparison
+  const isRecommended = analysis?.comparison?.recommended_strategy === 'STR' || 
+                       analysis?.overallScore >= 7 || 
+                       (monthlyIncome > 0);
   
   return InvestmentVerdictMockup({
     propertyPrice,
