@@ -679,10 +679,12 @@ function buildStructuredData(extracted, propertyAddress, researchContent, citati
     propertyValue: propertyValue,
     city: address.city,
     province: address.state,
-    propertyType: extracted.property_details?.property_type || 'Single Family',
-    squareFeet: extracted.property_details?.square_feet || null,
-    yearBuilt: extracted.property_details?.year_built || null,
-    hasAmenities: false // Could be enhanced with amenity detection
+    propertyType: propertyData?.propertyType || extracted.property_details?.property_type || 'Single Family',
+    squareFeet: propertyData?.sqft || extracted.property_details?.square_feet || null,
+    yearBuilt: propertyData?.yearBuilt || extracted.property_details?.year_built || null,
+    hasAmenities: false, // Could be enhanced with amenity detection
+    actualPropertyTax: propertyData?.propertyTaxes || null,
+    actualCondoFees: propertyData?.condoFees || null
   });
   
   // First check if we have actual property tax data from the extension
@@ -874,7 +876,9 @@ function fallbackDataExtraction(researchContent, propertyAddress, address, citat
         propertyType: propertyData?.propertyType || 'Single Family',
         squareFeet: propertyData?.sqft || 1800,
         yearBuilt: propertyData?.yearBuilt || 2000,
-        hasAmenities: false
+        hasAmenities: false,
+        actualPropertyTax: propertyData?.propertyTaxes || null,
+        actualCondoFees: propertyData?.condoFees || null
       });
       
       // Override with actual property taxes if provided

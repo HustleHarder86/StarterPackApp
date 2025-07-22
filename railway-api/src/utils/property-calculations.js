@@ -556,12 +556,24 @@ function calculateAccurateExpenses(propertyData) {
     propertyType,
     squareFeet,
     yearBuilt,
-    hasAmenities
+    hasAmenities,
+    actualPropertyTax,  // Actual property tax from listing
+    actualCondoFees     // Actual condo/HOA fees from listing
   } = propertyData;
   
-  // Calculate property tax
-  const taxRate = getPropertyTaxRate(city, province || 'Ontario');
-  const propertyTaxAnnual = Math.round(propertyValue * taxRate);
+  // Calculate property tax - use actual if available
+  let propertyTaxAnnual;
+  let taxRate;
+  
+  if (actualPropertyTax && actualPropertyTax > 0) {
+    // Use actual property tax from listing
+    propertyTaxAnnual = Math.round(actualPropertyTax);
+    taxRate = propertyTaxAnnual / propertyValue; // Calculate effective rate
+  } else {
+    // Calculate based on city rates
+    taxRate = getPropertyTaxRate(city, province || 'Ontario');
+    propertyTaxAnnual = Math.round(propertyValue * taxRate);
+  }
   
   // Calculate insurance
   const insuranceAnnual = calculateInsurance(propertyValue, city, propertyType);
@@ -569,8 +581,16 @@ function calculateAccurateExpenses(propertyData) {
   // Calculate maintenance
   const maintenanceAnnual = calculateMaintenance(propertyValue, propertyType, squareFeet, yearBuilt);
   
-  // Calculate HOA fees
-  const hoaMonthly = calculateHOAFees(propertyType, propertyValue, hasAmenities);
+  // Calculate HOA fees - use actual if available
+  let hoaMonthly;
+  
+  if (actualCondoFees && actualCondoFees > 0) {
+    // Use actual condo/HOA fees from listing
+    hoaMonthly = Math.round(actualCondoFees);
+  } else {
+    // Calculate based on property type and value
+    hoaMonthly = calculateHOAFees(propertyType, propertyValue, hasAmenities);
+  }
   
   // Utilities (varies by property type)
   let utilitiesMonthly = 250; // Default
@@ -589,6 +609,7 @@ function calculateAccurateExpenses(propertyData) {
     maintenance_annual: maintenanceAnnual,
     hoa_monthly: hoaMonthly,
     utilities_monthly: utilitiesMonthly,
+    calculation_method: actualPropertyTax ? 'actual_data' : 'location_based_estimate',
     
     // Calculated totals
     total_monthly_expenses: Math.round(

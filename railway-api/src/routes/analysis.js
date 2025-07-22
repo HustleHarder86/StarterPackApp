@@ -126,37 +126,107 @@ router.post('/property', optionalAuth, async (req, res, next) => {
           
           // Extract city from complex address format
           if (propertyAddress) {
-            // Try various patterns to extract city name
-            // Pattern 1: Look for text between "CROSSING" or street name and province
-            const crossingMatch = propertyAddress.match(/(?:CROSSING|Street|ST|Ave|AVE|Road|RD|Drive|DR|Court|CT)([A-Za-z\s]+?)(?:\s*\(|,|\s+(?:Ontario|ON|British Columbia|BC|Alberta|AB|Quebec|QC))/i);
-            if (crossingMatch && crossingMatch[1]) {
-              cityName = crossingMatch[1].trim();
-            } else {
-              // Pattern 2: Look for city in parentheses like "(Unionville)"
-              const parenMatch = propertyAddress.match(/\(([^)]+)\)/);
-              if (parenMatch && parenMatch[1] && !parenMatch[1].match(/^\d/)) {
-                // Use the parent city, not the neighborhood
-                // For "Markham (Unionville)", we want "Markham"
-                const beforeParen = propertyAddress.substring(0, propertyAddress.indexOf('(')).trim();
-                const cityFromBefore = beforeParen.match(/([A-Za-z\s]+?)(?:\s*\(|,|\s+(?:Ontario|ON|L\d[A-Z]|M\d[A-Z]))/);
-                if (cityFromBefore && cityFromBefore[1]) {
-                  cityName = cityFromBefore[1].replace(/.*(?:CROSSING|Street|ST|Ave|AVE|Road|RD|Drive|DR|Court|CT)/i, '').trim();
-                }
-              } else {
-                // Pattern 3: Look for city before province
-                const beforeProvince = propertyAddress.match(/([A-Za-z\s]+?)(?:,?\s*(?:Ontario|ON|British Columbia|BC|Alberta|AB|Quebec|QC))/i);
-                if (beforeProvince && beforeProvince[1]) {
-                  cityName = beforeProvince[1].split(/[,(]/).pop().trim();
+            // Log the original address for debugging
+            logger.info('Parsing address for city extraction', { propertyAddress });
+            
+            // First, fix common concatenation issues (like "EOakville" -> "E Oakville")
+            let cleanedAddress = propertyAddress
+              .replace(/([A-Z])([A-Z][a-z])/g, '$1 $2') // Split concatenated words like EOakville
+              .replace(/AVENUE\s+[NSEW]\b/gi, 'AVENUE') // Handle "AVENUE E" patterns
+              .replace(/\s+/g, ' '); // Normalize spaces
+            
+            logger.debug('Cleaned address', { cleanedAddress });
+            
+            // Try to extract city name using different patterns
+            let extractedCity = null;
+            
+            // Pattern 1: Look for known Ontario cities first (most reliable)
+            const knownCities = [
+              'Oakville', 'Toronto', 'Mississauga', 'Brampton', 'Hamilton', 
+              'Burlington', 'Milton', 'Markham', 'Vaughan', 'Richmond Hill',
+              'Ajax', 'Pickering', 'Whitby', 'Oshawa', 'Scarborough',
+              'North York', 'Etobicoke', 'York', 'East York', 'Thornhill',
+              'Newmarket', 'Aurora', 'King City', 'Stouffville', 'Unionville'
+            ];
+            
+            for (const city of knownCities) {
+              // Case-insensitive search with word boundaries
+              const cityRegex = new RegExp(`\\b${city}\\b`, 'i');
+              if (cityRegex.test(cleanedAddress)) {
+                extractedCity = city;
+                logger.debug('Found known city', { city, pattern: 'known_cities' });
+                break;
+              }
+            }
+            
+            // Pattern 2: If no known city found, try to extract from parentheses
+            if (!extractedCity && cleanedAddress.includes('(') && cleanedAddress.includes(')')) {
+              // Sometimes the area/neighborhood is in parentheses, but city might be after
+              const parenContent = cleanedAddress.match(/\(([^)]+)\)/);
+              if (parenContent) {
+                // Check if parentheses contain a known city
+                for (const city of knownCities) {
+                  if (parenContent[1].includes(city)) {
+                    extractedCity = city;
+                    logger.debug('Found city in parentheses', { city, pattern: 'parentheses' });
+                    break;
+                  }
                 }
               }
             }
             
-            // Clean up extracted city name
-            cityName = cityName.replace(/^\d+\s*-?\s*\d*\s*/, ''); // Remove leading numbers
-            cityName = cityName.replace(/^(CROSSING|Street|ST|Ave|AVE|Road|RD|Drive|DR|Court|CT)\s*/i, ''); // Remove street suffixes
+            // Pattern 3: Look for city before province/postal code
+            if (!extractedCity) {
+              // Remove unit/suite numbers at the beginning
+              const withoutUnit = cleanedAddress.replace(/^\d+\s*[-–]\s*\d*\s*/, '');
+              
+              // Look for text before province indicators or postal codes
+              const beforeProvinceMatch = withoutUnit.match(/([A-Za-z\s]+?)(?:\s*\(|,|\s+(?:Ontario|ON|British Columbia|BC|Alberta|AB|Quebec|QC)|\s+[A-Z]\d[A-Z])/i);
+              if (beforeProvinceMatch) {
+                let potentialCity = beforeProvinceMatch[1].trim();
+                
+                // Remove street types to find the actual city
+                const streetTypes = [
+                  'AVENUE', 'AVE', 'STREET', 'ST', 'ROAD', 'RD', 'DRIVE', 'DR',
+                  'BOULEVARD', 'BLVD', 'COURT', 'CT', 'PLACE', 'PL', 'LANE', 'LN',
+                  'WAY', 'PARKWAY', 'PKWY', 'CIRCLE', 'CIR', 'SQUARE', 'SQ',
+                  'CROSSING', 'XING', 'TERRACE', 'TERR', 'TRAIL', 'TRL',
+                  'CRESCENT', 'CRES', 'HEIGHTS', 'HTS', 'GROVE', 'GRV'
+                ];
+                
+                const words = potentialCity.split(/\s+/);
+                
+                // Find the last occurrence of a street type
+                let streetTypeIndex = -1;
+                for (let i = words.length - 1; i >= 0; i--) {
+                  if (streetTypes.includes(words[i].toUpperCase())) {
+                    streetTypeIndex = i;
+                    break;
+                  }
+                }
+                
+                // City should be after the street type
+                if (streetTypeIndex >= 0 && streetTypeIndex < words.length - 1) {
+                  extractedCity = words.slice(streetTypeIndex + 1).join(' ');
+                  logger.debug('Found city after street type', { city: extractedCity, pattern: 'after_street' });
+                }
+              }
+            }
             
-            // Default to Toronto if extraction failed
-            if (!cityName || cityName.length < 3 || /[A-Z]\d[A-Z]/.test(cityName)) {
+            // Use the extracted city or default
+            if (extractedCity) {
+              cityName = extractedCity;
+            }
+            
+            // Clean up the city name
+            cityName = cityName
+              .replace(/^\d+\s*[-–]\s*\d*\s*/, '') // Remove any remaining unit numbers
+              .replace(/^[EWNS]\s+/i, '') // Remove directional prefixes
+              .trim();
+            
+            // Validate the city name
+            if (!cityName || cityName.length < 3 || /^[A-Z]\d[A-Z]/.test(cityName) || /^\d/.test(cityName)) {
+              logger.warn('Invalid city name extracted, defaulting to Toronto', { invalidCity: cityName });
               cityName = 'Toronto';
             }
           }
