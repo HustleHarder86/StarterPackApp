@@ -73,7 +73,10 @@ export function updateFinancialCalculations() {
     if (platformFeesEl) platformFeesEl.value = calculatedPlatform;
   }
 
-  // Update key metrics if they exist
+  // Update key metrics values and indicators
+  updateKeyMetrics(monthlyRevenue, totalExpenses, netCashFlow, annualIncome);
+  
+  // Update key metrics indicators if they exist
   if (typeof updateMetricIndicators === 'function') {
     updateMetricIndicators();
   }
@@ -187,7 +190,42 @@ export function initializeFinancialCalculator() {
   updateMetricIndicators();
 }
 
+// Function to update key metrics based on current calculator values
+export function updateKeyMetrics(monthlyRevenue, totalExpenses, netCashFlow, annualIncome) {
+  // Get property data
+  const propertyPrice = window.analysisData?.propertyPrice || 850000;
+  const downPayment = window.analysisData?.downPayment || 170000;
+  
+  // Calculate operating expenses (excluding mortgage for cap rate)
+  const mortgage = parseFloat(document.getElementById('mortgage')?.value) || 0;
+  const operatingExpenses = totalExpenses - mortgage;
+  const annualOperatingIncome = (monthlyRevenue - operatingExpenses) * 12;
+  
+  // Calculate metrics
+  const capRate = (annualOperatingIncome / propertyPrice) * 100;
+  const roi = (annualIncome / downPayment) * 100; // Cash-on-cash return
+  const breakEvenOccupancy = monthlyRevenue > 0 ? (totalExpenses / monthlyRevenue) * 100 : 100;
+  
+  // Update metric values in DOM
+  const capRateEl = document.getElementById('capRateValue');
+  const roiEl = document.getElementById('roiValue');
+  const cashFlowEl = document.getElementById('cashFlowValue');
+  const breakEvenEl = document.getElementById('breakEvenValue');
+  
+  if (capRateEl) capRateEl.textContent = capRate.toFixed(1) + '%';
+  if (roiEl) roiEl.textContent = roi.toFixed(1) + '%';
+  if (cashFlowEl) cashFlowEl.textContent = (netCashFlow >= 0 ? '+$' : '-$') + Math.abs(netCashFlow).toLocaleString();
+  if (breakEvenEl) breakEvenEl.textContent = breakEvenOccupancy.toFixed(0) + '%';
+  
+  // Update indicators
+  updateIndicator('capRateIndicator', getMetricRating('capRate', capRate));
+  updateIndicator('roiIndicator', getMetricRating('roi', roi));
+  updateIndicator('cashFlowIndicator', getMetricRating('cashFlow', netCashFlow));
+  updateIndicator('breakEvenIndicator', getMetricRating('breakEven', breakEvenOccupancy));
+}
+
 // Make functions globally available
 window.updateFinancialCalculations = updateFinancialCalculations;
 window.resetCalculator = resetCalculator;
 window.updateMetricIndicators = updateMetricIndicators;
+window.updateKeyMetrics = updateKeyMetrics;
