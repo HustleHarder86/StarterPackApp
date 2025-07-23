@@ -88,6 +88,11 @@ export const EnhancedFinancialSummary = ({
   console.log('EnhancedFinancialSummary - costs found:', costs);
   console.log('  - property_tax_annual:', costs.property_tax_annual);
   console.log('  - calculation_method:', costs.calculation_method);
+  console.log('  - hoa_monthly:', costs.hoa_monthly);
+  console.log('EnhancedFinancialSummary - Full analysis object structure:');
+  console.log('  - analysis.propertyData:', analysis.propertyData);
+  console.log('  - analysis.property:', analysis.property);
+  console.log('  - analysis.data:', analysis.data);
   
   // Property tax: Use actual from listing first
   const propertyTaxAnnual = propertyData.propertyTaxes || propertyData.property_taxes || costs.property_tax_annual || (propertyPrice * 0.01);

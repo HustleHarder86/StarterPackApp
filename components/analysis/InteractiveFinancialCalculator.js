@@ -64,6 +64,39 @@ export const InteractiveFinancialCalculator = ({
     otherExpenses: expenses.otherExpenses || 140
   };
   
+  // Determine data sources based on what's available
+  const dataSources = {
+    mortgage: 'calculated',
+    propertyTax: (() => {
+      // Check calculation_method from API first
+      if (actualCosts?.calculation_method === 'actual_data') return 'actual';
+      // Then check for actual property data
+      if (actualPropertyData?.propertyTaxes || actualPropertyData?.property_taxes) return 'actual';
+      // Then check if we have API-calculated costs
+      if (actualCosts?.property_tax_annual) return 'market';
+      // Default to estimated
+      return 'estimated';
+    })(),
+    insurance: actualCosts?.insurance_annual ? 'market' : 'estimated',
+    hoaFees: (() => {
+      // Check if we have actual condo fees from property data
+      if ('condoFees' in actualPropertyData || 'condo_fees' in actualPropertyData) return 'actual';
+      // Check if calculation method indicates actual data was used
+      if (actualCosts?.calculation_method === 'actual_data' && actualCosts?.hoa_monthly !== undefined) return 'actual';
+      // Check if we have market data
+      if ('hoa_monthly' in actualCosts) return 'market';
+      // Default to estimated
+      return 'estimated';
+    })(),
+    propertyMgmt: 'calculated',
+    utilities: actualCosts?.utilities_monthly ? 'market' : 'estimated',
+    cleaning: 'airbnb',
+    maintenance: actualCosts?.maintenance_annual ? 'market' : 'estimated',
+    supplies: 'calculated',
+    platformFees: 'airbnb',
+    otherExpenses: 'estimated'
+  };
+  
   // Log for debugging
   console.log('=== InteractiveFinancialCalculator Debug ===');
   console.log('propertyData received:', propertyData);
@@ -79,21 +112,6 @@ export const InteractiveFinancialCalculator = ({
   console.log('  - propertyTax:', expenseValues.propertyTax, '(source:', dataSources.propertyTax, ')');
   console.log('  - hoaFees:', expenseValues.hoaFees, '(source:', dataSources.hoaFees, ')');
   console.log('==========================================');
-  
-  // Determine data sources based on what's available
-  const dataSources = {
-    mortgage: 'calculated',
-    propertyTax: (actualPropertyData?.propertyTaxes || actualPropertyData?.property_taxes) ? 'actual' : (actualCosts?.property_tax_annual ? 'market' : 'estimated'),
-    insurance: actualCosts?.insurance_annual ? 'market' : 'estimated',
-    hoaFees: ('condoFees' in actualPropertyData || 'condo_fees' in actualPropertyData) ? 'actual' : ('hoa_monthly' in actualCosts ? 'market' : 'estimated'),
-    propertyMgmt: 'calculated',
-    utilities: actualCosts?.utilities_monthly ? 'market' : 'estimated',
-    cleaning: 'airbnb',
-    maintenance: actualCosts?.maintenance_annual ? 'market' : 'estimated',
-    supplies: 'calculated',
-    platformFees: 'airbnb',
-    otherExpenses: 'estimated'
-  };
 
   return Card({
     children: `
