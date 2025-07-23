@@ -129,13 +129,20 @@ router.post('/property', optionalAuth, async (req, res, next) => {
             // Log the original address for debugging
             logger.info('Parsing address for city extraction', { propertyAddress });
             
-            // First, fix common concatenation issues (like "EOakville" -> "E Oakville")
-            let cleanedAddress = propertyAddress
+            // First, remove content in parentheses for cleaner parsing
+            let addressWithoutParens = propertyAddress.replace(/\s*\([^)]*\)/g, '');
+            
+            // Then fix common concatenation issues (like "ROADMilton" -> "ROAD Milton")
+            let cleanedAddress = addressWithoutParens
               .replace(/([A-Z])([A-Z][a-z])/g, '$1 $2') // Split concatenated words like EOakville
               .replace(/AVENUE\s+[NSEW]\b/gi, 'AVENUE') // Handle "AVENUE E" patterns
               .replace(/\s+/g, ' '); // Normalize spaces
             
-            logger.debug('Cleaned address', { cleanedAddress });
+            logger.debug('Cleaned address', { 
+              original: propertyAddress,
+              withoutParens: addressWithoutParens,
+              cleaned: cleanedAddress 
+            });
             
             // Try to extract city name using different patterns
             let extractedCity = null;
@@ -165,23 +172,9 @@ router.post('/property', optionalAuth, async (req, res, next) => {
               }
             }
             
-            // Pattern 2: If no known city found, try to extract from parentheses
-            if (!extractedCity && cleanedAddress.includes('(') && cleanedAddress.includes(')')) {
-              // Sometimes the area/neighborhood is in parentheses, but city might be after
-              const parenContent = cleanedAddress.match(/\(([^)]+)\)/);
-              if (parenContent) {
-                // Check if parentheses contain a known city
-                for (const city of knownCities) {
-                  if (parenContent[1].includes(city)) {
-                    extractedCity = city;
-                    logger.debug('Found city in parentheses', { city, pattern: 'parentheses' });
-                    break;
-                  }
-                }
-              }
-            }
+            // Pattern 2: Skip parentheses content as it's usually neighborhoods, not cities
             
-            // Pattern 3: Look for city before province/postal code
+            // Pattern 2: Look for city before province/postal code
             if (!extractedCity) {
               // Remove unit/suite numbers at the beginning
               const withoutUnit = cleanedAddress.replace(/^\d+\s*[-–]\s*\d*\s*/, '');

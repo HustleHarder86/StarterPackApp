@@ -92,15 +92,23 @@ async function analyzePropertyLogic({
   };
   
   try {
-    // Parse address
-    const addressParts = propertyAddress.split(',').map(part => part.trim());
+    // Parse address - remove content in parentheses for API calls
+    const cleanAddress = propertyAddress.replace(/\s*\([^)]*\)/g, ''); // Remove bracketed content
+    const addressParts = cleanAddress.split(',').map(part => part.trim());
     const address = {
       street: addressParts[0] || '',
       city: addressParts[1] || '',
       state: addressParts[2] || '',
       country: addressParts[3] || 'Canada',
-      postal: addressParts[4] || ''
+      postal: addressParts[4] || '',
+      fullOriginal: propertyAddress // Keep original for display
     };
+    
+    logger.info('Address parsing', {
+      original: propertyAddress,
+      cleaned: cleanAddress,
+      parsedCity: address.city
+    });
     
     // Estimate property value
     let estimatedValue = propertyData?.price || 850000;
