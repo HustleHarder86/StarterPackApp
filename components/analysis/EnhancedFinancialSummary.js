@@ -23,12 +23,20 @@ export const EnhancedFinancialSummary = ({
   className = ''
 }) => {
   // Extract values from analysis data
-  const strRevenue = analysis.strAnalysis?.monthlyRevenue || 5400;
-  const ltrRevenue = analysis.longTermRental?.monthlyRent || 3200;
-  const monthlyExpenses = analysis.costs?.totalMonthly || 3300;
+  const strRevenue = analysis.strAnalysis?.monthlyRevenue || analysis.short_term_rental?.monthly_revenue || 5400;
+  const ltrRevenue = analysis.longTermRental?.monthlyRent || analysis.long_term_rental?.monthly_rent || 3200;
+  const monthlyExpenses = analysis.costs?.totalMonthly || analysis.costs?.total_monthly_expenses || 3300;
   const netCashFlow = strRevenue - monthlyExpenses;
-  const propertyPrice = analysis.property?.price || 850000;
-  const downPayment = propertyPrice * 0.2;
+  
+  // Extract property price from various possible locations in the response
+  const propertyPrice = analysis.propertyDetails?.estimatedValue || 
+                       analysis.property_details?.estimated_value ||
+                       analysis.propertyData?.price || 
+                       analysis.property_data?.price ||
+                       analysis.property?.price || 
+                       analysis.purchase?.price ||
+                       850000;
+  const downPayment = analysis.purchase?.downPayment || analysis.purchase?.down_payment || (propertyPrice * 0.2);
   
   // Calculate metrics
   const annualNetIncome = netCashFlow * 12;
@@ -44,8 +52,9 @@ export const EnhancedFinancialSummary = ({
   // 2. Then use analysis costs
   // 3. Finally fall back to calculated defaults
   
-  const propertyData = analysis.property || {};
-  const costs = analysis.costs || {};
+  // propertyData can be at different locations depending on API response structure
+  const propertyData = analysis.propertyData || analysis.property_data || analysis.property || {};
+  const costs = analysis.costs || analysis.expenses || {};
   
   // Log what data we have for debugging
   console.log('EnhancedFinancialSummary - propertyData:', propertyData);
@@ -53,7 +62,7 @@ export const EnhancedFinancialSummary = ({
   console.log('EnhancedFinancialSummary - full analysis:', analysis);
   
   // Property tax: Use actual from listing first
-  const propertyTaxAnnual = propertyData.propertyTaxes || costs.property_tax_annual || (propertyPrice * 0.01);
+  const propertyTaxAnnual = propertyData.propertyTaxes || propertyData.property_taxes || costs.property_tax_annual || (propertyPrice * 0.01);
   
   // Calculate STR-specific expenses based on market data
   const strOccupancy = analysis.strAnalysis?.occupancy_rate || analysis.short_term_rental?.occupancy_rate || 0.7;
@@ -64,7 +73,7 @@ export const EnhancedFinancialSummary = ({
   const expenses = {
     propertyTax: Math.round(propertyTaxAnnual / 12),
     insurance: Math.round((costs.insurance_annual || propertyPrice * 0.004 * 1.25) / 12), // STR insurance is 25% higher
-    hoaFees: propertyData.condoFees || costs.hoa_monthly || 0, // Use actual condo fees or 0 for houses
+    hoaFees: propertyData.condoFees || propertyData.condo_fees || costs.hoa_monthly || 0, // Use actual condo fees or 0 for houses
     propertyMgmt: Math.round(strRevenue * 0.10), // 10% management fee
     utilities: costs.utilities_monthly || Math.round(200 * 1.4), // 40% higher for STR
     cleaning: avgCleaningFee * turnoversPerMonth, // Based on turnover frequency

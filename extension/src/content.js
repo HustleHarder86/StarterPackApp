@@ -222,12 +222,60 @@ function extractAddress() {
     for (const selector of selectors) {
       const addressElement = document.querySelector(selector);
       if (addressElement && addressElement.textContent) {
-        const fullAddress = addressElement.textContent.trim();
+        let fullAddress = addressElement.textContent.trim();
         if (fullAddress && fullAddress.length > 5 && !fullAddress.includes('Cookie')) {
-          console.log('[StarterPack] Found address:', fullAddress, 'from selector:', selector);
-          const parts = fullAddress.split(',').map(part => part.trim());
+          console.log('[StarterPack] Found raw address:', fullAddress, 'from selector:', selector);
           
-          // Try to parse Canadian address format
+          // Fix common spacing issues before parsing
+          // Fix concatenated street types and city names (e.g., "ROADMilton" -> "ROAD Milton")
+          const streetTypes = [
+            'AVENUE', 'AVE', 'STREET', 'ST', 'ROAD', 'RD', 'DRIVE', 'DR',
+            'BOULEVARD', 'BLVD', 'COURT', 'CT', 'PLACE', 'PL', 'LANE', 'LN',
+            'WAY', 'PARKWAY', 'PKWY', 'CIRCLE', 'CIR', 'CRESCENT', 'CRES',
+            'TERRACE', 'TERR', 'TRAIL', 'TRL', 'CROSSING', 'XING', 'SQUARE', 'SQ',
+            'HEIGHTS', 'HTS', 'GROVE', 'GRV'
+          ];
+          
+          // Add spaces after street types if missing
+          streetTypes.forEach(type => {
+            const regex = new RegExp(`(${type})([A-Z])`, 'g');
+            fullAddress = fullAddress.replace(regex, '$1 $2');
+          });
+          
+          // Fix other concatenation issues (e.g., "E Oakville" -> "E Oakville")
+          fullAddress = fullAddress
+            .replace(/([a-z])([A-Z])/g, '$1 $2') // lowercase followed by uppercase
+            .replace(/([A-Z]{2,})([A-Z][a-z])/g, '$1 $2') // multiple caps followed by capital+lowercase
+            .replace(/\s+/g, ' ') // normalize multiple spaces
+            .trim();
+          
+          console.log('[StarterPack] Fixed address:', fullAddress);
+          
+          // First try to split by comma
+          let parts = fullAddress.split(',').map(part => part.trim());
+          
+          // If no comma after street, try to extract city from the fixed address
+          if (parts.length === 1 || (parts[1] && parts[1].includes('Ontario'))) {
+            // Look for city name before province
+            const match = fullAddress.match(/(.+?)\s+(\w+)\s*(?:\([^)]+\))?\s*,?\s*(Ontario|ON|British Columbia|BC|Alberta|AB|Quebec|QC)\s+([A-Z]\d[A-Z]\s*\d[A-Z]\d)$/i);
+            if (match) {
+              const streetPart = match[1].trim();
+              const cityName = match[2].trim();
+              const province = match[3].trim();
+              const postalCode = match[4].trim();
+              
+              return {
+                street: streetPart,
+                city: cityName,
+                province: province,
+                postalCode: postalCode,
+                country: 'Canada',
+                full: fullAddress
+              };
+            }
+          }
+          
+          // Fallback to comma-based parsing
           return {
             street: parts[0] || '',
             city: parts[1] || '',

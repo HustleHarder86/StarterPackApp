@@ -168,11 +168,23 @@ async function analyzePropertyLogic({
       ...processedData,
       ...financialMetrics,
       insights,
+      // CRITICAL: Include propertyData in response for frontend
+      propertyData: propertyData || null,
       metadata: {
         dataSource: propertyData ? 'listing_with_ai_enhancement' : 'ai_research_only',
-        confidence: processedData.dataQuality || 'high'
+        confidence: processedData.dataQuality || 'high',
+        hasActualPropertyTax: !!propertyData?.propertyTaxes,
+        hasActualCondoFees: !!propertyData?.condoFees
       }
     };
+    
+    // Log final analysis structure
+    logger.info('Final analysis structure', {
+      hasPropertyData: !!analysis.propertyData,
+      propertyTaxAnnual: analysis.expenses?.property_tax_annual,
+      calculationMethod: analysis.expenses?.calculation_method,
+      propertyDataTaxes: analysis.propertyData?.propertyTaxes
+    });
     
     // Save to database if user is authenticated
     if (userId) {
@@ -351,6 +363,15 @@ async function processResearchData({ researchContent, propertyAddress, address, 
   // This is a simplified version - the full implementation would extract all the data
   // from the research content similar to the original analyze-property.js
   
+  // Log incoming propertyData for debugging
+  logger.info('Processing research data with propertyData', {
+    hasPropertyData: !!propertyData,
+    propertyTaxes: propertyData?.propertyTaxes,
+    condoFees: propertyData?.condoFees,
+    propertyType: propertyData?.propertyType,
+    price: propertyData?.price
+  });
+  
   const extractedData = {
     propertyDetails: {
       address: propertyAddress,
@@ -372,6 +393,8 @@ async function processResearchData({ researchContent, propertyAddress, address, 
       actualPropertyTax: propertyData?.propertyTaxes,
       actualCondoFees: propertyData?.condoFees
     }),
+    // CRITICAL: Pass through the original propertyData to preserve actual values
+    propertyData: propertyData || null,
     rental: {
       monthlyRent: extractNumericValue(researchContent, 'rent|monthly') || 
                    estimateRentalRate(
@@ -384,12 +407,25 @@ async function processResearchData({ researchContent, propertyAddress, address, 
     citations: citations || []
   };
   
+  // Log what we're returning
+  logger.info('Extracted data with expenses', {
+    propertyTaxAnnual: extractedData.expenses.property_tax_annual,
+    calculationMethod: extractedData.expenses.calculation_method,
+    hasPropertyData: !!extractedData.propertyData
+  });
+  
   return extractedData;
 }
 
 // Calculate financial metrics
 function calculateFinancialMetrics(data) {
-  const { propertyDetails, expenses, rental } = data;
+  const { propertyDetails, expenses, rental, propertyData } = data;
+  
+  logger.info('Calculating financial metrics', {
+    hasPropertyData: !!propertyData,
+    propertyTaxAnnual: expenses.property_tax_annual,
+    calculationMethod: expenses.calculation_method
+  });
   
   // Mortgage calculations (assuming 20% down, 5% interest, 25 years)
   const downPayment = propertyDetails.estimatedValue * 0.2;
@@ -434,7 +470,10 @@ function calculateFinancialMetrics(data) {
       capRate: capRate.toFixed(2),
       cashOnCashReturn: cashOnCashReturn.toFixed(2),
       totalROI: ((annualCashFlow + (propertyDetails.estimatedValue * 0.03)) / downPayment * 100).toFixed(2)
-    }
+    },
+    // Pass through propertyData and expenses details for frontend
+    propertyData: propertyData || null,
+    costs: expenses
   };
 }
 

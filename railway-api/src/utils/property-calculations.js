@@ -476,7 +476,17 @@ function getPropertyTaxRate(city, province) {
 
 // Calculate realistic HOA fees based on property type and amenities
 function calculateHOAFees(propertyType, propertyValue, hasAmenities = false) {
-  if (propertyType === 'Single Family' || propertyType === 'Detached') {
+  // More comprehensive check for single-family homes
+  const singleFamilyTypes = ['Single Family', 'Detached', 'House', 'Freehold', 'Single-Family', 'Detached House'];
+  const propertyTypeLower = (propertyType || '').toLowerCase();
+  
+  // Check if it's a single-family home
+  const isSingleFamily = singleFamilyTypes.some(type => 
+    propertyTypeLower.includes(type.toLowerCase()) || 
+    propertyType === type
+  );
+  
+  if (isSingleFamily) {
     return 0; // Most single-family homes don't have HOA
   }
   
@@ -590,6 +600,17 @@ function calculateAccurateExpenses(propertyData) {
   } else {
     // Calculate based on property type and value
     hoaMonthly = calculateHOAFees(propertyType, propertyValue, hasAmenities);
+  }
+  
+  // Double-check: if it's a single-family home and we calculated fees, set to 0
+  const singleFamilyTypes = ['Single Family', 'Detached', 'House', 'Freehold', 'Single-Family', 'Detached House'];
+  const propertyTypeLower = (propertyType || '').toLowerCase();
+  const isSingleFamily = singleFamilyTypes.some(type => 
+    propertyTypeLower.includes(type.toLowerCase()) || propertyType === type
+  );
+  
+  if (isSingleFamily && !actualCondoFees) {
+    hoaMonthly = 0;
   }
   
   // Utilities (varies by property type)

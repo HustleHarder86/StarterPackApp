@@ -80,15 +80,69 @@ function extractAllPropertyData() {
   // Extract address
   const addressElement = document.querySelector('h1');
   if (addressElement) {
-    const addressText = addressElement.textContent.trim();
-    const parts = addressText.split(/[,()]/);
-    data.address = {
-      full: addressText,
-      street: parts[0]?.trim() || '',
-      city: parts[1]?.trim() || '',
-      province: parts[2]?.trim()?.split(' ')[0] || '',
-      postalCode: parts[2]?.trim()?.split(' ').slice(1).join(' ') || ''
-    };
+    let addressText = addressElement.textContent.trim();
+    console.log('[StarterPack] Raw address text:', addressText);
+    
+    // Fix common spacing issues before parsing
+    // Fix concatenated street types and city names (e.g., "ROADMilton" -> "ROAD Milton")
+    const streetTypes = [
+      'AVENUE', 'AVE', 'STREET', 'ST', 'ROAD', 'RD', 'DRIVE', 'DR',
+      'BOULEVARD', 'BLVD', 'COURT', 'CT', 'PLACE', 'PL', 'LANE', 'LN',
+      'WAY', 'PARKWAY', 'PKWY', 'CIRCLE', 'CIR', 'CRESCENT', 'CRES',
+      'TERRACE', 'TERR', 'TRAIL', 'TRL', 'CROSSING', 'XING', 'SQUARE', 'SQ',
+      'HEIGHTS', 'HTS', 'GROVE', 'GRV'
+    ];
+    
+    // Add spaces after street types if missing
+    streetTypes.forEach(type => {
+      const regex = new RegExp(`(${type})([A-Z])`, 'g');
+      addressText = addressText.replace(regex, '$1 $2');
+    });
+    
+    // Fix other concatenation issues
+    addressText = addressText
+      .replace(/([a-z])([A-Z])/g, '$1 $2') // lowercase followed by uppercase
+      .replace(/([A-Z]{2,})([A-Z][a-z])/g, '$1 $2') // multiple caps followed by capital+lowercase
+      .replace(/\s+/g, ' ') // normalize multiple spaces
+      .trim();
+    
+    console.log('[StarterPack] Fixed address text:', addressText);
+    
+    // First try to split by comma/parentheses
+    let parts = addressText.split(/[,()]/);
+    
+    // If no proper city found, try to extract from the fixed address
+    if (parts.length === 1 || (parts[1] && parts[1].includes('Ontario'))) {
+      // Look for city name pattern
+      const match = addressText.match(/(.+?)\s+(\w+)\s*(?:\([^)]+\))?\s*,?\s*(Ontario|ON|British Columbia|BC|Alberta|AB|Quebec|QC)\s+([A-Z]\d[A-Z]\s*\d[A-Z]\d)$/i);
+      if (match) {
+        data.address = {
+          full: addressText,
+          street: match[1].trim(),
+          city: match[2].trim(),
+          province: match[3].trim(),
+          postalCode: match[4].trim()
+        };
+      } else {
+        // Fallback to original parsing
+        data.address = {
+          full: addressText,
+          street: parts[0]?.trim() || '',
+          city: parts[1]?.trim() || '',
+          province: parts[2]?.trim()?.split(' ')[0] || '',
+          postalCode: parts[2]?.trim()?.split(' ').slice(1).join(' ') || ''
+        };
+      }
+    } else {
+      // Use standard parsing
+      data.address = {
+        full: addressText,
+        street: parts[0]?.trim() || '',
+        city: parts[1]?.trim() || '',
+        province: parts[2]?.trim()?.split(' ')[0] || '',
+        postalCode: parts[2]?.trim()?.split(' ').slice(1).join(' ') || ''
+      };
+    }
   }
   
   // Extract property details from the table

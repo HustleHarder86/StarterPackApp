@@ -146,7 +146,13 @@ router.post('/property', optionalAuth, async (req, res, next) => {
               'Burlington', 'Milton', 'Markham', 'Vaughan', 'Richmond Hill',
               'Ajax', 'Pickering', 'Whitby', 'Oshawa', 'Scarborough',
               'North York', 'Etobicoke', 'York', 'East York', 'Thornhill',
-              'Newmarket', 'Aurora', 'King City', 'Stouffville', 'Unionville'
+              'Newmarket', 'Aurora', 'King City', 'Stouffville', 'Unionville',
+              'Caledon', 'Georgetown', 'Acton', 'Halton Hills', 'Orangeville',
+              'Barrie', 'Innisfil', 'Bradford', 'Alliston', 'Collingwood',
+              'Guelph', 'Cambridge', 'Kitchener', 'Waterloo', 'Stratford',
+              'London', 'Windsor', 'Chatham', 'Sarnia', 'St. Catharines',
+              'Niagara Falls', 'Welland', 'Fort Erie', 'Kingston', 'Belleville',
+              'Peterborough', 'Ottawa', 'Kanata', 'Orleans', 'Nepean'
             ];
             
             for (const city of knownCities) {
@@ -222,12 +228,36 @@ router.post('/property', optionalAuth, async (req, res, next) => {
             cityName = cityName
               .replace(/^\d+\s*[-–]\s*\d*\s*/, '') // Remove any remaining unit numbers
               .replace(/^[EWNS]\s+/i, '') // Remove directional prefixes
+              .replace(/\([^)]*\)/, '') // Remove content in parentheses
               .trim();
             
             // Validate the city name
             if (!cityName || cityName.length < 3 || /^[A-Z]\d[A-Z]/.test(cityName) || /^\d/.test(cityName)) {
               logger.warn('Invalid city name extracted, defaulting to Toronto', { invalidCity: cityName });
               cityName = 'Toronto';
+            }
+            
+            // Special handling for neighborhoods within cities
+            const neighborhoodToCityMap = {
+              'Unionville': 'Markham',
+              'Thornhill': 'Vaughan',
+              'Scarborough': 'Toronto',
+              'North York': 'Toronto',
+              'Etobicoke': 'Toronto',
+              'East York': 'Toronto',
+              'York': 'Toronto',
+              'Leaside': 'Toronto',
+              'Rosedale': 'Toronto',
+              'Forest Hill': 'Toronto',
+              'The Beaches': 'Toronto',
+              'Tam O\'Shanter-Sullivan': 'Toronto',
+              'CL Clarke': 'Milton'
+            };
+            
+            // Check if it's a neighborhood and map to city
+            if (neighborhoodToCityMap[cityName]) {
+              logger.info('Mapping neighborhood to city', { neighborhood: cityName, city: neighborhoodToCityMap[cityName] });
+              cityName = neighborhoodToCityMap[cityName];
             }
           }
           
