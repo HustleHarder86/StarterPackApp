@@ -754,19 +754,70 @@ function extractMainImage() {
 }
 
 function extractPropertyType() {
-  const typeElement = document.querySelector('[data-testid="propertyType"]') ||
-                     Array.from(document.querySelectorAll('*')).find(el => 
-                       el.textContent.match(/(house|condo|townhouse|apartment)/i)
-                     );
+  // Look for property type in various locations
+  const selectors = [
+    '[data-testid="propertyType"]',
+    '.propertyDetailsSectionContentValue',
+    'td:contains("Property Type") + td',
+    'td:contains("Building Type") + td',
+    '*:contains("Property Type"):not(:has(*))',
+    '*:contains("Building Type"):not(:has(*))'
+  ];
   
-  if (typeElement) {
-    const text = typeElement.textContent.toLowerCase();
-    if (text.includes('house')) return 'house';
-    if (text.includes('condo')) return 'condo';
-    if (text.includes('townhouse')) return 'townhouse';
-    if (text.includes('apartment')) return 'apartment';
+  let propertyTypeText = '';
+  
+  // Try each selector
+  for (const selector of selectors) {
+    try {
+      const elements = document.querySelectorAll(selector);
+      for (const el of elements) {
+        const text = el.textContent || '';
+        if (text && text.match(/(house|condo|townhouse|apartment|row|duplex|triplex|loft)/i)) {
+          propertyTypeText = text;
+          break;
+        }
+      }
+      if (propertyTypeText) break;
+    } catch (e) {
+      // Continue with next selector
+    }
   }
-  return 'residential';
+  
+  // If still not found, search more broadly
+  if (!propertyTypeText) {
+    const allElements = Array.from(document.querySelectorAll('*'));
+    const typeElement = allElements.find(el => {
+      const text = el.textContent || '';
+      return text.match(/^(Row \/ Townhouse|Detached|Semi-Detached|Condo|Apartment|Townhouse|House|Duplex|Triplex|Loft|Stacked Townhouse)$/i) ||
+             (text.includes('Property Type') && el.nextElementSibling);
+    });
+    
+    if (typeElement) {
+      propertyTypeText = typeElement.nextElementSibling?.textContent || typeElement.textContent || '';
+    }
+  }
+  
+  console.log('[StarterPack] Found property type text:', propertyTypeText);
+  
+  // Parse the property type text
+  const text = propertyTypeText.toLowerCase().trim();
+  
+  // Handle specific patterns first
+  if (text.includes('row') && text.includes('townhouse')) return 'Townhouse';
+  if (text.includes('row / townhouse')) return 'Townhouse';
+  if (text.includes('stacked') && text.includes('townhouse')) return 'Townhouse';
+  if (text.includes('townhouse') || text.includes('townhome')) return 'Townhouse';
+  if (text.includes('semi-detached')) return 'Semi-Detached';
+  if (text.includes('detached')) return 'House';
+  if (text.includes('condo') || text.includes('condominium')) return 'Condo';
+  if (text.includes('apartment')) return 'Apartment';
+  if (text.includes('duplex')) return 'Duplex';
+  if (text.includes('triplex')) return 'Triplex';
+  if (text.includes('loft')) return 'Loft';
+  if (text.includes('house')) return 'House';
+  
+  // Default fallback
+  return 'House';
 }
 
 function extractYearBuilt() {

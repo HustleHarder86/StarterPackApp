@@ -455,6 +455,8 @@
                     if (analysisDoc.exists) {
                         const analysisData = analysisDoc.data();
                         window.appState.currentAnalysis = analysisData;
+                        // Also set window.analysisData for compatibility with showAllComparables
+                        window.analysisData = analysisData;
                         await this.renderAnalysisResults(analysisData);
                     } else {
                         this.showError('Analysis not found');
@@ -592,6 +594,8 @@
                     
                     console.log('Transformed analysis data:', analysisData);
                     window.appState.currentAnalysis = analysisData;
+                    // Also set window.analysisData for compatibility with showAllComparables
+                    window.analysisData = analysisData;
                     await this.renderAnalysisResults(analysisData);
                     
                 } catch (error) {
