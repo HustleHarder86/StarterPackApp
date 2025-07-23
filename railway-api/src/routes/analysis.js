@@ -498,6 +498,11 @@ router.post('/property', optionalAuth, async (req, res, next) => {
         snakeCaseResult.analysis_timestamp = snakeCaseResult.timestamp;
       }
       
+      // CRITICAL: Ensure propertyData is included in the response
+      if (result.propertyData && !snakeCaseResult.property_data) {
+        snakeCaseResult.property_data = result.propertyData;
+      }
+      
       // Log the transformation for debugging
       logger.debug('API response after transformation', {
         hasRental: !!result.rental,
@@ -506,7 +511,17 @@ router.post('/property', optionalAuth, async (req, res, next) => {
         hasStrAnalysis: !!result.strAnalysis,
         hasShortTermRental: !!snakeCaseResult.short_term_rental,
         dailyRate: snakeCaseResult.short_term_rental?.daily_rate,
-        roiPercentage: snakeCaseResult.roi_percentage
+        roiPercentage: snakeCaseResult.roi_percentage,
+        hasPropertyData: !!snakeCaseResult.property_data,
+        propertyTaxes: snakeCaseResult.property_data?.property_taxes || snakeCaseResult.property_data?.propertyTaxes
+      });
+      
+      // Final logging before response
+      logger.info('Final API response structure', {
+        hasPropertyData: !!snakeCaseResult.property_data,
+        propertyCosts: snakeCaseResult.costs,
+        propertyExpenses: snakeCaseResult.expenses,
+        calculationMethod: snakeCaseResult.costs?.calculation_method || snakeCaseResult.expenses?.calculation_method
       });
       
       // Return the combined result

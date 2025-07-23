@@ -16,6 +16,9 @@ export const InteractiveFinancialCalculator = ({
   onUpdate = () => {},
   className = ''
 }) => {
+  // Ensure we have propertyData from any available source
+  const actualPropertyData = propertyData || window.analysisData?.propertyData || window.extractedPropertyData || {};
+  const actualCosts = costs || window.analysisData?.costs || {};
   // Calculate mortgage payment
   const loanAmount = propertyPrice - downPayment;
   const interestRate = 0.065 / 12; // 6.5% annual rate / 12 months
@@ -30,22 +33,29 @@ export const InteractiveFinancialCalculator = ({
     mortgage: mortgagePayment,
     propertyTax: (() => {
       // Priority: 1) Actual property taxes from listing, 2) Costs from API, 3) Calculated default
-      if (propertyData?.propertyTaxes) {
-        return Math.round(propertyData.propertyTaxes / 12); // Convert annual to monthly
-      } else if (costs?.property_tax_annual) {
-        return Math.round(costs.property_tax_annual / 12);
+      if (actualPropertyData?.propertyTaxes || actualPropertyData?.property_taxes) {
+        const annualTax = actualPropertyData.propertyTaxes || actualPropertyData.property_taxes;
+        return Math.round(annualTax / 12); // Convert annual to monthly
+      } else if (actualCosts?.property_tax_annual) {
+        return Math.round(actualCosts.property_tax_annual / 12);
       } else {
         return expenses.propertyTax || 708; // Fall back to provided or default
       }
     })(),
     insurance: expenses.insurance || 250,
-    hoaFees: propertyData?.condoFees || costs?.hoa_monthly || expenses.hoaFees || 450,
+    hoaFees: (() => {
+      // Check if condoFees exists (including 0 value)
+      if ('condoFees' in actualPropertyData) return actualPropertyData.condoFees;
+      if ('condo_fees' in actualPropertyData) return actualPropertyData.condo_fees;
+      if ('hoa_monthly' in actualCosts) return actualCosts.hoa_monthly;
+      return expenses.hoaFees || 0; // Default to 0, not 450
+    })(),
     propertyMgmt: expenses.propertyMgmt || 540,
-    utilities: costs?.utilities_monthly || expenses.utilities || 200,
+    utilities: actualCosts?.utilities_monthly || expenses.utilities || 200,
     cleaning: expenses.cleaning || 400,
     maintenance: (() => {
-      if (costs?.maintenance_annual) {
-        return Math.round(costs.maintenance_annual / 12);
+      if (actualCosts?.maintenance_annual) {
+        return Math.round(actualCosts.maintenance_annual / 12);
       }
       return expenses.maintenance || 300;
     })(),
@@ -55,20 +65,31 @@ export const InteractiveFinancialCalculator = ({
   };
   
   // Log for debugging
-  console.log('InteractiveFinancialCalculator - propertyData:', propertyData);
-  console.log('InteractiveFinancialCalculator - costs:', costs);
-  console.log('InteractiveFinancialCalculator - calculated expenses:', expenseValues);
+  console.log('=== InteractiveFinancialCalculator Debug ===');
+  console.log('propertyData received:', propertyData);
+  console.log('actualPropertyData found:', actualPropertyData);
+  console.log('  - propertyTaxes:', actualPropertyData?.propertyTaxes || actualPropertyData?.property_taxes);
+  console.log('  - condoFees:', actualPropertyData?.condoFees || actualPropertyData?.condo_fees);
+  console.log('  - propertyType:', actualPropertyData?.propertyType || actualPropertyData?.property_type);
+  console.log('costs received:', costs);
+  console.log('actualCosts found:', actualCosts);
+  console.log('  - property_tax_annual:', actualCosts?.property_tax_annual);
+  console.log('  - hoa_monthly:', actualCosts?.hoa_monthly);
+  console.log('Calculated expense values:');
+  console.log('  - propertyTax:', expenseValues.propertyTax, '(source:', dataSources.propertyTax, ')');
+  console.log('  - hoaFees:', expenseValues.hoaFees, '(source:', dataSources.hoaFees, ')');
+  console.log('==========================================');
   
   // Determine data sources based on what's available
   const dataSources = {
     mortgage: 'calculated',
-    propertyTax: propertyData?.propertyTaxes ? 'actual' : (costs?.property_tax_annual ? 'market' : 'estimated'),
-    insurance: costs?.insurance_annual ? 'market' : 'estimated',
-    hoaFees: propertyData?.condoFees ? 'actual' : (costs?.hoa_monthly ? 'market' : 'estimated'),
+    propertyTax: (actualPropertyData?.propertyTaxes || actualPropertyData?.property_taxes) ? 'actual' : (actualCosts?.property_tax_annual ? 'market' : 'estimated'),
+    insurance: actualCosts?.insurance_annual ? 'market' : 'estimated',
+    hoaFees: ('condoFees' in actualPropertyData || 'condo_fees' in actualPropertyData) ? 'actual' : ('hoa_monthly' in actualCosts ? 'market' : 'estimated'),
     propertyMgmt: 'calculated',
-    utilities: costs?.utilities_monthly ? 'market' : 'estimated',
+    utilities: actualCosts?.utilities_monthly ? 'market' : 'estimated',
     cleaning: 'airbnb',
-    maintenance: costs?.maintenance_annual ? 'market' : 'estimated',
+    maintenance: actualCosts?.maintenance_annual ? 'market' : 'estimated',
     supplies: 'calculated',
     platformFees: 'airbnb',
     otherExpenses: 'estimated'

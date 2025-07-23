@@ -22,6 +22,15 @@ export const EnhancedFinancialSummary = ({
   analysis = {},
   className = ''
 }) => {
+  // Debug logging to trace data flow
+  console.log('=== EnhancedFinancialSummary Data Flow Debug ===');
+  console.log('Full analysis object:', analysis);
+  console.log('analysis.propertyData:', analysis.propertyData);
+  console.log('analysis.property_data:', analysis.property_data);
+  console.log('analysis.data?.property_data:', analysis.data?.property_data);
+  console.log('analysis.costs:', analysis.costs);
+  console.log('analysis.expenses:', analysis.expenses);
+  console.log('==============================================');
   // Extract values from analysis data
   const strRevenue = analysis.strAnalysis?.monthlyRevenue || analysis.short_term_rental?.monthly_revenue || 5400;
   const ltrRevenue = analysis.longTermRental?.monthlyRent || analysis.long_term_rental?.monthly_rent || 3200;
@@ -53,13 +62,32 @@ export const EnhancedFinancialSummary = ({
   // 3. Finally fall back to calculated defaults
   
   // propertyData can be at different locations depending on API response structure
-  const propertyData = analysis.propertyData || analysis.property_data || analysis.property || {};
-  const costs = analysis.costs || analysis.expenses || {};
+  // Check all possible locations where propertyData might exist
+  const propertyData = 
+    analysis.propertyData || 
+    analysis.property_data || 
+    analysis.property || 
+    analysis.data?.propertyData ||
+    analysis.data?.property_data ||
+    window.analysisData?.propertyData ||
+    window.extractedPropertyData || // From browser extension
+    {};
+    
+  const costs = 
+    analysis.costs || 
+    analysis.expenses || 
+    analysis.data?.costs ||
+    analysis.data?.expenses ||
+    {};
   
   // Log what data we have for debugging
-  console.log('EnhancedFinancialSummary - propertyData:', propertyData);
-  console.log('EnhancedFinancialSummary - costs:', costs);
-  console.log('EnhancedFinancialSummary - full analysis:', analysis);
+  console.log('EnhancedFinancialSummary - propertyData found:', propertyData);
+  console.log('  - propertyTaxes:', propertyData.propertyTaxes || propertyData.property_taxes);
+  console.log('  - condoFees:', propertyData.condoFees || propertyData.condo_fees);
+  console.log('  - propertyType:', propertyData.propertyType || propertyData.property_type);
+  console.log('EnhancedFinancialSummary - costs found:', costs);
+  console.log('  - property_tax_annual:', costs.property_tax_annual);
+  console.log('  - calculation_method:', costs.calculation_method);
   
   // Property tax: Use actual from listing first
   const propertyTaxAnnual = propertyData.propertyTaxes || propertyData.property_taxes || costs.property_tax_annual || (propertyPrice * 0.01);
@@ -93,7 +121,13 @@ export const EnhancedFinancialSummary = ({
   const expenses = {
     propertyTax: Math.round(propertyTaxAnnual / 12),
     insurance: Math.round((costs.insurance_annual || propertyPrice * 0.004 * 1.25) / 12), // STR insurance is 25% higher
-    hoaFees: propertyData.condoFees || propertyData.condo_fees || costs.hoa_monthly || 0, // Use actual condo fees or 0 for houses
+    hoaFees: (() => {
+      // Check if condoFees exists (including 0 value)
+      if ('condoFees' in propertyData) return propertyData.condoFees;
+      if ('condo_fees' in propertyData) return propertyData.condo_fees;
+      if ('hoa_monthly' in costs) return costs.hoa_monthly;
+      return 0; // Default to 0 for houses
+    })(), // Use actual condo fees or 0 for houses
     propertyMgmt: Math.round(strRevenue * 0.10), // 10% management fee
     utilities: costs.utilities_monthly || Math.round(200 * 1.4), // 40% higher for STR
     cleaning: avgCleaningFee * turnoversPerMonth, // More realistic based on property size and stay length
@@ -110,6 +144,8 @@ export const EnhancedFinancialSummary = ({
   window.analysisData.propertyPrice = propertyPrice;
   window.analysisData.downPayment = downPayment;
   window.analysisData.expenses = expenses;
+  window.analysisData.propertyData = propertyData;
+  window.analysisData.costs = costs;
 
   return `
     <div class="space-y-2xl">
