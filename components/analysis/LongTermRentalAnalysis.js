@@ -78,8 +78,82 @@ export const LongTermRentalAnalysis = ({
   const rentControl = getRentControlInfo();
   const effectiveGrowthRate = rentControl.controlled ? Math.min(rentControl.guideline, rentGrowth) : rentGrowth;
   
+  // Get property image (use a default if none provided)
+  const propertyImage = propertyData.imageUrl || propertyData.image_url || 
+    'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=800&h=600&fit=crop';
+  
   return `
     <div class="${className}">
+      <!-- Property Card Header -->
+      <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <!-- Property Image -->
+          <div class="md:col-span-1">
+            <div class="relative h-48 md:h-full rounded-lg overflow-hidden">
+              <img src="${propertyImage}" alt="${address}" class="w-full h-full object-cover">
+              <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+              <div class="absolute bottom-3 left-3">
+                <span class="bg-white/90 backdrop-blur px-3 py-1 rounded-full text-sm font-semibold">
+                  ${propertyType}
+                </span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Property Details -->
+          <div class="md:col-span-2">
+            <div class="flex items-start justify-between mb-4">
+              <div>
+                <h3 class="text-xl font-bold text-gray-900 mb-1">${address.split(',')[0]}</h3>
+                <p class="text-gray-600">${cityName}, ${province}</p>
+              </div>
+              <div class="text-right">
+                <p class="text-2xl font-bold text-green-600">$${monthlyRent.toLocaleString()}/mo</p>
+                <p class="text-sm text-gray-500">Long-Term Rental</p>
+              </div>
+            </div>
+            
+            <!-- Property Features -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+              <div class="text-center p-3 bg-gray-50 rounded-lg">
+                <div class="text-lg font-semibold">${bedrooms}</div>
+                <div class="text-xs text-gray-600">Bedrooms</div>
+              </div>
+              <div class="text-center p-3 bg-gray-50 rounded-lg">
+                <div class="text-lg font-semibold">${bathrooms}</div>
+                <div class="text-xs text-gray-600">Bathrooms</div>
+              </div>
+              <div class="text-center p-3 bg-gray-50 rounded-lg">
+                <div class="text-lg font-semibold">${sqft}</div>
+                <div class="text-xs text-gray-600">Sq Ft</div>
+              </div>
+              <div class="text-center p-3 bg-gray-50 rounded-lg">
+                <div class="text-lg font-semibold">${sqft !== 'N/A' ? '$' + (monthlyRent / parseInt(sqft)).toFixed(2) : 'N/A'}</div>
+                <div class="text-xs text-gray-600">Per Sq Ft</div>
+              </div>
+            </div>
+            
+            <!-- Quick Insights -->
+            <div class="flex flex-wrap gap-2">
+              <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium">
+                ${demandLevel} Demand
+              </span>
+              <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-medium">
+                ${vacancyRate}% Vacancy
+              </span>
+              ${rentControl.controlled ? 
+                `<span class="px-3 py-1 bg-orange-100 text-orange-700 rounded-full text-sm font-medium">
+                  Rent Controlled
+                </span>` : 
+                `<span class="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm font-medium">
+                  Market Rate
+                </span>`
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Header matching STR style -->
       <div class="flex items-center justify-between mb-6">
         <div class="flex items-center gap-3">
