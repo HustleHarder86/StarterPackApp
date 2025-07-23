@@ -532,7 +532,7 @@
                 });
             }
             
-            async analyzeProperty(propertyData) {
+            async analyzeProperty(propertyData, analysisType = 'both') {
                 this.showLoading('Analyzing property...');
                 
                 try {
@@ -549,7 +549,8 @@
                             propertyAddress: propertyData.address,
                             propertyData: propertyData,
                             requestType: 'authenticated',
-                            includeStrAnalysis: true
+                            analysisType: analysisType,
+                            includeStrAnalysis: analysisType === 'both' || analysisType === 'str'
                         })
                     });
                     
@@ -593,6 +594,10 @@
                     }
                     
                     console.log('Transformed analysis data:', analysisData);
+                    
+                    // Store analysis type in the data
+                    analysisData.analysisType = analysisType;
+                    
                     window.appState.currentAnalysis = analysisData;
                     // Also set window.analysisData for compatibility with showAllComparables
                     window.analysisData = analysisData;
@@ -629,9 +634,9 @@
                     
                     const component = PropertyConfirmation(
                         propertyData,
-                        () => {
-                            // onConfirm
-                            this.analyzeProperty(propertyData);
+                        (analysisType) => {
+                            // onConfirm with selected analysis type
+                            this.analyzeProperty(propertyData, analysisType);
                         },
                         () => {
                             // onCancel
@@ -646,8 +651,18 @@
                     // Render the component
                     confirmationContainer.innerHTML = component.html;
                     
-                    // Setup event listeners
-                    component.setup();
+                    // Get user data for trial count
+                    const userData = window.appState.userData ? {
+                        isPremium: window.appState.userData.subscriptionTier === 'premium' || 
+                                   window.appState.userData.subscriptionTier === 'pro' || 
+                                   window.appState.userData.subscriptionTier === 'enterprise',
+                        strTrialUsed: window.appState.userData.strTrialUsed || 0,
+                        role: window.appState.userData.role,
+                        isAdmin: window.appState.userData.isAdmin
+                    } : null;
+                    
+                    // Setup event listeners with user data
+                    component.setup(userData);
                     
                 } catch (error) {
                     console.error('Failed to load PropertyConfirmation component:', error);

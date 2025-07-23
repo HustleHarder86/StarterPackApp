@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Check Admin Status</title>
+    <script src="https://www.gstatic.com/firebasejs/9.17.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.2/firebase-firestore-compat.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen p-8">
+    <div class="max-w-2xl mx-auto">
+        <div class="bg-white rounded-lg shadow-lg p-8">
+            <h1 class="text-2xl font-bold mb-6">Admin Status Checker</h1>
+            
+            <div id="status" class="space-y-4">
+                <p class="text-gray-600">Loading...</p>
+            </div>
+            
+            <div id="login-form" class="hidden mt-6 space-y-4">
+                <h2 class="text-lg font-semibold">Login to Check Status</h2>
+                <input type="email" id="email" placeholder="amy__ali@hotmail.com" 
+                       value="amy__ali@hotmail.com"
+                       class="w-full p-2 border rounded">
+                <input type="password" id="password" placeholder="Your password" 
+                       class="w-full p-2 border rounded">
+                <button onclick="login()" 
+                        class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
+                    Login & Check Status
+                </button>
+            </div>
+            
+            <div id="results" class="hidden mt-6 p-4 bg-gray-50 rounded">
+                <h2 class="text-lg font-semibold mb-3">Your Account Details:</h2>
+                <div id="account-details" class="space-y-2"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let auth, db;
+        
+        async function initializeFirebase() {
+            try {
+                const response = await fetch('/api/config');
+                const config = await response.json();
+                
+                firebase.initializeApp(config.firebase);
+                auth = firebase.auth();
+                db = firebase.firestore();
+                
+                // Check auth state
+                auth.onAuthStateChanged(async (user) => {
+                    if (user) {
+                        await checkAdminStatus(user);
+                    } else {
+                        document.getElementById('status').innerHTML = 
+                            '<p class="text-orange-600">Not logged in</p>';
+                        document.getElementById('login-form').classList.remove('hidden');
+                    }
+                });
+                
+            } catch (error) {
+                document.getElementById('status').innerHTML = 
+                    `<p class="text-red-600">Error initializing: ${error.message}</p>`;
+            }
+        }
+        
+        async function login() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            try {
+                document.getElementById('status').innerHTML = 
+                    '<p class="text-blue-600">Logging in...</p>';
+                    
+                await auth.signInWithEmailAndPassword(email, password);
+                // Auth state change will trigger checkAdminStatus
+                
+            } catch (error) {
+                document.getElementById('status').innerHTML = 
+                    `<p class="text-red-600">Login failed: ${error.message}</p>`;
+            }
+        }
+        
+        async function checkAdminStatus(user) {
+            document.getElementById('status').innerHTML = 
+                `<p class="text-green-600">✓ Logged in as: ${user.email}</p>`;
+            document.getElementById('login-form').classList.add('hidden');
+            
+            try {
+                const userDoc = await db.collection('users').doc(user.uid).get();
+                
+                if (userDoc.exists) {
+                    const userData = userDoc.data();
+                    const isAdmin = userData.role === 'admin' || userData.isAdmin === true;
+                    const trialsUsed = userData.strTrialUsed || 0;
+                    const trialsLeft = Math.max(0, 5 - trialsUsed);
+                    
+                    let statusHTML = `
+                        <div class="grid grid-cols-2 gap-2 text-sm">
+                            <div class="font-semibold">Email:</div>
+                            <div>${user.email}</div>
+                            
+                            <div class="font-semibold">UID:</div>
+                            <div class="text-xs font-mono">${user.uid}</div>
+                            
+                            <div class="font-semibold">Role:</div>
+                            <div>${userData.role || 'user'}</div>
+                            
+                            <div class="font-semibold">Is Admin:</div>
+                            <div>${userData.isAdmin ? '✅ Yes' : '❌ No'}</div>
+                            
+                            <div class="font-semibold">Subscription:</div>
+                            <div>${userData.subscriptionTier || 'free'}</div>
+                            
+                            <div class="font-semibold">STR Trials Used:</div>
+                            <div>${trialsUsed} / 5</div>
+                        </div>
+                        
+                        <div class="mt-4 p-4 rounded ${isAdmin ? 'bg-purple-100' : 'bg-gray-100'}">
+                            ${isAdmin ? 
+                                '<p class="text-purple-700 font-semibold">👑 You have ADMIN access with unlimited STR analyses!</p>' :
+                                `<p class="text-gray-700">📊 You have ${trialsLeft} STR trials remaining</p>`
+                            }
+                        </div>
+                    `;
+                    
+                    if (!isAdmin) {
+                        statusHTML += `
+                            <div class="mt-4 p-4 bg-yellow-50 rounded">
+                                <p class="text-sm text-yellow-800 mb-2">To get admin access:</p>
+                                <code class="block bg-gray-800 text-white p-2 rounded text-xs">
+                                    node scripts/update-to-admin.js ${user.email}
+                                </code>
+                            </div>
+                        `;
+                    }
+                    
+                    document.getElementById('account-details').innerHTML = statusHTML;
+                    document.getElementById('results').classList.remove('hidden');
+                    
+                } else {
+                    document.getElementById('status').innerHTML += 
+                        '<p class="text-red-600">User document not found in database</p>';
+                }
+                
+            } catch (error) {
+                document.getElementById('status').innerHTML += 
+                    `<p class="text-red-600">Error: ${error.message}</p>`;
+            }
+        }
+        
+        // Initialize on load
+        initializeFirebase();
+    </script>
+</body>
+</html>

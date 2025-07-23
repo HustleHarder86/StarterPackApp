@@ -105,13 +105,22 @@ class ComponentLoader {
         analysis: analysisData,
         useMockData: false  // Ensure real data is used
       });
-      const airbnbHtml = airbnbModule.AirbnbHeroSectionMockup({ 
+      
+      // Determine which analysis types to show
+      const analysisType = analysisData.analysisType || 'both';
+      const showSTR = analysisType === 'both' || analysisType === 'str';
+      const showLTR = analysisType === 'both' || analysisType === 'ltr';
+      const showTabs = analysisType === 'both';
+      
+      const airbnbHtml = showSTR ? airbnbModule.AirbnbHeroSectionMockup({ 
         analysis: analysisData,
         useMockData: false  // Ensure real data is used
-      });
-      const ltrHtml = ltrModule.LongTermRentalAnalysis({ 
+      }) : '';
+      
+      const ltrHtml = showLTR ? ltrModule.LongTermRentalAnalysis({ 
         analysis: analysisData
-      });
+      }) : '';
+      
       // Use EnhancedFinancialSummary for proper data handling
       const financialHtml = financialModule.EnhancedFinancialSummary ? 
         financialModule.EnhancedFinancialSummary({ analysis: analysisData }) :
@@ -129,40 +138,48 @@ class ComponentLoader {
           </div>
 
           <div class="max-w-7xl mx-auto px-6">
-            <!-- Rental Analysis Tabs -->
+            <!-- Rental Analysis -->
             <div class="mb-8">
-              <!-- Tab Navigation -->
-              <div class="border-b border-gray-200">
-                <nav class="-mb-px flex space-x-8" aria-label="Tabs">
-                  <button
-                    id="str-tab"
-                    onclick="switchTab('str')"
-                    class="tab-button active border-blue-500 text-blue-600 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm"
-                  >
-                    Short-Term Rental Analysis
-                  </button>
-                  <button
-                    id="ltr-tab"
-                    onclick="switchTab('ltr')"
-                    class="tab-button border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm"
-                  >
-                    Long-Term Rental Analysis
-                  </button>
-                </nav>
-              </div>
-              
-              <!-- Tab Content -->
-              <div class="mt-6">
-                <!-- STR Content -->
-                <div id="str-content" class="tab-content">
-                  ${airbnbHtml}
+              ${showTabs ? `
+                <!-- Tab Navigation -->
+                <div class="border-b border-gray-200">
+                  <nav class="-mb-px flex space-x-8" aria-label="Tabs">
+                    <button
+                      id="str-tab"
+                      onclick="switchTab('str')"
+                      class="tab-button active border-blue-500 text-blue-600 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm"
+                    >
+                      Short-Term Rental Analysis
+                    </button>
+                    <button
+                      id="ltr-tab"
+                      onclick="switchTab('ltr')"
+                      class="tab-button border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm"
+                    >
+                      Long-Term Rental Analysis
+                    </button>
+                  </nav>
                 </div>
                 
-                <!-- LTR Content -->
-                <div id="ltr-content" class="tab-content hidden">
-                  ${ltrHtml}
+                <!-- Tab Content -->
+                <div class="mt-6">
+                  <!-- STR Content -->
+                  <div id="str-content" class="tab-content">
+                    ${airbnbHtml}
+                  </div>
+                  
+                  <!-- LTR Content -->
+                  <div id="ltr-content" class="tab-content hidden">
+                    ${ltrHtml}
+                  </div>
                 </div>
-              </div>
+              ` : `
+                <!-- Single Analysis Content -->
+                <div class="mt-6">
+                  ${showSTR ? airbnbHtml : ''}
+                  ${showLTR ? ltrHtml : ''}
+                </div>
+              `}
             </div>
 
             <!-- Enhanced Financial Summary with Calculator -->
@@ -198,7 +215,7 @@ class ComponentLoader {
         
         <!-- Tab Switching Script -->
         <script>
-          function switchTab(tabName) {
+          window.switchTab = function(tabName) {
             // Update tab buttons
             document.querySelectorAll('.tab-button').forEach(btn => {
               btn.classList.remove('border-blue-500', 'text-blue-600', 'active');
@@ -220,10 +237,12 @@ class ComponentLoader {
           }
           
           // Restore active tab if exists
-          const activeTab = sessionStorage.getItem('activeRentalTab');
-          if (activeTab && activeTab === 'ltr') {
-            switchTab('ltr');
-          }
+          setTimeout(() => {
+            const activeTab = sessionStorage.getItem('activeRentalTab');
+            if (activeTab && activeTab === 'ltr') {
+              window.switchTab('ltr');
+            }
+          }, 100);
         </script>
       `;
 

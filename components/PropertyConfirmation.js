@@ -39,14 +39,41 @@ export function PropertyConfirmation(propertyData, onConfirm, onCancel) {
                 
                 <!-- Property Details -->
                 <div class="p-8">
-                    <!-- Property Type Badges -->
-                    <div class="flex gap-2 mb-6">
-                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
-                            Traditional Rental (LTR)
-                        </span>
-                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-purple-100 text-purple-800">
-                            Short Term Rental (STR)
-                        </span>
+                    <!-- Analysis Type Selection -->
+                    <div class="mb-6 p-4 bg-gray-50 rounded-lg">
+                        <h3 class="text-sm font-medium text-gray-700 mb-3">Select Analysis Type</h3>
+                        <div class="space-y-2">
+                            <label class="flex items-start p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-white transition-colors">
+                                <input type="radio" name="analysisType" value="both" checked class="mt-1 mr-3">
+                                <div class="flex-1">
+                                    <div class="font-medium text-gray-900">Complete Analysis (Recommended)</div>
+                                    <div class="text-sm text-gray-600">Compare both Short-Term Rental (Airbnb) and Long-Term Rental potential</div>
+                                    <div class="text-xs text-orange-600 mt-1" id="str-trial-notice" style="display: none;">
+                                        ⚡ Includes STR analysis (X/5 free trials remaining)
+                                    </div>
+                                </div>
+                            </label>
+                            
+                            <label class="flex items-start p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-white transition-colors">
+                                <input type="radio" name="analysisType" value="ltr" class="mt-1 mr-3">
+                                <div class="flex-1">
+                                    <div class="font-medium text-gray-900">Long-Term Rental Only</div>
+                                    <div class="text-sm text-gray-600">Traditional rental analysis with market rates and projections</div>
+                                    <div class="text-xs text-green-600 mt-1">✓ Always free</div>
+                                </div>
+                            </label>
+                            
+                            <label class="flex items-start p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-white transition-colors">
+                                <input type="radio" name="analysisType" value="str" class="mt-1 mr-3">
+                                <div class="flex-1">
+                                    <div class="font-medium text-gray-900">Short-Term Rental Only</div>
+                                    <div class="text-sm text-gray-600">Airbnb analysis with live comparables and revenue projections</div>
+                                    <div class="text-xs text-orange-600 mt-1" id="str-only-trial-notice" style="display: none;">
+                                        ⚡ Premium feature (X/5 free trials remaining)
+                                    </div>
+                                </div>
+                            </label>
+                        </div>
                     </div>
                     
                     <!-- Property Image and Info Grid -->
@@ -154,9 +181,60 @@ export function PropertyConfirmation(propertyData, onConfirm, onCancel) {
     // Return HTML and setup function
     return {
         html,
-        setup: () => {
+        setup: (userData) => {
+            // Check if user is admin
+            const isAdmin = userData && (userData.role === 'admin' || userData.isAdmin === true);
+            
+            // Show STR trial count if user is not premium and not admin
+            if (userData && !userData.isPremium && !isAdmin) {
+                const trialsUsed = userData.strTrialUsed || 0;
+                const trialsRemaining = Math.max(0, 5 - trialsUsed);
+                
+                // Update trial notices
+                const notices = ['str-trial-notice', 'str-only-trial-notice'];
+                notices.forEach(id => {
+                    const notice = document.getElementById(id);
+                    if (notice) {
+                        notice.style.display = 'block';
+                        notice.innerHTML = notice.innerHTML.replace('X', trialsRemaining);
+                        
+                        // If no trials left, show upgrade message
+                        if (trialsRemaining === 0) {
+                            notice.innerHTML = '⚡ Premium feature - <a href="#upgrade" class="underline">Upgrade to continue</a>';
+                            notice.classList.remove('text-orange-600');
+                            notice.classList.add('text-red-600');
+                        }
+                    }
+                });
+                
+                // Disable STR options if no trials left
+                if (trialsRemaining === 0) {
+                    document.querySelectorAll('input[value="both"], input[value="str"]').forEach(input => {
+                        input.disabled = true;
+                        input.closest('label').classList.add('opacity-50', 'cursor-not-allowed');
+                    });
+                    // Auto-select LTR only
+                    document.querySelector('input[value="ltr"]').checked = true;
+                }
+            } else if (isAdmin) {
+                // For admin users, show unlimited access notice
+                const notices = ['str-trial-notice', 'str-only-trial-notice'];
+                notices.forEach(id => {
+                    const notice = document.getElementById(id);
+                    if (notice) {
+                        notice.style.display = 'block';
+                        notice.innerHTML = '👑 Admin - Unlimited access';
+                        notice.classList.remove('text-orange-600');
+                        notice.classList.add('text-purple-600');
+                    }
+                });
+            }
+            
             // Attach event listeners
-            document.getElementById('property-confirm-analyze').addEventListener('click', onConfirm);
+            document.getElementById('property-confirm-analyze').addEventListener('click', () => {
+                const selectedType = document.querySelector('input[name="analysisType"]:checked').value;
+                onConfirm(selectedType);
+            });
             document.getElementById('property-confirm-cancel').addEventListener('click', onCancel);
         }
     };

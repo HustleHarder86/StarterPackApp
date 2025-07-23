@@ -27,18 +27,25 @@ router.options('/property', (req, res) => {
 // Property analysis endpoint - Direct processing (no queues)
 router.post('/property', optionalAuth, async (req, res, next) => {
   try {
-    const { propertyAddress, propertyData, requestType, includeStrAnalysis } = req.body;
+    const { propertyAddress, propertyData, requestType, includeStrAnalysis, analysisType } = req.body;
     
     // Validate input
     if (!propertyAddress) {
       throw new APIError('Property address is required', 400);
     }
     
+    // Determine analysis type
+    const effectiveAnalysisType = analysisType || 'both';
+    const shouldIncludeSTR = effectiveAnalysisType === 'both' || effectiveAnalysisType === 'str' || includeStrAnalysis;
+    const shouldIncludeLTR = effectiveAnalysisType === 'both' || effectiveAnalysisType === 'ltr';
+    
     logger.info('Property analysis request received', {
       propertyAddress,
       userId: req.userId,
       hasPropertyData: !!propertyData,
-      includeStrAnalysis: !!includeStrAnalysis,
+      analysisType: effectiveAnalysisType,
+      includeStrAnalysis: shouldIncludeSTR,
+      includeLtrAnalysis: shouldIncludeLTR,
       propertyDataBedrooms: propertyData?.bedrooms,
       propertyDataBathrooms: propertyData?.bathrooms,
       propertyDataKeys: propertyData ? Object.keys(propertyData) : []
@@ -65,7 +72,7 @@ router.post('/property', optionalAuth, async (req, res, next) => {
       logger.info('Property analysis completed', { propertyAddress });
       
       // If STR analysis is requested, run it regardless of LTR success
-      if (includeStrAnalysis) {
+      if (shouldIncludeSTR) {
         logger.info('STR analysis requested, triggering STR analysis');
         
         // If LTR failed, create a basic result structure
@@ -96,7 +103,11 @@ router.post('/property', optionalAuth, async (req, res, next) => {
             const userDoc = await db.collection('users').doc(req.userId).get();
             const userData = userDoc.data();
             
-            const canUseSTR = userData.subscriptionTier === 'pro' || 
+            // Admin users have unlimited access
+            const isAdmin = userData.role === 'admin' || userData.isAdmin === true;
+            
+            const canUseSTR = isAdmin ||
+                              userData.subscriptionTier === 'pro' || 
                               userData.subscriptionTier === 'enterprise' ||
                               (userData.strTrialUsed || 0) < 5;
             
@@ -382,12 +393,15 @@ router.post('/property', optionalAuth, async (req, res, next) => {
                 comparison: result.comparison
               }, 24 * 3600);
               
-              // Update user's trial count if free tier
+              // Update user's trial count if free tier (skip for admin)
               if (req.userId) {
                 const userDoc = await db.collection('users').doc(req.userId).get();
                 const userData = userDoc.data();
                 
-                if (userData.subscriptionTier === 'free') {
+                // Admin users have unlimited access
+                const isAdmin = userData.role === 'admin' || userData.isAdmin === true;
+                
+                if (userData.subscriptionTier === 'free' && !isAdmin) {
                   await db.collection('users').doc(req.userId).update({
                     strTrialUsed: admin.firestore.FieldValue.increment(1),
                     lastStrAnalysis: admin.firestore.FieldValue.serverTimestamp()
