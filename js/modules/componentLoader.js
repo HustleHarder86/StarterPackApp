@@ -87,12 +87,14 @@ class ComponentLoader {
       const [
         verdictModule,
         airbnbModule,
+        ltrModule,
         financialModule,
         shareModule,
         buttonModule
       ] = await Promise.all([
         this.loadComponent('components/analysis/InvestmentVerdictMockup.js'),
         this.loadComponent('components/analysis/AirbnbListingsMockup.js'),
+        this.loadComponent('components/analysis/LongTermRentalAnalysis.js'),
         this.loadComponent('components/analysis/EnhancedFinancialSummary.js'),
         this.loadComponent('components/ui/ShareModal.js'),
         this.loadComponent('components/ui/Button.js')
@@ -106,6 +108,9 @@ class ComponentLoader {
       const airbnbHtml = airbnbModule.AirbnbHeroSectionMockup({ 
         analysis: analysisData,
         useMockData: false  // Ensure real data is used
+      });
+      const ltrHtml = ltrModule.LongTermRentalAnalysis({ 
+        analysis: analysisData
       });
       // Use EnhancedFinancialSummary for proper data handling
       const financialHtml = financialModule.EnhancedFinancialSummary ? 
@@ -124,9 +129,40 @@ class ComponentLoader {
           </div>
 
           <div class="max-w-7xl mx-auto px-6">
-            <!-- Airbnb Listings - HERO SECTION -->
+            <!-- Rental Analysis Tabs -->
             <div class="mb-8">
-              ${airbnbHtml}
+              <!-- Tab Navigation -->
+              <div class="border-b border-gray-200">
+                <nav class="-mb-px flex space-x-8" aria-label="Tabs">
+                  <button
+                    id="str-tab"
+                    onclick="switchTab('str')"
+                    class="tab-button active border-blue-500 text-blue-600 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm"
+                  >
+                    Short-Term Rental Analysis
+                  </button>
+                  <button
+                    id="ltr-tab"
+                    onclick="switchTab('ltr')"
+                    class="tab-button border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm"
+                  >
+                    Long-Term Rental Analysis
+                  </button>
+                </nav>
+              </div>
+              
+              <!-- Tab Content -->
+              <div class="mt-6">
+                <!-- STR Content -->
+                <div id="str-content" class="tab-content">
+                  ${airbnbHtml}
+                </div>
+                
+                <!-- LTR Content -->
+                <div id="ltr-content" class="tab-content hidden">
+                  ${ltrHtml}
+                </div>
+              </div>
             </div>
 
             <!-- Enhanced Financial Summary with Calculator -->
@@ -159,6 +195,36 @@ class ComponentLoader {
 
         <!-- Share Modal Script -->
         ${shareModule.shareModalScript}
+        
+        <!-- Tab Switching Script -->
+        <script>
+          function switchTab(tabName) {
+            // Update tab buttons
+            document.querySelectorAll('.tab-button').forEach(btn => {
+              btn.classList.remove('border-blue-500', 'text-blue-600', 'active');
+              btn.classList.add('border-transparent', 'text-gray-500');
+            });
+            
+            document.getElementById(tabName + '-tab').classList.remove('border-transparent', 'text-gray-500');
+            document.getElementById(tabName + '-tab').classList.add('border-blue-500', 'text-blue-600', 'active');
+            
+            // Update tab content
+            document.querySelectorAll('.tab-content').forEach(content => {
+              content.classList.add('hidden');
+            });
+            
+            document.getElementById(tabName + '-content').classList.remove('hidden');
+            
+            // Store active tab in session
+            sessionStorage.setItem('activeRentalTab', tabName);
+          }
+          
+          // Restore active tab if exists
+          const activeTab = sessionStorage.getItem('activeRentalTab');
+          if (activeTab && activeTab === 'ltr') {
+            switchTab('ltr');
+          }
+        </script>
       `;
 
       targetContainer.innerHTML = analysisLayout;
