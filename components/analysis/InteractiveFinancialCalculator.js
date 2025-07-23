@@ -278,12 +278,17 @@ function generateExpenseRow(label, id, value, source, propertyData = {}, costs =
         }
         
       case 'insurance':
-        const insuranceRate = propertyData?.propertyType?.includes('Condo') ? 0.0025 : 0.0035;
+        const propertyType = propertyData?.propertyType || 'House';
+        const insuranceRate = propertyType.toLowerCase().includes('condo') ? 0.0025 : 0.0035;
+        const annualInsurance = Math.round(propertyValue * insuranceRate);
+        const monthlyInsurance = Math.round(annualInsurance / 12);
         return `<strong>${source === 'market' ? 'Market average' : 'Estimated'} calculation:</strong><br>
-                Property type: ${propertyData?.propertyType || 'House'}<br>
-                Insurance rate: ${(insuranceRate * 100).toFixed(2)}% of value<br>
-                Annual: $${propertyValue.toLocaleString()} × ${(insuranceRate * 100).toFixed(2)}% = $${Math.round(propertyValue * insuranceRate).toLocaleString()}<br>
-                Monthly: $${value}`;
+                Property type: ${propertyType}<br>
+                Property value: $${propertyValue.toLocaleString()}<br>
+                Insurance rate: ${(insuranceRate * 100).toFixed(2)}% annually<br>
+                ${propertyType.toLowerCase().includes('condo') ? '(Lower rate for condos - building structure covered by strata)<br>' : '(Higher rate for houses - full coverage needed)<br>'}
+                Annual premium: $${annualInsurance.toLocaleString()}<br>
+                Monthly cost: $${annualInsurance} ÷ 12 = $${value}`;
                 
       case 'hoaFees':
         if (source === 'actual') {
@@ -308,25 +313,37 @@ function generateExpenseRow(label, id, value, source, propertyData = {}, costs =
                 
       case 'utilities':
         if (source === 'market') {
+          const baseUtilities = Math.round(value / 1.4);
           return `<strong>Market average for STR:</strong><br>
                   Includes: electricity, gas, water, internet<br>
-                  40% higher than long-term rental<br>
-                  Base $200 × 1.4 = $${value}`;
+                  STR utilities are ~40% higher than long-term rentals<br>
+                  Base LTR cost: $${baseUtilities}/month<br>
+                  STR cost: $${baseUtilities} × 1.4 = $${value}/month`;
         } else {
+          const sqft = propertyData?.sqft || 'Unknown';
+          const perSqft = sqft && sqft !== 'Unknown' ? (value / sqft).toFixed(2) : 'N/A';
           return `<strong>Estimated based on property size:</strong><br>
-                  ${propertyData?.sqft || 'Unknown'} sq ft<br>
-                  Typical STR utility costs`;
+                  Property size: ${sqft} sq ft<br>
+                  Utility cost: $${value}/month<br>
+                  ${perSqft !== 'N/A' ? `Cost per sq ft: $${perSqft}<br>` : ''}
+                  Includes higher usage for STR guests`;
         }
         
       case 'cleaning':
         const bedrooms = propertyData?.bedrooms || 3;
         const cleaningFee = bedrooms <= 2 ? 75 : bedrooms <= 3 ? 100 : 125;
-        const turnovers = Math.round(21); // Assuming 70% occupancy, 6-day avg stay
+        // Calculate turnovers based on actual cleaning expense and fee
+        const turnovers = Math.round(value / cleaningFee);
+        const occupancyRate = 0.70; // 70% occupancy
+        const occupiedDays = Math.round(30 * occupancyRate); // ~21 days
+        const avgStayLength = turnovers > 0 ? Math.round(occupiedDays / turnovers) : 6;
+        
         return `<strong>Airbnb cleaning costs:</strong><br>
                 Property: ${bedrooms} bedrooms<br>
                 Cleaning fee per turnover: $${cleaningFee}<br>
+                Monthly expense: $${value}<br>
                 Est. turnovers/month: ${turnovers}<br>
-                $${cleaningFee} × ${turnovers} = $${value}`;
+                (Based on ${Math.round(occupancyRate * 100)}% occupancy, ~${avgStayLength} days avg stay)`;
                 
       case 'maintenance':
         const maintenanceRate = source === 'market' ? 0.015 : 0.01;
