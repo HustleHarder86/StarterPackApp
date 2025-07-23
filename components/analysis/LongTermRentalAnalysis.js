@@ -30,8 +30,53 @@ export const LongTermRentalAnalysis = ({
   const demandLevel = marketInsights.demand_level || marketInsights.demandLevel || 'High';
   const typicalTenant = marketInsights.typical_tenant || marketInsights.typicalTenant || 'Young families and professionals';
   
-  // Extract city name for display
+  // Extract city name and province for display
   const cityName = address.split(',')[1]?.trim() || 'this area';
+  const province = address.split(',')[2]?.trim() || 'Ontario';
+  
+  // Determine rent control guidelines based on province
+  const getRentControlInfo = () => {
+    if (province.includes('Ontario')) {
+      return {
+        guideline: 2.5, // 2024 Ontario guideline
+        controlled: true,
+        note: 'Ontario properties built before Nov 15, 2018 are rent controlled',
+        historicalRates: '2024: 2.5%, 2023: 2.5%, 2022: 1.2%, 2021: 0%, 2020: 2.2%'
+      };
+    } else if (province.includes('British Columbia') || province.includes('BC')) {
+      return {
+        guideline: 3.5, // 2024 BC guideline
+        controlled: true,
+        note: 'BC annual rent increase limited to inflation + 2%',
+        historicalRates: '2024: 3.5%, 2023: 2.0%, 2022: 1.5%, 2021: 0%, 2020: 2.6%'
+      };
+    } else if (province.includes('Quebec')) {
+      return {
+        guideline: 1.9, // Average Quebec guideline
+        controlled: true,
+        note: 'Quebec uses complex formula based on building expenses',
+        historicalRates: '2024: 1.9% avg, varies by heating type and region'
+      };
+    } else if (province.includes('Manitoba')) {
+      return {
+        guideline: 3.0, // 2024 Manitoba guideline
+        controlled: true,
+        note: 'Manitoba rent increases tied to CPI',
+        historicalRates: '2024: 3.0%, 2023: 0%, 2022: 0%, 2021: 1.6%, 2020: 2.4%'
+      };
+    } else {
+      // Alberta, Saskatchewan, etc. - no rent control
+      return {
+        guideline: rentGrowth,
+        controlled: false,
+        note: `${province} has no rent control - market rates apply`,
+        historicalRates: 'Market-driven increases based on supply and demand'
+      };
+    }
+  };
+  
+  const rentControl = getRentControlInfo();
+  const effectiveGrowthRate = rentControl.controlled ? Math.min(rentControl.guideline, rentGrowth) : rentGrowth;
   
   return `
     <div class="${className}">
@@ -55,8 +100,8 @@ export const LongTermRentalAnalysis = ({
           <div class="text-sm text-gray-600">Vacancy Rate</div>
         </div>
         <div class="text-center">
-          <div class="text-2xl font-bold text-gray-900">+${rentGrowth}%</div>
-          <div class="text-sm text-gray-600">Annual Growth</div>
+          <div class="text-2xl font-bold text-gray-900">+${effectiveGrowthRate}%</div>
+          <div class="text-sm text-gray-600">${rentControl.controlled ? 'Max Annual Increase' : 'Market Growth'}</div>
         </div>
         <div class="text-center">
           <div class="text-2xl font-bold text-gray-900">${demandLevel}</div>
@@ -82,11 +127,22 @@ export const LongTermRentalAnalysis = ({
                 <span class="text-sm text-gray-600">Effective Rate (${100 - vacancyRate}% occupancy)</span>
                 <span class="font-semibold">$${Math.round(monthlyRent * (1 - vacancyRate / 100)).toLocaleString()}/mo</span>
               </div>
+              <div class="flex justify-between items-center pb-2 border-b">
+                <span class="text-sm text-gray-600">Annual Increase Limit</span>
+                <span class="font-semibold ${rentControl.controlled ? 'text-orange-600' : 'text-green-600'}">${effectiveGrowthRate}%${rentControl.controlled ? ' (rent controlled)' : ''}</span>
+              </div>
               <div class="flex justify-between items-center">
                 <span class="text-sm text-gray-600">5-Year Projection</span>
-                <span class="font-semibold text-green-600">$${Math.round(monthlyRent * Math.pow(1 + rentGrowth/100, 5)).toLocaleString()}/mo</span>
+                <span class="font-semibold text-green-600">$${Math.round(monthlyRent * Math.pow(1 + effectiveGrowthRate/100, 5)).toLocaleString()}/mo</span>
               </div>
             </div>
+            ${rentControl.controlled ? `
+              <div class="mt-3 p-3 bg-orange-50 rounded-lg">
+                <p class="text-xs text-orange-800">
+                  <strong>⚠️ Rent Control:</strong> ${rentControl.note}
+                </p>
+              </div>
+            ` : ''}
           `
         })}
 
@@ -152,6 +208,13 @@ export const LongTermRentalAnalysis = ({
                   <div>
                     <strong>Census & Demographics</strong>
                     <p class="text-xs text-gray-600 mt-1">${cityName}: Growing population, ${demandLevel.toLowerCase()} rental demand</p>
+                  </div>
+                </li>
+                <li class="flex items-start">
+                  <span class="text-green-500 mr-2 mt-0.5">✓</span>
+                  <div>
+                    <strong>Provincial Rent Guidelines</strong>
+                    <p class="text-xs text-gray-600 mt-1">${rentControl.historicalRates}</p>
                   </div>
                 </li>
               </ul>
