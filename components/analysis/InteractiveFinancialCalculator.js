@@ -142,7 +142,7 @@ export const InteractiveFinancialCalculator = ({
           </span>
         </div>
         <div class="pl-lg">
-          ${generateExpenseRow('Monthly Mortgage', 'mortgage', expenseValues.mortgage, dataSources.mortgage)}
+          ${generateExpenseRow('Monthly Mortgage', 'mortgage', expenseValues.mortgage, dataSources.mortgage, actualPropertyData, actualCosts)}
         </div>
       </div>
 
@@ -158,16 +158,16 @@ export const InteractiveFinancialCalculator = ({
           </span>
         </div>
         <div class="space-y-3 pl-lg">
-          ${generateExpenseRow('Property Tax', 'propertyTax', expenseValues.propertyTax, dataSources.propertyTax)}
-          ${generateExpenseRow('Insurance', 'insurance', expenseValues.insurance, dataSources.insurance)}
-          ${generateExpenseRow('HOA/Condo Fees', 'hoaFees', expenseValues.hoaFees, dataSources.hoaFees)}
-          ${generateExpenseRow('Property Management (10%)', 'propertyMgmt', expenseValues.propertyMgmt, dataSources.propertyMgmt)}
-          ${generateExpenseRow('Utilities', 'utilities', expenseValues.utilities, dataSources.utilities)}
-          ${generateExpenseRow('Cleaning & Turnover', 'cleaning', expenseValues.cleaning, dataSources.cleaning)}
-          ${generateExpenseRow('Maintenance & Repairs', 'maintenance', expenseValues.maintenance, dataSources.maintenance)}
-          ${generateExpenseRow('Supplies & Amenities', 'supplies', expenseValues.supplies, dataSources.supplies)}
-          ${generateExpenseRow('Platform Fees (3%)', 'platformFees', expenseValues.platformFees, dataSources.platformFees)}
-          ${generateExpenseRow('Other Expenses', 'otherExpenses', expenseValues.otherExpenses, dataSources.otherExpenses)}
+          ${generateExpenseRow('Property Tax', 'propertyTax', expenseValues.propertyTax, dataSources.propertyTax, actualPropertyData, actualCosts)}
+          ${generateExpenseRow('Insurance', 'insurance', expenseValues.insurance, dataSources.insurance, actualPropertyData, actualCosts)}
+          ${generateExpenseRow('HOA/Condo Fees', 'hoaFees', expenseValues.hoaFees, dataSources.hoaFees, actualPropertyData, actualCosts)}
+          ${generateExpenseRow('Property Management (10%)', 'propertyMgmt', expenseValues.propertyMgmt, dataSources.propertyMgmt, actualPropertyData, actualCosts)}
+          ${generateExpenseRow('Utilities', 'utilities', expenseValues.utilities, dataSources.utilities, actualPropertyData, actualCosts)}
+          ${generateExpenseRow('Cleaning & Turnover', 'cleaning', expenseValues.cleaning, dataSources.cleaning, actualPropertyData, actualCosts)}
+          ${generateExpenseRow('Maintenance & Repairs', 'maintenance', expenseValues.maintenance, dataSources.maintenance, actualPropertyData, actualCosts)}
+          ${generateExpenseRow('Supplies & Amenities', 'supplies', expenseValues.supplies, dataSources.supplies, actualPropertyData, actualCosts)}
+          ${generateExpenseRow('Platform Fees (3%)', 'platformFees', expenseValues.platformFees, dataSources.platformFees, actualPropertyData, actualCosts)}
+          ${generateExpenseRow('Other Expenses', 'otherExpenses', expenseValues.otherExpenses, dataSources.otherExpenses, actualPropertyData, actualCosts)}
         </div>
         
         <!-- Total Expenses -->
@@ -224,7 +224,7 @@ export const InteractiveFinancialCalculator = ({
   });
 };
 
-function generateExpenseRow(label, id, value, source) {
+function generateExpenseRow(label, id, value, source, propertyData = {}, costs = {}) {
   const sourceColors = {
     actual: 'green',
     market: 'blue',
@@ -241,11 +241,137 @@ function generateExpenseRow(label, id, value, source) {
     estimated: 'estimated'
   };
 
+  // Get detailed calculation explanation based on expense type
+  const getCalculationDetails = () => {
+    const propertyValue = propertyData?.price || 850000;
+    const monthlyRevenue = window.analysisData?.strRevenue || 5400;
+    
+    switch(id) {
+      case 'mortgage':
+        const loanAmount = propertyValue - (propertyValue * 0.2);
+        return `<strong>Mortgage calculation:</strong><br>
+                Property price: $${propertyValue.toLocaleString()}<br>
+                Down payment: $${(propertyValue * 0.2).toLocaleString()} (20%)<br>
+                Loan amount: $${loanAmount.toLocaleString()}<br>
+                Interest rate: 6.5% annually<br>
+                Term: 30 years (360 months)<br>
+                <br>
+                Uses standard amortization formula<br>
+                Monthly payment: $${value}`;
+                
+      case 'propertyTax':
+        if (source === 'actual') {
+          return `<strong>From Realtor.ca listing:</strong><br>
+                  Annual tax: $${(propertyData?.propertyTaxes || costs?.property_tax_annual || 0).toLocaleString()}<br>
+                  Monthly: Annual ÷ 12 = $${value}`;
+        } else if (source === 'market') {
+          const rate = costs?.property_tax_rate || 0.01;
+          return `<strong>Based on local tax rates:</strong><br>
+                  Property value: $${propertyValue.toLocaleString()}<br>
+                  Tax rate: ${(rate * 100).toFixed(2)}%<br>
+                  Annual: $${propertyValue} × ${(rate * 100).toFixed(2)}% = $${(propertyValue * rate).toLocaleString()}<br>
+                  Monthly: $${Math.round(propertyValue * rate / 12)}`;
+        } else {
+          return `<strong>Estimated calculation:</strong><br>
+                  Default rate: 1% of property value<br>
+                  $${propertyValue.toLocaleString()} × 1% ÷ 12 months`;
+        }
+        
+      case 'insurance':
+        const insuranceRate = propertyData?.propertyType?.includes('Condo') ? 0.0025 : 0.0035;
+        return `<strong>${source === 'market' ? 'Market average' : 'Estimated'} calculation:</strong><br>
+                Property type: ${propertyData?.propertyType || 'House'}<br>
+                Insurance rate: ${(insuranceRate * 100).toFixed(2)}% of value<br>
+                Annual: $${propertyValue.toLocaleString()} × ${(insuranceRate * 100).toFixed(2)}% = $${Math.round(propertyValue * insuranceRate).toLocaleString()}<br>
+                Monthly: $${value}`;
+                
+      case 'hoaFees':
+        if (source === 'actual') {
+          return `<strong>From Realtor.ca listing:</strong><br>
+                  Monthly condo/HOA fees: $${propertyData?.condoFees || 0}<br>
+                  ${propertyData?.condoFees === 0 ? '(No fees for this property)' : ''}`;
+        } else if (propertyData?.propertyType === 'House') {
+          return `<strong>Property type: House</strong><br>
+                  Most houses don't have HOA fees<br>
+                  Set to $0`;
+        } else {
+          return `<strong>Estimated for ${propertyData?.propertyType || 'Condo'}:</strong><br>
+                  Based on typical fees for similar properties<br>
+                  Factors: building age, amenities, location`;
+        }
+        
+      case 'propertyMgmt':
+        return `<strong>Industry standard calculation:</strong><br>
+                Monthly revenue: $${monthlyRevenue.toLocaleString()}<br>
+                Management fee: 10% of revenue<br>
+                $${monthlyRevenue} × 10% = $${value}`;
+                
+      case 'utilities':
+        if (source === 'market') {
+          return `<strong>Market average for STR:</strong><br>
+                  Includes: electricity, gas, water, internet<br>
+                  40% higher than long-term rental<br>
+                  Base $200 × 1.4 = $${value}`;
+        } else {
+          return `<strong>Estimated based on property size:</strong><br>
+                  ${propertyData?.sqft || 'Unknown'} sq ft<br>
+                  Typical STR utility costs`;
+        }
+        
+      case 'cleaning':
+        const bedrooms = propertyData?.bedrooms || 3;
+        const cleaningFee = bedrooms <= 2 ? 75 : bedrooms <= 3 ? 100 : 125;
+        const turnovers = Math.round(21); // Assuming 70% occupancy, 6-day avg stay
+        return `<strong>Airbnb cleaning costs:</strong><br>
+                Property: ${bedrooms} bedrooms<br>
+                Cleaning fee per turnover: $${cleaningFee}<br>
+                Est. turnovers/month: ${turnovers}<br>
+                $${cleaningFee} × ${turnovers} = $${value}`;
+                
+      case 'maintenance':
+        const maintenanceRate = source === 'market' ? 0.015 : 0.01;
+        return `<strong>${source === 'market' ? 'Market rate' : 'Estimated'} for STR:</strong><br>
+                ${(maintenanceRate * 100).toFixed(1)}% of property value annually<br>
+                Higher wear from frequent guests<br>
+                Annual: $${Math.round(propertyValue * maintenanceRate).toLocaleString()}<br>
+                Monthly: $${value}`;
+                
+      case 'supplies':
+        return `<strong>STR supplies calculation:</strong><br>
+                Monthly revenue: $${monthlyRevenue.toLocaleString()}<br>
+                Supplies rate: 4% of revenue<br>
+                Includes: toiletries, linens, consumables<br>
+                $${monthlyRevenue} × 4% = $${value}`;
+                
+      case 'platformFees':
+        return `<strong>Airbnb host service fee:</strong><br>
+                Monthly revenue: $${monthlyRevenue.toLocaleString()}<br>
+                Platform fee: 3% of bookings<br>
+                $${monthlyRevenue} × 3% = $${value}`;
+                
+      case 'otherExpenses':
+        return `<strong>Miscellaneous STR expenses:</strong><br>
+                • Guest communication tools<br>
+                • Extra insurance coverage<br>
+                • Minor repairs & replacements<br>
+                Estimated: $${value}/month`;
+                
+      default:
+        return 'Calculation details not available';
+    }
+  };
+
   return `
     <div class="flex items-center justify-between">
-      <span class="text-sm text-gray-600">
+      <span class="text-sm text-gray-600 flex items-center">
         ${label}
         <span class="text-xs text-${sourceColors[source]}-600 ml-1" title="Data source">• ${sourceLabels[source]}</span>
+        <div class="tooltip inline-block ml-1">
+          <span class="help-icon text-gray-400 hover:text-gray-600 cursor-help">?</span>
+          <span class="tooltiptext">
+            ${getCalculationDetails()}
+          </span>
+        </div>
       </span>
       <div class="flex items-center">
         <span class="text-gray-400 text-sm mr-1">$</span>
@@ -287,22 +413,29 @@ export const financialCalculatorStyles = `
 
 .tooltip .tooltiptext {
   visibility: hidden;
-  width: 280px;
+  width: 320px;
   background-color: #1f2937;
   color: #fff;
   text-align: left;
   border-radius: 8px;
-  padding: 12px;
+  padding: 12px 16px;
   position: absolute;
-  z-index: 1;
+  z-index: 10;
   bottom: 125%;
   left: 50%;
-  margin-left: -140px;
+  margin-left: -160px;
   opacity: 0;
   transition: opacity 0.3s;
   font-size: 12px;
-  line-height: 1.5;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+  line-height: 1.6;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+}
+
+.tooltip .tooltiptext strong {
+  color: #fbbf24;
+  display: block;
+  margin-bottom: 4px;
+  font-size: 13px;
 }
 
 .tooltip .tooltiptext::after {
