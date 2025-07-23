@@ -5,6 +5,7 @@
 
 import { Card } from '../ui/Card.js';
 import { LiveDataBadge } from '../ui/Badge.js';
+import { LongTermRentalCalculator, ltrCalculatorScript } from './LongTermRentalCalculator.js';
 
 export const LongTermRentalAnalysis = ({ 
   analysis = {},
@@ -33,6 +34,7 @@ export const LongTermRentalAnalysis = ({
   // Extract city name and province for display
   const cityName = address.split(',')[1]?.trim() || 'this area';
   const province = address.split(',')[2]?.trim() || 'Ontario';
+  const propertyPrice = propertyData.price || 850000;
   
   // Determine rent control guidelines based on province
   const getRentControlInfo = () => {
@@ -363,6 +365,88 @@ export const LongTermRentalAnalysis = ({
           className: 'h-full'
         })}
       </div>
+
+      <!-- Interactive Financial Calculator -->
+      <div class="mt-6">
+        ${LongTermRentalCalculator({
+          monthlyRevenue: monthlyRent,
+          expenses: {
+            propertyTax: Math.round((propertyData.propertyTaxes || propertyData.property_taxes || propertyPrice * 0.01) / 12),
+            insurance: 200,
+            hoaFees: propertyData.condoFees || propertyData.condo_fees || 0,
+            propertyMgmt: Math.round(monthlyRent * 0.08),
+            maintenance: 250,
+            vacancy: Math.round(monthlyRent * 0.05),
+            otherExpenses: 100
+          },
+          propertyPrice: propertyPrice,
+          downPayment: propertyPrice * 0.2,
+          propertyData: propertyData,
+          costs: {}
+        })}
+      </div>
     </div>
+
+    <!-- LTR Calculator Script -->
+    ${ltrCalculatorScript}
+
+    <!-- Calculator Styles -->
+    <style>
+      .tooltip {
+        position: relative;
+        display: inline-block;
+      }
+
+      .tooltip .tooltiptext {
+        visibility: hidden;
+        width: 320px;
+        background-color: #1f2937;
+        color: #fff;
+        text-align: left;
+        border-radius: 8px;
+        padding: 12px 16px;
+        position: absolute;
+        z-index: 10;
+        bottom: 125%;
+        left: 50%;
+        margin-left: -160px;
+        opacity: 0;
+        transition: opacity 0.3s;
+        font-size: 12px;
+        line-height: 1.6;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+      }
+
+      .tooltip .tooltiptext strong {
+        color: #fbbf24;
+        display: block;
+        margin-bottom: 4px;
+        font-size: 13px;
+      }
+
+      .tooltip:hover .tooltiptext {
+        visibility: visible;
+        opacity: 1;
+      }
+
+      .help-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 16px;
+        height: 16px;
+        background-color: #e5e7eb;
+        color: #6b7280;
+        border-radius: 50%;
+        font-size: 11px;
+        cursor: help;
+        margin-left: 4px;
+      }
+
+      .help-icon:hover {
+        background-color: #d1d5db;
+        color: #4b5563;
+      }
+    </style>
   `;
 };

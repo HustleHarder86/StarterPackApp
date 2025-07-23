@@ -14,6 +14,12 @@
     
     <script type="module">
         // Mock analysis data
+        // Set up window.analysisData for calculator
+        window.analysisData = {
+            downPayment: 170000,
+            ltrMonthlyRent: 3100
+        };
+        
         const mockAnalysis = {
             propertyData: {
                 address: "1421 Costigan Road Unit 614, Milton, Ontario, L9T 2N4",
@@ -21,7 +27,8 @@
                 bedrooms: 3,
                 bathrooms: 3,
                 squareFeet: 1224,
-                price: 619900
+                price: 619900,
+                propertyTaxes: 5490
             },
             longTermRental: {
                 monthlyRent: 3100,
