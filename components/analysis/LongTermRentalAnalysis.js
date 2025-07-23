@@ -124,10 +124,6 @@ export const LongTermRentalAnalysis = ({
                 <span class="font-semibold">$${annualRent.toLocaleString()}</span>
               </div>
               <div class="flex justify-between items-center pb-2 border-b">
-                <span class="text-sm text-gray-600">Effective Rate (${100 - vacancyRate}% occupancy)</span>
-                <span class="font-semibold">$${Math.round(monthlyRent * (1 - vacancyRate / 100)).toLocaleString()}/mo</span>
-              </div>
-              <div class="flex justify-between items-center pb-2 border-b">
                 <span class="text-sm text-gray-600">Annual Increase Limit</span>
                 <span class="font-semibold ${rentControl.controlled ? 'text-orange-600' : 'text-green-600'}">${effectiveGrowthRate}%${rentControl.controlled ? ' (rent controlled)' : ''}</span>
               </div>
