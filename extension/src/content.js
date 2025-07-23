@@ -227,26 +227,43 @@ function extractAddress() {
           console.log('[StarterPack] Found raw address:', fullAddress, 'from selector:', selector);
           
           // Fix common spacing issues before parsing
+          // First, handle unit/suite numbers properly
+          fullAddress = fullAddress
+            .replace(/^(\d+)\s*[-–—]\s*(\d+)\s+/, '$1 - $2 ') // Fix unit number spacing
+            .replace(/^(\d+)([A-Z])/g, '$1 $2') // Add space after building number
+            .replace(/Unit\s*#\s*,\s*(\d+)/gi, 'Unit $1, ') // Fix "Unit#, 614" -> "Unit 614, "
+            .replace(/Unit#(\d+)/gi, 'Unit $1') // Fix "Unit#614" -> "Unit 614"
+            .replace(/(\d+)([A-Z][a-z]+)/g, '$1, $2'); // Fix "614Milton" -> "614, Milton"
+          
+          // Fix concatenated street names (e.g., "COST IGAN" should stay as is, but fix real concatenations)
+          // Handle postal codes that might be stuck to province names
+          fullAddress = fullAddress.replace(/([A-Z]{2,})([A-Z]\d[A-Z]\d[A-Z]\d)/g, '$1 $2');
+          
           // Fix concatenated street types and city names (e.g., "ROADMilton" -> "ROAD Milton")
-          const streetTypes = [
-            'AVENUE', 'AVE', 'STREET', 'ST', 'ROAD', 'RD', 'DRIVE', 'DR',
-            'BOULEVARD', 'BLVD', 'COURT', 'CT', 'PLACE', 'PL', 'LANE', 'LN',
-            'WAY', 'PARKWAY', 'PKWY', 'CIRCLE', 'CIR', 'CRESCENT', 'CRES',
-            'TERRACE', 'TERR', 'TRAIL', 'TRL', 'CROSSING', 'XING', 'SQUARE', 'SQ',
-            'HEIGHTS', 'HTS', 'GROVE', 'GRV'
+          // Create patterns for complete street type words followed by city names
+          const streetTypePatterns = [
+            // Full word street types followed by a capital letter (likely city name)
+            /\b(AVENUE|STREET|ROAD|DRIVE|BOULEVARD|COURT|PLACE|LANE|WAY|PARKWAY|CIRCLE|CRESCENT|TERRACE|TRAIL|CROSSING|SQUARE|HEIGHTS|GROVE|GATE|MEWS|WALK|PATH)([A-Z][a-z])/g,
+            // Abbreviated street types followed by a capital letter (likely city name)
+            /\b(AVE|ST|RD|DR|BLVD|CT|PL|LN|PKWY|CIR|CRES|TERR|TRL|XING|SQ|HTS|GRV)([A-Z][a-z])/g
           ];
           
-          // Add spaces after street types if missing
-          streetTypes.forEach(type => {
-            const regex = new RegExp(`(${type})([A-Z])`, 'g');
-            fullAddress = fullAddress.replace(regex, '$1 $2');
+          // Apply street type patterns
+          streetTypePatterns.forEach(pattern => {
+            fullAddress = fullAddress.replace(pattern, '$1 $2');
           });
           
-          // Fix other concatenation issues (e.g., "E Oakville" -> "E Oakville")
+          // Fix postal code formatting
+          fullAddress = fullAddress.replace(/([A-Z]\d[A-Z])(\d[A-Z]\d)/g, '$1 $2'); // Add space in middle of postal code
+          
+          // Fix other concatenation issues
           fullAddress = fullAddress
             .replace(/([a-z])([A-Z])/g, '$1 $2') // lowercase followed by uppercase
             .replace(/([A-Z]{2,})([A-Z][a-z])/g, '$1 $2') // multiple caps followed by capital+lowercase
+            .replace(/,([^ ])/g, ', $1') // Add space after commas
             .replace(/\s+/g, ' ') // normalize multiple spaces
+            .replace(/\s+,/g, ',') // Remove spaces before commas
+            .replace(/,\s*,/g, ',') // Remove duplicate commas
             .trim();
           
           console.log('[StarterPack] Fixed address:', fullAddress);
@@ -254,35 +271,71 @@ function extractAddress() {
           // First try to split by comma
           let parts = fullAddress.split(',').map(part => part.trim());
           
-          // If no comma after street, try to extract city from the fixed address
-          if (parts.length === 1 || (parts[1] && parts[1].includes('Ontario'))) {
-            // Look for city name before province
-            const match = fullAddress.match(/(.+?)\s+(\w+)\s*(?:\([^)]+\))?\s*,?\s*(Ontario|ON|British Columbia|BC|Alberta|AB|Quebec|QC)\s+([A-Z]\d[A-Z]\s*\d[A-Z]\d)$/i);
-            if (match) {
-              const streetPart = match[1].trim();
-              const cityName = match[2].trim();
-              const province = match[3].trim();
-              const postalCode = match[4].trim();
-              
-              return {
-                street: streetPart,
-                city: cityName,
-                province: province,
-                postalCode: postalCode,
-                country: 'Canada',
-                full: fullAddress
-              };
-            }
+          // If we have a standard format with commas
+          if (parts.length >= 3) {
+            const street = parts[0];
+            const city = parts[1];
+            const provinceAndPostal = parts[2].trim();
+            
+            // Extract province and postal code
+            const provinceMatch = provinceAndPostal.match(/^(.+?)\s+([A-Z]\d[A-Z]\s*\d[A-Z]\d)$/i);
+            const province = provinceMatch ? provinceMatch[1].trim() : provinceAndPostal.split(' ')[0];
+            const postalCode = provinceMatch ? provinceMatch[2].replace(/\s/g, ' ').trim() : provinceAndPostal.split(' ').slice(1).join(' ');
+            
+            // Format the address nicely
+            const formattedAddress = `${street}, ${city}, ${province} ${postalCode}`;
+            
+            return {
+              street: street,
+              city: city,
+              province: province,
+              postalCode: postalCode,
+              country: 'Canada',
+              full: formattedAddress // Use formatted version
+            };
           }
           
-          // Fallback to comma-based parsing
+          // If no proper comma separation, try to extract from the pattern
+          const match = fullAddress.match(/(.+?)\s+([A-Za-z\s]+?)\s*(?:\([^)]+\))?\s*,?\s*(Ontario|ON|British Columbia|BC|Alberta|AB|Quebec|QC)\s+([A-Z]\d[A-Z]\s*\d[A-Z]\d)$/i);
+          if (match) {
+            const streetPart = match[1].trim();
+            const cityName = match[2].trim();
+            const province = match[3].trim();
+            const postalCode = match[4].replace(/\s/g, ' ').trim();
+            
+            // Format the address nicely
+            const formattedAddress = `${streetPart}, ${cityName}, ${province} ${postalCode}`;
+            
+            return {
+              street: streetPart,
+              city: cityName,
+              province: province,
+              postalCode: postalCode,
+              country: 'Canada',
+              full: formattedAddress // Use formatted version
+            };
+          }
+          
+          // Fallback with better formatting
+          const street = parts[0] || '';
+          const city = parts[1] || '';
+          const provinceAndPostal = parts[2] || '';
+          const province = provinceAndPostal.split(' ')[0] || '';
+          const postalCode = provinceAndPostal.split(' ').slice(1).join(' ') || '';
+          
+          // Create a properly formatted address
+          let formattedAddress = street;
+          if (city) formattedAddress += `, ${city}`;
+          if (province) formattedAddress += `, ${province}`;
+          if (postalCode) formattedAddress += ` ${postalCode}`;
+          
           return {
-            street: parts[0] || '',
-            city: parts[1] || '',
-            province: parts[2]?.split(' ')[0] || '',
-            postalCode: parts[2]?.split(' ').slice(1).join(' ') || '',
+            street: street,
+            city: city,
+            province: province,
+            postalCode: postalCode,
             country: 'Canada',
-            full: fullAddress
+            full: formattedAddress
           };
         }
       }
