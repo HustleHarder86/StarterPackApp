@@ -365,10 +365,29 @@ class ComponentLoader {
     window.showAllComparables = () => {
       console.log('Showing all comparables...');
       
-      // Get the current analysis data
-      const analysisData = window.analysisData || {};
-      const comparables = analysisData.strAnalysis?.comparables || 
-                          analysisData.short_term_rental?.comparables || [];
+      // Get the current analysis data from multiple possible sources
+      const analysisData = window.analysisData || window.appState?.currentAnalysis || {};
+      
+      // Try to find comparables in various locations
+      let comparables = null;
+      
+      // Check different possible data structures
+      if (analysisData.strAnalysis?.comparables) {
+        comparables = analysisData.strAnalysis.comparables;
+      } else if (analysisData.short_term_rental?.comparables) {
+        comparables = analysisData.short_term_rental.comparables;
+      } else if (analysisData.data?.short_term_rental?.comparables) {
+        comparables = analysisData.data.short_term_rental.comparables;
+      } else if (analysisData.comparables) {
+        comparables = analysisData.comparables;
+      }
+      
+      // Ensure comparables is an array
+      if (!Array.isArray(comparables)) {
+        console.error('Comparables data not found or not an array:', analysisData);
+        alert('No comparable listings available');
+        return;
+      }
       
       if (comparables.length === 0) {
         alert('No additional comparables available');
@@ -391,11 +410,16 @@ class ComponentLoader {
             </div>
             <div class="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                ${comparables.map((comp, index) => `
+                ${comparables.map((comp, index) => {
+                  // Ensure comp exists and has properties
+                  if (!comp) return '';
+                  
+                  return `
                   <a href="${comp.url || comp.airbnb_url || comp.airbnbUrl || '#'}" target="_blank" 
                      class="block bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow">
                     <img src="${comp.image_url || comp.imageUrl || comp.thumbnail || 'https://via.placeholder.com/300x200'}" 
-                         alt="${comp.title || 'Comparable Property'}" class="w-full h-48 object-cover">
+                         alt="${comp.title || 'Comparable Property'}" class="w-full h-48 object-cover"
+                         onerror="this.src='https://via.placeholder.com/300x200?text=No+Image'">
                     <div class="p-4">
                       <h3 class="font-bold text-gray-900 mb-2">${comp.title || 'Comparable Property'}</h3>
                       <div class="flex justify-between items-center mb-2">
@@ -417,7 +441,8 @@ class ComponentLoader {
                       </div>
                     </div>
                   </a>
-                `).join('')}
+                `;
+                }).join('')}
               </div>
             </div>
           </div>

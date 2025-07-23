@@ -66,9 +66,29 @@ export const EnhancedFinancialSummary = ({
   
   // Calculate STR-specific expenses based on market data
   const strOccupancy = analysis.strAnalysis?.occupancy_rate || analysis.short_term_rental?.occupancy_rate || 0.7;
-  const avgStayLength = 3; // Average nights per booking
-  const turnoversPerMonth = Math.round(30 * strOccupancy / avgStayLength);
-  const avgCleaningFee = 100; // Per turnover based on market data
+  
+  // More realistic assumptions for cleaning
+  // Average stay length varies by property type
+  const avgStayLength = (() => {
+    const propType = (propertyData.propertyType || propertyData.property_type || '').toLowerCase();
+    if (propType.includes('condo') || propType.includes('apartment')) {
+      return 5; // Urban condos: shorter stays
+    } else if (propType.includes('house') || propType.includes('detached')) {
+      return 7; // Houses: family vacations
+    }
+    return 6; // Default
+  })();
+  
+  const turnoversPerMonth = Math.round((30 * strOccupancy) / avgStayLength);
+  
+  // Cleaning fee based on property size
+  const bedrooms = analysis.propertyDetails?.bedrooms || propertyData.bedrooms || 3;
+  const avgCleaningFee = (() => {
+    if (bedrooms <= 2) return 75;
+    if (bedrooms <= 3) return 100;
+    if (bedrooms <= 4) return 125;
+    return 150; // 5+ bedrooms
+  })();
   
   const expenses = {
     propertyTax: Math.round(propertyTaxAnnual / 12),
@@ -76,7 +96,7 @@ export const EnhancedFinancialSummary = ({
     hoaFees: propertyData.condoFees || propertyData.condo_fees || costs.hoa_monthly || 0, // Use actual condo fees or 0 for houses
     propertyMgmt: Math.round(strRevenue * 0.10), // 10% management fee
     utilities: costs.utilities_monthly || Math.round(200 * 1.4), // 40% higher for STR
-    cleaning: avgCleaningFee * turnoversPerMonth, // Based on turnover frequency
+    cleaning: avgCleaningFee * turnoversPerMonth, // More realistic based on property size and stay length
     maintenance: Math.round((costs.maintenance_annual || propertyPrice * 0.015) / 12), // 1.5% for STR
     supplies: Math.round(strRevenue * 0.04), // 4% for consumables
     platformFees: Math.round(strRevenue * 0.03), // 3% Airbnb fee
