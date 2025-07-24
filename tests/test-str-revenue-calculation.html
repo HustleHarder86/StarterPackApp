@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>STR Revenue Calculation Test</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50 p-8">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-2xl font-bold mb-6">STR Revenue Calculation Test</h1>
+        
+        <!-- Test Controls -->
+        <div class="bg-white p-6 rounded-lg shadow mb-6">
+            <h2 class="text-lg font-bold mb-4">Comparable Properties</h2>
+            <div class="space-y-3">
+                <div class="grid grid-cols-4 gap-4 text-sm font-medium text-gray-700">
+                    <div>Nightly Rate</div>
+                    <div>Occupancy</div>
+                    <div>Monthly Revenue</div>
+                    <div>Calculation</div>
+                </div>
+                
+                <div class="grid grid-cols-4 gap-4 text-sm">
+                    <input type="number" id="rate1" value="167" class="p-2 border rounded">
+                    <input type="number" id="occ1" value="70" class="p-2 border rounded" min="0" max="100">
+                    <div id="revenue1" class="p-2 bg-gray-100 rounded"></div>
+                    <div id="calc1" class="p-2 text-xs text-gray-600"></div>
+                </div>
+                
+                <div class="grid grid-cols-4 gap-4 text-sm">
+                    <input type="number" id="rate2" value="83" class="p-2 border rounded">
+                    <input type="number" id="occ2" value="70" class="p-2 border rounded" min="0" max="100">
+                    <div id="revenue2" class="p-2 bg-gray-100 rounded"></div>
+                    <div id="calc2" class="p-2 text-xs text-gray-600"></div>
+                </div>
+                
+                <div class="grid grid-cols-4 gap-4 text-sm">
+                    <input type="number" id="rate3" value="98" class="p-2 border rounded">
+                    <input type="number" id="occ3" value="70" class="p-2 border rounded" min="0" max="100">
+                    <div id="revenue3" class="p-2 bg-gray-100 rounded"></div>
+                    <div id="calc3" class="p-2 text-xs text-gray-600"></div>
+                </div>
+            </div>
+            
+            <button onclick="calculateRevenues()" class="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+                Calculate
+            </button>
+        </div>
+        
+        <!-- Results -->
+        <div class="bg-white p-6 rounded-lg shadow">
+            <h2 class="text-lg font-bold mb-4">Analysis Results</h2>
+            
+            <div class="space-y-3">
+                <div class="flex justify-between">
+                    <span class="font-medium">Average Nightly Rate:</span>
+                    <span id="avgRate" class="font-bold"></span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="font-medium">Average Occupancy:</span>
+                    <span id="avgOcc" class="font-bold"></span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="font-medium">Calculated Monthly Revenue:</span>
+                    <span id="calcMonthly" class="font-bold text-green-600"></span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="font-medium">Days per Month:</span>
+                    <span class="text-gray-600">30.4</span>
+                </div>
+            </div>
+            
+            <div class="mt-6 p-4 bg-blue-50 rounded">
+                <h3 class="font-bold mb-2">Formula:</h3>
+                <code class="text-sm">Monthly Revenue = Nightly Rate × 30.4 days × Occupancy Rate</code>
+            </div>
+            
+            <div class="mt-4 p-4 bg-yellow-50 rounded">
+                <h3 class="font-bold mb-2">Issue Identified:</h3>
+                <p class="text-sm">The financial calculator shows $5,400/month but the actual calculation based on comparables should be much lower.</p>
+                <p class="text-sm mt-2">This appears to be using a hardcoded default value instead of the actual STR analysis data.</p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function calculateRevenues() {
+            // Calculate individual revenues
+            for (let i = 1; i <= 3; i++) {
+                const rate = parseFloat(document.getElementById(`rate${i}`).value) || 0;
+                const occ = parseFloat(document.getElementById(`occ${i}`).value) / 100 || 0;
+                const revenue = Math.round(rate * 30.4 * occ);
+                
+                document.getElementById(`revenue${i}`).textContent = `$${revenue.toLocaleString()}`;
+                document.getElementById(`calc${i}`).textContent = `$${rate} × 30.4 × ${(occ * 100).toFixed(0)}%`;
+            }
+            
+            // Calculate averages
+            const rates = [1, 2, 3].map(i => parseFloat(document.getElementById(`rate${i}`).value) || 0);
+            const occs = [1, 2, 3].map(i => parseFloat(document.getElementById(`occ${i}`).value) / 100 || 0);
+            
+            const avgRate = Math.round(rates.reduce((a, b) => a + b) / rates.length);
+            const avgOcc = occs.reduce((a, b) => a + b) / occs.length;
+            const monthlyRevenue = Math.round(avgRate * 30.4 * avgOcc);
+            
+            document.getElementById('avgRate').textContent = `$${avgRate}/night`;
+            document.getElementById('avgOcc').textContent = `${(avgOcc * 100).toFixed(1)}%`;
+            document.getElementById('calcMonthly').textContent = `$${monthlyRevenue.toLocaleString()}/month`;
+        }
+        
+        // Calculate on load
+        calculateRevenues();
+        
+        // Add event listeners
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('input', calculateRevenues);
+        });
+    </script>
+</body>
+</html>

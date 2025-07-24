@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Key Metrics Sync Test</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        .test-result {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .pass { background: #d4edda; color: #155724; }
+        .fail { background: #f8d7da; color: #721c24; }
+    </style>
+</head>
+<body class="p-8">
+    <h1 class="text-2xl font-bold mb-4">Key Metrics Sync Test</h1>
+    
+    <div id="test-container">
+        <!-- Mock calculator values -->
+        <input type="number" id="monthlyRevenue" value="4511" hidden>
+        <input type="number" id="mortgage" value="4300" hidden>
+        <input type="number" id="propertyTax" value="458" hidden>
+        <input type="number" id="insurance" value="250" hidden>
+        <input type="number" id="hoaFees" value="450" hidden>
+        <input type="number" id="propertyMgmt" value="451" hidden>
+        <input type="number" id="utilities" value="200" hidden>
+        <input type="number" id="cleaning" value="400" hidden>
+        <input type="number" id="maintenance" value="300" hidden>
+        <input type="number" id="supplies" value="150" hidden>
+        <input type="number" id="platformFees" value="135" hidden>
+        <input type="number" id="otherExpenses" value="140" hidden>
+        
+        <!-- Mock Key Metrics display -->
+        <div class="grid grid-cols-2 gap-4 mb-4">
+            <div class="border p-4">
+                <h3 class="font-bold">Calculator Values</h3>
+                <p>Total Expenses: <span id="totalExpenses">-$0</span></p>
+                <p>Net Cash Flow: <span id="netCashFlow">$0</span></p>
+                <p>Annual Income: <span id="annualIncome">$0</span></p>
+                <p>Cash Return: <span id="cashReturn">0%</span></p>
+            </div>
+            <div class="border p-4">
+                <h3 class="font-bold">Key Metrics</h3>
+                <p>Cap Rate: <span id="capRateValue">0%</span></p>
+                <p>Annual ROI: <span id="roiValue">0%</span></p>
+                <p>Cash Flow: <span id="cashFlowValue">$0</span></p>
+                <p>Break-even: <span id="breakEvenValue">0%</span></p>
+            </div>
+        </div>
+        
+        <!-- Indicators -->
+        <div id="capRateIndicator" hidden></div>
+        <div id="roiIndicator" hidden></div>
+        <div id="cashFlowIndicator" hidden></div>
+        <div id="breakEvenIndicator" hidden></div>
+    </div>
+    
+    <div id="test-results"></div>
+    
+    <script>
+        // Mock window.analysisData
+        window.analysisData = {
+            propertyPrice: 850000,
+            downPayment: 170000
+        };
+        
+        // Mock functions that will be called
+        window.updateIndicator = function(id, rating) {
+            console.log(`Updated ${id} with rating:`, rating);
+        };
+        
+        window.getMetricRating = function(metric, value) {
+            const ratings = {
+                capRate: {
+                    excellent: { min: 10, label: 'Excellent', color: 'purple' },
+                    good: { min: 8, label: 'Good', color: 'green' },
+                    fair: { min: 6, label: 'Fair', color: 'yellow' },
+                    poor: { min: 0, label: 'Poor', color: 'red' }
+                },
+                roi: {
+                    excellent: { min: 12, label: 'Excellent', color: 'purple' },
+                    good: { min: 8, label: 'Good', color: 'green' },
+                    fair: { min: 5, label: 'Fair', color: 'yellow' },
+                    poor: { min: 0, label: 'Poor', color: 'red' }
+                },
+                cashFlow: {
+                    excellent: { min: 2000, label: 'Strong', color: 'green' },
+                    good: { min: 500, label: 'Good', color: 'green' },
+                    fair: { min: 0, label: 'Fair', color: 'yellow' },
+                    poor: { min: -Infinity, label: 'Negative', color: 'red' }
+                },
+                breakEven: {
+                    excellent: { max: 60, label: 'Excellent', color: 'purple' },
+                    good: { max: 70, label: 'Good', color: 'green' },
+                    fair: { max: 80, label: 'Fair', color: 'yellow' },
+                    poor: { max: 100, label: 'Risky', color: 'red' }
+                }
+            };
+
+            const metricRatings = ratings[metric];
+            let rating = metricRatings.poor;
+
+            if (metric === 'breakEven') {
+                if (value <= metricRatings.excellent.max) rating = metricRatings.excellent;
+                else if (value <= metricRatings.good.max) rating = metricRatings.good;
+                else if (value <= metricRatings.fair.max) rating = metricRatings.fair;
+            } else {
+                if (value >= metricRatings.excellent.min) rating = metricRatings.excellent;
+                else if (value >= metricRatings.good.min) rating = metricRatings.good;
+                else if (value >= metricRatings.fair.min) rating = metricRatings.fair;
+            }
+
+            return rating;
+        };
+    </script>
+    
+    <!-- Load the actual functions -->
+    <script src="../js/modules/financialCalculatorInit.js" type="module"></script>
+    
+    <script type="module">
+        import { updateFinancialCalculations, updateKeyMetrics } from '../js/modules/financialCalculatorInit.js';
+        
+        const results = document.getElementById('test-results');
+        
+        function addResult(test, passed, details) {
+            const div = document.createElement('div');
+            div.className = `test-result ${passed ? 'pass' : 'fail'}`;
+            div.innerHTML = `<strong>${test}:</strong> ${passed ? 'PASS' : 'FAIL'} - ${details}`;
+            results.appendChild(div);
+        }
+        
+        // Run tests
+        setTimeout(() => {
+            console.log('Running Key Metrics sync test...');
+            
+            // First update the calculator
+            updateFinancialCalculations();
+            
+            // Get calculated values
+            const totalExpensesText = document.getElementById('totalExpenses').textContent;
+            const netCashFlowText = document.getElementById('netCashFlow').textContent;
+            
+            // Check if calculator values updated
+            addResult('Calculator updates', totalExpensesText !== '-$0', `Total expenses: ${totalExpensesText}`);
+            
+            // Check if Key Metrics updated
+            const capRateText = document.getElementById('capRateValue').textContent;
+            const roiText = document.getElementById('roiValue').textContent;
+            const cashFlowMetricText = document.getElementById('cashFlowValue').textContent;
+            const breakEvenText = document.getElementById('breakEvenValue').textContent;
+            
+            addResult('Cap Rate updated', capRateText !== '0%', `Cap Rate: ${capRateText}`);
+            addResult('ROI updated', roiText !== '0%', `ROI: ${roiText}`);
+            addResult('Cash Flow metric updated', cashFlowMetricText !== '$0', `Cash Flow: ${cashFlowMetricText}`);
+            addResult('Break-even updated', breakEvenText !== '0%', `Break-even: ${breakEvenText}`);
+            
+            // Verify cash flow values match
+            const calculatorCashFlow = parseFloat(netCashFlowText.replace(/[^0-9.-]/g, ''));
+            const metricCashFlow = parseFloat(cashFlowMetricText.replace(/[^0-9.-]/g, ''));
+            
+            addResult('Cash flow values match', 
+                      Math.abs(calculatorCashFlow - metricCashFlow) < 1, 
+                      `Calculator: ${netCashFlowText}, Metric: ${cashFlowMetricText}`);
+            
+            // Expected values based on the inputs
+            const expectedTotalExpenses = 6734;
+            const expectedNetCashFlow = 4511 - expectedTotalExpenses; // -2223
+            const expectedROI = (expectedNetCashFlow * 12 / 170000) * 100; // -15.7%
+            
+            addResult('Values are realistic', 
+                      calculatorCashFlow < 0 && parseFloat(roiText) < 0,
+                      'Negative cash flow and ROI as expected');
+            
+        }, 100);
+    </script>
+</body>
+</html>

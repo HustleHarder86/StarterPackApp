@@ -50,7 +50,7 @@ export const InteractiveFinancialCalculator = ({
       if ('hoa_monthly' in actualCosts) return actualCosts.hoa_monthly;
       return expenses.hoaFees || 0; // Default to 0, not 450
     })(),
-    propertyMgmt: expenses.propertyMgmt || 540,
+    propertyMgmt: expenses.propertyMgmt || Math.round(monthlyRevenue * 0.10), // 10% of STR revenue
     utilities: actualCosts?.utilities_monthly || expenses.utilities || 200,
     cleaning: expenses.cleaning || 400,
     maintenance: (() => {
@@ -59,8 +59,8 @@ export const InteractiveFinancialCalculator = ({
       }
       return expenses.maintenance || 300;
     })(),
-    supplies: expenses.supplies || 150,
-    platformFees: expenses.platformFees || 162,
+    supplies: expenses.supplies || Math.round(monthlyRevenue * 0.04), // 4% of revenue
+    platformFees: expenses.platformFees || Math.round(monthlyRevenue * 0.03), // 3% of revenue
     otherExpenses: expenses.otherExpenses || 140
   };
   
@@ -306,10 +306,13 @@ function generateExpenseRow(label, id, value, source, propertyData = {}, costs =
         }
         
       case 'propertyMgmt':
+        const actualRevenue = window.analysisData?.strRevenue || monthlyRevenue;
         return `<strong>Industry standard calculation:</strong><br>
-                Monthly revenue: $${monthlyRevenue.toLocaleString()}<br>
+                Monthly STR revenue: $${actualRevenue.toLocaleString()}<br>
                 Management fee: 10% of revenue<br>
-                $${monthlyRevenue} × 10% = $${value}`;
+                $${actualRevenue} × 10% = $${value}<br>
+                <br>
+                <em>Professional property management for STR typically charges 10-20% of gross revenue</em>`;
                 
       case 'utilities':
         if (source === 'market') {

@@ -32,9 +32,9 @@ export const EnhancedFinancialSummary = ({
   console.log('analysis.expenses:', analysis.expenses);
   console.log('==============================================');
   // Extract values from analysis data
-  const strRevenue = analysis.strAnalysis?.monthlyRevenue || analysis.short_term_rental?.monthly_revenue || 5400;
-  const ltrRevenue = analysis.longTermRental?.monthlyRent || analysis.long_term_rental?.monthly_rent || 3200;
-  const monthlyExpenses = analysis.costs?.totalMonthly || analysis.costs?.total_monthly_expenses || 3300;
+  const strRevenue = analysis.strAnalysis?.monthlyRevenue || analysis.short_term_rental?.monthly_revenue || 0;
+  const ltrRevenue = analysis.longTermRental?.monthlyRent || analysis.long_term_rental?.monthly_rent || 0;
+  const monthlyExpenses = analysis.costs?.totalMonthly || analysis.costs?.total_monthly_expenses || 0;
   const netCashFlow = strRevenue - monthlyExpenses;
   
   // Extract property price from various possible locations in the response
