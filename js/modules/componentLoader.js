@@ -90,14 +90,22 @@ class ComponentLoader {
         ltrModule,
         financialModule,
         shareModule,
-        buttonModule
+        buttonModule,
+        taxCalcModule,
+        dummiesModule,
+        financingModule,
+        appreciationModule
       ] = await Promise.all([
         this.loadComponent('components/analysis/InvestmentVerdictMockup.js'),
         this.loadComponent('components/analysis/AirbnbListingsMockup.js'),
         this.loadComponent('components/analysis/LongTermRentalAnalysis.js'),
         this.loadComponent('components/analysis/EnhancedFinancialSummary.js'),
         this.loadComponent('components/ui/ShareModal.js'),
-        this.loadComponent('components/ui/Button.js')
+        this.loadComponent('components/ui/Button.js'),
+        this.loadComponent('components/analysis/CanadianCapitalGainsTaxCalculator.js'),
+        this.loadComponent('components/analysis/InvestmentSummaryForDummies.js'),
+        this.loadComponent('components/analysis/FinancingScenariosComparison.js'),
+        this.loadComponent('components/analysis/PropertyAppreciationChart.js')
       ]);
 
       // Generate component HTML with real data
@@ -125,6 +133,42 @@ class ComponentLoader {
       const financialHtml = financialModule.EnhancedFinancialSummary ? 
         financialModule.EnhancedFinancialSummary({ analysis: analysisData }) :
         financialModule.FinancialSummaryFromAnalysis({ analysis: analysisData });
+      
+      // Generate Investment Planning components
+      const investmentPlanningHtml = `
+        <div class="space-y-6">
+          <!-- Property Appreciation Chart - New! -->
+          ${appreciationModule.PropertyAppreciationChart({
+            propertyData: analysisData.propertyData || {},
+            currentValue: analysisData.propertyData?.price || 0
+          })}
+          
+          <!-- Investment Summary for Dummies -->
+          ${dummiesModule.InvestmentSummaryForDummies({
+            propertyData: analysisData.propertyData || {},
+            strAnalysis: analysisData.strAnalysis || {},
+            ltrAnalysis: analysisData.longTermRental || {},
+            financialAssumptions: {}
+          })}
+          
+          <!-- Canadian Capital Gains Tax Calculator -->
+          ${taxCalcModule.CanadianCapitalGainsTaxCalculator({
+            propertyData: analysisData.propertyData || {},
+            purchasePrice: analysisData.propertyData?.price || 0,
+            currentValue: analysisData.propertyData?.price || 0
+          })}
+          
+          <!-- Financing Scenarios Comparison -->
+          ${financingModule.FinancingScenariosComparison({
+            propertyData: analysisData.propertyData || {},
+            monthlyRevenue: analysisData.strAnalysis?.monthlyRevenue || analysisData.longTermRental?.monthlyRent || 0,
+            monthlyExpenses: (analysisData.propertyData?.propertyTaxes || 0) / 12 + 
+                            (analysisData.propertyData?.condoFees || 0) + 
+                            200 // Other estimated expenses
+          })}
+        </div>
+      `;
+      
       const shareModalHtml = shareModule.ShareModal();
       const actionsHtml = this.generateActionButtons(buttonModule);
 
@@ -140,10 +184,10 @@ class ComponentLoader {
           <div class="max-w-7xl mx-auto px-6">
             <!-- Rental Analysis -->
             <div class="mb-8">
-              ${showTabs ? `
-                <!-- Tab Navigation -->
-                <div class="border-b border-gray-200">
-                  <nav class="-mb-px flex space-x-8" aria-label="Tabs">
+              <!-- Tab Navigation - Always show tabs for better UX -->
+              <div class="border-b border-gray-200">
+                <nav class="-mb-px flex space-x-8" aria-label="Tabs">
+                  ${showSTR ? `
                     <button
                       id="str-tab"
                       onclick="window.switchTab('str')"
@@ -151,35 +195,47 @@ class ComponentLoader {
                     >
                       Short-Term Rental Analysis
                     </button>
+                  ` : ''}
+                  ${showLTR ? `
                     <button
                       id="ltr-tab"
                       onclick="window.switchTab('ltr')"
-                      class="tab-button border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm"
+                      class="tab-button ${!showSTR ? 'active border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'} whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm"
                     >
                       Long-Term Rental Analysis
                     </button>
-                  </nav>
-                </div>
+                  ` : ''}
+                  <button
+                    id="investment-tab"
+                    onclick="window.switchTab('investment')"
+                    class="tab-button border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm"
+                  >
+                    Investment Planning
+                  </button>
+                </nav>
+              </div>
                 
-                <!-- Tab Content -->
-                <div class="mt-6">
+              <!-- Tab Content -->
+              <div class="mt-6">
+                ${showSTR ? `
                   <!-- STR Content -->
-                  <div id="str-content" class="tab-content">
+                  <div id="str-content" class="tab-content ${showSTR && !showLTR ? '' : ''}">
                     ${airbnbHtml}
                   </div>
-                  
+                ` : ''}
+                
+                ${showLTR ? `
                   <!-- LTR Content -->
-                  <div id="ltr-content" class="tab-content hidden">
+                  <div id="ltr-content" class="tab-content ${!showSTR && showLTR ? '' : 'hidden'}">
                     ${ltrHtml}
                   </div>
+                ` : ''}
+                
+                <!-- Investment Planning Content - Always available -->
+                <div id="investment-content" class="tab-content hidden">
+                  ${investmentPlanningHtml}
                 </div>
-              ` : `
-                <!-- Single Analysis Content -->
-                <div class="mt-6">
-                  ${showSTR ? airbnbHtml : ''}
-                  ${showLTR ? ltrHtml : ''}
-                </div>
-              `}
+              </div>
             </div>
 
             <!-- Enhanced Financial Summary with Calculator -->
@@ -216,31 +272,51 @@ class ComponentLoader {
         <!-- Tab Switching Script -->
         <script>
           window.switchTab = function(tabName) {
+            console.log('Switching to tab:', tabName);
+            
             // Update tab buttons
             document.querySelectorAll('.tab-button').forEach(btn => {
               btn.classList.remove('border-blue-500', 'text-blue-600', 'active');
               btn.classList.add('border-transparent', 'text-gray-500');
             });
             
-            document.getElementById(tabName + '-tab').classList.remove('border-transparent', 'text-gray-500');
-            document.getElementById(tabName + '-tab').classList.add('border-blue-500', 'text-blue-600', 'active');
+            const activeTab = document.getElementById(tabName + '-tab');
+            if (activeTab) {
+              activeTab.classList.remove('border-transparent', 'text-gray-500');
+              activeTab.classList.add('border-blue-500', 'text-blue-600', 'active');
+            }
             
             // Update tab content
             document.querySelectorAll('.tab-content').forEach(content => {
               content.classList.add('hidden');
             });
             
-            document.getElementById(tabName + '-content').classList.remove('hidden');
+            const activeContent = document.getElementById(tabName + '-content');
+            if (activeContent) {
+              activeContent.classList.remove('hidden');
+            }
             
             // Store active tab in session
             sessionStorage.setItem('activeRentalTab', tabName);
+            
+            // Initialize investment planning scripts if switching to investment tab
+            if (tabName === 'investment') {
+              setTimeout(() => {
+                if (window.calculateCapitalGains) {
+                  window.calculateCapitalGains();
+                }
+                if (window.updateScenarios) {
+                  window.updateScenarios();
+                }
+              }, 100);
+            }
           }
           
           // Restore active tab if exists
           setTimeout(() => {
             const activeTab = sessionStorage.getItem('activeRentalTab');
-            if (activeTab && activeTab === 'ltr') {
-              window.switchTab('ltr');
+            if (activeTab && (activeTab === 'ltr' || activeTab === 'investment')) {
+              window.switchTab(activeTab);
             }
           }, 100);
         </script>
