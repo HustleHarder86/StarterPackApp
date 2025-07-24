@@ -505,6 +505,7 @@
     <script type="module">
         import ComponentLoader from './js/modules/componentLoader.js';
         import { FirebaseWrapper } from './js/firebase-wrapper.js';
+        import { progressTracker } from './js/modules/analysisProgressTracker.js';
         
         // Initialize Firebase with wrapper
         const firebaseWrapper = new FirebaseWrapper();
@@ -564,7 +565,11 @@
             currentUser: null,
             currentAnalysis: null,
             isLoading: false,
-            isMobile: window.innerWidth <= 640
+            isMobile: window.innerWidth <= 640,
+            loadingState: null,
+            currentAnalysisController: null,
+            lastPropertyData: null,
+            lastAnalysisType: null
         };
         
         // Initialize component loader
@@ -737,8 +742,42 @@
                 // Use enhanced loading state for analysis
                 if (message.includes('Analyzing')) {
                     try {
-                        const { EnhancedLoadingState } = await import('./components/ui/EnhancedLoadingState.js');
-                        loadingContainer.innerHTML = EnhancedLoadingState({ message });
+                        const { AnalysisLoadingState } = await import('./components/ui/AnalysisLoadingState.js');
+                        
+                        // Create and store the loading state instance
+                        window.appState.loadingState = new AnalysisLoadingState(loadingContainer, {
+                            timeout: 60000, // 60 seconds
+                            onCancel: () => {
+                                // Cancel the current analysis request if possible
+                                if (window.appState.currentAnalysisController) {
+                                    window.appState.currentAnalysisController.abort();
+                                }
+                                this.showPropertyInput();
+                            },
+                            onTimeout: () => {
+                                console.error('Analysis timed out after 60 seconds');
+                            },
+                            onRetry: () => {
+                                // Retry the last analysis
+                                if (window.appState.lastPropertyData) {
+                                    this.analyzeProperty(window.appState.lastPropertyData, window.appState.lastAnalysisType);
+                                } else {
+                                    this.showPropertyInput();
+                                }
+                            }
+                        });
+                        
+                        window.appState.loadingState.render();
+                        
+                        // Subscribe to progress updates
+                        window.appState.progressUnsubscribe = progressTracker.subscribe((update) => {
+                            if (window.appState.loadingState) {
+                                window.appState.loadingState.updateProgress(update.progress);
+                            }
+                        });
+                        
+                        // Start simulated progress (will be replaced by real progress from server)
+                        progressTracker.simulateProgress(35000);
                     } catch (error) {
                         console.error('Failed to load enhanced loading state:', error);
                         // Fallback to simple loading
@@ -777,9 +816,16 @@
             }
             
             async analyzeProperty(propertyData, analysisType = 'both') {
+                // Store for retry functionality
+                window.appState.lastPropertyData = propertyData;
+                window.appState.lastAnalysisType = analysisType;
+                
                 this.showLoading('Analyzing property...');
                 
                 try {
+                    // Create an AbortController for cancellation
+                    window.appState.currentAnalysisController = new AbortController();
+                    
                     // Use Railway API for heavy processing (per architecture)
                     const railwayUrl = 'https://real-estate-app-production-ba5c.up.railway.app/api/analysis/property';
                     
@@ -795,7 +841,8 @@
                             requestType: 'authenticated',
                             analysisType: analysisType,
                             includeStrAnalysis: analysisType === 'both' || analysisType === 'str'
-                        })
+                        }),
+                        signal: window.appState.currentAnalysisController.signal
                     });
                     
                     if (!response.ok) {
@@ -845,11 +892,48 @@
                     window.appState.currentAnalysis = analysisData;
                     // Also set window.analysisData for compatibility with showAllComparables
                     window.analysisData = analysisData;
+                    
+                    // Complete the loading state
+                    if (window.appState.loadingState) {
+                        progressTracker.updateStep('complete');
+                        window.appState.loadingState.complete();
+                        // Small delay to show completion before transitioning
+                        await new Promise(resolve => setTimeout(resolve, 500));
+                        window.appState.loadingState.destroy();
+                        window.appState.loadingState = null;
+                    }
+                    
+                    // Unsubscribe from progress updates
+                    if (window.appState.progressUnsubscribe) {
+                        window.appState.progressUnsubscribe();
+                        window.appState.progressUnsubscribe = null;
+                    }
+                    
                     await this.renderAnalysisResults(analysisData);
                     
                 } catch (error) {
+                    // Clean up loading state
+                    if (window.appState.loadingState) {
+                        window.appState.loadingState.destroy();
+                        window.appState.loadingState = null;
+                    }
+                    
+                    // Unsubscribe from progress updates
+                    if (window.appState.progressUnsubscribe) {
+                        window.appState.progressUnsubscribe();
+                        window.appState.progressUnsubscribe = null;
+                    }
+                    
+                    if (error.name === 'AbortError') {
+                        console.log('Analysis was cancelled');
+                        return;
+                    }
+                    
                     console.error('Analysis error:', error);
                     this.showError(`Failed to analyze property: ${error.message}. Please try again.`);
+                } finally {
+                    // Clean up controller
+                    window.appState.currentAnalysisController = null;
                 }
             }
             
@@ -1138,10 +1222,19 @@
                 
                 // Global retry function
                 window.retryAnalysis = () => {
-                    if (window.appState.currentAnalysis) {
+                    if (window.appState.lastPropertyData) {
+                        this.analyzeProperty(window.appState.lastPropertyData, window.appState.lastAnalysisType || 'both');
+                    } else if (window.appState.currentAnalysis) {
                         this.renderAnalysisResults(window.appState.currentAnalysis);
                     } else {
                         this.showPropertyInput();
+                    }
+                };
+                
+                // Global cancel analysis function
+                window.cancelAnalysis = () => {
+                    if (window.appState.loadingState) {
+                        window.appState.loadingState.handleCancel();
                     }
                 };
             }
