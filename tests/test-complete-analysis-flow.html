@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Complete Analysis Flow Test</title>
+  <link href="../styles/output.css" rel="stylesheet">
+  <link href="../styles/design-system.css" rel="stylesheet">
+  <style>
+    .animate-slide-in {
+      animation: slideIn 0.3s ease-out;
+    }
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+</head>
+<body class="bg-gray-50">
+  <div id="analysis-results"></div>
+
+  <script type="module">
+    import ComponentLoader from '../js/modules/componentLoader.js';
+    
+    // Comprehensive mock analysis data
+    const mockAnalysisData = {
+      propertyData: {
+        price: 1250000,
+        propertyType: 'Luxury Condo',
+        bedrooms: 3,
+        bathrooms: 2,
+        city: 'Toronto',
+        propertyTaxes: 12000,
+        condoFees: 850,
+        sqft: 1800,
+        mainImage: 'https://via.placeholder.com/600x400?text=Luxury+Toronto+Condo'
+      },
+      propertyAddress: '100 King Street West, Toronto, ON',
+      strAnalysis: {
+        monthlyRevenue: 8500,
+        occupancy_rate: 0.82,
+        comparables: [
+          { 
+            monthly_revenue: 7800, 
+            occupancy_rate: 0.78,
+            nightly_rate: 325,
+            bedrooms: 3,
+            bathrooms: 2,
+            rating: 4.8,
+            reviewCount: 142,
+            title: 'Downtown Luxury Suite',
+            url: '#',
+            image_url: 'https://via.placeholder.com/300x200?text=Comp+1'
+          },
+          { 
+            monthly_revenue: 8200, 
+            occupancy_rate: 0.85,
+            nightly_rate: 340,
+            bedrooms: 3,
+            bathrooms: 2,
+            rating: 4.9,
+            reviewCount: 98,
+            title: 'King West Premium Condo',
+            url: '#',
+            image_url: 'https://via.placeholder.com/300x200?text=Comp+2'
+          },
+          { 
+            monthly_revenue: 8600, 
+            occupancy_rate: 0.83,
+            nightly_rate: 350,
+            bedrooms: 3,
+            bathrooms: 2.5,
+            rating: 4.7,
+            reviewCount: 215,
+            title: 'Entertainment District Gem',
+            url: '#',
+            image_url: 'https://via.placeholder.com/300x200?text=Comp+3'
+          }
+        ]
+      },
+      longTermRental: {
+        monthlyRent: 4200,
+        cashFlow: 1200,
+        roi: 8.5
+      },
+      costs: {
+        totalMonthly: 3800,
+        property_tax_annual: 12000,
+        insurance_annual: 1800,
+        hoa_monthly: 850,
+        utilities_monthly: 250,
+        maintenance_annual: 18750
+      },
+      overallScore: 8.5,
+      analysisType: 'both'
+    };
+    
+    // Set global analysis data
+    window.analysisData = mockAnalysisData;
+    window.appState = { currentAnalysis: mockAnalysisData };
+    
+    // Create and render analysis
+    const loader = new ComponentLoader();
+    const container = document.getElementById('analysis-results');
+    
+    loader.renderAnalysisResults(mockAnalysisData, container).then(() => {
+      console.log('Analysis rendered successfully!');
+      
+      // Test the toggle function after a short delay
+      setTimeout(() => {
+        const detailButton = document.querySelector('button[onclick="toggleDetailedAnalysis()"]');
+        if (detailButton) {
+          console.log('Found detail toggle button, clicking to show detailed analysis...');
+          detailButton.click();
+        }
+      }, 2000);
+    });
+  </script>
+</body>
+</html>
