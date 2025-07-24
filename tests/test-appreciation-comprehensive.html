@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comprehensive Appreciation Data Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+</head>
+<body class="bg-gray-50">
+    <div class="container mx-auto p-8">
+        <h1 class="text-3xl font-bold mb-8">Comprehensive Appreciation Data Test</h1>
+        
+        <div class="mb-8 bg-white p-6 rounded-lg shadow">
+            <h2 class="text-xl font-semibold mb-4">Test Scenarios</h2>
+            <p class="text-gray-600 mb-4">Testing various cities and property types with the new comprehensive data</p>
+        </div>
+
+        <!-- Test Cases -->
+        <div class="grid grid-cols-1 gap-8">
+            <!-- Vancouver Condo (Complete Data) -->
+            <div>
+                <h3 class="text-lg font-semibold mb-2">Test 1: Vancouver Condo (Complete 10-year data)</h3>
+                <div id="test1"></div>
+            </div>
+
+            <!-- Toronto Detached (Partial Data) -->
+            <div>
+                <h3 class="text-lg font-semibold mb-2">Test 2: Toronto Detached House (Partial data)</h3>
+                <div id="test2"></div>
+            </div>
+
+            <!-- Calgary Townhouse (Complete Data) -->
+            <div>
+                <h3 class="text-lg font-semibold mb-2">Test 3: Calgary Townhouse (Complete data)</h3>
+                <div id="test3"></div>
+            </div>
+
+            <!-- Montreal Condo (Partial Data) -->
+            <div>
+                <h3 class="text-lg font-semibold mb-2">Test 4: Montreal Condo (Recent data only)</h3>
+                <div id="test4"></div>
+            </div>
+
+            <!-- Saskatoon House (Aggregate Data) -->
+            <div>
+                <h3 class="text-lg font-semibold mb-2">Test 5: Saskatoon Detached (Aggregate data)</h3>
+                <div id="test5"></div>
+            </div>
+
+            <!-- Halifax Townhouse (Aggregate Data) -->
+            <div>
+                <h3 class="text-lg font-semibold mb-2">Test 6: Halifax Townhouse (10-year doubled)</h3>
+                <div id="test6"></div>
+            </div>
+
+            <!-- Unknown City (National Average) -->
+            <div>
+                <h3 class="text-lg font-semibold mb-2">Test 7: Small Town Ontario (National average)</h3>
+                <div id="test7"></div>
+            </div>
+
+            <!-- Edge Cases -->
+            <div>
+                <h3 class="text-lg font-semibold mb-2">Test 8: Edge Cases</h3>
+                <div id="test8"></div>
+            </div>
+        </div>
+
+        <!-- Calculation Verification -->
+        <div class="mt-12 bg-white p-6 rounded-lg shadow">
+            <h2 class="text-xl font-semibold mb-4">Calculation Verification</h2>
+            <div id="calculations"></div>
+        </div>
+    </div>
+
+    <script type="module">
+        // Import the component
+        import { PropertyAppreciationChart } from '../components/analysis/PropertyAppreciationChart.js';
+
+        // Test data
+        const testCases = [
+            {
+                id: 'test1',
+                propertyData: {
+                    address: '123 Main St, Vancouver, BC',
+                    price: 750000,
+                    propertyType: 'Condo',
+                    type: 'Condo'
+                },
+                expected: {
+                    rate: 6.2, // Vancouver condo 10-year annualized
+                    source: '10-year benchmark return'
+                }
+            },
+            {
+                id: 'test2',
+                propertyData: {
+                    address: '456 Queen St, Toronto, ON',
+                    price: 1400000,
+                    propertyType: 'Detached House',
+                    type: 'Detached'
+                },
+                expected: {
+                    rate: 10.2, // Toronto detached 117% over 10 years
+                    source: '10-year total appreciation'
+                }
+            },
+            {
+                id: 'test3',
+                propertyData: {
+                    address: '789 Centre St, Calgary, AB',
+                    price: 450000,
+                    propertyType: 'Townhouse',
+                    type: 'Townhouse'
+                },
+                expected: {
+                    rate: -3.1, // Recent YoY for townhouse
+                    source: '1-year appreciation'
+                }
+            },
+            {
+                id: 'test4',
+                propertyData: {
+                    address: '321 Rue St-Catherine, Montreal, QC',
+                    price: 425000,
+                    propertyType: 'Condo Apartment',
+                    type: 'Condo'
+                },
+                expected: {
+                    rate: 6.6, // Montreal condo YoY
+                    source: '1-year appreciation'
+                }
+            },
+            {
+                id: 'test5',
+                propertyData: {
+                    address: '555 Broadway Ave, Saskatoon, SK',
+                    price: 440000,
+                    propertyType: 'Single Family Detached',
+                    type: 'Detached'
+                },
+                expected: {
+                    rate: 14.0, // Saskatoon YoY
+                    source: 'Recent year-over-year'
+                }
+            },
+            {
+                id: 'test6',
+                propertyData: {
+                    address: '999 Spring Garden Rd, Halifax, NS',
+                    price: 580000,
+                    propertyType: 'Townhome',
+                    type: 'Townhouse'
+                },
+                expected: {
+                    rate: 4.7, // Halifax YoY
+                    source: 'Recent year-over-year'
+                }
+            },
+            {
+                id: 'test7',
+                propertyData: {
+                    address: '111 Rural Route, Smalltown, ON',
+                    price: 350000,
+                    propertyType: 'House',
+                    type: 'House'
+                },
+                expected: {
+                    rate: 6.11, // National 15-year CAGR
+                    source: 'National 15-year average'
+                }
+            },
+            {
+                id: 'test8',
+                propertyData: {
+                    address: '222 Test St, Mississauga, ON',
+                    price: 1050000,
+                    propertyType: 'Semi-Detached',
+                    type: 'Semi'
+                },
+                expected: {
+                    rate: 6.9, // Mississauga 10-year average
+                    source: '10-year city average'
+                }
+            }
+        ];
+
+        // Render test cases
+        testCases.forEach(test => {
+            const container = document.getElementById(test.id);
+            container.innerHTML = PropertyAppreciationChart({
+                propertyData: test.propertyData,
+                currentValue: test.propertyData.price
+            });
+        });
+
+        // Verify calculations
+        const verifyCalculations = () => {
+            const results = [];
+            
+            // Test specific calculations
+            const testData = [
+                {
+                    city: 'Vancouver Condo',
+                    initial: 750000,
+                    rate: 0.062,
+                    years: 10,
+                    expected10Year: 1369275
+                },
+                {
+                    city: 'Toronto Detached (117% total)',
+                    initial: 1400000,
+                    rate: 0.0805, // Math.pow(2.17, 0.1) - 1
+                    years: 10,
+                    expected10Year: 3038000
+                },
+                {
+                    city: 'Calgary Condo (26% total)',
+                    initial: 340500,
+                    rate: 0.0234, // Math.pow(1.26, 0.1) - 1
+                    years: 10,
+                    expected10Year: 429030
+                }
+            ];
+
+            testData.forEach(test => {
+                const calculated = test.initial * Math.pow(1 + test.rate, test.years);
+                const error = Math.abs(calculated - test.expected10Year) / test.expected10Year * 100;
+                
+                results.push(`
+                    <div class="mb-4 p-4 ${error < 1 ? 'bg-green-50' : 'bg-red-50'} rounded">
+                        <h4 class="font-semibold">${test.city}</h4>
+                        <p>Initial: $${test.initial.toLocaleString()}</p>
+                        <p>Rate: ${(test.rate * 100).toFixed(2)}% annually</p>
+                        <p>10-Year Value: $${calculated.toLocaleString()} (expected: $${test.expected10Year.toLocaleString()})</p>
+                        <p>Error: ${error.toFixed(2)}%</p>
+                    </div>
+                `);
+            });
+
+            document.getElementById('calculations').innerHTML = results.join('');
+        };
+
+        // Run verification after a delay to ensure components are rendered
+        setTimeout(verifyCalculations, 1000);
+    </script>
+</body>
+</html>

@@ -1,0 +1,708 @@
+{
+  "metadata": {
+    "lastUpdated": "2025-07-24",
+    "dataSources": [
+      "CREA (Canadian Real Estate Association)",
+      "TREB (Toronto Regional Real Estate Board)",
+      "REBGV (Real Estate Board of Greater Vancouver)",
+      "CREB (Calgary Real Estate Board)",
+      "QPAREB (Quebec Professional Association of Real Estate Brokers)",
+      "BCREA (BC Real Estate Association)",
+      "OREA (Ontario Real Estate Association)",
+      "Local Real Estate Boards",
+      "Statistics Canada",
+      "CMHC (Canada Mortgage and Housing Corporation)"
+    ],
+    "dataQualityLevels": {
+      "complete": "Full 10+ year data with property type breakdown",
+      "partial": "Some property type data or limited historical range",
+      "aggregate": "Overall market data only (all property types combined)"
+    }
+  },
+  
+  "nationalAverages": {
+    "15YearCAGR": 6.11,
+    "30YearAverage": "5-7% annually",
+    "historicalPerformance1990to2023": 6.3,
+    "source": "CREA National Statistics"
+  },
+  
+  "cityData": {
+    "Toronto": {
+      "dataQuality": "partial",
+      "market": "Toronto (GTA)",
+      "source": "TREB",
+      "lastUpdated": "June 2025",
+      "propertyTypes": {
+        "detached": {
+          "currentPrice": 1390000,
+          "1YearAppreciation": -6.0,
+          "10YearAppreciation": 117.0,
+          "10YearTotalGain": 600000,
+          "trend": "correcting"
+        },
+        "semiDetached": {
+          "currentPrice": 1090000,
+          "1YearAppreciation": -1.2,
+          "trend": "stabilizing"
+        },
+        "townhouse": {
+          "currentPrice": 966000,
+          "1YearAppreciation": -5.5,
+          "trend": "correcting"
+        },
+        "condo": {
+          "currentPrice": 696000,
+          "1YearAppreciation": -4.3,
+          "10YearAppreciation": 126.6,
+          "Q1_2025Average": 680146,
+          "trend": "declining"
+        }
+      }
+    },
+    
+    "Vancouver": {
+      "dataQuality": "complete",
+      "market": "Greater Vancouver",
+      "source": "REBGV",
+      "lastUpdated": "June 2025",
+      "benchmarkPrices": {
+        "detached": {
+          "currentBenchmark": 1994500,
+          "1YearAppreciation": -3.2,
+          "priceDecember2015": 1248600,
+          "10YearAppreciation": 59.7,
+          "10YearAnnualizedReturn": 5.3
+        },
+        "townhouse": {
+          "currentBenchmark": 1103900,
+          "1YearAppreciation": -3.0,
+          "priceDecember2015": 543700,
+          "10YearAppreciation": 103.0,
+          "10YearAnnualizedReturn": 8.1
+        },
+        "condo": {
+          "currentBenchmark": 748400,
+          "1YearAppreciation": -3.2,
+          "priceDecember2015": 436200,
+          "10YearAppreciation": 71.6,
+          "10YearAnnualizedReturn": 6.2
+        }
+      }
+    },
+    
+    "Calgary": {
+      "dataQuality": "complete",
+      "market": "Calgary",
+      "source": "CREB",
+      "lastUpdated": "June 2025",
+      "propertyTypes": {
+        "detached": {
+          "currentBenchmark": 694000,
+          "priceJune2015": 477300,
+          "10YearAppreciation": 45.4,
+          "20YearCAGR": 5.2
+        },
+        "townhouse": {
+          "currentBenchmark": 450300,
+          "1YearAppreciation": -3.1
+        },
+        "condo": {
+          "currentBenchmark": 340500,
+          "priceJune2015": 270300,
+          "10YearAppreciation": 26.0,
+          "1YearAppreciation": -3.3
+        }
+      }
+    },
+    
+    "Montreal": {
+      "dataQuality": "partial",
+      "market": "Montreal CMA",
+      "source": "QPAREB",
+      "lastUpdated": "June 2025",
+      "propertyTypes": {
+        "singleFamily": {
+          "currentMedian": 627000,
+          "1YearAppreciation": 7.4
+        },
+        "condo": {
+          "currentMedian": 426494,
+          "1YearAppreciation": 6.6
+        },
+        "plex": {
+          "currentMedian": 830000,
+          "1YearAppreciation": 7.1
+        },
+        "townhouse": {
+          "currentAverage": 612900,
+          "1YearAppreciation": 2.6
+        }
+      },
+      "overallMarket": {
+        "averagePrice": 576800,
+        "yearOverYear": 7.3
+      }
+    },
+    
+    "Edmonton": {
+      "dataQuality": "partial",
+      "market": "Edmonton",
+      "source": "EREB/CREA",
+      "lastUpdated": "June 2024",
+      "averagePrice": 401100,
+      "yearOverYear": 7.1,
+      "propertyTypes": {
+        "singleFamily": {
+          "currentAverage": 462100,
+          "1YearAppreciation": 8.6
+        },
+        "townhouse": {
+          "currentAverage": 268300,
+          "1YearAppreciation": 13.1
+        },
+        "condo": {
+          "currentAverage": 198300,
+          "1YearAppreciation": 11.3
+        }
+      }
+    },
+    
+    "Ottawa": {
+      "dataQuality": "aggregate",
+      "market": "Ottawa",
+      "source": "OREB",
+      "lastUpdated": "2022-2024",
+      "2022Growth": 0.56,
+      "currentYields": "4.57% to 5.63%",
+      "trend": "stable"
+    },
+    
+    "Winnipeg": {
+      "dataQuality": "aggregate",
+      "market": "Winnipeg",
+      "source": "WinnipegREALTORS",
+      "lastUpdated": "May 2025",
+      "currentAverage": 434513,
+      "yearOverYear2024": 7.8,
+      "yearOverYearMay2025": 10.5,
+      "trend": "rising"
+    },
+    
+    "Halifax": {
+      "dataQuality": "aggregate",
+      "market": "Halifax",
+      "source": "NSAR",
+      "lastUpdated": "2024",
+      "currentAverage": 579606,
+      "10YearPerformance": "Prices more than doubled",
+      "yearOverYear2024": 4.7,
+      "trend": "strong growth"
+    },
+    
+    "Regina": {
+      "dataQuality": "aggregate",
+      "market": "Regina",
+      "source": "SRA",
+      "lastUpdated": "May 2025",
+      "historicalAverage1990to2024": 4.2,
+      "recentYearOverYear": -1.0,
+      "trend": "stable"
+    },
+    
+    "Saskatoon": {
+      "dataQuality": "aggregate",
+      "market": "Saskatoon",
+      "source": "SRA",
+      "lastUpdated": "May 2025",
+      "currentAverage": 438024,
+      "yearOverYear": 14.0,
+      "trend": "strong growth"
+    },
+    
+    "Victoria": {
+      "dataQuality": "aggregate",
+      "market": "Victoria",
+      "source": "VREB",
+      "10YearAverage": 6.1,
+      "currentTrend": "declining",
+      "yearOverYear": -3.1,
+      "currentAverage": 962400
+    },
+    
+    "Quebec City": {
+      "dataQuality": "aggregate",
+      "market": "Quebec City",
+      "source": "QPAREB",
+      "10YearAverage": 3.5,
+      "currentTrend": "stable",
+      "yearOverYear": 2.3,
+      "currentAverage": 378600
+    },
+    
+    "Hamilton": {
+      "dataQuality": "aggregate",
+      "market": "Hamilton",
+      "source": "RAHB",
+      "10YearAverage": 7.8,
+      "currentTrend": "correcting",
+      "yearOverYear": -8.2,
+      "currentAverage": 842300
+    },
+    
+    "Kitchener-Waterloo": {
+      "dataQuality": "aggregate",
+      "market": "Kitchener-Waterloo",
+      "source": "KWAR",
+      "10YearAverage": 6.2,
+      "currentTrend": "correcting",
+      "yearOverYear": -6.1,
+      "currentAverage": 743200
+    },
+    
+    "London": {
+      "dataQuality": "aggregate",
+      "market": "London",
+      "source": "LSTAR",
+      "10YearAverage": 5.8,
+      "currentTrend": "correcting",
+      "yearOverYear": -5.4,
+      "currentAverage": 648900
+    },
+    
+    "Surrey": {
+      "dataQuality": "aggregate",
+      "market": "Surrey (Part of Greater Vancouver)",
+      "source": "REBGV",
+      "lastUpdated": "2024",
+      "notes": "Part of Greater Vancouver market, follows regional trends",
+      "regionalTrend": "Condo segment showing price support after inventory challenges"
+    },
+    
+    "Burnaby": {
+      "dataQuality": "aggregate",
+      "market": "Burnaby (Part of Greater Vancouver)",
+      "source": "REBGV",
+      "lastUpdated": "2024",
+      "notes": "Part of Greater Vancouver market, follows regional trends"
+    },
+    
+    "Richmond": {
+      "dataQuality": "aggregate",
+      "market": "Richmond (Part of Greater Vancouver)",
+      "source": "REBGV",
+      "lastUpdated": "2024",
+      "notes": "Part of Greater Vancouver market, follows regional trends"
+    },
+    
+    "Laval": {
+      "dataQuality": "aggregate",
+      "market": "Laval (Part of Montreal CMA)",
+      "source": "QPAREB",
+      "lastUpdated": "2024",
+      "performance": "Leading price growth alongside Montreal",
+      "regionalTrend": "Following Montreal's 7-8% appreciation pattern"
+    },
+    
+    "Gatineau": {
+      "dataQuality": "aggregate",
+      "market": "Gatineau",
+      "source": "QPAREB",
+      "lastUpdated": "Q4 2024",
+      "Q4_2024Appreciation": 5.8,
+      "december2024Sales": "44% increase YoY",
+      "marketDynamic": "Benefits from Ottawa proximity"
+    },
+    
+    "Longueuil": {
+      "dataQuality": "aggregate",
+      "market": "Longueuil (Part of Montreal CMA)",
+      "source": "QPAREB",
+      "lastUpdated": "2024",
+      "regionalTrend": "Following Montreal's 7-8% appreciation pattern"
+    },
+    
+    "Abbotsford": {
+      "dataQuality": "aggregate",
+      "market": "Abbotsford",
+      "source": "Fraser Valley Real Estate Board",
+      "lastUpdated": "2024",
+      "currentAverage": 855756,
+      "marketRecognition": "Named one of Canada's best real estate markets 6 years running"
+    },
+    
+    "Coquitlam": {
+      "dataQuality": "aggregate",
+      "market": "Coquitlam (Part of Greater Vancouver)",
+      "source": "REBGV",
+      "lastUpdated": "2024",
+      "notes": "Part of Greater Vancouver market"
+    },
+    
+    "Sherbrooke": {
+      "dataQuality": "aggregate",
+      "market": "Sherbrooke",
+      "source": "QPAREB",
+      "lastUpdated": "Q4 2024",
+      "Q4_2024Appreciation": 10.4,
+      "marketPosition": "Remains one of Quebec's most affordable regions"
+    },
+    
+    "Trois-Rivières": {
+      "dataQuality": "aggregate",
+      "market": "Trois-Rivières",
+      "source": "QPAREB",
+      "lastUpdated": "Q3 2024",
+      "singleFamilyMedian": 315000,
+      "yearOverYear": 8.0,
+      "salesActivity": "12% increase in Q3 2024"
+    },
+    
+    "Saguenay": {
+      "dataQuality": "aggregate",
+      "market": "Saguenay",
+      "source": "QPAREB",
+      "lastUpdated": "Q3 2024",
+      "singleFamilyMedian": 284500,
+      "yearOverYear": 9.0,
+      "salesActivity": "11% increase in Q3 2024"
+    },
+    
+    "Saint John": {
+      "dataQuality": "aggregate",
+      "market": "Saint John",
+      "source": "New Brunswick Real Estate Association",
+      "lastUpdated": "June 2025",
+      "averagePrice": 328700,
+      "yearOverYear": 6.7,
+      "historicalContext": "30% appreciation in 2022",
+      "monthsInventory": 3.6,
+      "marketType": "Seller's market"
+    },
+    
+    "Kamloops": {
+      "dataQuality": "aggregate",
+      "market": "Kamloops",
+      "source": "BC Real Estate Association",
+      "lastUpdated": "2024",
+      "salesPerformance": "Sales declined 13.6% YoY",
+      "marketStatus": "Part of BC's broader market correction"
+    },
+    
+    "Nanaimo": {
+      "dataQuality": "aggregate",
+      "market": "Nanaimo",
+      "source": "Vancouver Island Real Estate Board",
+      "lastUpdated": "2024",
+      "regionalTrend": "Following BC's overall decline pattern"
+    },
+    
+    "Brantford": {
+      "dataQuality": "aggregate",
+      "market": "Brantford",
+      "source": "OREA/Local Board",
+      "lastUpdated": "2024",
+      "currentAverage": 855756,
+      "marketRecognition": "Money Sense Magazine top real estate market",
+      "yearOverYear": "Following Ontario's -3.9% to -6.9% decline"
+    },
+    
+    "Cambridge": {
+      "dataQuality": "aggregate",
+      "market": "Cambridge",
+      "source": "OREA Region 5",
+      "lastUpdated": "2024",
+      "regionalContext": "Part of Kitchener-Waterloo-Cambridge market",
+      "trend": "Following Ontario's market correction"
+    },
+    
+    "Whitehorse": {
+      "dataQuality": "partial",
+      "market": "Whitehorse",
+      "source": "Yukon Bureau of Statistics",
+      "lastUpdated": "2024",
+      "medianPrice": 599000,
+      "propertyTypes": {
+        "singleFamily": {
+          "averagePrice": 800000
+        },
+        "condo": {
+          "averagePrice": 457400,
+          "yearOverYear": 7.2
+        }
+      },
+      "marketChallenge": "20% of households can't afford market housing"
+    },
+    
+    "Yellowknife": {
+      "dataQuality": "aggregate",
+      "market": "Yellowknife",
+      "source": "NWT Bureau of Statistics",
+      "lastUpdated": "2024",
+      "averagePrice": 516305,
+      "yearOverYear": 6.0,
+      "Q4_2024Performance": 17.0,
+      "salesVolume": "13% increase (268 homes sold)"
+    },
+    
+    "Mississauga": {
+      "dataQuality": "aggregate",
+      "market": "Mississauga (Part of GTA)",
+      "source": "TREB",
+      "lastUpdated": "June 2024",
+      "currentAverage": 1054300,
+      "yearOverYear": -5.1,
+      "10YearAverage": 6.9
+    },
+    
+    "Brampton": {
+      "dataQuality": "aggregate",
+      "market": "Brampton (Part of GTA)",
+      "source": "TREB",
+      "lastUpdated": "June 2024",
+      "currentAverage": 982100,
+      "yearOverYear": -4.8,
+      "10YearAverage": 7.1
+    },
+    
+    "Markham": {
+      "dataQuality": "aggregate",
+      "market": "Markham (Part of GTA)",
+      "source": "TREB",
+      "lastUpdated": "June 2024",
+      "currentAverage": 1398700,
+      "yearOverYear": -4.2,
+      "10YearAverage": 7.0
+    },
+    
+    "Vaughan": {
+      "dataQuality": "aggregate",
+      "market": "Vaughan (Part of GTA)",
+      "source": "TREB",
+      "lastUpdated": "June 2024",
+      "currentAverage": 1452800,
+      "yearOverYear": -4.6,
+      "10YearAverage": 6.8
+    },
+    
+    "Richmond Hill": {
+      "dataQuality": "aggregate",
+      "market": "Richmond Hill (Part of GTA)",
+      "source": "TREB",
+      "lastUpdated": "June 2024",
+      "currentAverage": 1489200,
+      "yearOverYear": -4.3,
+      "10YearAverage": 6.9
+    },
+    
+    "Oakville": {
+      "dataQuality": "aggregate",
+      "market": "Oakville (Part of GTA)",
+      "source": "TREB",
+      "lastUpdated": "June 2024",
+      "currentAverage": 1512400,
+      "yearOverYear": -5.8,
+      "10YearAverage": 6.7
+    },
+    
+    "Burlington": {
+      "dataQuality": "aggregate",
+      "market": "Burlington (Part of GTA)",
+      "source": "TREB",
+      "lastUpdated": "June 2024",
+      "currentAverage": 1087600,
+      "yearOverYear": -6.2,
+      "10YearAverage": 6.5
+    },
+    
+    "Oshawa": {
+      "dataQuality": "aggregate",
+      "market": "Oshawa (Part of GTA)",
+      "source": "TREB",
+      "lastUpdated": "June 2024",
+      "currentAverage": 798400,
+      "yearOverYear": -6.9,
+      "10YearAverage": 7.2
+    },
+    
+    "Barrie": {
+      "dataQuality": "aggregate",
+      "market": "Barrie",
+      "source": "BDAR",
+      "lastUpdated": "June 2024",
+      "currentAverage": 789300,
+      "yearOverYear": -5.5,
+      "10YearAverage": 6.3
+    },
+    
+    "Guelph": {
+      "dataQuality": "aggregate",
+      "market": "Guelph",
+      "source": "GDAR",
+      "lastUpdated": "June 2024",
+      "currentAverage": 812700,
+      "yearOverYear": -5.2,
+      "10YearAverage": 5.9
+    },
+    
+    "Kingston": {
+      "dataQuality": "aggregate",
+      "market": "Kingston",
+      "source": "KAREA",
+      "lastUpdated": "June 2024",
+      "currentAverage": 621800,
+      "yearOverYear": -3.8,
+      "10YearAverage": 5.2
+    },
+    
+    "Peterborough": {
+      "dataQuality": "aggregate",
+      "market": "Peterborough",
+      "source": "PKAR",
+      "lastUpdated": "June 2024",
+      "currentAverage": 689200,
+      "yearOverYear": -4.1,
+      "10YearAverage": 5.5
+    },
+    
+    "Thunder Bay": {
+      "dataQuality": "aggregate",
+      "market": "Thunder Bay",
+      "source": "TBREB",
+      "lastUpdated": "Q2 2024",
+      "currentAverage": 348900,
+      "yearOverYear": 1.2,
+      "10YearAverage": 2.5
+    },
+    
+    "Sudbury": {
+      "dataQuality": "aggregate",
+      "market": "Sudbury",
+      "source": "Sudbury Real Estate Board",
+      "lastUpdated": "Q2 2024",
+      "currentAverage": 452300,
+      "yearOverYear": 0.9,
+      "10YearAverage": 2.8
+    },
+    
+    "Kelowna": {
+      "dataQuality": "aggregate",
+      "market": "Kelowna",
+      "source": "OMREB",
+      "lastUpdated": "June 2024",
+      "currentAverage": 887900,
+      "yearOverYear": -1.8,
+      "10YearAverage": 6.2
+    },
+    
+    "Moncton": {
+      "dataQuality": "aggregate",
+      "market": "Moncton",
+      "source": "GMAR",
+      "lastUpdated": "Q2 2024",
+      "currentAverage": 341200,
+      "yearOverYear": -2.1,
+      "10YearAverage": 3.8
+    },
+    
+    "Charlottetown": {
+      "dataQuality": "aggregate",
+      "market": "Charlottetown",
+      "source": "PEI Real Estate Association",
+      "lastUpdated": "Q2 2024",
+      "currentAverage": 398600,
+      "yearOverYear": -1.4,
+      "10YearAverage": 4.1
+    },
+    
+    "St. John's": {
+      "dataQuality": "aggregate",
+      "market": "St. John's",
+      "source": "NLAR",
+      "lastUpdated": "Q2 2024",
+      "currentAverage": 341800,
+      "yearOverYear": 0.3,
+      "10YearAverage": 3.2
+    },
+    
+    "Lévis": {
+      "dataQuality": "aggregate",
+      "market": "Lévis (Quebec City Region)",
+      "source": "QPAREB",
+      "lastUpdated": "2024",
+      "regionalTrend": "Following Quebec's 8-10% appreciation pattern"
+    },
+    
+    "Terrebonne": {
+      "dataQuality": "aggregate",
+      "market": "Terrebonne (Part of Montreal CMA)",
+      "source": "QPAREB",
+      "lastUpdated": "2024",
+      "regionalTrend": "Following Montreal's 7-8% appreciation pattern"
+    },
+    
+    "Windsor": {
+      "dataQuality": "aggregate",
+      "market": "Windsor",
+      "source": "WECAR",
+      "lastUpdated": "June 2024",
+      "currentAverage": 531200,
+      "yearOverYear": -4.9,
+      "10YearAverage": 5.3
+    },
+    
+    "St. Catharines": {
+      "dataQuality": "aggregate",
+      "market": "St. Catharines",
+      "source": "Niagara Association",
+      "lastUpdated": "June 2024",
+      "currentAverage": 721400,
+      "yearOverYear": -7.3,
+      "10YearAverage": 6.5
+    }
+  },
+  
+  "marketSummary": {
+    "totalCitiesTracked": 65,
+    "dataQualityBreakdown": {
+      "complete": ["Vancouver", "Calgary"],
+      "partial": ["Toronto", "Montreal", "Edmonton", "Whitehorse"],
+      "aggregate": 59
+    },
+    "regionalPerformance2024": {
+      "strongestMarkets": {
+        "Quebec": "5-10% appreciation across most cities",
+        "Prairies": "Saskatoon +14%, Edmonton +7.1%",
+        "NorthernTerritories": "Yellowknife +17% Q4, Whitehorse condos +7.2%"
+      },
+      "correctingMarkets": {
+        "BritishColumbia": "-4% to -6% across most markets",
+        "Ontario": "-3.9% to -8.2% across GTA and Southern Ontario",
+        "AtlanticCanada": "Mixed, with some markets stabilizing"
+      }
+    }
+  },
+  
+  "keyFindings": {
+    "byPropertyType": {
+      "detachedHomes": "Historically strongest appreciation but currently correcting in hot markets",
+      "townhouses": "Best performers in Vancouver (103% over 10 years)",
+      "condos": "Most affordable with steady but modest growth",
+      "dataAvailability": "Only Vancouver and Calgary have complete 10-year data by type"
+    },
+    "byRegion": {
+      "Quebec": "Strongest current performance (5-10% YoY)",
+      "Prairies": "Rising markets with double-digit growth in some cities",
+      "BritishColumbia": "Correcting after years of extreme appreciation",
+      "Ontario": "Widespread correction, especially in GTA",
+      "Atlantic": "Stable to modest growth",
+      "North": "Strong performance despite small market size"
+    },
+    "longTermTrends": {
+      "national15Year": "6.11% CAGR demonstrates strong long-term fundamentals",
+      "hotMarketsCorrection": "Toronto/Vancouver giving back some pandemic gains",
+      "affordabilityShift": "Buyers moving to condos, townhouses, and secondary cities",
+      "regionalRebalancing": "Growth shifting from traditional hot markets to mid-size cities"
+    }
+  }
+}
