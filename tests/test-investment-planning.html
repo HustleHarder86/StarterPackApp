@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Investment Planning Features</title>
+    <script src="https://www.gstatic.com/firebasejs/9.17.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.2/firebase-firestore-compat.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../styles/design-system.css">
+    <style>
+        .test-section { margin: 20px 0; padding: 20px; border: 1px solid #ddd; border-radius: 8px; }
+        .tab-button { cursor: pointer; }
+        .tab-content.hidden { display: none; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="max-w-7xl mx-auto p-8">
+        <h1 class="text-3xl font-bold mb-8">Investment Planning Features Test</h1>
+        
+        <!-- Test Navigation -->
+        <div class="bg-white rounded-lg shadow mb-8 p-6">
+            <h2 class="text-xl font-bold mb-4">Test Tab Navigation</h2>
+            <div class="border-b border-gray-200">
+                <nav class="-mb-px flex space-x-8">
+                    <button id="str-tab" onclick="window.switchTab('str')" 
+                            class="tab-button active border-blue-500 text-blue-600 py-2 px-4 border-b-2">
+                        STR Analysis
+                    </button>
+                    <button id="ltr-tab" onclick="window.switchTab('ltr')" 
+                            class="tab-button border-transparent text-gray-500 py-2 px-4 border-b-2">
+                        LTR Analysis
+                    </button>
+                    <button id="investment-tab" onclick="window.switchTab('investment')" 
+                            class="tab-button border-transparent text-gray-500 py-2 px-4 border-b-2">
+                        Investment Planning
+                    </button>
+                </nav>
+            </div>
+            
+            <div class="mt-4">
+                <div id="str-content" class="tab-content">
+                    <p class="text-gray-600">STR Analysis Content</p>
+                </div>
+                <div id="ltr-content" class="tab-content hidden">
+                    <p class="text-gray-600">LTR Analysis Content</p>
+                </div>
+                <div id="investment-content" class="tab-content hidden">
+                    <p class="text-gray-600">Investment Planning Content (see below)</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Investment Planning Components Container -->
+        <div id="investment-planning-container">
+            <!-- Components will be loaded here -->
+        </div>
+    </div>
+
+    <script type="module">
+        import { InvestmentSummaryForDummies } from '../components/analysis/InvestmentSummaryForDummies.js';
+        import { CanadianCapitalGainsTaxCalculator } from '../components/analysis/CanadianCapitalGainsTaxCalculator.js';
+        import { FinancingScenariosComparison } from '../components/analysis/FinancingScenariosComparison.js';
+        
+        // Mock data for testing
+        const mockPropertyData = {
+            address: '1080 GREENWOOD AVENUE Toronto, Ontario M4J 4E4',
+            price: 1049000,
+            bedrooms: 2,
+            bathrooms: 2,
+            sqft: 900,
+            propertyType: 'Condo',
+            propertyTaxes: 5490,
+            condoFees: 450
+        };
+        
+        const mockAnalysis = {
+            propertyData: mockPropertyData,
+            strAnalysis: {
+                monthlyRevenue: 3554,
+                avgNightlyRate: 117,
+                occupancyRate: 0.70
+            },
+            longTermRental: {
+                monthlyRent: 2800,
+                monthlyExpenses: 1200,
+                cashFlow: 1600
+            }
+        };
+        
+        // Tab switching functionality
+        window.switchTab = function(tabName) {
+            // Update tab buttons
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('border-blue-500', 'text-blue-600', 'active');
+                btn.classList.add('border-transparent', 'text-gray-500');
+            });
+            
+            document.getElementById(tabName + '-tab').classList.remove('border-transparent', 'text-gray-500');
+            document.getElementById(tabName + '-tab').classList.add('border-blue-500', 'text-blue-600', 'active');
+            
+            // Update tab content
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.add('hidden');
+            });
+            
+            document.getElementById(tabName + '-content').classList.remove('hidden');
+        };
+        
+        // Load investment planning components
+        function loadInvestmentPlanningComponents() {
+            const container = document.getElementById('investment-planning-container');
+            
+            const investmentPlanningHtml = `
+                <div class="space-y-6">
+                    <h2 class="text-2xl font-bold text-gray-900">Investment Planning Tools</h2>
+                    
+                    <!-- Investment Summary for Dummies -->
+                    ${InvestmentSummaryForDummies({
+                        propertyData: mockPropertyData,
+                        strAnalysis: mockAnalysis.strAnalysis,
+                        ltrAnalysis: mockAnalysis.longTermRental,
+                        financialAssumptions: {}
+                    })}
+                    
+                    <!-- Canadian Capital Gains Tax Calculator -->
+                    ${CanadianCapitalGainsTaxCalculator({
+                        propertyData: mockPropertyData,
+                        purchasePrice: mockPropertyData.price,
+                        currentValue: mockPropertyData.price * 1.3 // 30% appreciation
+                    })}
+                    
+                    <!-- Financing Scenarios Comparison -->
+                    ${FinancingScenariosComparison({
+                        propertyData: mockPropertyData,
+                        monthlyRevenue: mockAnalysis.strAnalysis.monthlyRevenue,
+                        monthlyExpenses: (mockPropertyData.propertyTaxes / 12) + mockPropertyData.condoFees + 200
+                    })}
+                </div>
+            `;
+            
+            container.innerHTML = investmentPlanningHtml;
+            
+            // Initialize any scripts after DOM update
+            setTimeout(() => {
+                if (window.calculateCapitalGains) {
+                    window.calculateCapitalGains();
+                }
+                if (window.updateScenarios) {
+                    window.updateScenarios();
+                }
+            }, 100);
+        }
+        
+        // Load components on page load
+        loadInvestmentPlanningComponents();
+        
+        // Test Results Display
+        const testResults = {
+            tabSwitching: false,
+            summaryComponent: false,
+            taxCalculator: false,
+            financingScenarios: false
+        };
+        
+        // Test tab switching
+        setTimeout(() => {
+            window.switchTab('investment');
+            testResults.tabSwitching = document.getElementById('investment-content').classList.contains('hidden') === false;
+            
+            // Test component presence
+            testResults.summaryComponent = document.querySelector('.bg-gradient-to-br.from-blue-50.to-purple-50') !== null;
+            testResults.taxCalculator = document.getElementById('tax-results') !== null;
+            testResults.financingScenarios = document.getElementById('comparison-results') !== null;
+            
+            // Display test results
+            console.log('Test Results:', testResults);
+            
+            // Add visual test results
+            const resultsHtml = `
+                <div class="bg-white rounded-lg shadow p-6 mt-8">
+                    <h3 class="text-xl font-bold mb-4">Test Results</h3>
+                    <div class="space-y-2">
+                        <div class="flex justify-between">
+                            <span>Tab Switching:</span>
+                            <span class="${testResults.tabSwitching ? 'text-green-600' : 'text-red-600'}">
+                                ${testResults.tabSwitching ? '✓ PASS' : '✗ FAIL'}
+                            </span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Investment Summary Component:</span>
+                            <span class="${testResults.summaryComponent ? 'text-green-600' : 'text-red-600'}">
+                                ${testResults.summaryComponent ? '✓ PASS' : '✗ FAIL'}
+                            </span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Tax Calculator Component:</span>
+                            <span class="${testResults.taxCalculator ? 'text-green-600' : 'text-red-600'}">
+                                ${testResults.taxCalculator ? '✓ PASS' : '✗ FAIL'}
+                            </span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Financing Scenarios Component:</span>
+                            <span class="${testResults.financingScenarios ? 'text-green-600' : 'text-red-600'}">
+                                ${testResults.financingScenarios ? '✓ PASS' : '✗ FAIL'}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="mt-4 pt-4 border-t">
+                        <div class="font-semibold ${Object.values(testResults).every(v => v) ? 'text-green-600' : 'text-red-600'}">
+                            Overall: ${Object.values(testResults).every(v => v) ? 'ALL TESTS PASSED' : 'SOME TESTS FAILED'}
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('investment-planning-container').insertAdjacentHTML('beforeend', resultsHtml);
+        }, 1000);
+    </script>
+</body>
+</html>

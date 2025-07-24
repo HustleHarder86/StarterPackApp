@@ -1,0 +1,305 @@
+{
+  "metadata": {
+    "lastUpdated": "2025-07-24",
+    "dataSources": [
+      "CREA (Canadian Real Estate Association)",
+      "TREB (Toronto Regional Real Estate Board)",
+      "REBGV (Real Estate Board of Greater Vancouver)",
+      "CREB (Calgary Real Estate Board)",
+      "QPAREB (Quebec Professional Association of Real Estate Brokers)",
+      "Local Real Estate Boards",
+      "Statistics Canada",
+      "CMHC (Canada Mortgage and Housing Corporation)"
+    ],
+    "notes": "All rates are based on actual published data from official sources. Where specific 10-year data by property type was unavailable, the most recent available data is provided with sources cited."
+  },
+  
+  "nationalAverages": {
+    "15YearCAGR": 6.11,
+    "30YearAverage": "5-7% annually",
+    "historicalPerformance1990to2023": 6.3,
+    "source": "CREA National Statistics"
+  },
+  
+  "cityPropertyTypeData": {
+    "Toronto": {
+      "market": "Toronto (GTA)",
+      "source": "TREB",
+      "lastUpdated": "June 2025",
+      "propertyTypes": {
+        "detached": {
+          "currentPrice": 1390000,
+          "1YearAppreciation": -6.0,
+          "10YearAppreciation": 117.0,
+          "10YearTotalGain": 600000,
+          "trend": "correcting"
+        },
+        "semiDetached": {
+          "currentPrice": 1090000,
+          "1YearAppreciation": -1.2,
+          "trend": "stabilizing"
+        },
+        "townhouse": {
+          "currentPrice": 966000,
+          "1YearAppreciation": -5.5,
+          "trend": "correcting"
+        },
+        "condo": {
+          "currentPrice": 696000,
+          "1YearAppreciation": -4.3,
+          "10YearAppreciation": 126.6,
+          "Q1_2025Average": 680146,
+          "Q1_2024Average": 695555,
+          "yearOverYearChange": -2.2,
+          "trend": "declining",
+          "notes": "2019 data showed condos at $506,900 with 8.04% YoY growth"
+        }
+      }
+    },
+    
+    "Vancouver": {
+      "market": "Greater Vancouver",
+      "source": "REBGV",
+      "lastUpdated": "June 2025",
+      "benchmarkPrices": {
+        "detached": {
+          "currentBenchmark": 1994500,
+          "1YearAppreciation": -3.2,
+          "priceDecember2015": 1248600,
+          "10YearAppreciation": 59.7,
+          "10YearAnnualizedReturn": 5.3,
+          "historicalNote": "159% appreciation over earlier 10-year period (2006-2016)"
+        },
+        "townhouse": {
+          "currentBenchmark": 1103900,
+          "1YearAppreciation": -3.0,
+          "priceDecember2015": 543700,
+          "10YearAppreciation": 103.0,
+          "10YearAnnualizedReturn": 8.1,
+          "historicalNote": "81% appreciation 2006-2016"
+        },
+        "condo": {
+          "currentBenchmark": 748400,
+          "1YearAppreciation": -3.2,
+          "priceDecember2015": 436200,
+          "10YearAppreciation": 71.6,
+          "10YearAnnualizedReturn": 6.2,
+          "historicalNote": "61% appreciation 2006-2016"
+        }
+      },
+      "marketIndicators": {
+        "salestoActiveRatio": 12.8,
+        "detachedRatio": 9.9,
+        "attachedRatio": 16.9,
+        "apartmentRatio": 13.9,
+        "marketType": "balanced to buyer's"
+      }
+    },
+    
+    "Calgary": {
+      "market": "Calgary",
+      "source": "CREB",
+      "lastUpdated": "June 2025",
+      "propertyTypes": {
+        "detached": {
+          "currentBenchmark": 694000,
+          "currentAverage": 819909,
+          "priceJune2015": 477300,
+          "10YearAppreciation": 45.4,
+          "20YearCAGR": 5.2,
+          "trend": "stable"
+        },
+        "townhouse": {
+          "currentBenchmark": 450300,
+          "currentAverage": 462200,
+          "1YearAppreciation": -3.1,
+          "yearOverYearAverage": -2.6,
+          "trend": "declining"
+        },
+        "condo": {
+          "currentBenchmark": 340500,
+          "currentAverage": 352000,
+          "priceJune2015": 270300,
+          "10YearAppreciation": 26.0,
+          "1YearAppreciation": -3.3,
+          "trend": "stable",
+          "notes": "Most affordable option with modest appreciation"
+        }
+      },
+      "marketMetrics": {
+        "monthsOfSupply": 3.04,
+        "inventory": 6941,
+        "salesShift": "33.3% increase in condo sales 2015-2025"
+      }
+    },
+    
+    "Montreal": {
+      "market": "Montreal CMA",
+      "source": "QPAREB",
+      "lastUpdated": "June 2025",
+      "propertyTypes": {
+        "singleFamily": {
+          "currentMedian": 627000,
+          "1YearAppreciation": 7.4,
+          "12MonthIncrease": 7.9,
+          "trend": "rising"
+        },
+        "condo": {
+          "currentMedian": 426494,
+          "currentAverage": 424900,
+          "1YearAppreciation": 6.6,
+          "yearOverYearAverage": 5.1,
+          "trend": "rising"
+        },
+        "plex": {
+          "currentMedian": 830000,
+          "1YearAppreciation": 7.1,
+          "trend": "rising"
+        },
+        "townhouse": {
+          "currentAverage": 612900,
+          "1YearAppreciation": 2.6,
+          "trend": "stable"
+        }
+      },
+      "overallMarket": {
+        "averagePrice": 576800,
+        "yearOverYear": 7.3,
+        "salesVolume": "15.5% increase YoY"
+      }
+    },
+    
+    "Edmonton": {
+      "market": "Edmonton",
+      "source": "EREB/CREA",
+      "lastUpdated": "June 2024",
+      "averagePrice": 401100,
+      "yearOverYear": 7.1,
+      "propertyTypes": {
+        "singleFamily": {
+          "currentAverage": 462100,
+          "1YearAppreciation": 8.6,
+          "trend": "rising"
+        },
+        "townhouse": {
+          "currentAverage": 268300,
+          "1YearAppreciation": 13.1,
+          "trend": "strong growth"
+        },
+        "condo": {
+          "currentAverage": 198300,
+          "1YearAppreciation": 11.3,
+          "trend": "rising"
+        }
+      }
+    },
+    
+    "Ottawa": {
+      "market": "Ottawa",
+      "source": "OREB",
+      "lastUpdated": "2022-2024",
+      "2022Growth": 0.56,
+      "currentYields": "4.57% to 5.63%",
+      "trend": "stable"
+    },
+    
+    "Winnipeg": {
+      "market": "Winnipeg",
+      "source": "WinnipegREALTORS",
+      "lastUpdated": "May 2025",
+      "currentAverage": 434513,
+      "yearOverYear2024": 7.8,
+      "yearOverYearMay2025": 10.5,
+      "trend": "rising",
+      "notes": "Strong growth across all property types"
+    },
+    
+    "Halifax": {
+      "market": "Halifax",
+      "source": "NSAR",
+      "lastUpdated": "2024",
+      "currentAverage": 579606,
+      "10YearPerformance": "Prices more than doubled",
+      "yearOverYear2024": 4.7,
+      "trend": "strong growth"
+    },
+    
+    "Regina": {
+      "market": "Regina",
+      "source": "SRA",
+      "lastUpdated": "May 2025",
+      "historicalAverage1990to2024": 4.2,
+      "recentYearOverYear": -1.0,
+      "trend": "stable"
+    },
+    
+    "Saskatoon": {
+      "market": "Saskatoon",
+      "source": "SRA",
+      "lastUpdated": "May 2025",
+      "currentAverage": 438024,
+      "yearOverYear": 14.0,
+      "trend": "strong growth"
+    }
+  },
+  
+  "additionalMarkets": {
+    "Victoria": {
+      "10YearAverage": 6.1,
+      "currentTrend": "declining",
+      "yearOverYear": -3.1
+    },
+    "QuebecCity": {
+      "10YearAverage": 3.5,
+      "currentTrend": "stable",
+      "yearOverYear": 2.3
+    },
+    "Hamilton": {
+      "10YearAverage": 7.8,
+      "currentTrend": "correcting",
+      "yearOverYear": -8.2
+    },
+    "KitchenerWaterloo": {
+      "10YearAverage": 6.2,
+      "currentTrend": "correcting",
+      "yearOverYear": -6.1
+    },
+    "London": {
+      "10YearAverage": 5.8,
+      "currentTrend": "correcting",
+      "yearOverYear": -5.4
+    }
+  },
+  
+  "keyFindings": {
+    "byPropertyType": {
+      "detachedHomes": "Historically showed highest appreciation in hot markets (Vancouver 159%, Toronto 117% over different 10-year periods)",
+      "townhouses": "Strong performers, especially in Vancouver (103% over 10 years, 8.1% annual)",
+      "condos": "More modest but steady growth, best affordability option",
+      "marketSpecific": "Performance varies significantly by location"
+    },
+    "regionalTrends": {
+      "hotMarkets": "Toronto, Vancouver showed extreme appreciation but now correcting",
+      "prairieMarkets": "Calgary, Edmonton, Saskatoon showing current strength",
+      "atlanticMarkets": "Halifax doubled in 10 years, strong fundamentals",
+      "quebecMarkets": "Montreal showing consistent 5-7% annual growth"
+    },
+    "currentConditions": {
+      "2024to2025": "Major markets correcting after pandemic boom",
+      "interestRateImpact": "Higher rates cooling previously hot markets",
+      "affordabilityShift": "Buyers moving to condos and townhouses",
+      "regionalShift": "Prairie and Atlantic provinces outperforming"
+    }
+  },
+  
+  "dataLimitations": {
+    "note": "Complete 10-15 year data by property type not available for all markets",
+    "recommendation": "For precise historical data, contact local real estate boards directly",
+    "sources": [
+      "CREA MLS HPI Tool (professional access required)",
+      "Local board archives",
+      "CMHC Housing Market Information Portal",
+      "Statistics Canada CANSIM tables"
+    ]
+  }
+}

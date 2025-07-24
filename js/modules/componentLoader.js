@@ -174,43 +174,46 @@ class ComponentLoader {
 
       // Render the complete analysis layout
       const analysisLayout = `
-        <div class="min-h-screen bg-gray-50">
+        <div class="min-h-screen bg-gray-50" style="overflow-x: hidden;">
           
           <!-- Investment Verdict - Full Width with Header -->
           <div class="mb-6">
             ${verdictHtml}
           </div>
 
-          <div class="max-w-7xl mx-auto px-6">
+          <div class="max-w-7xl mx-auto px-4 lg:px-6" style="overflow-x: hidden;">
             <!-- Rental Analysis -->
             <div class="mb-8">
               <!-- Tab Navigation - Always show tabs for better UX -->
-              <div class="border-b border-gray-200">
-                <nav class="-mb-px flex space-x-8" aria-label="Tabs">
+              <div class="border-b border-gray-200 overflow-x-auto">
+                <nav class="-mb-px flex space-x-4 md:space-x-8 min-w-max" aria-label="Tabs">
                   ${showSTR ? `
                     <button
                       id="str-tab"
                       onclick="window.switchTab('str')"
-                      class="tab-button active border-blue-500 text-blue-600 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm"
+                      class="tab-button active border-blue-500 text-blue-600 whitespace-nowrap py-3 md:py-4 px-2 md:px-3 border-b-2 font-medium text-xs md:text-sm"
                     >
-                      Short-Term Rental Analysis
+                      <span class="hidden sm:inline">Short-Term Rental</span>
+                      <span class="sm:hidden">STR</span>
                     </button>
                   ` : ''}
                   ${showLTR ? `
                     <button
                       id="ltr-tab"
                       onclick="window.switchTab('ltr')"
-                      class="tab-button ${!showSTR ? 'active border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'} whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm"
+                      class="tab-button ${!showSTR ? 'active border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'} whitespace-nowrap py-3 md:py-4 px-2 md:px-3 border-b-2 font-medium text-xs md:text-sm"
                     >
-                      Long-Term Rental Analysis
+                      <span class="hidden sm:inline">Long-Term Rental</span>
+                      <span class="sm:hidden">LTR</span>
                     </button>
                   ` : ''}
                   <button
                     id="investment-tab"
                     onclick="window.switchTab('investment')"
-                    class="tab-button border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm"
+                    class="tab-button border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-3 md:py-4 px-2 md:px-3 border-b-2 font-medium text-xs md:text-sm"
                   >
-                    Investment Planning
+                    <span class="hidden sm:inline">Investment Planning</span>
+                    <span class="sm:hidden">Planning</span>
                   </button>
                 </nav>
               </div>
@@ -344,10 +347,10 @@ class ComponentLoader {
     } catch (error) {
       console.error('Failed to render analysis results:', error);
       targetContainer.innerHTML = `
-        <div class="container mx-auto p-lg">
-          <div class="card text-center p-2xl">
-            <h3 class="text-xl font-bold text-red-600 mb-md">Error Loading Analysis</h3>
-            <p class="text-gray-600 mb-lg">There was an error displaying the analysis results.</p>
+        <div class="container mx-auto p-4 lg:p-lg">
+          <div class="card text-center p-lg lg:p-2xl">
+            <h3 class="text-lg lg:text-xl font-bold text-red-600 mb-md">Error Loading Analysis</h3>
+            <p class="text-sm lg:text-base text-gray-600 mb-lg">There was an error displaying the analysis results.</p>
             <button onclick="location.reload()" class="btn btn-primary">Reload Page</button>
           </div>
         </div>
@@ -359,9 +362,9 @@ class ComponentLoader {
     const { ActionButton } = buttonModule;
     
     return `
-      <div class="card p-xl">
-        <h3 class="text-xl font-bold text-gray-900 mb-lg">Next Steps</h3>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-lg">
+      <div class="card p-lg lg:p-xl">
+        <h3 class="text-lg lg:text-xl font-bold text-gray-900 mb-lg">Next Steps</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-md lg:gap-lg">
           ${ActionButton({
             action: 'saveAnalysis()',
             icon: '💾',

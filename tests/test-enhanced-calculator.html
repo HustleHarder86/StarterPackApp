@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced Financial Calculator Test</title>
+    <link href="../styles/design-system.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-50">
+    <div class="container mx-auto p-8">
+        <h1 class="text-3xl font-bold mb-8">Enhanced Financial Calculator Test</h1>
+        
+        <!-- Set up test data -->
+        <script>
+            window.analysisData = {
+                strRevenue: 5400,
+                ltrRevenue: 2800,
+                monthlyExpenses: 3300,
+                propertyPrice: 850000,
+                downPayment: 170000,
+                expenses: {
+                    propertyTax: 708,
+                    insurance: 250,
+                    hoaFees: 450,
+                    propertyMgmt: 540,
+                    utilities: 280,
+                    cleaning: 400,
+                    maintenance: 300,
+                    supplies: 216,
+                    platformFees: 162,
+                    otherExpenses: 150
+                },
+                propertyData: {
+                    price: 850000,
+                    propertyTaxes: 5490,
+                    condoFees: 650,
+                    propertyType: 'Condo',
+                    bedrooms: 2,
+                    sqft: 1100
+                },
+                costs: {
+                    property_tax_annual: 5490,
+                    calculation_method: 'actual_data'
+                }
+            };
+        </script>
+        
+        <!-- Calculator Container -->
+        <div id="calculator-container"></div>
+        
+        <!-- Load the calculator -->
+        <script type="module">
+            import { InteractiveFinancialCalculator } from '../components/analysis/InteractiveFinancialCalculator.js';
+            import { initializeFinancialCalculator } from '../js/modules/financialCalculatorInit.js';
+            
+            // Render the calculator
+            const container = document.getElementById('calculator-container');
+            container.innerHTML = InteractiveFinancialCalculator({
+                monthlyRevenue: window.analysisData.strRevenue,
+                expenses: window.analysisData.expenses,
+                propertyPrice: window.analysisData.propertyPrice,
+                downPayment: window.analysisData.downPayment,
+                propertyData: window.analysisData.propertyData,
+                costs: window.analysisData.costs
+            });
+            
+            // Initialize functionality
+            setTimeout(() => {
+                initializeFinancialCalculator();
+            }, 100);
+        </script>
+        
+        <!-- Test Status -->
+        <div class="mt-8 p-4 bg-white rounded-lg shadow">
+            <h2 class="text-xl font-bold mb-4">Test Checklist</h2>
+            <ul class="space-y-2 text-sm">
+                <li class="flex items-center gap-2">
+                    <input type="checkbox" id="assumptions-visible">
+                    <label for="assumptions-visible">✅ Assumptions panel is visible with key values</label>
+                </li>
+                <li class="flex items-center gap-2">
+                    <input type="checkbox" id="sliders-work">
+                    <label for="sliders-work">✅ Interest rate and down payment sliders work</label>
+                </li>
+                <li class="flex items-center gap-2">
+                    <input type="checkbox" id="tooltips-show">
+                    <label for="tooltips-show">✅ Tooltips explain calculation methodology</label>
+                </li>
+                <li class="flex items-center gap-2">
+                    <input type="checkbox" id="reset-works">
+                    <label for="reset-works">✅ Reset to Defaults button restores original values</label>
+                </li>
+                <li class="flex items-center gap-2">
+                    <input type="checkbox" id="methodology-toggle">
+                    <label for="methodology-toggle">✅ Calculation methodology section toggles</label>
+                </li>
+                <li class="flex items-center gap-2">
+                    <input type="checkbox" id="values-update">
+                    <label for="values-update">✅ All values update when sliders change</label>
+                </li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

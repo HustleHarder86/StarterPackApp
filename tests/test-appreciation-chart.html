@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Property Appreciation Chart</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../styles/design-system.css">
+</head>
+<body class="bg-gray-50 p-8">
+    <div class="max-w-6xl mx-auto">
+        <h1 class="text-3xl font-bold mb-8">Property Appreciation Chart Test</h1>
+        
+        <!-- Test Different Markets -->
+        <div class="space-y-8">
+            <!-- Toronto Property -->
+            <div>
+                <h2 class="text-xl font-bold mb-4">Toronto Property (5.5% appreciation)</h2>
+                <div id="toronto-chart"></div>
+            </div>
+            
+            <!-- Vancouver Property -->
+            <div>
+                <h2 class="text-xl font-bold mb-4">Vancouver Property (6.0% appreciation)</h2>
+                <div id="vancouver-chart"></div>
+            </div>
+            
+            <!-- Generic Property -->
+            <div>
+                <h2 class="text-xl font-bold mb-4">Generic Canadian Property (4.0% appreciation)</h2>
+                <div id="generic-chart"></div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { PropertyAppreciationChart } from '../components/analysis/PropertyAppreciationChart.js';
+        
+        // Test data for different markets
+        const torontoProperty = {
+            address: '123 Main Street, Toronto, ON',
+            price: 1049000
+        };
+        
+        const vancouverProperty = {
+            address: '456 Oak Avenue, Vancouver, BC',
+            price: 1500000
+        };
+        
+        const genericProperty = {
+            address: '789 Elm Street, Winnipeg, MB',
+            price: 450000
+        };
+        
+        // Render charts
+        document.getElementById('toronto-chart').innerHTML = PropertyAppreciationChart({
+            propertyData: torontoProperty,
+            currentValue: torontoProperty.price
+        });
+        
+        document.getElementById('vancouver-chart').innerHTML = PropertyAppreciationChart({
+            propertyData: vancouverProperty,
+            currentValue: vancouverProperty.price
+        });
+        
+        document.getElementById('generic-chart').innerHTML = PropertyAppreciationChart({
+            propertyData: genericProperty,
+            currentValue: genericProperty.price
+        });
+        
+        // Test rate detection
+        console.log('Chart Tests:');
+        console.log('- Toronto property should show 5.5% rate');
+        console.log('- Vancouver property should show 6.0% rate');
+        console.log('- Generic property should show 4.0% rate');
+        
+        // Make update function available globally for slider testing
+        window.updateAppreciationChart = function(newRate) {
+            console.log('Rate updated to:', (newRate * 100).toFixed(1) + '%');
+            // In a real app, this would trigger a re-render
+        };
+    </script>
+</body>
+</html>

@@ -20,7 +20,8 @@ export const AirbnbListingsEnhanced = ({
       occupancy: '87%',
       monthlyRevenue: '$5,824',
       occupancyRate: '87%',
-      imageUrl: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400&h=300&fit=crop'
+      imageUrl: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400&h=300&fit=crop',
+      url: 'https://www.airbnb.com/rooms/12345678'
     },
     {
       title: '2BR • King West • ★4.9',
@@ -29,7 +30,8 @@ export const AirbnbListingsEnhanced = ({
       occupancy: '82%',
       monthlyRevenue: '$4,548',
       occupancyRate: '82%',
-      imageUrl: 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=400&h=300&fit=crop'
+      imageUrl: 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=400&h=300&fit=crop',
+      url: 'https://www.airbnb.com/rooms/23456789'
     },
     {
       title: '2BR • Harbourfront • ★5.0',
@@ -38,7 +40,8 @@ export const AirbnbListingsEnhanced = ({
       occupancy: '92%',
       monthlyRevenue: '$3,986',
       occupancyRate: '92%',
-      imageUrl: 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=400&h=300&fit=crop'
+      imageUrl: 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=400&h=300&fit=crop',
+      url: 'https://www.airbnb.com/rooms/34567890'
     }
   ];
 
@@ -119,9 +122,12 @@ export const AirbnbListingsEnhanced = ({
               </div>
               
               <div class="mt-3 pt-3 border-t border-gray-100">
-                <button class="text-sm text-blue-600 hover:text-blue-800 font-medium">
+                <a href="${listing.url || listing.airbnb_url || '#'}" 
+                   target="_blank" 
+                   rel="noopener noreferrer"
+                   class="text-sm text-blue-600 hover:text-blue-800 font-medium inline-block">
                   View on Airbnb →
-                </button>
+                </a>
               </div>
             </div>
           </div>

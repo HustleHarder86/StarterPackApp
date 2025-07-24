@@ -86,7 +86,7 @@ export const AirbnbListingsMockup = ({
       </div>
 
       <!-- Listing Cards -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 lg:gap-4">
         ${listings.slice(0, 3).map((listing, index) => `
           <a href="${listing.url}" target="_blank" rel="noopener noreferrer" class="block bg-white rounded-lg overflow-hidden border border-gray-200 hover:shadow-xl hover:border-gray-300 transition-all duration-300 cursor-pointer group transform hover:-translate-y-1 hover:scale-[1.02]">
             <!-- Property Image -->
@@ -157,8 +157,8 @@ export const AirbnbListingsMockup = ({
       ` : ''}
 
       <!-- Bottom Stats Bar -->
-      <div class="mt-6 bg-gray-50 rounded-lg p-4">
-        <div class="grid grid-cols-4 gap-4 text-center">
+      <div class="mt-6 bg-gray-50 rounded-lg p-3 lg:p-4">
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 lg:gap-4 text-center">
           <div>
             <div class="text-2xl font-bold ${stats.avgRate === 'N/A' ? 'text-gray-400' : 'text-gray-900'}">${stats.avgRate || 'N/A'}</div>
             <div class="text-xs text-gray-600">Average nightly rate</div>
@@ -198,8 +198,8 @@ export const AirbnbHeroSectionMockup = ({ analysis }) => {
   };
 
   return `
-    <div class="max-w-7xl mx-auto px-6 mt-6">
-      <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+    <div class="max-w-7xl mx-auto px-4 lg:px-6 mt-6" style="overflow-x: hidden;">
+      <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 lg:p-6">
         ${AirbnbListingsMockup({ comparables, stats })}
       </div>
     </div>

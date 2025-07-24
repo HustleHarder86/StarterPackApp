@@ -16,6 +16,9 @@ export const InteractiveFinancialCalculator = ({
   onUpdate = () => {},
   className = ''
 }) => {
+  // Calculate initial values for sliders
+  const downPaymentPercent = Math.round((downPayment / propertyPrice) * 100);
+  const interestRate = 6.5; // Default interest rate
   // Ensure we have propertyData from any available source
   const actualPropertyData = propertyData || window.analysisData?.propertyData || window.extractedPropertyData || {};
   const actualCosts = costs || window.analysisData?.costs || {};
@@ -117,7 +120,92 @@ export const InteractiveFinancialCalculator = ({
     children: `
       <div class="flex items-center justify-between mb-lg">
         <h3 class="text-xl font-bold text-gray-900">Financial Calculator</h3>
-        <button onclick="resetCalculator()" class="text-sm text-blue-600 hover:text-blue-800">Reset to defaults</button>
+        <button onclick="resetCalculator()" class="px-4 py-2 text-sm font-medium text-white bg-gray-600 hover:bg-gray-700 rounded-lg transition-colors flex items-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+          </svg>
+          Reset to Defaults
+        </button>
+      </div>
+      
+      <!-- Assumptions Panel -->
+      <div class="mb-xl p-lg bg-blue-50 rounded-lg border border-blue-200">
+        <div class="flex items-start gap-3 mb-md">
+          <svg class="w-5 h-5 text-blue-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          <div class="flex-1">
+            <h4 class="text-md font-semibold text-blue-900 mb-2">Key Assumptions</h4>
+            <p class="text-sm text-blue-800 mb-md">These values are used in our calculations. You can adjust them using the sliders below or by editing individual expense fields.</p>
+            
+            <!-- Interest Rate Slider -->
+            <div class="mb-md">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-sm font-medium text-blue-900">Mortgage Interest Rate</span>
+                <span class="text-sm font-bold text-blue-900">
+                  <span id="interestRateDisplay">${interestRate}</span>%
+                </span>
+              </div>
+              <input type="range" id="interestRateSlider" 
+                     min="3" max="10" step="0.1" value="${interestRate}"
+                     class="w-full h-2 bg-blue-200 rounded-lg appearance-none cursor-pointer slider"
+                     oninput="updateInterestRate(this.value)">
+              <div class="flex justify-between text-xs text-blue-700 mt-1">
+                <span>3%</span>
+                <span>Current: ${interestRate}%</span>
+                <span>10%</span>
+              </div>
+            </div>
+            
+            <!-- Down Payment Slider -->
+            <div class="mb-md">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-sm font-medium text-blue-900">Down Payment</span>
+                <span class="text-sm font-bold text-blue-900">
+                  <span id="downPaymentDisplay">${downPaymentPercent}</span>% 
+                  (<span id="downPaymentAmount">$${downPayment.toLocaleString()}</span>)
+                </span>
+              </div>
+              <input type="range" id="downPaymentSlider" 
+                     min="5" max="35" step="5" value="${downPaymentPercent}"
+                     class="w-full h-2 bg-blue-200 rounded-lg appearance-none cursor-pointer slider"
+                     oninput="updateDownPayment(this.value)">
+              <div class="flex justify-between text-xs text-blue-700 mt-1">
+                <span>5%</span>
+                <span>20% (Standard)</span>
+                <span>35%</span>
+              </div>
+            </div>
+            
+            <!-- Other Assumptions -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-md text-sm text-blue-800">
+              <div class="flex items-center gap-2">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                </svg>
+                <span>30-year amortization period</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                </svg>
+                <span>Property management: 10% of revenue</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                </svg>
+                <span>STR occupancy: 70% average</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                </svg>
+                <span>Airbnb platform fee: 3%</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
       
       <!-- Revenue Section -->
@@ -137,8 +225,10 @@ export const InteractiveFinancialCalculator = ({
       <div class="mb-lg">
         <div class="flex items-center justify-between mb-md">
           <span class="font-medium text-gray-700">Mortgage Payment</span>
-          <span class="text-xs text-gray-500">
-            20% down • 6.5% interest • 30 years
+          <span class="text-xs text-gray-500" id="mortgageAssumptions">
+            <span id="mortgageDownPaymentText">${downPaymentPercent}%</span> down • 
+            <span id="mortgageInterestText">${interestRate}%</span> interest • 
+            30 years
           </span>
         </div>
         <div class="pl-lg">
@@ -148,16 +238,17 @@ export const InteractiveFinancialCalculator = ({
 
       <!-- Operating Expenses Section -->
       <div class="mb-lg">
-        <div class="flex items-center justify-between mb-md">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-md gap-2">
           <span class="font-medium text-gray-700">Operating Expenses</span>
           <span class="text-xs text-gray-500">
             ${(propertyData?.propertyTaxes || propertyData?.condoFees) ? 
-              '<span class="text-green-600 font-semibold">✓ Using actual listing data</span> • ' : 
+              '<span class="text-green-600 font-semibold">✓ Using actual listing data</span> <span class="hidden sm:inline">• </span>' : 
               ''}
-            Realtor.ca listing • Airbnb market data • AI estimates
+            <span class="hidden sm:inline">Realtor.ca listing • Airbnb market data • AI estimates</span>
+            <span class="sm:hidden">Multiple data sources</span>
           </span>
         </div>
-        <div class="space-y-3 pl-lg">
+        <div class="space-y-3 sm:pl-lg">
           ${generateExpenseRow('Property Tax', 'propertyTax', expenseValues.propertyTax, dataSources.propertyTax, actualPropertyData, actualCosts)}
           ${generateExpenseRow('Insurance', 'insurance', expenseValues.insurance, dataSources.insurance, actualPropertyData, actualCosts)}
           ${generateExpenseRow('HOA/Condo Fees', 'hoaFees', expenseValues.hoaFees, dataSources.hoaFees, actualPropertyData, actualCosts)}
@@ -185,6 +276,43 @@ export const InteractiveFinancialCalculator = ({
           'Your total profit for the year after all expenses.<br><br>Formula: Monthly Net Cash Flow × 12<br><br>This is the actual money you\'ll receive annually from the property.')}
         ${generateSummaryRow('Cash-on-Cash Return', 'cashReturn', '14.8%', 'blue',
           'The annual return on your actual cash investment.<br><br>Formula: (Annual Net Income ÷ Cash Invested) × 100<br><br>Example: If you put $170k down and earn $25k/year, that\'s a 14.8% return on your cash.')}
+      </div>
+      
+      <!-- Calculation Methodology (Collapsible) -->
+      <div class="mt-lg">
+        <button onclick="toggleMethodology()" class="w-full text-left px-lg py-md bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors flex items-center justify-between group">
+          <span class="font-medium text-gray-700 group-hover:text-gray-900">📊 Detailed Calculation Methodology</span>
+          <svg id="methodologyChevron" class="w-5 h-5 text-gray-500 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+          </svg>
+        </button>
+        <div id="methodologyContent" class="hidden mt-md p-lg bg-gray-50 rounded-lg space-y-md">
+          <div>
+            <h5 class="font-semibold text-gray-900 mb-2">How We Calculate Each Metric:</h5>
+            <div class="space-y-3 text-sm text-gray-700">
+              <div>
+                <strong class="text-gray-900">Cap Rate (Capitalization Rate):</strong>
+                <p class="mt-1">Measures the property's return if purchased with cash. Formula: (Annual Net Operating Income ÷ Property Price) × 100. We exclude mortgage payments from this calculation as it represents the property's intrinsic earning power.</p>
+              </div>
+              <div>
+                <strong class="text-gray-900">Cash-on-Cash Return:</strong>
+                <p class="mt-1">Your actual return on invested cash. Formula: (Annual Cash Flow After Financing ÷ Initial Cash Investment) × 100. This includes mortgage payments and shows your true ROI.</p>
+              </div>
+              <div>
+                <strong class="text-gray-900">Break-Even Occupancy:</strong>
+                <p class="mt-1">The minimum occupancy rate needed to cover all expenses. Formula: (Total Monthly Expenses ÷ Maximum Potential Revenue) × 100. Lower is better - it means you need fewer bookings to be profitable.</p>
+              </div>
+              <div>
+                <strong class="text-gray-900">Property Tax Calculation:</strong>
+                <p class="mt-1">We prioritize actual data from property listings. If unavailable, we use local market rates (typically 0.8-1.2% of property value annually). You can override with actual values from your tax assessment.</p>
+              </div>
+              <div>
+                <strong class="text-gray-900">STR-Specific Expenses:</strong>
+                <p class="mt-1">Short-term rentals have unique costs: higher insurance (25% premium), frequent cleaning (based on 70% occupancy and 6-day average stays), supplies (4% of revenue), and platform fees (3% for Airbnb).</p>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
       
       <!-- Data Sources Legend -->
@@ -217,6 +345,7 @@ export const InteractiveFinancialCalculator = ({
         ` : ''}
         
         <p class="text-xs text-gray-600 italic mt-2">💡 All values are editable - adjust to match your specific situation</p>
+        <p class="text-xs text-gray-600 mt-1">📌 Use the sliders above for quick adjustments to interest rate and down payment</p>
       </div>
     `,
     className: `${className}`,
@@ -382,10 +511,10 @@ function generateExpenseRow(label, id, value, source, propertyData = {}, costs =
   };
 
   return `
-    <div class="flex items-center justify-between">
-      <span class="text-sm text-gray-600 flex items-center">
-        ${label}
-        <span class="text-xs text-${sourceColors[source]}-600 ml-1" title="Data source">• ${sourceLabels[source]}</span>
+    <div class="flex items-center justify-between expense-row">
+      <span class="text-sm text-gray-600 flex items-center flex-wrap">
+        <span>${label}</span>
+        <span class="text-xs text-${sourceColors[source]}-600 ml-1 whitespace-nowrap" title="Data source">• ${sourceLabels[source]}</span>
         <div class="tooltip inline-block ml-1">
           <span class="help-icon text-gray-400 hover:text-gray-600 cursor-help">?</span>
           <span class="tooltiptext">
@@ -393,7 +522,7 @@ function generateExpenseRow(label, id, value, source, propertyData = {}, costs =
           </span>
         </div>
       </span>
-      <div class="flex items-center">
+      <div class="flex items-center flex-shrink-0">
         <span class="text-gray-400 text-sm mr-1">$</span>
         <input type="number" id="${id}" value="${value}" 
                class="w-20 px-2 py-1 border border-gray-200 rounded text-right text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
@@ -426,6 +555,70 @@ export const financialCalculatorScript = '';
 // Export helper function to inject calculator styles
 export const financialCalculatorStyles = `
 <style>
+/* Custom slider styles */
+.slider {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.slider::-webkit-slider-track {
+  background: #dbeafe;
+  height: 8px;
+  border-radius: 4px;
+}
+
+.slider::-moz-range-track {
+  background: #dbeafe;
+  height: 8px;
+  border-radius: 4px;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  background: #3b82f6;
+  height: 20px;
+  width: 20px;
+  border-radius: 50%;
+  margin-top: -6px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease;
+}
+
+.slider::-moz-range-thumb {
+  background: #3b82f6;
+  height: 20px;
+  width: 20px;
+  border-radius: 50%;
+  border: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease;
+}
+
+.slider:hover::-webkit-slider-thumb {
+  background: #2563eb;
+  transform: scale(1.1);
+}
+
+.slider:hover::-moz-range-thumb {
+  background: #2563eb;
+  transform: scale(1.1);
+}
+
+.slider:focus {
+  outline: none;
+}
+
+.slider:focus::-webkit-slider-thumb {
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+}
+
+.slider:focus::-moz-range-thumb {
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+}
+
 .tooltip {
   position: relative;
   display: inline-block;
@@ -456,6 +649,90 @@ export const financialCalculatorStyles = `
   display: block;
   margin-bottom: 4px;
   font-size: 13px;
+}
+
+/* Responsive tooltip adjustments */
+@media (max-width: 768px) {
+  .tooltip .tooltiptext {
+    width: 240px;
+    margin-left: -120px;
+    font-size: 11px;
+    padding: 10px 12px;
+  }
+  
+  .tooltip .tooltiptext strong {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .tooltip .tooltiptext {
+    width: 200px;
+    margin-left: -100px;
+    bottom: auto;
+    top: 125%;
+  }
+  
+  .tooltip .tooltiptext::after {
+    bottom: auto;
+    top: -10px;
+    border-color: transparent transparent #1f2937 transparent;
+  }
+}
+
+/* Responsive calculator layout */
+@media (max-width: 1024px) {
+  .expense-row {
+    font-size: 0.875rem;
+  }
+  
+  .expense-row input {
+    width: 70px;
+    font-size: 0.875rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .expense-row {
+    padding: 0.5rem 0;
+  }
+  
+  .expense-row .text-sm {
+    font-size: 0.75rem;
+  }
+  
+  .expense-row input {
+    width: 60px;
+    padding: 0.25rem 0.5rem;
+  }
+  
+  /* Stack expense label and input on very small screens */
+  @media (max-width: 480px) {
+    .expense-row {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+    
+    .expense-row > div:last-child {
+      align-self: flex-end;
+    }
+  }
+}
+
+/* Responsive methodology content */
+#methodologyContent {
+  overflow-x: hidden;
+}
+
+@media (max-width: 768px) {
+  #methodologyContent {
+    padding: 0.75rem;
+  }
+  
+  #methodologyContent .text-sm {
+    font-size: 0.75rem;
+  }
 }
 
 .tooltip .tooltiptext::after {
@@ -491,6 +768,11 @@ export const financialCalculatorStyles = `
 .help-icon:hover {
   background-color: #d1d5db;
   color: #4b5563;
+}
+
+/* Utility classes */
+.rotate-180 {
+  transform: rotate(180deg);
 }
 </style>
 `;

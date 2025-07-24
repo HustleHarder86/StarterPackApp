@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../styles/design-system.css">
+</head>
+<body class="bg-gray-50">
+    <div class="max-w-7xl mx-auto p-6">
+        <h2 class="text-2xl font-bold mb-6">Property Analysis Results</h2>
+        
+        <!-- Tab Navigation -->
+        <div class="bg-white rounded-lg shadow p-6">
+            <div class="border-b border-gray-200">
+                <nav class="-mb-px flex space-x-8" aria-label="Tabs">
+                    <button
+                        id="str-tab"
+                        onclick="window.switchTab('str')"
+                        class="tab-button active border-blue-500 text-blue-600 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm"
+                    >
+                        Short-Term Rental Analysis
+                    </button>
+                    <button
+                        id="ltr-tab"
+                        onclick="window.switchTab('ltr')"
+                        class="tab-button border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm"
+                    >
+                        Long-Term Rental Analysis
+                    </button>
+                </nav>
+            </div>
+            
+            <!-- Tab Content -->
+            <div class="mt-6">
+                <!-- STR Content -->
+                <div id="str-content" class="tab-content">
+                    <div class="bg-green-50 p-6 rounded-lg">
+                        <h3 class="text-lg font-bold mb-4">Short-Term Rental (Airbnb) Analysis</h3>
+                        <div class="grid grid-cols-3 gap-4">
+                            <div>
+                                <p class="text-sm text-gray-600">Average Nightly Rate</p>
+                                <p class="text-2xl font-bold">$117</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-600">Occupancy Rate</p>
+                                <p class="text-2xl font-bold">70%</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-600">Monthly Revenue</p>
+                                <p class="text-2xl font-bold text-green-600">$3,554</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- LTR Content -->
+                <div id="ltr-content" class="tab-content hidden">
+                    <div class="bg-blue-50 p-6 rounded-lg">
+                        <h3 class="text-lg font-bold mb-4">Long-Term Rental Analysis</h3>
+                        <div class="grid grid-cols-3 gap-4">
+                            <div>
+                                <p class="text-sm text-gray-600">Market Rent</p>
+                                <p class="text-2xl font-bold">$2,800</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-600">Vacancy Rate</p>
+                                <p class="text-2xl font-bold">5%</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-600">Net Monthly Income</p>
+                                <p class="text-2xl font-bold text-blue-600">$2,660</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="mt-4 p-4 bg-green-100 rounded">
+            <p class="text-sm text-green-800">✅ Tab switching is now working! Click the tabs above to test.</p>
+        </div>
+    </div>
+    
+    <script>
+        // Define the switchTab function globally
+        window.switchTab = function(tabName) {
+            // Update tab buttons
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('border-blue-500', 'text-blue-600', 'active');
+                btn.classList.add('border-transparent', 'text-gray-500');
+            });
+            
+            document.getElementById(tabName + '-tab').classList.remove('border-transparent', 'text-gray-500');
+            document.getElementById(tabName + '-tab').classList.add('border-blue-500', 'text-blue-600', 'active');
+            
+            // Update tab content
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.add('hidden');
+            });
+            
+            document.getElementById(tabName + '-content').classList.remove('hidden');
+            
+            // Log for demo
+            console.log('Switched to tab:', tabName);
+        }
+    </script>
+</body>
+</html>

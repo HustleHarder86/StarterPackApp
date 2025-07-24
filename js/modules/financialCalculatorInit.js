@@ -224,8 +224,100 @@ export function updateKeyMetrics(monthlyRevenue, totalExpenses, netCashFlow, ann
   updateIndicator('breakEvenIndicator', getMetricRating('breakEven', breakEvenOccupancy));
 }
 
+// Function to update interest rate from slider
+export function updateInterestRate(rate) {
+  // Update display
+  const rateDisplay = document.getElementById('interestRateDisplay');
+  const mortgageInterestText = document.getElementById('mortgageInterestText');
+  if (rateDisplay) rateDisplay.textContent = rate;
+  if (mortgageInterestText) mortgageInterestText.textContent = rate + '%';
+  
+  // Recalculate mortgage payment
+  const propertyPrice = window.analysisData?.propertyPrice || 850000;
+  const downPaymentPercent = parseFloat(document.getElementById('downPaymentSlider')?.value) || 20;
+  const downPayment = propertyPrice * (downPaymentPercent / 100);
+  const loanAmount = propertyPrice - downPayment;
+  const monthlyRate = parseFloat(rate) / 100 / 12;
+  const loanTermMonths = 30 * 12;
+  
+  const mortgagePayment = Math.round(
+    loanAmount * (monthlyRate * Math.pow(1 + monthlyRate, loanTermMonths)) / 
+    (Math.pow(1 + monthlyRate, loanTermMonths) - 1)
+  );
+  
+  // Update mortgage input
+  const mortgageInput = document.getElementById('mortgage');
+  if (mortgageInput) {
+    mortgageInput.value = mortgagePayment;
+    updateFinancialCalculations();
+  }
+}
+
+// Function to update down payment from slider
+export function updateDownPayment(percent) {
+  const propertyPrice = window.analysisData?.propertyPrice || 850000;
+  const downPayment = Math.round(propertyPrice * (percent / 100));
+  
+  // Update displays
+  const percentDisplay = document.getElementById('downPaymentDisplay');
+  const amountDisplay = document.getElementById('downPaymentAmount');
+  const mortgageDownPaymentText = document.getElementById('mortgageDownPaymentText');
+  
+  if (percentDisplay) percentDisplay.textContent = percent;
+  if (amountDisplay) amountDisplay.textContent = '$' + downPayment.toLocaleString();
+  if (mortgageDownPaymentText) mortgageDownPaymentText.textContent = percent + '%';
+  
+  // Update global data
+  window.analysisData.downPayment = downPayment;
+  
+  // Recalculate mortgage with new down payment
+  const interestRate = parseFloat(document.getElementById('interestRateSlider')?.value) || 6.5;
+  updateInterestRate(interestRate);
+}
+
+// Enhanced reset function
+export function resetCalculatorEnhanced() {
+  // Reset sliders
+  const interestSlider = document.getElementById('interestRateSlider');
+  const downPaymentSlider = document.getElementById('downPaymentSlider');
+  
+  if (interestSlider) {
+    interestSlider.value = 6.5;
+    updateInterestRate(6.5);
+  }
+  
+  if (downPaymentSlider) {
+    downPaymentSlider.value = 20;
+    updateDownPayment(20);
+  }
+  
+  // Call original reset
+  resetCalculator();
+}
+
+// Function to toggle methodology section
+export function toggleMethodology() {
+  const content = document.getElementById('methodologyContent');
+  const chevron = document.getElementById('methodologyChevron');
+  
+  if (content && chevron) {
+    const isHidden = content.classList.contains('hidden');
+    
+    if (isHidden) {
+      content.classList.remove('hidden');
+      chevron.classList.add('rotate-180');
+    } else {
+      content.classList.add('hidden');
+      chevron.classList.remove('rotate-180');
+    }
+  }
+}
+
 // Make functions globally available
 window.updateFinancialCalculations = updateFinancialCalculations;
-window.resetCalculator = resetCalculator;
+window.resetCalculator = resetCalculatorEnhanced;
 window.updateMetricIndicators = updateMetricIndicators;
 window.updateKeyMetrics = updateKeyMetrics;
+window.updateInterestRate = updateInterestRate;
+window.updateDownPayment = updateDownPayment;
+window.toggleMethodology = toggleMethodology;

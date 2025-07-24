@@ -28,8 +28,8 @@ export const InvestmentVerdictMockup = ({
     <div class="relative">
       <!-- Purple gradient header with property image -->
       <div class="bg-gradient-to-r from-purple-600 to-purple-700 text-white">
-        <div class="max-w-7xl mx-auto">
-          <div class="flex flex-col md:flex-row gap-6 p-6">
+        <div class="max-w-7xl mx-auto px-4 lg:px-6">
+          <div class="flex flex-col md:flex-row gap-4 lg:gap-6 py-4 lg:py-6">
             <!-- Property Image -->
             ${propertyImage ? `
               <div class="flex-shrink-0">
@@ -55,9 +55,9 @@ export const InvestmentVerdictMockup = ({
       </div>
       
       <!-- Property details bar -->
-      <div class="bg-gray-100 px-6 py-3">
+      <div class="bg-gray-100 px-4 lg:px-6 py-3">
         <div class="max-w-7xl mx-auto">
-          <div class="flex items-center gap-4 text-sm text-gray-700">
+          <div class="flex flex-wrap items-center gap-2 lg:gap-4 text-xs lg:text-sm text-gray-700">
             <span class="font-semibold text-gray-900">${propertyPrice ? `$${propertyPrice.toLocaleString()}` : 'Price N/A'}</span>
             <span>•</span>
             <span>${bedrooms || 'N/A'} Bedrooms</span>
@@ -75,8 +75,8 @@ export const InvestmentVerdictMockup = ({
       </div>
       
       <!-- Main recommendation card -->
-      <div class="max-w-7xl mx-auto px-6 mt-6">
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+      <div class="max-w-7xl mx-auto px-4 lg:px-6 mt-4 lg:mt-6">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 lg:p-6">
           <div class="flex items-start justify-between">
             <div class="flex-1">
               <!-- Strategy badge and title -->
@@ -91,7 +91,7 @@ export const InvestmentVerdictMockup = ({
               <p class="text-gray-600 text-sm mb-4">Maximize your investment potential with STR strategy</p>
               
               <!-- Key insights -->
-              <div class="grid grid-cols-3 gap-4">
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 lg:gap-4">
                 <div class="flex items-start gap-2">
                   <div class="w-2 h-2 bg-green-500 rounded-full mt-1.5"></div>
                   <div>
@@ -117,9 +117,9 @@ export const InvestmentVerdictMockup = ({
             </div>
             
             <!-- Monthly income box -->
-            <div class="ml-8 text-right">
+            <div class="mt-4 md:mt-0 md:ml-4 lg:ml-8 text-center md:text-right">
               <div class="text-xs text-gray-500 mb-1">Estimated Monthly Income</div>
-              <div class="text-3xl font-bold ${monthlyIncome ? 'text-green-600' : 'text-gray-400'}">${monthlyIncome ? `$${monthlyIncome.toLocaleString()}` : 'N/A'}</div>
+              <div class="text-2xl lg:text-3xl font-bold ${monthlyIncome ? 'text-green-600' : 'text-gray-400'}">${monthlyIncome ? `$${monthlyIncome.toLocaleString()}` : 'N/A'}</div>
               <div class="text-sm text-gray-600 mt-1">Short-Term Rental</div>
             </div>
           </div>

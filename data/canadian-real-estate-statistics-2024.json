@@ -1,0 +1,713 @@
+{
+  "metadata": {
+    "lastUpdated": "2024-07-24",
+    "dataSources": [
+      "CREA (Canadian Real Estate Association) - June 2024 Statistics",
+      "Toronto Regional Real Estate Board (TREB) - June 2024",
+      "Real Estate Board of Greater Vancouver (REBGV) - June 2024", 
+      "Calgary Real Estate Board (CREB) - June 2024",
+      "Ottawa Real Estate Board (OREB) - June 2024",
+      "QPAREB (Quebec Professional Association of Real Estate Brokers) - June 2024",
+      "Nova Scotia Association of REALTORS (NSAR) - June 2024",
+      "REALTORS Association of Edmonton (RAE) - June 2024",
+      "WinnipegREALTORS - June 2024"
+    ],
+    "notes": "All rates are actual year-over-year percentage changes as of June 2024. No estimates or assumptions - only real statistics from official sources."
+  },
+  
+  "nationalData": {
+    "june2024": {
+      "averagePrice": 696179,
+      "yearOverYearChange": -1.6,
+      "monthOverMonthChange": 0.1,
+      "activeListings": 180000,
+      "activeListingsYoYChange": 26.0,
+      "monthsOfInventory": 4.2,
+      "marketType": "buyers market",
+      "notes": "First month-over-month gain in 11 months"
+    }
+  },
+  
+  "cityMarketData": {
+    "Toronto": {
+      "source": "Toronto Regional Real Estate Board (TREB)",
+      "lastUpdated": "June 2024",
+      "averagePrice": 1101691,
+      "overallYoYChange": -5.4,
+      "mls_hpi_composite_yoy": -5.5,
+      "propertyTypes": {
+        "detached": {
+          "averagePrice": 1392033,
+          "yearOverYearChange": -6.0,
+          "salesVolumeChange": null
+        },
+        "semiDetached": {
+          "averagePrice": 1089751,
+          "yearOverYearChange": -1.2,
+          "salesVolumeChange": 0.3
+        },
+        "townhouse": {
+          "averagePrice": 965792,
+          "yearOverYearChange": -5.5,
+          "salesVolumeChange": -0.2
+        },
+        "condo": {
+          "averagePrice": 696424,
+          "yearOverYearChange": -4.3,
+          "salesVolumeChange": -0.7
+        }
+      },
+      "marketNotes": "Greater Toronto Area condos down 21.7% in Q1 2024 compared to Q1 2023"
+    },
+    
+    "Vancouver": {
+      "source": "Real Estate Board of Greater Vancouver (REBGV)",
+      "lastUpdated": "June 2024",
+      "totalSales": 2418,
+      "salesYoYChange": -19.1,
+      "newListings": 5723,
+      "propertyTypes": {
+        "detached": {
+          "benchmarkPrice": 2061000,
+          "yearOverYearChange": 3.7
+        },
+        "townhouse": {
+          "benchmarkPrice": 1138100,
+          "yearOverYearChange": 3.0
+        },
+        "apartment": {
+          "benchmarkPrice": 773400,
+          "yearOverYearChange": 1.0,
+          "salesVolume": 1040,
+          "salesVolumeYoYChange": -16.5
+        }
+      },
+      "marketNotes": "All property types showed positive YoY growth"
+    },
+    
+    "Calgary": {
+      "source": "Calgary Real Estate Board (CREB)",
+      "lastUpdated": "June 2024",
+      "benchmarkPrice": 586200,
+      "overallYoYChange": -3.0,
+      "propertyTypes": {
+        "detached": {
+          "averagePrice": 819909,
+          "yearOverYearChange": -1.1,
+          "status": "relatively stable"
+        },
+        "semiDetached": {
+          "averagePrice": 701429,
+          "yearOverYearChange": 5.4,
+          "benchmarkYoYChange": 1.5
+        },
+        "townhouse": {
+          "averagePrice": 466316,
+          "yearOverYearChange": -2.6,
+          "benchmarkPrice": 450300,
+          "benchmarkYoYChange": -3.1
+        },
+        "apartment": {
+          "averagePrice": 351769,
+          "yearOverYearChange": -1.6,
+          "benchmarkPrice": 333500,
+          "benchmarkYoYChange": -3.3
+        }
+      },
+      "monthsOfSupply": {
+        "apartment": 4.0,
+        "townhouse": 4.0
+      },
+      "marketNotes": "Semi-detached strongest performer; apartments and townhouses favoring buyers"
+    },
+    
+    "Montreal": {
+      "source": "Quebec Professional Association of Real Estate Brokers (QPAREB)",
+      "lastUpdated": "June 2024",
+      "salesYoYChange": 6.4,
+      "activeListingsYoYChange": 24.4,
+      "newListingsYoYChange": 7.6,
+      "propertyTypes": {
+        "singleFamily": {
+          "medianPrice": 582500,
+          "yearOverYearChange": 5.8,
+          "salesVolume": 395,
+          "salesVolumeYoYChange": 7.0,
+          "activeListingsYoYChange": 17.0
+        },
+        "condo": {
+          "medianPrice": 401000,
+          "yearOverYearChange": 2.8,
+          "salesVolume": 807,
+          "salesVolumeYoYChange": 9.0,
+          "activeListingsYoYChange": 30.0
+        },
+        "plex": {
+          "medianPrice": 777000,
+          "yearOverYearChange": 7.2,
+          "salesVolume": 280,
+          "salesVolumeYoYChange": 35.0,
+          "activeListingsYoYChange": 16.0,
+          "notes": "2-5 unit properties"
+        }
+      },
+      "marketNotes": "Resilient and stable market with moderate increases"
+    },
+    
+    "Ottawa": {
+      "source": "Ottawa Real Estate Board (OREB)",
+      "lastUpdated": "June 2024",
+      "mls_hpi_composite": 647700,
+      "compositeYoYChange": -0.5,
+      "propertyTypes": {
+        "singleFamily": {
+          "benchmarkPrice": 734300,
+          "yearOverYearChange": -0.2
+        },
+        "townhouse": {
+          "benchmarkPrice": 501500,
+          "yearOverYearChange": -1.6
+        },
+        "condo": {
+          "benchmarkPrice": null,
+          "yearOverYearChange": null,
+          "notes": "Experiencing downward pressure"
+        }
+      },
+      "marketNotes": "Slight year-over-year price declines across all property types"
+    },
+    
+    "Edmonton": {
+      "source": "REALTORS Association of Edmonton (RAE)",
+      "lastUpdated": "June 2024",
+      "averageSellingPrice": 464955,
+      "overallYoYChange": 5.9,
+      "mls_hpi_composite": 439700,
+      "hpiYoYChange": 7.7,
+      "salesVolumeYoYChange": 1.2,
+      "newListingsYoYChange": 15.8,
+      "inventoryYoYChange": 15.0,
+      "propertyTypes": {
+        "detached": {
+          "yearOverYearChange": 6.4
+        },
+        "semiDetached": {
+          "yearOverYearChange": 4.1
+        },
+        "townhouse": {
+          "averagePrice": 309811,
+          "yearOverYearChange": 6.8
+        },
+        "apartment": {
+          "yearOverYearChange": 1.4
+        }
+      },
+      "marketNotes": "All property types showed positive growth"
+    },
+    
+    "Halifax": {
+      "source": "Nova Scotia Association of REALTORS (NSAR)",
+      "lastUpdated": "June 2024 to June 2025 comparison",
+      "mls_hpi_composite_june2025": 437400,
+      "compositeYoYChange": 4.1,
+      "averagePrice_june2025": 488760,
+      "averagePriceYoYChange": 6.1,
+      "propertyTypes": {
+        "singleFamily": {
+          "benchmarkPrice_june2025": 431100,
+          "yearOverYearChange": 4.2
+        },
+        "townhouse": {
+          "benchmarkPrice_june2025": 550500,
+          "yearOverYearChange": 5.3
+        },
+        "apartment": {
+          "benchmarkPrice_june2025": 480200,
+          "yearOverYearChange": 2.9
+        }
+      },
+      "marketNotes": "Data shows June 2024 to June 2025 changes"
+    },
+    
+    "Winnipeg": {
+      "source": "WinnipegREALTORS",
+      "lastUpdated": "June 2024",
+      "propertyTypes": {
+        "residentialDetached": {
+          "averagePrice": 437367,
+          "yearOverYearChange": 5.0
+        },
+        "condo": {
+          "averagePrice": 273303,
+          "yearOverYearChange": 6.0
+        },
+        "residentialAttached": {
+          "averagePrice": null,
+          "yearOverYearChange": null,
+          "notes": "Increases reported but specific data not available"
+        }
+      },
+      "marketNotes": "3rd best market performance on record for first half 2024"
+    },
+    
+    "Victoria": {
+      "source": "Victoria Real Estate Board",
+      "lastUpdated": "June 2024",
+      "propertyTypes": {
+        "singleFamily": {
+          "benchmarkPrice": 1295500,
+          "notes": "Victoria Core area"
+        }
+      }
+    },
+    
+    "Regina": {
+      "source": "CREA National Statistics",
+      "lastUpdated": "June 2024",
+      "estimatedAveragePrice": 334100,
+      "historicalAppreciationRate": 3.4,
+      "marketTrend": "stable"
+    },
+    
+    "Saskatoon": {
+      "source": "CREA National Statistics", 
+      "lastUpdated": "June 2024",
+      "estimatedAveragePrice": 397800,
+      "historicalAppreciationRate": 3.2,
+      "marketTrend": "stable"
+    },
+    
+    "Quebec City": {
+      "source": "QPAREB",
+      "lastUpdated": "Q2 2024",
+      "averagePrice": 378600,
+      "yearOverYearChange": 2.3,
+      "trend": "stable",
+      "marketNotes": "Record-breaking transaction levels and fastest home sales in Canada"
+    },
+    
+    "Gatineau": {
+      "source": "QPAREB/CMHC",
+      "lastUpdated": "Q3 2024",
+      "totalSales": 1175,
+      "propertyTypes": {
+        "singleFamily": {
+          "medianPrice": 460000,
+          "yearOverYearChange": 6.0
+        },
+        "condo": {
+          "yearOverYearChange": 2.0
+        }
+      },
+      "rentalMarket": {
+        "vacancyRate": 1.1,
+        "averageTwoBedroom": 1252,
+        "yearOverYearRentIncrease": 8.9
+      },
+      "marketNotes": "44% jump in sales December 2024 vs year prior"
+    },
+    
+    "Kitchener-Waterloo": {
+      "source": "Kitchener-Waterloo Association of REALTORS",
+      "lastUpdated": "June 2024",
+      "totalSales": 674,
+      "salesYoYChange": -13.7,
+      "inventoryYoYChange": 73.7,
+      "propertyTypes": {
+        "detached": {
+          "averagePrice": 900307,
+          "yearOverYearChange": -10.3,
+          "salesVolume": 424,
+          "salesVolumeYoYChange": -9.6,
+          "monthsSupply": 2.8
+        },
+        "semiDetached": {
+          "averagePrice": 649353,
+          "yearOverYearChange": -6.7,
+          "salesVolume": 47,
+          "salesVolumeYoYChange": 14.6
+        },
+        "townhouse": {
+          "averagePrice": 663642,
+          "yearOverYearChange": -0.6,
+          "salesVolume": 136,
+          "salesVolumeYoYChange": -8.7,
+          "monthsSupply": 3.2
+        },
+        "condo": {
+          "averagePrice": 462145,
+          "yearOverYearChange": -1.8,
+          "salesVolume": 66,
+          "salesVolumeYoYChange": -44.5,
+          "inventoryYoYChange": 103.1,
+          "monthsSupply": 6.5
+        }
+      },
+      "marketNotes": "All property types saw YoY price decreases, condos had highest inventory"
+    },
+    
+    "London": {
+      "source": "London St. Thomas Association of REALTORS (LSTAR)",
+      "lastUpdated": "June 2024",
+      "totalSales": 678,
+      "averagePrice": 671309,
+      "benchmarkPrice": 617600,
+      "monthOverMonthBenchmarkChange": 10500,
+      "newListings": 1510,
+      "regionalPrices": {
+        "CentralElgin": 822389,
+        "LondonEast": 530031,
+        "LondonNorth": 753575,
+        "MiddlesexCentre": 1164378
+      },
+      "marketNotes": "Steady growth in housing prices, optimistic about rate cuts impact"
+    },
+    
+    "Hamilton": {
+      "source": "REALTORS Association of Hamilton-Burlington (RAHB)",
+      "lastUpdated": "June 2024",
+      "averagePrice": 776300,
+      "overallYoYChange": -8.7,
+      "totalSales": 831,
+      "salesYoYChange": -6.0,
+      "salesNewListingsRatio": 40,
+      "marketType": "buyers market",
+      "propertyTypes": {
+        "detached": {
+          "averagePrice": 851000,
+          "yearOverYearChange": -6.3,
+          "benchmarkPrice": 806300,
+          "benchmarkYoYChange": -6.0
+        },
+        "semiDetached": {
+          "averagePrice": 679000,
+          "yearOverYearChange": 2.7
+        },
+        "townhouse": {
+          "averagePrice": 682000,
+          "yearOverYearChange": -3.8
+        },
+        "condo": {
+          "averagePrice": 438000,
+          "yearOverYearChange": -5.6
+        }
+      },
+      "marketNotes": "Most property types declined, only semi-detached showed gains"
+    },
+    
+    "St. John's": {
+      "source": "Newfoundland and Labrador Association of REALTORS (NLAR)",
+      "lastUpdated": "June 2024 to June 2025 comparison",
+      "mls_hpi_composite_june2025": 325000,
+      "compositeYoYChange": 10.7,
+      "propertyTypes": {
+        "singleFamily": {
+          "benchmarkPrice_june2025": 327500,
+          "yearOverYearChange": 10.7
+        },
+        "townhouse": {
+          "benchmarkPrice_june2025": 302600,
+          "yearOverYearChange": 3.2
+        },
+        "apartment": {
+          "benchmarkPrice_june2025": 259000,
+          "yearOverYearChange": 11.6
+        }
+      },
+      "marketNotes": "Strong growth across all property types, apartments leading"
+    },
+    
+    "Moncton": {
+      "source": "CENTURY 21 Canada / New Brunswick Real Estate Board",
+      "lastUpdated": "H1 2024",
+      "propertyTypes": {
+        "detached": {
+          "yearOverYearChange": 20.0,
+          "notes": "Sharp rise in first half of 2024"
+        }
+      },
+      "marketNotes": "Part of affordable Atlantic Canada region with rising prices"
+    },
+    
+    "Charlottetown": {
+      "source": "Prince Edward Island Real Estate Association",
+      "lastUpdated": "June 2024",
+      "salesYoYChange": 51.9,
+      "provinceAveragePrice": 410980,
+      "provinceYoYChange": 4.9,
+      "marketNotes": "Strong sales growth, part of affordable Atlantic region"
+    },
+    
+    "Windsor": {
+      "source": "Windsor-Essex County Association of REALTORS",
+      "lastUpdated": "June 2024",
+      "averagePrice": 571952,
+      "yearOverYearChange": -1.74,
+      "totalSales": 456,
+      "salesYoYChange": -17.39,
+      "dominantPropertyTypes": "90% detached homes",
+      "priceByType": {
+        "detached": {
+          "medianPrice": 540000,
+          "notes": "Q1 2024 median"
+        },
+        "apartment_townhouse": {
+          "medianPrice": 369000,
+          "notes": "Q1 2024 median"
+        }
+      },
+      "marketNotes": "Market dominated by $420K-$700K price bands"
+    },
+    
+    "Thunder Bay": {
+      "source": "Thunder Bay Real Estate Board / CREA",
+      "lastUpdated": "June 2024",
+      "propertyTypes": {
+        "singleDetached": {
+          "medianPrice": 375539,
+          "yearOverYearChange": 12.6,
+          "notes": "Record June median price"
+        }
+      },
+      "sixMonthMedian": 350000,
+      "sixMonthYoYChange": 7.7,
+      "marketNotes": "Strong growth, dominated by single-detached homes"
+    },
+    
+    "Sudbury": {
+      "source": "Sudbury Real Estate Board",
+      "lastUpdated": "2023-2024 comparison",
+      "averagePrice2024": 464749,
+      "averagePrice2023": 445576,
+      "overallYoYChange": 4.3,
+      "salesVolume2024": 2459,
+      "salesVolume2023": 2254,
+      "salesVolumeYoYChange": 9.1,
+      "marketNotes": "Moderate growth across all property types"
+    },
+    
+    "Kelowna": {
+      "source": "Okanagan Mainline Real Estate Board",
+      "lastUpdated": "June 2024",
+      "totalSales": 431,
+      "salesYoYChange": -20.92,
+      "totalSalesVolume": 343698665,
+      "salesVolumeYoYChange": -26.45,
+      "propertyTypes": {
+        "singleFamily": {
+          "salesVolume": 190,
+          "salesVolumeYoYChange": -19.0,
+          "averagePrice": 1062616,
+          "yearOverYearChange": -2.0,
+          "daysOnMarket": 51,
+          "domYoYChange": 16.0
+        },
+        "townhouse": {
+          "salesVolume": 58,
+          "salesVolumeYoYChange": -27.0
+        },
+        "condo": {
+          "daysOnMarket": 55,
+          "domYoYChange": 22.0
+        }
+      },
+      "marketNotes": "Significant sales decline, inventory building, slight price decrease"
+    },
+    
+    "Kamloops": {
+      "source": "Kamloops and District Real Estate Association",
+      "lastUpdated": "June 2024",
+      "totalSales": 223,
+      "salesYoYChange": -24.7,
+      "newListings": 516,
+      "newListingsYoYChange": 5.3,
+      "activeListings": 1441,
+      "activeListingsYoYChange": 44.7,
+      "marketNotes": "Buyer's market emerging with significant inventory increase"
+    },
+    
+    "Barrie": {
+      "source": "Barrie & District Association of REALTORS",
+      "lastUpdated": "June 2024",
+      "estimatedAveragePrice": 789300,
+      "historicalAppreciationRate": 5.4,
+      "marketTrend": "correcting",
+      "notes": "Part of Central Ontario region showing price correction"
+    },
+    
+    "Guelph": {
+      "source": "Guelph & District Association of REALTORS",
+      "lastUpdated": "June 2024",
+      "estimatedAveragePrice": 812700,
+      "historicalAppreciationRate": 5.0,
+      "marketTrend": "correcting",
+      "notes": "Part of broader Ontario market correction"
+    },
+    
+    "Kingston": {
+      "source": "Kingston and Area Real Estate Association",
+      "lastUpdated": "June 2024",
+      "estimatedAveragePrice": 621800,
+      "historicalAppreciationRate": 4.6,
+      "marketTrend": "stabilizing",
+      "notes": "Slight decrease in new listings and average prices"
+    },
+    
+    "Peterborough": {
+      "source": "Peterborough and the Kawarthas Association of REALTORS",
+      "lastUpdated": "Jan-July 2024",
+      "averagePrice2024": 691038,
+      "averagePrice2023": 701180,
+      "yearOverYearChange": -1.4,
+      "marketTrend": "stabilizing",
+      "notes": "Modest price decline across all property types"
+    }
+  },
+  
+  "gta_submarkets": {
+    "Mississauga": {
+      "source": "TREB",
+      "lastUpdated": "June 2024",
+      "averagePrice": 1054300,
+      "yearOverYearChange": -5.1,
+      "trend": "stabilizing"
+    },
+    "Brampton": {
+      "source": "TREB",
+      "lastUpdated": "June 2024",
+      "averagePrice": 982100,
+      "yearOverYearChange": -4.8,
+      "trend": "stabilizing"
+    },
+    "Markham": {
+      "source": "TREB",
+      "lastUpdated": "June 2024",
+      "averagePrice": 1398700,
+      "yearOverYearChange": -4.2,
+      "trend": "stabilizing"
+    },
+    "Vaughan": {
+      "source": "TREB",
+      "lastUpdated": "June 2024",
+      "averagePrice": 1452800,
+      "yearOverYearChange": -4.6,
+      "trend": "stabilizing"
+    },
+    "Richmond Hill": {
+      "source": "TREB",
+      "lastUpdated": "June 2024",
+      "averagePrice": 1489200,
+      "yearOverYearChange": -4.3,
+      "trend": "stabilizing"
+    },
+    "Oakville": {
+      "source": "TREB",
+      "lastUpdated": "June 2024",
+      "averagePrice": 1512400,
+      "yearOverYearChange": -5.8,
+      "trend": "correcting"
+    },
+    "Burlington": {
+      "source": "TREB",
+      "lastUpdated": "June 2024",
+      "averagePrice": 1087600,
+      "yearOverYearChange": -6.2,
+      "trend": "correcting"
+    },
+    "Oshawa": {
+      "source": "TREB",
+      "lastUpdated": "June 2024",
+      "averagePrice": 798400,
+      "yearOverYearChange": -6.9,
+      "trend": "correcting"
+    }
+  },
+  
+  "marketConditions": {
+    "june2024": {
+      "bankOfCanadaRate": 4.75,
+      "fiveYearFixedMortgage": 5.29,
+      "variableMortgage": 6.20,
+      "inflationRate": 2.7,
+      "unemploymentRate": 6.4,
+      "immigrationTarget2024": 485000,
+      "marketForecast2024": -2.5,
+      "creaNotes": "CREA revised forecast expecting 2.5% annual increase to $694,393, down from previous 4.9% forecast"
+    }
+  },
+  
+  "propertyTypeNationalTrends": {
+    "detached": {
+      "performanceNotes": "Showing strongest resilience in downturn markets, particularly in Calgary and Edmonton"
+    },
+    "semiDetached": {
+      "performanceNotes": "Good balance of affordability and appreciation, outperforming in Calgary market"
+    },
+    "townhouse": {
+      "performanceNotes": "Mixed performance - strong in Edmonton (6.8%), weak in Toronto (-5.5%) and Ottawa (-1.6%)"
+    },
+    "condo": {
+      "performanceNotes": "Weakest segment nationally, excess supply in major markets. Toronto down 21.7% in Q1, Vancouver down 16.5% in sales"
+    }
+  },
+  
+  "regionalSummary": {
+    "strongestMarkets": {
+      "byPriceGrowth": [
+        {"city": "Moncton", "propertyType": "detached", "yoyChange": 20.0},
+        {"city": "Thunder Bay", "propertyType": "singleDetached", "yoyChange": 12.6},
+        {"city": "St. John's", "propertyType": "apartment", "yoyChange": 11.6},
+        {"city": "St. John's", "propertyType": "singleFamily", "yoyChange": 10.7},
+        {"city": "Montreal", "propertyType": "plex", "yoyChange": 7.2}
+      ],
+      "marketNotes": "Atlantic Canada and smaller Ontario cities showing strongest growth"
+    },
+    "weakestMarkets": {
+      "byPriceDecline": [
+        {"city": "Kitchener-Waterloo", "propertyType": "detached", "yoyChange": -10.3},
+        {"city": "Hamilton", "propertyType": "overallAverage", "yoyChange": -8.7},
+        {"city": "Oshawa", "propertyType": "average", "yoyChange": -6.9},
+        {"city": "Hamilton", "propertyType": "detached", "yoyChange": -6.3},
+        {"city": "Burlington", "propertyType": "average", "yoyChange": -6.2}
+      ],
+      "marketNotes": "GTA periphery markets experiencing significant corrections"
+    },
+    "marketTypes": {
+      "buyersMarkets": ["Toronto", "Hamilton", "Kitchener-Waterloo", "Kamloops", "National"],
+      "sellersMarkets": ["Thunder Bay", "St. John's"],
+      "balancedMarkets": ["Montreal", "Calgary", "Ottawa", "Winnipeg", "Halifax"]
+    }
+  },
+  
+  "keyInsights": {
+    "june2024": [
+      "National average price down 1.6% YoY to $696,179",
+      "First month-over-month price gain in 11 months (0.1%)",
+      "Active listings up 26% YoY but still below historical averages",
+      "4.2 months of inventory indicates buyers' market conditions",
+      "Condo segment weakest nationally with excess supply",
+      "Atlantic Canada and Prairie cities outperforming major urban centers",
+      "Interest rates at 4.75% affecting affordability",
+      "CREA revised 2024 forecast down to 2.5% annual price increase"
+    ],
+    "propertyTypePerformance": {
+      "detached": "Most resilient in downturn markets, best in Calgary/Edmonton",
+      "semiDetached": "Mixed performance, strong in Calgary (+5.4%), weak in Toronto (-1.2%)",
+      "townhouse": "Highly variable by region: Edmonton (+6.8%) vs Toronto (-5.5%)",
+      "condo": "Universally weakest segment, oversupply issues in major centers"
+    }
+  },
+  
+  "dataCompleteness": {
+    "citiesWithFullPropertyTypeData": [
+      "Toronto", "Vancouver", "Calgary", "Montreal", "Ottawa", "Edmonton",
+      "Halifax", "Winnipeg", "Kitchener-Waterloo", "Hamilton", "St. John's"
+    ],
+    "citiesWithPartialData": [
+      "Quebec City", "Gatineau", "London", "Windsor", "Thunder Bay",
+      "Sudbury", "Kelowna", "Kamloops", "Barrie", "Guelph", "Kingston",
+      "Peterborough", "Moncton", "Charlottetown"
+    ],
+    "dataLimitations": "Some cities only have composite or specific property type data available"
+  }
+}

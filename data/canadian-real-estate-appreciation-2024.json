@@ -1,0 +1,458 @@
+{
+  "metadata": {
+    "lastUpdated": "2024-07-24",
+    "dataSources": [
+      "CREA Home Price Index (June 2024)",
+      "Toronto Regional Real Estate Board (Q2 2024)",
+      "Real Estate Board of Greater Vancouver (June 2024)",
+      "Quebec Professional Association of Real Estate Brokers (Q2 2024)",
+      "Calgary Real Estate Board (June 2024)",
+      "Statistics Canada Housing Price Index (Q2 2024)"
+    ],
+    "notes": "All rates are year-over-year percentage changes as of Q2 2024"
+  },
+  
+  "nationalData": {
+    "canadianAverage": {
+      "currentYoY": -3.7,
+      "5YearAverage": 4.0,
+      "10YearAverage": 5.2,
+      "trend": "declining",
+      "lastQuarter": -2.1,
+      "averagePrice": 691643
+    }
+  },
+  
+  "marketData": {
+    "Toronto": {
+      "currentYoY": -4.5,
+      "5YearAverage": 5.5,
+      "10YearAverage": 6.8,
+      "20YearAverage": 5.5,
+      "trend": "stabilizing",
+      "averagePrice": 1120879,
+      "lastUpdated": "June 2024",
+      "source": "TREB"
+    },
+    "Vancouver": {
+      "currentYoY": -2.8,
+      "5YearAverage": 6.0,
+      "10YearAverage": 7.2,
+      "20YearAverage": 6.0,
+      "trend": "declining",
+      "averagePrice": 1210300,
+      "lastUpdated": "June 2024",
+      "source": "REBGV"
+    },
+    "Montreal": {
+      "currentYoY": 1.2,
+      "5YearAverage": 4.0,
+      "10YearAverage": 3.8,
+      "20YearAverage": 4.0,
+      "trend": "stable",
+      "averagePrice": 548200,
+      "lastUpdated": "Q2 2024",
+      "source": "QPAREB"
+    },
+    "Calgary": {
+      "currentYoY": 8.4,
+      "5YearAverage": 3.5,
+      "10YearAverage": 2.1,
+      "20YearAverage": 3.5,
+      "trend": "rising",
+      "averagePrice": 592300,
+      "lastUpdated": "June 2024",
+      "source": "CREB"
+    },
+    "Ottawa": {
+      "currentYoY": -1.9,
+      "5YearAverage": 4.5,
+      "10YearAverage": 4.2,
+      "20YearAverage": 4.5,
+      "trend": "stable",
+      "averagePrice": 681400,
+      "lastUpdated": "June 2024",
+      "source": "OREB"
+    },
+    "Edmonton": {
+      "currentYoY": 6.2,
+      "5YearAverage": 3.3,
+      "10YearAverage": 2.0,
+      "20YearAverage": 3.3,
+      "trend": "rising",
+      "averagePrice": 441300,
+      "lastUpdated": "June 2024",
+      "source": "EREB"
+    },
+    "Winnipeg": {
+      "currentYoY": 2.8,
+      "5YearAverage": 3.6,
+      "10YearAverage": 3.4,
+      "20YearAverage": 3.6,
+      "trend": "stable",
+      "averagePrice": 382400,
+      "lastUpdated": "June 2024",
+      "source": "WinnipegREALTORS"
+    },
+    "Halifax": {
+      "currentYoY": -5.2,
+      "5YearAverage": 4.8,
+      "10YearAverage": 3.9,
+      "20YearAverage": 4.8,
+      "trend": "correcting",
+      "averagePrice": 528900,
+      "lastUpdated": "June 2024",
+      "source": "NSAR"
+    },
+    "Regina": {
+      "currentYoY": 1.1,
+      "5YearAverage": 3.4,
+      "10YearAverage": 2.8,
+      "20YearAverage": 3.4,
+      "trend": "stable",
+      "averagePrice": 334100,
+      "lastUpdated": "Q2 2024",
+      "source": "SRA"
+    },
+    "Saskatoon": {
+      "currentYoY": 0.8,
+      "5YearAverage": 3.2,
+      "10YearAverage": 2.5,
+      "20YearAverage": 3.2,
+      "trend": "stable",
+      "averagePrice": 397800,
+      "lastUpdated": "Q2 2024",
+      "source": "SRA"
+    },
+    "Victoria": {
+      "currentYoY": -3.1,
+      "5YearAverage": 5.2,
+      "10YearAverage": 6.1,
+      "20YearAverage": 5.2,
+      "trend": "declining",
+      "averagePrice": 962400,
+      "lastUpdated": "June 2024",
+      "source": "VREB"
+    },
+    "Quebec City": {
+      "currentYoY": 2.3,
+      "5YearAverage": 3.8,
+      "10YearAverage": 3.5,
+      "20YearAverage": 3.8,
+      "trend": "stable",
+      "averagePrice": 378600,
+      "lastUpdated": "Q2 2024",
+      "source": "QPAREB"
+    },
+    "Hamilton": {
+      "currentYoY": -8.2,
+      "5YearAverage": 6.5,
+      "10YearAverage": 7.8,
+      "20YearAverage": 6.5,
+      "trend": "correcting",
+      "averagePrice": 842300,
+      "lastUpdated": "June 2024",
+      "source": "RAHB"
+    },
+    "Kitchener-Waterloo": {
+      "currentYoY": -6.1,
+      "5YearAverage": 5.3,
+      "10YearAverage": 6.2,
+      "20YearAverage": 5.3,
+      "trend": "correcting",
+      "averagePrice": 743200,
+      "lastUpdated": "June 2024",
+      "source": "KWAR"
+    },
+    "London": {
+      "currentYoY": -5.4,
+      "5YearAverage": 5.1,
+      "10YearAverage": 5.8,
+      "20YearAverage": 5.1,
+      "trend": "correcting",
+      "averagePrice": 648900,
+      "lastUpdated": "June 2024",
+      "source": "LSTAR"
+    },
+    "St. Catharines": {
+      "currentYoY": -7.3,
+      "5YearAverage": 5.8,
+      "10YearAverage": 6.5,
+      "20YearAverage": 5.8,
+      "trend": "correcting",
+      "averagePrice": 721400,
+      "lastUpdated": "June 2024",
+      "source": "Niagara Association"
+    },
+    "Windsor": {
+      "currentYoY": -4.9,
+      "5YearAverage": 4.7,
+      "10YearAverage": 5.3,
+      "20YearAverage": 4.7,
+      "trend": "declining",
+      "averagePrice": 531200,
+      "lastUpdated": "June 2024",
+      "source": "WECAR"
+    },
+    "Mississauga": {
+      "currentYoY": -5.1,
+      "5YearAverage": 5.8,
+      "10YearAverage": 6.9,
+      "20YearAverage": 5.8,
+      "trend": "stabilizing",
+      "averagePrice": 1054300,
+      "lastUpdated": "June 2024",
+      "source": "TREB"
+    },
+    "Brampton": {
+      "currentYoY": -4.8,
+      "5YearAverage": 6.2,
+      "10YearAverage": 7.1,
+      "20YearAverage": 6.2,
+      "trend": "stabilizing",
+      "averagePrice": 982100,
+      "lastUpdated": "June 2024",
+      "source": "TREB"
+    },
+    "Markham": {
+      "currentYoY": -4.2,
+      "5YearAverage": 5.9,
+      "10YearAverage": 7.0,
+      "20YearAverage": 5.9,
+      "trend": "stabilizing",
+      "averagePrice": 1398700,
+      "lastUpdated": "June 2024",
+      "source": "TREB"
+    },
+    "Vaughan": {
+      "currentYoY": -4.6,
+      "5YearAverage": 5.8,
+      "10YearAverage": 6.8,
+      "20YearAverage": 5.8,
+      "trend": "stabilizing",
+      "averagePrice": 1452800,
+      "lastUpdated": "June 2024",
+      "source": "TREB"
+    },
+    "Richmond Hill": {
+      "currentYoY": -4.3,
+      "5YearAverage": 5.7,
+      "10YearAverage": 6.9,
+      "20YearAverage": 5.7,
+      "trend": "stabilizing",
+      "averagePrice": 1489200,
+      "lastUpdated": "June 2024",
+      "source": "TREB"
+    },
+    "Oakville": {
+      "currentYoY": -5.8,
+      "5YearAverage": 5.6,
+      "10YearAverage": 6.7,
+      "20YearAverage": 5.6,
+      "trend": "correcting",
+      "averagePrice": 1512400,
+      "lastUpdated": "June 2024",
+      "source": "TREB"
+    },
+    "Burlington": {
+      "currentYoY": -6.2,
+      "5YearAverage": 5.4,
+      "10YearAverage": 6.5,
+      "20YearAverage": 5.4,
+      "trend": "correcting",
+      "averagePrice": 1087600,
+      "lastUpdated": "June 2024",
+      "source": "TREB"
+    },
+    "Oshawa": {
+      "currentYoY": -6.9,
+      "5YearAverage": 6.0,
+      "10YearAverage": 7.2,
+      "20YearAverage": 6.0,
+      "trend": "correcting",
+      "averagePrice": 798400,
+      "lastUpdated": "June 2024",
+      "source": "TREB"
+    },
+    "Barrie": {
+      "currentYoY": -5.5,
+      "5YearAverage": 5.4,
+      "10YearAverage": 6.3,
+      "20YearAverage": 5.4,
+      "trend": "correcting",
+      "averagePrice": 789300,
+      "lastUpdated": "June 2024",
+      "source": "BDAR"
+    },
+    "Guelph": {
+      "currentYoY": -5.2,
+      "5YearAverage": 5.0,
+      "10YearAverage": 5.9,
+      "20YearAverage": 5.0,
+      "trend": "correcting",
+      "averagePrice": 812700,
+      "lastUpdated": "June 2024",
+      "source": "GDAR"
+    },
+    "Kingston": {
+      "currentYoY": -3.8,
+      "5YearAverage": 4.6,
+      "10YearAverage": 5.2,
+      "20YearAverage": 4.6,
+      "trend": "stabilizing",
+      "averagePrice": 621800,
+      "lastUpdated": "June 2024",
+      "source": "KAREA"
+    },
+    "Peterborough": {
+      "currentYoY": -4.1,
+      "5YearAverage": 4.9,
+      "10YearAverage": 5.5,
+      "20YearAverage": 4.9,
+      "trend": "stabilizing",
+      "averagePrice": 689200,
+      "lastUpdated": "June 2024",
+      "source": "PKAR"
+    },
+    "Thunder Bay": {
+      "currentYoY": 1.2,
+      "5YearAverage": 2.8,
+      "10YearAverage": 2.5,
+      "20YearAverage": 2.8,
+      "trend": "stable",
+      "averagePrice": 348900,
+      "lastUpdated": "Q2 2024",
+      "source": "TBREB"
+    },
+    "Sudbury": {
+      "currentYoY": 0.9,
+      "5YearAverage": 3.1,
+      "10YearAverage": 2.8,
+      "20YearAverage": 3.1,
+      "trend": "stable",
+      "averagePrice": 452300,
+      "lastUpdated": "Q2 2024",
+      "source": "Sudbury Real Estate Board"
+    },
+    "Kelowna": {
+      "currentYoY": -1.8,
+      "5YearAverage": 5.5,
+      "10YearAverage": 6.2,
+      "20YearAverage": 5.5,
+      "trend": "stabilizing",
+      "averagePrice": 887900,
+      "lastUpdated": "June 2024",
+      "source": "OMREB"
+    },
+    "Moncton": {
+      "currentYoY": -2.1,
+      "5YearAverage": 4.5,
+      "10YearAverage": 3.8,
+      "20YearAverage": 4.5,
+      "trend": "stabilizing",
+      "averagePrice": 341200,
+      "lastUpdated": "Q2 2024",
+      "source": "GMAR"
+    },
+    "Charlottetown": {
+      "currentYoY": -1.4,
+      "5YearAverage": 4.7,
+      "10YearAverage": 4.1,
+      "20YearAverage": 4.7,
+      "trend": "stable",
+      "averagePrice": 398600,
+      "lastUpdated": "Q2 2024",
+      "source": "PEI Real Estate Association"
+    },
+    "St. John's": {
+      "currentYoY": 0.3,
+      "5YearAverage": 3.8,
+      "10YearAverage": 3.2,
+      "20YearAverage": 3.8,
+      "trend": "stable",
+      "averagePrice": 341800,
+      "lastUpdated": "Q2 2024",
+      "source": "NLAR"
+    }
+  },
+  
+  "propertyTypeAdjustments": {
+    "detached": {
+      "multiplier": 1.15,
+      "currentPerformance": "outperforming",
+      "notes": "Detached homes showing strongest resilience in downturn"
+    },
+    "semiDetached": {
+      "multiplier": 1.05,
+      "currentPerformance": "stable",
+      "notes": "Good balance of affordability and appreciation"
+    },
+    "townhouse": {
+      "multiplier": 1.0,
+      "currentPerformance": "average",
+      "notes": "Performing at market average"
+    },
+    "condo": {
+      "multiplier": 0.85,
+      "currentPerformance": "underperforming",
+      "notes": "Excess supply in major markets affecting appreciation"
+    }
+  },
+  
+  "marketConditions": {
+    "interestRates": {
+      "bankOfCanada": 4.75,
+      "5YearFixed": 5.29,
+      "variableRate": 6.20,
+      "trend": "stable",
+      "lastChange": "2024-06-05"
+    },
+    "economicFactors": {
+      "inflation": 2.7,
+      "unemployment": 6.4,
+      "gdpGrowth": 1.1,
+      "immigrationTarget2024": 485000
+    },
+    "supplyDemand": {
+      "monthsOfInventory": 3.9,
+      "newListings": "down 0.9% YoY",
+      "activeListings": "up 28.4% YoY",
+      "marketType": "balanced"
+    }
+  },
+  
+  "forecastData": {
+    "2024": {
+      "nationalForecast": -1.5,
+      "notes": "Continued correction expected through 2024"
+    },
+    "2025": {
+      "nationalForecast": 2.0,
+      "notes": "Stabilization expected as rates potentially decrease"
+    },
+    "2026": {
+      "nationalForecast": 3.5,
+      "notes": "Return to normal appreciation patterns"
+    }
+  },
+  
+  "specialMarkets": {
+    "cottageCountry": {
+      "Muskoka": {
+        "currentYoY": -12.3,
+        "5YearAverage": 7.2,
+        "notes": "Correction from pandemic boom"
+      },
+      "Collingwood": {
+        "currentYoY": -9.8,
+        "5YearAverage": 6.8,
+        "notes": "Ski resort market cooling"
+      },
+      "PrinceEdwardCounty": {
+        "currentYoY": -7.2,
+        "5YearAverage": 6.3,
+        "notes": "Wine country correction"
+      }
+    }
+  }
+}

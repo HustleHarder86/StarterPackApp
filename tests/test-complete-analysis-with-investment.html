@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Complete Analysis with Investment Planning</title>
+    <script src="https://www.gstatic.com/firebasejs/9.17.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.2/firebase-firestore-compat.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../styles/design-system.css">
+</head>
+<body class="bg-gray-50">
+    <div id="analysis-results">
+        <!-- Analysis will be rendered here -->
+    </div>
+
+    <script type="module">
+        import { default as ComponentLoader } from '../js/modules/componentLoader.js';
+        
+        // Mock complete analysis data
+        const mockAnalysisData = {
+            propertyData: {
+                address: '1080 GREENWOOD AVENUE Toronto, Ontario M4J 4E4',
+                price: 1049000,
+                bedrooms: 2,
+                bathrooms: 2,
+                sqft: 900,
+                propertyType: 'Condo',
+                propertyTaxes: 5490,
+                condoFees: 450,
+                mainImage: 'https://photos.zolo.ca/1080-greenwood-avenue-unit-309-toronto-C8196906-1-p.jpg?2024-10-17+20%3A51%3A40'
+            },
+            analysisType: 'both', // This ensures all tabs are shown
+            strAnalysis: {
+                monthlyRevenue: 3554,
+                avgNightlyRate: 117,
+                occupancyRate: 0.70,
+                comparables: [
+                    {
+                        title: 'Bright, Stylish Bedroom in Korea Downtown Toronto',
+                        nightly_rate: 167,
+                        occupancy_rate: 0.57,
+                        monthly_revenue: 2883,
+                        bedrooms: 1,
+                        bathrooms: 1,
+                        rating: 4.8,
+                        reviewCount: 45,
+                        image_url: 'https://a0.muscache.com/im/pictures/miso/Hosting-51809333/original/16fbd2e1-d10f-41e6-b630-39265d2e8dd0.jpeg',
+                        url: 'https://www.airbnb.com/rooms/51809333'
+                    },
+                    {
+                        title: 'Bright Bedlit in basement of cozy home!',
+                        nightly_rate: 83,
+                        occupancy_rate: 0.57,
+                        monthly_revenue: 1433,
+                        bedrooms: 1,
+                        bathrooms: 1,
+                        rating: 4.6,
+                        reviewCount: 28,
+                        image_url: 'https://a0.muscache.com/im/pictures/miso/Hosting-587300404406917532/original/a4788c13-9e67-423f-9a34-ca5a7b8ba890.jpeg',
+                        url: 'https://www.airbnb.com/rooms/587300404406917532'
+                    },
+                    {
+                        title: 'Close to Subway-1 minute walk to Bus - Cozy Bdrm',
+                        nightly_rate: 98,
+                        occupancy_rate: 0.57,
+                        monthly_revenue: 1692,
+                        bedrooms: 1,
+                        bathrooms: 1,
+                        rating: 4.7,
+                        reviewCount: 52,
+                        image_url: 'https://a0.muscache.com/im/pictures/miso/Hosting-53066953/original/e3098f18-d41f-4d69-be7b-e6c1b0ae5675.jpeg',
+                        url: 'https://www.airbnb.com/rooms/53066953'
+                    }
+                ]
+            },
+            longTermRental: {
+                monthlyRent: 2800,
+                monthlyExpenses: 1200,
+                cashFlow: 1600,
+                roi: 8.2,
+                capRate: 3.2
+            },
+            overallScore: 8.5,
+            comparison: {
+                recommended_strategy: 'STR'
+            }
+        };
+        
+        // Initialize component loader and render analysis
+        async function loadAnalysis() {
+            const loader = new ComponentLoader();
+            const container = document.getElementById('analysis-results');
+            
+            try {
+                await loader.renderAnalysisResults(mockAnalysisData, container);
+                
+                // Check if all tabs are working
+                setTimeout(() => {
+                    console.log('Analysis loaded successfully');
+                    
+                    // Test switching to Investment Planning tab
+                    if (window.switchTab) {
+                        window.switchTab('investment');
+                        console.log('Switched to Investment Planning tab');
+                    }
+                }, 1000);
+                
+            } catch (error) {
+                console.error('Error loading analysis:', error);
+                container.innerHTML = `
+                    <div class="p-8 text-center">
+                        <h2 class="text-xl font-bold text-red-600 mb-4">Error Loading Analysis</h2>
+                        <p class="text-gray-600">${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+        
+        // Load the analysis
+        loadAnalysis();
+    </script>
+</body>
+</html>

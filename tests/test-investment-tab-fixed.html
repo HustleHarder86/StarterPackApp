@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Investment Tab - Fixed</title>
+    <script src="https://www.gstatic.com/firebasejs/9.17.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.2/firebase-firestore-compat.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../styles/design-system.css">
+</head>
+<body class="bg-gray-50">
+    <div id="analysis-results">
+        <div class="p-8 text-center">
+            <h2 class="text-xl font-bold text-gray-600 mb-4">Loading Analysis...</h2>
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+        </div>
+    </div>
+
+    <script type="module">
+        // Direct import and render without component loader to test
+        import { InvestmentSummaryForDummies } from '../components/analysis/InvestmentSummaryForDummies.js';
+        import { CanadianCapitalGainsTaxCalculator } from '../components/analysis/CanadianCapitalGainsTaxCalculator.js';
+        import { FinancingScenariosComparison } from '../components/analysis/FinancingScenariosComparison.js';
+        import { VerdictSummaryMockup } from '../components/analysis/InvestmentVerdictMockup.js';
+        import { AirbnbHeroSectionMockup } from '../components/analysis/AirbnbListingsMockup.js';
+        import { LongTermRentalAnalysis } from '../components/analysis/LongTermRentalAnalysis.js';
+        
+        // Mock data
+        const mockAnalysisData = {
+            propertyData: {
+                address: '1080 GREENWOOD AVENUE Toronto, Ontario M4J 4E4',
+                price: 1049000,
+                bedrooms: 2,
+                bathrooms: 2,
+                sqft: 900,
+                propertyType: 'Condo',
+                propertyTaxes: 5490,
+                condoFees: 450,
+                mainImage: 'https://photos.zolo.ca/1080-greenwood-avenue-unit-309-toronto-C8196906-1-p.jpg?2024-10-17+20%3A51%3A40'
+            },
+            strAnalysis: {
+                monthlyRevenue: 3554,
+                avgNightlyRate: 117,
+                occupancyRate: 0.70,
+                comparables: []
+            },
+            longTermRental: {
+                monthlyRent: 2800,
+                monthlyExpenses: 1200,
+                cashFlow: 1600,
+                roi: 8.2
+            }
+        };
+        
+        // Manual render
+        function renderAnalysis() {
+            const container = document.getElementById('analysis-results');
+            
+            const html = `
+                <div class="min-h-screen bg-gray-50">
+                    <!-- Verdict -->
+                    <div class="mb-6">
+                        ${VerdictSummaryMockup({ analysis: mockAnalysisData })}
+                    </div>
+                    
+                    <div class="max-w-7xl mx-auto px-6">
+                        <!-- Tabs -->
+                        <div class="mb-8">
+                            <div class="border-b border-gray-200">
+                                <nav class="-mb-px flex space-x-8">
+                                    <button id="str-tab" onclick="switchTab('str')" 
+                                            class="tab-button active border-blue-500 text-blue-600 py-4 px-1 border-b-2 font-medium text-sm">
+                                        Short-Term Rental Analysis
+                                    </button>
+                                    <button id="ltr-tab" onclick="switchTab('ltr')" 
+                                            class="tab-button border-transparent text-gray-500 py-4 px-1 border-b-2 font-medium text-sm">
+                                        Long-Term Rental Analysis
+                                    </button>
+                                    <button id="investment-tab" onclick="switchTab('investment')" 
+                                            class="tab-button border-transparent text-gray-500 py-4 px-1 border-b-2 font-medium text-sm">
+                                        Investment Planning
+                                    </button>
+                                </nav>
+                            </div>
+                            
+                            <!-- Tab Content -->
+                            <div class="mt-6">
+                                <div id="str-content" class="tab-content">
+                                    ${AirbnbHeroSectionMockup({ analysis: mockAnalysisData })}
+                                </div>
+                                
+                                <div id="ltr-content" class="tab-content hidden">
+                                    ${LongTermRentalAnalysis({ analysis: mockAnalysisData })}
+                                </div>
+                                
+                                <div id="investment-content" class="tab-content hidden">
+                                    <div class="space-y-6">
+                                        ${InvestmentSummaryForDummies({
+                                            propertyData: mockAnalysisData.propertyData,
+                                            strAnalysis: mockAnalysisData.strAnalysis,
+                                            ltrAnalysis: mockAnalysisData.longTermRental
+                                        })}
+                                        
+                                        ${CanadianCapitalGainsTaxCalculator({
+                                            propertyData: mockAnalysisData.propertyData,
+                                            purchasePrice: mockAnalysisData.propertyData.price,
+                                            currentValue: mockAnalysisData.propertyData.price * 1.3
+                                        })}
+                                        
+                                        ${FinancingScenariosComparison({
+                                            propertyData: mockAnalysisData.propertyData,
+                                            monthlyRevenue: mockAnalysisData.strAnalysis.monthlyRevenue,
+                                            monthlyExpenses: 1000
+                                        })}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            container.innerHTML = html;
+            
+            // Define switchTab globally
+            window.switchTab = function(tabName) {
+                console.log('Switching to:', tabName);
+                
+                // Update tabs
+                document.querySelectorAll('.tab-button').forEach(btn => {
+                    btn.classList.remove('border-blue-500', 'text-blue-600', 'active');
+                    btn.classList.add('border-transparent', 'text-gray-500');
+                });
+                
+                document.getElementById(tabName + '-tab').classList.remove('border-transparent', 'text-gray-500');
+                document.getElementById(tabName + '-tab').classList.add('border-blue-500', 'text-blue-600', 'active');
+                
+                // Update content
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.add('hidden');
+                });
+                
+                document.getElementById(tabName + '-content').classList.remove('hidden');
+                
+                // Initialize calculators if needed
+                if (tabName === 'investment') {
+                    setTimeout(() => {
+                        if (window.calculateCapitalGains) window.calculateCapitalGains();
+                        if (window.updateScenarios) window.updateScenarios();
+                    }, 100);
+                }
+            };
+        }
+        
+        // Render on load
+        renderAnalysis();
+        
+        // Auto-switch to investment tab after 2 seconds
+        setTimeout(() => {
+            console.log('Auto-switching to Investment Planning tab...');
+            window.switchTab('investment');
+        }, 2000);
+    </script>
+</body>
+</html>

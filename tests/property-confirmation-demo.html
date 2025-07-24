@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../styles/design-system.css">
+</head>
+<body>
+    <div id="demo-container"></div>
+    
+    <script type="module">
+        import { PropertyConfirmation } from '../components/PropertyConfirmation.js';
+        
+        // Real property data from screenshot
+        const propertyData = {
+            address: '1080 GREENWOOD AVENUE Toronto, Ontario M4J 4E4',
+            price: 1049000,
+            bedrooms: 2,
+            bathrooms: 2,
+            sqft: 900,
+            propertyType: 'Condo',
+            propertyTaxes: 5490,
+            condoFees: 450
+        };
+        
+        const component = PropertyConfirmation(
+            propertyData,
+            (type) => alert(`Selected analysis type: ${type}`),
+            () => alert('Cancelled')
+        );
+        
+        document.getElementById('demo-container').innerHTML = component.html;
+        
+        // Setup with user data showing 3/5 trials remaining
+        component.setup({
+            isPremium: false,
+            strTrialUsed: 2
+        });
+    </script>
+</body>
+</html>

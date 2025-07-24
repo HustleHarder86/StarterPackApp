@@ -7,6 +7,8 @@ import { Card } from '../ui/Card.js';
 import { MetricBadge } from '../ui/Badge.js';
 import { Button } from '../ui/Button.js';
 import { InteractiveFinancialCalculator, financialCalculatorScript, financialCalculatorStyles } from './InteractiveFinancialCalculator.js';
+import { RatingTooltip, InfoTooltip } from '../ui/Tooltip.js';
+import { RatingLegend, CompactRatingLegend } from '../ui/RatingLegend.js';
 
 // Store analysis data globally for script access
 window.analysisData = {
@@ -183,8 +185,8 @@ export const EnhancedFinancialSummary = ({
       <!-- Key Metrics with Indicators -->
       ${Card({
         children: `
-          <h3 class="text-xl font-bold text-gray-900 mb-xl">Key Metrics</h3>
-          <div class="grid grid-cols-2 md:grid-cols-4 gap-lg">
+          <h3 class="text-lg lg:text-xl font-bold text-gray-900 mb-lg lg:mb-xl">Key Metrics</h3>
+          <div class="grid grid-cols-2 lg:grid-cols-4 gap-md lg:gap-lg">
             ${generateMetricWithIndicator('Cap Rate', capRate.toFixed(1) + '%', 'capRate', capRate)}
             ${generateMetricWithIndicator('Annual ROI', cashOnCashReturn.toFixed(1) + '%', 'roi', cashOnCashReturn)}
             ${generateMetricWithIndicator('Monthly Cash Flow', '$' + netCashFlow.toLocaleString(), 'cashFlow', netCashFlow)}
@@ -193,21 +195,29 @@ export const EnhancedFinancialSummary = ({
         `,
         className: 'mb-xl'
       })}
+      
+      <!-- Rating Legend -->
+      <div class="mb-xl">
+        ${RatingLegend({ 
+          showMetrics: ['capRate', 'roi', 'cashFlow', 'breakEven'],
+          collapsed: true 
+        })}
+      </div>
 
       <!-- Action Buttons with Share -->
       ${Card({
         children: `
-          <div class="flex flex-col sm:flex-row gap-lg justify-center">
-            <button onclick="saveAnalysis()" class="btn btn-primary">
+          <div class="flex flex-col sm:flex-row flex-wrap gap-md lg:gap-lg justify-center">
+            <button onclick="saveAnalysis()" class="btn btn-primary flex-1 sm:flex-none">
               💾 Save This Analysis
             </button>
-            <button onclick="generateReport()" class="btn btn-secondary">
+            <button onclick="generateReport()" class="btn btn-secondary flex-1 sm:flex-none">
               📊 Generate Full Report
             </button>
-            <button onclick="shareAnalysis()" class="btn btn-secondary">
+            <button onclick="shareAnalysis()" class="btn btn-secondary flex-1 sm:flex-none">
               🔗 Share Analysis
             </button>
-            <button onclick="analyzeAnother()" class="btn btn-secondary">
+            <button onclick="analyzeAnother()" class="btn btn-secondary flex-1 sm:flex-none">
               🔍 Analyze Another Property
             </button>
           </div>
@@ -222,36 +232,67 @@ export const EnhancedFinancialSummary = ({
       .revenue-chart-container {
         height: 250px;
         position: relative;
+        max-width: 100%;
+        overflow: hidden;
+      }
+      
+      @media (max-width: 768px) {
+        .revenue-chart-container {
+          height: 200px;
+        }
+      }
+      
+      /* Responsive metric cards */
+      @media (max-width: 1024px) {
+        #capRateValue, #roiValue, #cashFlowValue, #breakEvenValue {
+          font-size: 1.25rem;
+        }
+      }
+      
+      @media (max-width: 768px) {
+        #capRateValue, #roiValue, #cashFlowValue, #breakEvenValue {
+          font-size: 1.125rem;
+        }
       }
     </style>
+    
+    <!-- Script to load enhanced calculator with tooltips -->
+    <script type="module">
+      import { initializeFinancialCalculatorWithTooltips, updateFinancialCalculations, resetCalculatorEnhanced, updateInterestRate, updateDownPayment, toggleMethodology } from '/js/modules/financialCalculatorWithTooltips.js';
+      
+      // Make functions available globally
+      window.updateFinancialCalculations = updateFinancialCalculations;
+      window.resetCalculator = resetCalculatorEnhanced;
+      window.updateInterestRate = updateInterestRate;
+      window.updateDownPayment = updateDownPayment;
+      window.toggleMethodology = toggleMethodology;
+      window.initializeFinancialCalculatorWithTooltips = initializeFinancialCalculatorWithTooltips;
+      
+      // Initialize when DOM is ready
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initializeFinancialCalculatorWithTooltips);
+      } else {
+        initializeFinancialCalculatorWithTooltips();
+      }
+    </script>
   `;
 };
 
 function generateMetricWithIndicator(label, value, metricType, numericValue) {
-  const tooltips = {
-    capRate: 'The property\'s annual return if purchased with cash.<br><br>Formula: (Annual Net Income ÷ Property Price) × 100<br><br>Higher cap rates indicate better cash flow relative to price. 8%+ is generally considered good.',
-    roi: 'Your total annual return including equity buildup.<br><br>Includes: Cash flow + mortgage principal paydown + appreciation<br><br>12%+ ROI is excellent for real estate investments.',
-    cashFlow: 'Net profit after all monthly expenses and mortgage.<br><br>Formula: Monthly Revenue - All Expenses - Mortgage Payment<br><br>Positive cash flow means immediate monthly profit.',
-    breakEven: 'Minimum occupancy needed to cover all expenses.<br><br>Formula: (Total Expenses ÷ Maximum Revenue) × 100<br><br>Lower is better - 68% means you profit even with 32% vacancy.'
-  };
-
+  // We'll update this later with actual ratings from the calculator
   return `
     <div class="text-center">
       <div id="${metricType}Value" class="text-2xl font-bold text-blue-600">${value}</div>
-      <div class="text-sm text-gray-600 flex items-center justify-center">
+      <div class="text-sm text-gray-600 flex items-center justify-center gap-1">
         ${label}
-        <div class="tooltip">
-          <span class="help-icon">?</span>
-          <span class="tooltiptext">
-            ${tooltips[metricType]}
-          </span>
-        </div>
       </div>
-      <div id="${metricType}Indicator" class="mt-2 inline-flex items-center gap-1 px-2 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium">
-        <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
-          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-        </svg>
-        Loading...
+      <div id="${metricType}Indicator" class="mt-2 inline-block">
+        <span class="inline-flex items-center gap-1 px-2 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium">
+          <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+          </svg>
+          Calculating...
+        </span>
       </div>
     </div>
   `;
@@ -313,8 +354,12 @@ export const initializeEnhancedFinancialSummary = () => {
     initializeFinancialCalculator();
   }
 
-  // Update metric indicators
-  if (typeof updateMetricIndicators === 'function') {
+  // Update metric indicators with enhanced tooltips
+  if (typeof updateMetricIndicatorsWithTooltips === 'function') {
+    // Use enhanced version with tooltips
+    updateMetricIndicatorsWithTooltips();
+  } else if (typeof updateMetricIndicators === 'function') {
+    // Fallback to regular version
     updateMetricIndicators();
   }
 };
