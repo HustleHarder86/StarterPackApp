@@ -197,23 +197,10 @@ export const InteractiveFinancialCalculator = ({
               
               <!-- Property Management -->
               <div>
-                <div class="flex items-center justify-between mb-2">
-                  <label class="block text-sm font-medium text-blue-900">
-                    Property Management
-                  </label>
-                  <label class="flex items-center cursor-pointer">
-                    <input type="checkbox" 
-                           id="propertyManagementToggle"
-                           checked
-                           onchange="togglePropertyManagement(this.checked)"
-                           class="sr-only">
-                    <div class="relative">
-                      <div class="block bg-gray-300 w-10 h-6 rounded-full transition-colors" id="toggleBg"></div>
-                      <div class="dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform transform translate-x-4" id="toggleDot"></div>
-                    </div>
-                  </label>
-                </div>
-                <div class="flex items-center" id="managementFeeInputContainer">
+                <label class="block text-sm font-medium text-blue-900 mb-1">
+                  Property Management Fee
+                </label>
+                <div class="flex items-center">
                   <input type="number" 
                          id="managementFeeInput" 
                          value="10"
@@ -221,7 +208,7 @@ export const InteractiveFinancialCalculator = ({
                          max="25" 
                          step="1"
                          class="w-20 px-2 py-1 border border-blue-300 rounded text-right font-semibold text-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                         onchange="updateManagementFee(this.value)">
+                         oninput="updateManagementFee(this.value)">
                   <span class="ml-1 text-blue-900 font-medium">%</span>
                   <span class="ml-2 text-sm text-blue-800">of revenue</span>
                 </div>
