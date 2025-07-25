@@ -326,9 +326,16 @@ router.post('/property', optionalAuth, async (req, res, next) => {
             const searchResults = await airbnbScraper.searchComparables(strPropertyData);
             logger.info(`Found ${searchResults.listings.length} comparable listings`);
             
-            // Filter comparables
-            const filteredComparables = filterComparables(searchResults.listings, strPropertyData);
-            logger.info(`Filtered to ${filteredComparables.length} relevant comparables`);
+            // TEMPORARY DEBUG: Skip filtering, use all listings
+            const filteredComparables = searchResults.listings.map(listing => ({
+              ...listing,
+              similarityScore: 50 // Add score for compatibility
+            }));
+            logger.info(`🚨 DEBUG: Using ALL ${filteredComparables.length} listings without filterComparables`);
+            
+            // COMMENTED OUT - Original filtering
+            // const filteredComparables = filterComparables(searchResults.listings, strPropertyData);
+            // logger.info(`Filtered to ${filteredComparables.length} relevant comparables`);
             
             if (filteredComparables.length > 0) {
               // Check STR regulations

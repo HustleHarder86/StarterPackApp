@@ -298,7 +298,8 @@ class AirbnbScraperService {
           isSuperhost: item.host?.is_superhost || false
         }
       };
-    }).filter(listing => listing.price >= 50); // Filter out listings with no price or unrealistic prices
+    }); // TEMPORARY DEBUG: Removed price filter to show all listings
+    //.filter(listing => listing.price >= 50); // Filter out listings with no price or unrealistic prices
   }
 
   /**
