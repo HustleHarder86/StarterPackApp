@@ -9,7 +9,7 @@ class AirbnbScraperService {
     // The actor you're using - use tilde not forward slash!
     this.actorId = 'tri_angle~new-fast-airbnb-scraper';
     this.maxResults = 20; // Cost control - limit to 20 for ~$0.01 per search
-    this.timeout = 120000; // 120 second timeout for debug mode
+    this.timeout = 300000; // 5 minute timeout for debug mode
   }
 
   /**
@@ -176,8 +176,8 @@ class AirbnbScraperService {
    * Wait for actor run to complete and return results
    */
   async waitForResults(runId, controller) {
-    const maxAttempts = 30; // Increase attempts for longer runs
-    const delayMs = 3000; // Increase delay to 3 seconds
+    const maxAttempts = 60; // More attempts for debug mode
+    const delayMs = 5000; // 5 second delay between checks
 
     for (let attempt = 0; attempt < maxAttempts; attempt++) {
       await new Promise(resolve => setTimeout(resolve, delayMs));
@@ -193,6 +193,11 @@ class AirbnbScraperService {
       }
 
       const status = await statusResponse.json();
+      
+      // Log progress every 5 attempts (25 seconds)
+      if (attempt % 5 === 0 || attempt > 20) {
+        logger.info(`Waiting for Apify results: attempt ${attempt + 1}/${maxAttempts}, status: ${status.data.status}, elapsed: ${((attempt + 1) * delayMs / 1000).toFixed(0)}s`);
+      }
 
       if (status.data.status === 'SUCCEEDED') {
         // Get the results
