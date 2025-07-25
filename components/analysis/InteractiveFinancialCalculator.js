@@ -18,17 +18,17 @@ export const InteractiveFinancialCalculator = ({
 }) => {
   // Calculate initial values for sliders
   const downPaymentPercent = Math.round((downPayment / propertyPrice) * 100);
-  const interestRate = 6.5; // Default interest rate
+  const defaultInterestRate = 6.5; // Default interest rate
   // Ensure we have propertyData from any available source
   const actualPropertyData = propertyData || window.analysisData?.propertyData || window.extractedPropertyData || {};
   const actualCosts = costs || window.analysisData?.costs || {};
   // Calculate mortgage payment
   const loanAmount = propertyPrice - downPayment;
-  const interestRate = 0.065 / 12; // 6.5% annual rate / 12 months
+  const monthlyInterestRate = 0.065 / 12; // 6.5% annual rate / 12 months
   const loanTermMonths = 30 * 12; // 30 years
   const mortgagePayment = costs?.mortgage_payment || Math.round(
-    loanAmount * (interestRate * Math.pow(1 + interestRate, loanTermMonths)) / 
-    (Math.pow(1 + interestRate, loanTermMonths) - 1)
+    loanAmount * (monthlyInterestRate * Math.pow(1 + monthlyInterestRate, loanTermMonths)) / 
+    (Math.pow(1 + monthlyInterestRate, loanTermMonths) - 1)
   );
   
   // Calculate expense values with priority for actual data
@@ -143,16 +143,16 @@ export const InteractiveFinancialCalculator = ({
               <div class="flex items-center justify-between mb-2">
                 <span class="text-sm font-medium text-blue-900">Mortgage Interest Rate</span>
                 <span class="text-sm font-bold text-blue-900">
-                  <span id="interestRateDisplay">${interestRate}</span>%
+                  <span id="interestRateDisplay">${defaultInterestRate}</span>%
                 </span>
               </div>
               <input type="range" id="interestRateSlider" 
-                     min="3" max="10" step="0.1" value="${interestRate}"
+                     min="3" max="10" step="0.1" value="${defaultInterestRate}"
                      class="w-full h-2 bg-blue-200 rounded-lg appearance-none cursor-pointer slider"
                      oninput="updateInterestRate(this.value)">
               <div class="flex justify-between text-xs text-blue-700 mt-1">
                 <span>3%</span>
-                <span>Current: ${interestRate}%</span>
+                <span>Current: ${defaultInterestRate}%</span>
                 <span>10%</span>
               </div>
             </div>
@@ -227,7 +227,7 @@ export const InteractiveFinancialCalculator = ({
           <span class="font-medium text-gray-700">Mortgage Payment</span>
           <span class="text-xs text-gray-500" id="mortgageAssumptions">
             <span id="mortgageDownPaymentText">${downPaymentPercent}%</span> down • 
-            <span id="mortgageInterestText">${interestRate}%</span> interest • 
+            <span id="mortgageInterestText">${defaultInterestRate}%</span> interest • 
             30 years
           </span>
         </div>
