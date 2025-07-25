@@ -125,14 +125,15 @@ class ComponentLoader {
       const showLTR = analysisType === 'both' || analysisType === 'ltr';
       const showTabs = analysisType === 'both';
       
-      const airbnbHtml = showSTR ? airbnbModule.AirbnbHeroSectionMockup({ 
+      // Always generate content for tabs, but show appropriate messages if data is missing
+      const airbnbHtml = analysisData.strAnalysis ? airbnbModule.AirbnbHeroSectionMockup({ 
         analysis: analysisData,
         useMockData: false  // Ensure real data is used
-      }) : '';
+      }) : '<div class="text-center text-gray-500 py-12"><p class="text-lg">Short-term rental analysis was not included in this report.</p><p class="mt-2">Re-run the analysis with STR option selected to see Airbnb comparables.</p></div>';
       
-      const ltrHtml = showLTR ? ltrModule.LongTermRentalAnalysis({ 
+      const ltrHtml = analysisData.longTermRental ? ltrModule.LongTermRentalAnalysis({ 
         analysis: analysisData
-      }) : '';
+      }) : '<div class="text-center text-gray-500 py-12"><p class="text-lg">Long-term rental analysis was not included in this report.</p><p class="mt-2">Re-run the analysis with LTR option selected to see rental estimates.</p></div>';
       
       // Use EnhancedFinancialSummary for proper data handling
       const financialHtml = financialModule.EnhancedFinancialSummary ? 
@@ -222,13 +223,13 @@ class ComponentLoader {
               <!-- Tab Content -->
               <div class="mt-6">
                 <!-- STR Content -->
-                <div id="str-content" class="tab-content ${showSTR ? '' : 'hidden'}">
-                  ${showSTR ? airbnbHtml : '<div class="text-center text-gray-500 py-8">Short-term rental analysis not included in this report.</div>'}
+                <div id="str-content" class="tab-content">
+                  ${airbnbHtml}
                 </div>
                 
                 <!-- LTR Content -->
-                <div id="ltr-content" class="tab-content ${showLTR && !showSTR ? '' : 'hidden'}">
-                  ${showLTR ? ltrHtml : '<div class="text-center text-gray-500 py-8">Long-term rental analysis not included in this report.</div>'}
+                <div id="ltr-content" class="tab-content hidden">
+                  ${ltrHtml}
                 </div>
                 
                 <!-- Investment Planning Content - Always available -->

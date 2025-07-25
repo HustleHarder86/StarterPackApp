@@ -281,6 +281,55 @@ export function updateManagementFee(percent) {
   }
 }
 
+// Function to toggle property management
+export function togglePropertyManagement(isEnabled) {
+  console.log('togglePropertyManagement:', isEnabled);
+  
+  // Update toggle visual state
+  const toggleBg = document.getElementById('toggleBg');
+  const toggleDot = document.getElementById('toggleDot');
+  const inputContainer = document.getElementById('managementFeeInputContainer');
+  
+  if (toggleBg && toggleDot) {
+    if (isEnabled) {
+      toggleBg.classList.add('bg-blue-500');
+      toggleBg.classList.remove('bg-gray-300');
+      toggleDot.classList.add('translate-x-4');
+      toggleDot.classList.remove('translate-x-0');
+      if (inputContainer) {
+        inputContainer.classList.remove('opacity-50');
+      }
+    } else {
+      toggleBg.classList.remove('bg-blue-500');
+      toggleBg.classList.add('bg-gray-300');
+      toggleDot.classList.remove('translate-x-4');
+      toggleDot.classList.add('translate-x-0');
+      if (inputContainer) {
+        inputContainer.classList.add('opacity-50');
+      }
+    }
+  }
+  
+  // Update property management value
+  const propertyMgmtEl = document.getElementById('propertyMgmt');
+  if (propertyMgmtEl) {
+    if (isEnabled) {
+      // Re-enable management fee
+      const mgmtPercent = parseFloat(document.getElementById('managementFeeInput')?.value) || 10;
+      const monthlyRevenue = parseFloat(document.getElementById('monthlyRevenue')?.value) || 0;
+      const mgmtFee = Math.round(monthlyRevenue * (mgmtPercent / 100));
+      propertyMgmtEl.value = mgmtFee;
+    } else {
+      // Set to 0 when disabled
+      propertyMgmtEl.value = 0;
+    }
+    
+    // Trigger update
+    propertyMgmtEl.dispatchEvent(new Event('input', { bubbles: true }));
+    updateFinancialCalculations();
+  }
+}
+
 // Helper function to calculate mortgage payment
 export function calculateMortgagePayment() {
   const propertyPrice = window.analysisData?.propertyPrice || 850000;
@@ -385,5 +434,6 @@ window.updateInterestRate = updateInterestRate;
 window.updateDownPayment = updateDownPayment;
 window.updateAmortization = updateAmortization;
 window.updateManagementFee = updateManagementFee;
+window.togglePropertyManagement = togglePropertyManagement;
 window.calculateMortgagePayment = calculateMortgagePayment;
 window.toggleMethodology = toggleMethodology;

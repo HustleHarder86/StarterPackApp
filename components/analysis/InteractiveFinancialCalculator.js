@@ -197,10 +197,23 @@ export const InteractiveFinancialCalculator = ({
               
               <!-- Property Management -->
               <div>
-                <label class="block text-sm font-medium text-blue-900 mb-1">
-                  Property Management Fee
-                </label>
-                <div class="flex items-center">
+                <div class="flex items-center justify-between mb-2">
+                  <label class="block text-sm font-medium text-blue-900">
+                    Property Management
+                  </label>
+                  <label class="flex items-center cursor-pointer">
+                    <input type="checkbox" 
+                           id="propertyManagementToggle"
+                           checked
+                           onchange="togglePropertyManagement(this.checked)"
+                           class="sr-only">
+                    <div class="relative">
+                      <div class="block bg-gray-300 w-10 h-6 rounded-full transition-colors" id="toggleBg"></div>
+                      <div class="dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform transform translate-x-4" id="toggleDot"></div>
+                    </div>
+                  </label>
+                </div>
+                <div class="flex items-center" id="managementFeeInputContainer">
                   <input type="number" 
                          id="managementFeeInput" 
                          value="10"
