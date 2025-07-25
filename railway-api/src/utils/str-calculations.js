@@ -11,14 +11,46 @@
 function filterComparables(listings, targetProperty) {
   if (!listings || listings.length === 0) return [];
   
-  console.log(`🚨 DEBUG MODE: Returning ALL ${listings.length} listings without similarity scoring`);
+  console.log(`Filtering ${listings.length} listings with price and property type quality checks`);
   
-  // TEMPORARY: Return all listings with basic similarity scores for display
-  const scoredListings = listings.map(listing => ({
-    ...listing,
-    similarityScore: 50 // Give all listings a neutral score for display
-  }));
+  // Apply practical filtering based on available API data
+  const filteredListings = listings.filter(listing => {
+    // Price sanity check
+    const price = listing.price || listing.nightly_rate || 0;
+    if (price < 50 || price > 2000) {
+      console.log(`Filtered out: "${listing.title}" - unrealistic price ($${price})`);
+      return false;
+    }
+    
+    return true;
+  });
   
+  // Add basic similarity scores for display and ranking
+  const scoredListings = filteredListings.map(listing => {
+    let score = 50; // Base score
+    
+    // Boost score for better property types
+    const propertyType = (listing.propertyType || listing.property_type || '').toLowerCase();
+    if (propertyType.includes('entire_home') || propertyType.includes('house')) {
+      score += 20; // Better for house analysis
+    } else if (propertyType.includes('apartment') || propertyType.includes('condo')) {
+      score += 10; // Decent for house analysis
+    } else if (propertyType.includes('private_room') || propertyType.includes('shared_room')) {
+      score -= 20; // Poor comparables for house analysis
+    }
+    
+    // Boost score for better ratings
+    if (listing.rating >= 4.5) score += 10;
+    else if (listing.rating >= 4.0) score += 5;
+    
+    return {
+      ...listing,
+      similarityScore: Math.max(10, score) // Minimum score of 10
+    };
+  })
+  .sort((a, b) => b.similarityScore - a.similarityScore);
+  
+  console.log(`Filtered from ${listings.length} to ${scoredListings.length} listings with quality checks`);
   return scoredListings;
   
   /*

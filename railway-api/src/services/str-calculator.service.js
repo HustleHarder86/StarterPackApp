@@ -82,15 +82,28 @@ class STRCalculatorService {
   filterQualityComparables(listings, property) {
     const logger = require('./logger.service');
     
-    logger.info(`🚨 DEBUG MODE: Returning ALL ${listings.length} listings without filtering for ${property.bedrooms}BR property in ${property.address?.city}`);
+    logger.info(`Filtering ${listings.length} listings with price and property type filters for ${property.bedrooms}BR property in ${property.address?.city}`);
     
-    // Log each listing for debugging
-    listings.forEach((listing, index) => {
-      logger.info(`Listing ${index + 1}: "${listing.title}" - ${listing.bedrooms}BR, $${listing.price}/night, City: ${this.extractCityFromListing(listing) || 'unknown'}`);
+    const results = listings.filter(listing => {
+      // Filter 2: Price sanity check
+      const price = listing.price || listing.nightly_rate || 0;
+      if (price < 50 || price > 2000) {
+        logger.debug(`Filtered out listing "${listing.title}" - unrealistic price ($${price}/night)`);
+        return false;
+      }
+      
+      // Filter 3: Property type preference (allow but log)
+      const propertyType = listing.propertyType || listing.property_type || '';
+      if (propertyType === 'private_room' || propertyType === 'shared_room') {
+        logger.debug(`Kept but noted: "${listing.title}" - property type: ${propertyType} (not ideal for house analysis)`);
+      }
+      
+      logger.debug(`Kept listing: "${listing.title}" - $${price}/night, type: ${propertyType}`);
+      return true;
     });
     
-    // TEMPORARY: Return all listings without any filtering
-    return listings;
+    logger.info(`Filtered from ${listings.length} to ${results.length} listings after price/type filtering`);
+    return results;
     
     /*
     // COMMENTED OUT - Original filtering logic (restore later)
