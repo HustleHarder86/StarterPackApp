@@ -14,10 +14,10 @@ export const PropertyAppreciationChart = ({
   const propertyType = propertyData.propertyType || propertyData.type || 'Unknown';
   
   // Load comprehensive appreciation data
-  const [appreciationData, setAppreciationData] = React.useState(null);
-  const [loading, setLoading] = React.useState(true);
+  const [appreciationData, setAppreciationData] = window.React.useState(null);
+  const [loading, setLoading] = window.React.useState(true);
   
-  React.useEffect(() => {
+  window.React.useEffect(() => {
     fetch('/data/canadian-real-estate-appreciation-comprehensive-2025.json')
       .then(res => res.json())
       .then(data => {
