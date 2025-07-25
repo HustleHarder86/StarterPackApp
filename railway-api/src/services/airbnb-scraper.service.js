@@ -9,7 +9,7 @@ class AirbnbScraperService {
     // The actor you're using - use tilde not forward slash!
     this.actorId = 'tri_angle~new-fast-airbnb-scraper';
     this.maxResults = 20; // Cost control - limit to 20 for ~$0.01 per search
-    this.timeout = 60000; // 60 second timeout
+    this.timeout = 120000; // 120 second timeout for debug mode
   }
 
   /**
