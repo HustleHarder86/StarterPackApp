@@ -125,6 +125,14 @@ class AirbnbScraperService {
       // Process and normalize results
       const allListings = this.normalizeListings(results);
       
+      // Log bedroom distribution for debugging
+      const bedroomCounts = {};
+      allListings.forEach(listing => {
+        const br = listing.bedrooms || 'unknown';
+        bedroomCounts[br] = (bedroomCounts[br] || 0) + 1;
+      });
+      logger.info('Bedroom distribution in normalized listings:', bedroomCounts);
+      
       // Ensure we respect maxResults limit for cost control
       const listings = allListings.slice(0, this.maxResults);
       
@@ -228,14 +236,35 @@ class AirbnbScraperService {
                       parseFloat(item.price.toString().replace(/[^\d.]/g, ''));
       }
 
-      // Extract bedrooms and bathrooms from title/name
+      // Extract bedrooms - prioritize text parsing over potentially incorrect API data
       const combinedText = `${item.name || ''} ${item.title || ''} ${item.additionalInfo || ''}`;
       
-      // Try multiple patterns for bedrooms
-      const bedrooms = item.bedrooms || item.beds || 
-                      this.extractNumber(combinedText, /(\d+)\s*(?:bedroom|bd|br|BR|bed)/i) ||
-                      this.extractNumber(combinedText, /(\d+)BR/i) ||
-                      (combinedText.match(/studio/i) ? 0 : 2); // Default to 2 if not found
+      let bedrooms = null;
+      
+      // First, try to extract from text with comprehensive patterns
+      bedrooms = this.extractNumber(combinedText, /(\d+)\s*(?:bedroom|bedrooms|bd|br|BR|bed|beds)/i) ||
+                 this.extractNumber(combinedText, /(\d+)BR/i) ||
+                 this.extractNumber(combinedText, /(\d+)\s*(?:bdrm|bdr)/i) ||
+                 this.extractNumber(combinedText, /(\d+)\s*(?:bed\b)/i);
+      
+      // If text parsing failed, try API data as backup
+      if (!bedrooms) {
+        bedrooms = item.bedrooms || item.beds || null;
+      }
+      
+      // Handle special cases
+      if (!bedrooms) {
+        if (combinedText.match(/studio/i)) {
+          bedrooms = 0;
+        } else {
+          bedrooms = 2; // Conservative default
+        }
+      }
+      
+      // Log bedroom extraction for debugging
+      if (item.name && bedrooms !== (item.bedrooms || item.beds)) {
+        console.log(`Bedroom extraction override: "${item.name}" - API: ${item.bedrooms || item.beds}, Extracted: ${bedrooms}`);
+      }
       
       // Try multiple patterns for bathrooms
       const bathrooms = item.bathrooms || 

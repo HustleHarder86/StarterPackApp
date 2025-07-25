@@ -80,27 +80,42 @@ class STRCalculatorService {
    * @returns {Array} Filtered quality comparables
    */
   filterQualityComparables(listings, property) {
-    return listings.filter(listing => {
+    const logger = require('./logger.service');
+    
+    logger.info(`Starting filterQualityComparables with ${listings.length} listings for ${property.bedrooms}BR property in ${property.address?.city}`);
+    
+    const results = listings.filter(listing => {
       // Must have a price
-      if (!listing.price || listing.price <= 0) return false;
+      if (!listing.price || listing.price <= 0) {
+        logger.debug(`Filtered out listing "${listing.title}" - no valid price (${listing.price})`);
+        return false;
+      }
       
       // ±1 bedroom range (e.g., for 5BR property, allow 4-6BR)
       const minBedrooms = Math.max(1, property.bedrooms - 1);
       const maxBedrooms = property.bedrooms + 1;
-      if (listing.bedrooms < minBedrooms || listing.bedrooms > maxBedrooms) return false;
+      if (listing.bedrooms < minBedrooms || listing.bedrooms > maxBedrooms) {
+        logger.debug(`Filtered out listing "${listing.title}" - bedroom mismatch (has ${listing.bedrooms}, need ${minBedrooms}-${maxBedrooms})`);
+        return false;
+      }
       
       // City filtering - only show comparables from the same city
       const propertyCity = property.address?.city?.toLowerCase().trim();
       const listingCity = this.extractCityFromListing(listing);
       if (propertyCity && listingCity && propertyCity !== listingCity) {
+        logger.debug(`Filtered out listing "${listing.title}" - city mismatch (listing: ${listingCity}, property: ${propertyCity})`);
         return false;
       }
       
       // No rating filter - include all listings regardless of rating
       // This gives a more realistic view of the market
       
+      logger.debug(`Kept listing "${listing.title}" - ${listing.bedrooms}BR, $${listing.price}/night`);
       return true;
     });
+    
+    logger.info(`Filtered from ${listings.length} to ${results.length} quality comparables`);
+    return results;
   }
 
   /**
