@@ -5,6 +5,9 @@
  * Includes question mark tooltips for data transparency
  */
 
+// Store appreciation data globally
+window.appreciationDataCache = null;
+
 export const PropertyAppreciationChart = ({ 
   propertyData = {},
   currentValue = 0,
@@ -13,30 +16,23 @@ export const PropertyAppreciationChart = ({
   const purchasePrice = currentValue || propertyData.price || 0;
   const propertyType = propertyData.propertyType || propertyData.type || 'Unknown';
   
-  // Load comprehensive appreciation data
-  const [appreciationData, setAppreciationData] = window.React.useState(null);
-  const [loading, setLoading] = window.React.useState(true);
+  // Use cached data or default data
+  const appreciationData = window.appreciationDataCache || {
+    nationalAverages: { '15YearCAGR': 6.11 },
+    cityData: {}
+  };
   
-  window.React.useEffect(() => {
+  // Load data asynchronously for future use
+  if (!window.appreciationDataCache) {
     fetch('/data/canadian-real-estate-appreciation-comprehensive-2025.json')
       .then(res => res.json())
       .then(data => {
-        setAppreciationData(data);
-        setLoading(false);
+        window.appreciationDataCache = data;
+        // Could trigger a re-render here if needed
       })
       .catch(err => {
         console.error('Failed to load appreciation data:', err);
-        setLoading(false);
       });
-  }, []);
-  
-  if (loading) {
-    return `<div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
-      <div class="animate-pulse">
-        <div class="h-4 bg-gray-200 rounded w-1/4 mb-4"></div>
-        <div class="h-64 bg-gray-200 rounded"></div>
-      </div>
-    </div>`;
   }
   
   // Detect market from address
