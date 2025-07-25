@@ -324,7 +324,7 @@ class STRCalculatorService {
       comparables: {
         total: listings.length,
         quality: qualityListings.length,
-        listings: qualityListings.slice(0, 10), // Top 10 for display
+        listings: qualityListings, // TEMPORARY DEBUG: Show all listings
         location: metadata.location
       },
       rates: {
