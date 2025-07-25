@@ -272,44 +272,7 @@ export const InteractiveFinancialCalculator = ({
           ${generateExpenseRow('Property Tax', 'propertyTax', expenseValues.propertyTax, dataSources.propertyTax, actualPropertyData, actualCosts)}
           ${generateExpenseRow('Insurance', 'insurance', expenseValues.insurance, dataSources.insurance, actualPropertyData, actualCosts)}
           ${generateExpenseRow('HOA/Condo Fees', 'hoaFees', expenseValues.hoaFees, dataSources.hoaFees, actualPropertyData, actualCosts)}
-          <div class="flex items-center justify-between expense-row">
-            <span class="text-sm text-gray-600 flex items-center flex-wrap">
-              <span>Property Management</span>
-              <span class="ml-2">
-                <input type="number" 
-                       id="managementFeeInput" 
-                       value="10"
-                       min="0" 
-                       max="25" 
-                       step="1"
-                       class="w-12 px-1 py-0.5 border border-gray-300 rounded text-center text-sm font-medium"
-                       oninput="updateManagementFee(this.value)">
-                <span class="text-gray-600 ml-1">%</span>
-              </span>
-              <span class="text-xs text-purple-600 ml-1 whitespace-nowrap" title="Data source">• calculated</span>
-              <div class="tooltip inline-block ml-1">
-                <span class="help-icon text-gray-400 hover:text-gray-600 cursor-help">?</span>
-                <span class="tooltiptext">
-                  <strong>Property management fee:</strong><br>
-                  Professional property management services.<br>
-                  <br>
-                  STR: 10% of revenue (default)<br>
-                  Covers guest communication, check-ins, issues<br>
-                  <br>
-                  LTR: 8-10% of rent<br>
-                  Handles tenant screening, rent collection<br>
-                  <br>
-                  Adjust percentage based on your management plan
-                </span>
-              </div>
-            </span>
-            <div class="flex items-center flex-shrink-0">
-              <span class="text-gray-400 text-sm mr-1">$</span>
-              <input type="number" id="propertyMgmt" value="${expenseValues.propertyMgmt}" 
-                     class="w-20 px-2 py-1 border border-gray-200 rounded text-right text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
-                     onchange="updateFinancialCalculations()">
-            </div>
-          </div>
+          ${generateExpenseRow('Property Management', 'propertyMgmt', expenseValues.propertyMgmt, dataSources.propertyMgmt, actualPropertyData, actualCosts)}
           ${generateExpenseRow('Utilities', 'utilities', expenseValues.utilities, dataSources.utilities, actualPropertyData, actualCosts)}
           ${generateExpenseRow('Cleaning & Turnover', 'cleaning', expenseValues.cleaning, dataSources.cleaning, actualPropertyData, actualCosts)}
           ${generateExpenseRow('Maintenance & Repairs', 'maintenance', expenseValues.maintenance, dataSources.maintenance, actualPropertyData, actualCosts)}
@@ -493,12 +456,17 @@ function generateExpenseRow(label, id, value, source, propertyData = {}, costs =
         
       case 'propertyMgmt':
         const actualRevenue = window.analysisData?.strRevenue || monthlyRevenue;
-        return `<strong>Industry standard calculation:</strong><br>
+        return `<strong>Property management fee:</strong><br>
+                Professional property management services.<br>
+                <br>
+                Default calculation: 10% of revenue<br>
                 Monthly STR revenue: $${actualRevenue.toLocaleString()}<br>
-                Management fee: 10% of revenue<br>
                 $${actualRevenue} × 10% = $${value}<br>
                 <br>
-                <em>Professional property management for STR typically charges 10-20% of gross revenue</em>`;
+                STR: Covers guest communication, check-ins, issues<br>
+                LTR: Handles tenant screening, rent collection<br>
+                <br>
+                <em>Typical range: 8-20% of rental income</em>`;
                 
       case 'utilities':
         if (source === 'market') {

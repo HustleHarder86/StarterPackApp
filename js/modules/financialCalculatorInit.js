@@ -59,12 +59,8 @@ export function updateFinancialCalculations() {
   if (annualIncomeEl) annualIncomeEl.textContent = '$' + annualIncome.toLocaleString();
   if (cashReturnEl) cashReturnEl.textContent = cashReturn.toFixed(1) + '%';
 
-  // Update Property Management fee based on revenue (10%)
-  if (document.activeElement?.id !== 'propertyMgmt') {
-    const calculatedMgmt = Math.round(monthlyRevenue * 0.10);
-    const propertyMgmtEl = document.getElementById('propertyMgmt');
-    if (propertyMgmtEl) propertyMgmtEl.value = calculatedMgmt;
-  }
+  // Property Management fee is now user-editable only
+  // No automatic recalculation based on revenue percentage
 
   // Update Platform fees based on revenue (3%)
   if (document.activeElement?.id !== 'platformFees') {
@@ -251,35 +247,10 @@ export function updateAmortization(years) {
   calculateMortgagePayment();
 }
 
-// Function to update management fee
-export function updateManagementFee(percent) {
-  // Validate input
-  const mgmtPercent = Math.max(0, Math.min(25, parseFloat(percent) || 10));
-  
-  // Update input value if needed
-  const mgmtInput = document.getElementById('managementFeeInput');
-  if (mgmtInput && mgmtInput.value !== mgmtPercent.toString()) {
-    mgmtInput.value = mgmtPercent;
-  }
-  
-  // Recalculate property management expense
-  const monthlyRevenue = parseFloat(document.getElementById('monthlyRevenue')?.value) || 0;
-  const mgmtFee = Math.round(monthlyRevenue * (mgmtPercent / 100));
-  
-  console.log('UpdateManagementFee:', {
-    percent: mgmtPercent,
-    monthlyRevenue,
-    calculatedFee: mgmtFee
-  });
-  
-  const propertyMgmtEl = document.getElementById('propertyMgmt');
-  if (propertyMgmtEl) {
-    propertyMgmtEl.value = mgmtFee;
-    // Trigger input event to ensure the calculator updates
-    propertyMgmtEl.dispatchEvent(new Event('input', { bubbles: true }));
-    updateFinancialCalculations();
-  }
-}
+// Function to update management fee - DEPRECATED
+// Management fee is now directly editable as a dollar amount
+// The 10% calculation still happens automatically when revenue changes
+// but users can override it by editing the dollar amount directly
 
 // Helper function to calculate mortgage payment
 export function calculateMortgagePayment() {
@@ -384,6 +355,6 @@ window.updateKeyMetrics = updateKeyMetrics;
 window.updateInterestRate = updateInterestRate;
 window.updateDownPayment = updateDownPayment;
 window.updateAmortization = updateAmortization;
-window.updateManagementFee = updateManagementFee;
+// window.updateManagementFee = updateManagementFee; // Deprecated - direct dollar edit only
 window.calculateMortgagePayment = calculateMortgagePayment;
 window.toggleMethodology = toggleMethodology;
