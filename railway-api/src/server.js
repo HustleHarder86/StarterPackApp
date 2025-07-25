@@ -91,7 +91,9 @@ app.use('/api/appreciation', require('./routes/appreciation'));
 
 // Debug routes
 app.use('/api/debug', require('./routes/debug'));
-app.use('/api/debug', require('./routes/debug-cors'));
+// Mount cors-debug routes under the same /api/debug path
+const corsDebugRouter = require('./routes/cors-debug');
+app.use('/api/debug', corsDebugRouter);
 
 // Debug route to list all available routes
 app.get('/api/debug/routes', (req, res) => {
