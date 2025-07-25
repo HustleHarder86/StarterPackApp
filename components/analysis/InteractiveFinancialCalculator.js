@@ -130,78 +130,120 @@ export const InteractiveFinancialCalculator = ({
       
       <!-- Assumptions Panel -->
       <div class="mb-xl p-lg bg-blue-50 rounded-lg border border-blue-200">
-        <div class="flex items-start gap-3 mb-md">
-          <svg class="w-5 h-5 text-blue-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="flex items-start gap-3">
+          <svg class="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
           </svg>
           <div class="flex-1">
-            <h4 class="text-md font-semibold text-blue-900 mb-2">Key Assumptions</h4>
-            <p class="text-sm text-blue-800 mb-md">These values are used in our calculations. You can adjust them using the sliders below or by editing individual expense fields.</p>
+            <h4 class="text-md font-semibold text-blue-900 mb-3">Key Assumptions</h4>
+            <p class="text-sm text-blue-800 mb-4">Adjust these values to match your specific financing scenario.</p>
             
-            <!-- Interest Rate Slider -->
-            <div class="mb-md">
-              <div class="flex items-center justify-between mb-2">
-                <span class="text-sm font-medium text-blue-900">Mortgage Interest Rate</span>
-                <span class="text-sm font-bold text-blue-900">
-                  <span id="interestRateDisplay">${defaultInterestRate}</span>%
-                </span>
+            <!-- Editable Assumptions Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+              <!-- Interest Rate -->
+              <div>
+                <label class="block text-sm font-medium text-blue-900 mb-1">
+                  Mortgage Interest Rate
+                </label>
+                <div class="flex items-center">
+                  <input type="number" 
+                         id="interestRateInput" 
+                         value="${defaultInterestRate}"
+                         min="1" 
+                         max="15" 
+                         step="0.1"
+                         class="w-20 px-2 py-1 border border-blue-300 rounded text-right font-semibold text-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                         onchange="updateInterestRate(this.value)">
+                  <span class="ml-1 text-blue-900 font-medium">%</span>
+                </div>
+                <span class="text-xs text-blue-700 mt-1">Current market: 6-7%</span>
               </div>
-              <input type="range" id="interestRateSlider" 
-                     min="3" max="10" step="0.1" value="${defaultInterestRate}"
-                     class="w-full h-2 bg-blue-200 rounded-lg appearance-none cursor-pointer slider"
-                     oninput="updateInterestRate(this.value)">
-              <div class="flex justify-between text-xs text-blue-700 mt-1">
-                <span>3%</span>
-                <span>Current: ${defaultInterestRate}%</span>
-                <span>10%</span>
+              
+              <!-- Down Payment -->
+              <div>
+                <label class="block text-sm font-medium text-blue-900 mb-1">
+                  Down Payment
+                </label>
+                <div class="flex items-center">
+                  <input type="number" 
+                         id="downPaymentPercentInput" 
+                         value="${downPaymentPercent}"
+                         min="5" 
+                         max="50" 
+                         step="5"
+                         class="w-20 px-2 py-1 border border-blue-300 rounded text-right font-semibold text-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                         onchange="updateDownPayment(this.value)">
+                  <span class="ml-1 text-blue-900 font-medium">%</span>
+                  <span class="ml-2 text-sm text-blue-800">($<span id="downPaymentAmount">${downPayment.toLocaleString()}</span>)</span>
+                </div>
+                <span class="text-xs text-blue-700 mt-1">Minimum: 5% (20% avoids CMHC)</span>
+              </div>
+              
+              <!-- Amortization Period -->
+              <div>
+                <label class="block text-sm font-medium text-blue-900 mb-1">
+                  Amortization Period
+                </label>
+                <div class="flex items-center">
+                  <select id="amortizationPeriod" 
+                          class="px-3 py-1 border border-blue-300 rounded font-semibold text-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          onchange="updateAmortization(this.value)">
+                    <option value="25">25 years</option>
+                    <option value="30" selected>30 years</option>
+                  </select>
+                </div>
+                <span class="text-xs text-blue-700 mt-1">Longer = lower payments</span>
+              </div>
+              
+              <!-- Property Management -->
+              <div>
+                <label class="block text-sm font-medium text-blue-900 mb-1">
+                  Property Management Fee
+                </label>
+                <div class="flex items-center">
+                  <input type="number" 
+                         id="managementFeeInput" 
+                         value="10"
+                         min="0" 
+                         max="25" 
+                         step="1"
+                         class="w-20 px-2 py-1 border border-blue-300 rounded text-right font-semibold text-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                         onchange="updateManagementFee(this.value)">
+                  <span class="ml-1 text-blue-900 font-medium">%</span>
+                  <span class="ml-2 text-sm text-blue-800">of revenue</span>
+                </div>
+                <span class="text-xs text-blue-700 mt-1">STR typical: 10-15%</span>
               </div>
             </div>
             
-            <!-- Down Payment Slider -->
-            <div class="mb-md">
-              <div class="flex items-center justify-between mb-2">
-                <span class="text-sm font-medium text-blue-900">Down Payment</span>
-                <span class="text-sm font-bold text-blue-900">
-                  <span id="downPaymentDisplay">${downPaymentPercent}</span>% 
-                  (<span id="downPaymentAmount">$${downPayment.toLocaleString()}</span>)
-                </span>
-              </div>
-              <input type="range" id="downPaymentSlider" 
-                     min="5" max="35" step="5" value="${downPaymentPercent}"
-                     class="w-full h-2 bg-blue-200 rounded-lg appearance-none cursor-pointer slider"
-                     oninput="updateDownPayment(this.value)">
-              <div class="flex justify-between text-xs text-blue-700 mt-1">
-                <span>5%</span>
-                <span>20% (Standard)</span>
-                <span>35%</span>
-              </div>
-            </div>
-            
-            <!-- Other Assumptions -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-md text-sm text-blue-800">
-              <div class="flex items-center gap-2">
-                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                </svg>
-                <span>30-year amortization period</span>
-              </div>
-              <div class="flex items-center gap-2">
-                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                </svg>
-                <span>Property management: 10% of revenue</span>
-              </div>
-              <div class="flex items-center gap-2">
-                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                </svg>
-                <span>STR occupancy: 70% average</span>
-              </div>
-              <div class="flex items-center gap-2">
-                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                </svg>
-                <span>Airbnb platform fee: 3%</span>
+            <!-- Additional Assumptions Info -->
+            <div class="border-t border-blue-200 pt-3 mt-3">
+              <p class="text-xs text-blue-800 font-medium mb-2">Other Fixed Assumptions:</p>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-blue-700">
+                <div class="flex items-center gap-1">
+                  <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                  </svg>
+                  <span>STR occupancy: 70% average</span>
+                </div>
+                <div class="flex items-center gap-1">
+                  <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                  </svg>
+                  <span>Airbnb platform fee: 3%</span>
+                </div>
+                <div class="flex items-center gap-1">
+                  <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                  </svg>
+                  <span>Insurance: 25% higher for STR</span>
+                </div>
+                <div class="flex items-center gap-1">
+                  <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                  </svg>
+                  <span>Utilities: 40% higher for STR</span>
+                </div>
               </div>
             </div>
           </div>
@@ -226,9 +268,7 @@ export const InteractiveFinancialCalculator = ({
         <div class="flex items-center justify-between mb-md">
           <span class="font-medium text-gray-700">Mortgage Payment</span>
           <span class="text-xs text-gray-500" id="mortgageAssumptions">
-            <span id="mortgageDownPaymentText">${downPaymentPercent}%</span> down • 
-            <span id="mortgageInterestText">${defaultInterestRate}%</span> interest • 
-            30 years
+            Based on assumptions above
           </span>
         </div>
         <div class="pl-lg">
@@ -555,69 +595,6 @@ export const financialCalculatorScript = '';
 // Export helper function to inject calculator styles
 export const financialCalculatorStyles = `
 <style>
-/* Custom slider styles */
-.slider {
-  -webkit-appearance: none;
-  appearance: none;
-  background: transparent;
-  cursor: pointer;
-}
-
-.slider::-webkit-slider-track {
-  background: #dbeafe;
-  height: 8px;
-  border-radius: 4px;
-}
-
-.slider::-moz-range-track {
-  background: #dbeafe;
-  height: 8px;
-  border-radius: 4px;
-}
-
-.slider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  background: #3b82f6;
-  height: 20px;
-  width: 20px;
-  border-radius: 50%;
-  margin-top: -6px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  transition: all 0.2s ease;
-}
-
-.slider::-moz-range-thumb {
-  background: #3b82f6;
-  height: 20px;
-  width: 20px;
-  border-radius: 50%;
-  border: none;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  transition: all 0.2s ease;
-}
-
-.slider:hover::-webkit-slider-thumb {
-  background: #2563eb;
-  transform: scale(1.1);
-}
-
-.slider:hover::-moz-range-thumb {
-  background: #2563eb;
-  transform: scale(1.1);
-}
-
-.slider:focus {
-  outline: none;
-}
-
-.slider:focus::-webkit-slider-thumb {
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
-}
-
-.slider:focus::-moz-range-thumb {
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
-}
 
 .tooltip {
   position: relative;

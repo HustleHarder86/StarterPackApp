@@ -222,7 +222,7 @@ class ComponentLoader {
               <div class="mt-6">
                 ${showSTR ? `
                   <!-- STR Content -->
-                  <div id="str-content" class="tab-content ${showSTR && !showLTR ? '' : ''}">
+                  <div id="str-content" class="tab-content">
                     ${airbnbHtml}
                   </div>
                 ` : ''}
