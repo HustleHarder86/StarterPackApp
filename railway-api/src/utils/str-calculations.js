@@ -23,8 +23,9 @@ function filterComparables(listings, targetProperty) {
       // Bedroom similarity (40% weight)
       const bedroomDiff = Math.abs((listing.bedrooms || 0) - targetBedrooms);
       if (bedroomDiff === 0) score += 40;
-      else if (bedroomDiff === 1) score += 20;
-      else if (bedroomDiff === 2) score += 10;
+      else if (bedroomDiff === 1) score += 30;  // More points for ±1 bedroom
+      else if (bedroomDiff === 2) score += 20;  // More points for ±2 bedrooms
+      else if (bedroomDiff === 3) score += 10;  // Still some points for ±3 bedrooms
       
       // Bathroom similarity (20% weight)
       const bathroomDiff = Math.abs((listing.bathrooms || 0) - targetBathrooms);
@@ -47,22 +48,25 @@ function filterComparables(listings, targetProperty) {
         }
       }
       
-      // Rating bonus (10% weight)
+      // Rating bonus (10% weight) - all listings get some points
       if (listing.rating >= 4.8) score += 10;
-      else if (listing.rating >= 4.5) score += 7;
-      else if (listing.rating >= 4.0) score += 5;
+      else if (listing.rating >= 4.5) score += 8;
+      else if (listing.rating >= 4.0) score += 6;
+      else score += 5; // Even low-rated or unrated listings get points
       
-      // Review count bonus (10% weight)
+      // Review count bonus (10% weight) - all listings get some points
       if (listing.reviewsCount >= 50) score += 10;
-      else if (listing.reviewsCount >= 20) score += 7;
-      else if (listing.reviewsCount >= 10) score += 5;
+      else if (listing.reviewsCount >= 20) score += 8;
+      else if (listing.reviewsCount >= 10) score += 6;
+      else if (listing.reviewsCount >= 5) score += 5;
+      else score += 4; // Even new listings with few reviews get points
       
       return {
         ...listing,
         similarityScore: score
       };
     })
-    .filter(listing => listing.similarityScore >= 30) // Minimum 30% match
+    .filter(listing => listing.similarityScore >= 10) // Minimum 10% match - more inclusive
     .sort((a, b) => b.similarityScore - a.similarityScore);
   
   // Return top matches (max 20)
