@@ -69,17 +69,6 @@ export class AnalysisLoadingState {
                      style="width: ${this.progress}%"></div>
               </div>
               
-              <!-- Time Stats -->
-              <div class="flex justify-between mt-4 text-sm">
-                <div>
-                  <span class="opacity-80">Elapsed:</span>
-                  <span class="font-semibold ml-1">${elapsedTime}</span>
-                </div>
-                <div>
-                  <span class="opacity-80">Est. remaining:</span>
-                  <span class="font-semibold ml-1">${estimatedRemaining}</span>
-                </div>
-              </div>
             </div>
             
             <!-- Steps Progress -->
@@ -262,13 +251,9 @@ export class AnalysisLoadingState {
   updateProgressDisplay() {
     const progressBar = this.container.querySelector('.bg-white.rounded-full');
     const progressText = this.container.querySelector('.text-3xl.font-bold');
-    const remainingText = this.container.querySelector('.font-semibold.ml-1:last-of-type');
-    const elapsedText = this.container.querySelector('.font-semibold.ml-1:first-of-type');
     
     if (progressBar) progressBar.style.width = `${this.progress}%`;
     if (progressText) progressText.textContent = `${Math.round(this.progress)}%`;
-    if (remainingText) remainingText.textContent = this.getEstimatedRemaining();
-    if (elapsedText) elapsedText.textContent = this.getElapsedTime();
   }
   
   updateStepDisplay() {
