@@ -185,14 +185,17 @@ export const InteractiveFinancialCalculator = ({
                   Amortization Period
                 </label>
                 <div class="flex items-center">
-                  <select id="amortizationPeriod" 
-                          class="px-3 py-1 border border-blue-300 rounded font-semibold text-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                          onchange="updateAmortization(this.value)">
-                    <option value="25">25 years</option>
-                    <option value="30" selected>30 years</option>
-                  </select>
+                  <input type="number" 
+                         id="amortizationPeriod" 
+                         value="30"
+                         min="0" 
+                         max="100" 
+                         step="1"
+                         class="w-20 px-2 py-1 border border-blue-300 rounded text-right font-semibold text-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                         onchange="updateAmortization(this.value)">
+                  <span class="ml-1 text-blue-900 font-medium">years</span>
                 </div>
-                <span class="text-xs text-blue-700 mt-1">Longer = lower payments</span>
+                <span class="text-xs text-blue-700 mt-1">Typical: 25-30 years</span>
               </div>
               
               <!-- Property Management -->

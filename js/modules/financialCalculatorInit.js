@@ -224,7 +224,7 @@ export function updateKeyMetrics(monthlyRevenue, totalExpenses, netCashFlow, ann
   updateIndicator('breakEvenIndicator', getMetricRating('breakEven', breakEvenOccupancy));
 }
 
-// Function to update interest rate from slider
+// Function to update interest rate
 export function updateInterestRate(rate) {
   // Update display
   const rateDisplay = document.getElementById('interestRateDisplay');
@@ -233,17 +233,71 @@ export function updateInterestRate(rate) {
   if (mortgageInterestText) mortgageInterestText.textContent = rate + '%';
   
   // Recalculate mortgage payment
+  calculateMortgagePayment();
+}
+
+// Function to update amortization period
+export function updateAmortization(years) {
+  // Validate input
+  const amortizationYears = Math.max(0, Math.min(100, parseFloat(years) || 30));
+  
+  // Update input value if needed
+  const amortizationInput = document.getElementById('amortizationPeriod');
+  if (amortizationInput && amortizationInput.value !== amortizationYears.toString()) {
+    amortizationInput.value = amortizationYears;
+  }
+  
+  // Recalculate mortgage payment
+  calculateMortgagePayment();
+}
+
+// Function to update management fee
+export function updateManagementFee(percent) {
+  // Validate input
+  const mgmtPercent = Math.max(0, Math.min(25, parseFloat(percent) || 10));
+  
+  // Update input value if needed
+  const mgmtInput = document.getElementById('managementFeeInput');
+  if (mgmtInput && mgmtInput.value !== mgmtPercent.toString()) {
+    mgmtInput.value = mgmtPercent;
+  }
+  
+  // Recalculate property management expense
+  const monthlyRevenue = parseFloat(document.getElementById('monthlyRevenue')?.value) || 0;
+  const mgmtFee = Math.round(monthlyRevenue * (mgmtPercent / 100));
+  
+  const propertyMgmtEl = document.getElementById('propertyMgmt');
+  if (propertyMgmtEl) {
+    propertyMgmtEl.value = mgmtFee;
+    updateFinancialCalculations();
+  }
+}
+
+// Helper function to calculate mortgage payment
+export function calculateMortgagePayment() {
   const propertyPrice = window.analysisData?.propertyPrice || 850000;
-  const downPaymentPercent = parseFloat(document.getElementById('downPaymentSlider')?.value) || 20;
+  const downPaymentPercent = parseFloat(document.getElementById('downPaymentPercentInput')?.value) || 
+                            parseFloat(document.getElementById('downPaymentSlider')?.value) || 20;
   const downPayment = propertyPrice * (downPaymentPercent / 100);
   const loanAmount = propertyPrice - downPayment;
-  const monthlyRate = parseFloat(rate) / 100 / 12;
-  const loanTermMonths = 30 * 12;
   
-  const mortgagePayment = Math.round(
-    loanAmount * (monthlyRate * Math.pow(1 + monthlyRate, loanTermMonths)) / 
-    (Math.pow(1 + monthlyRate, loanTermMonths) - 1)
-  );
+  const interestRate = parseFloat(document.getElementById('interestRateInput')?.value) || 
+                       parseFloat(document.getElementById('interestRateSlider')?.value) || 6.5;
+  const monthlyRate = interestRate / 100 / 12;
+  
+  const amortizationYears = parseFloat(document.getElementById('amortizationPeriod')?.value) || 30;
+  const loanTermMonths = amortizationYears * 12;
+  
+  let mortgagePayment = 0;
+  if (loanTermMonths > 0 && monthlyRate > 0) {
+    mortgagePayment = Math.round(
+      loanAmount * (monthlyRate * Math.pow(1 + monthlyRate, loanTermMonths)) / 
+      (Math.pow(1 + monthlyRate, loanTermMonths) - 1)
+    );
+  } else if (loanTermMonths > 0) {
+    // Handle 0% interest rate
+    mortgagePayment = Math.round(loanAmount / loanTermMonths);
+  }
   
   // Update mortgage input
   const mortgageInput = document.getElementById('mortgage');
@@ -253,7 +307,7 @@ export function updateInterestRate(rate) {
   }
 }
 
-// Function to update down payment from slider
+// Function to update down payment
 export function updateDownPayment(percent) {
   const propertyPrice = window.analysisData?.propertyPrice || 850000;
   const downPayment = Math.round(propertyPrice * (percent / 100));
@@ -264,15 +318,16 @@ export function updateDownPayment(percent) {
   const mortgageDownPaymentText = document.getElementById('mortgageDownPaymentText');
   
   if (percentDisplay) percentDisplay.textContent = percent;
-  if (amountDisplay) amountDisplay.textContent = '$' + downPayment.toLocaleString();
+  if (amountDisplay) amountDisplay.textContent = downPayment.toLocaleString();
   if (mortgageDownPaymentText) mortgageDownPaymentText.textContent = percent + '%';
   
   // Update global data
-  window.analysisData.downPayment = downPayment;
+  if (window.analysisData) {
+    window.analysisData.downPayment = downPayment;
+  }
   
   // Recalculate mortgage with new down payment
-  const interestRate = parseFloat(document.getElementById('interestRateSlider')?.value) || 6.5;
-  updateInterestRate(interestRate);
+  calculateMortgagePayment();
 }
 
 // Enhanced reset function
@@ -320,4 +375,7 @@ window.updateMetricIndicators = updateMetricIndicators;
 window.updateKeyMetrics = updateKeyMetrics;
 window.updateInterestRate = updateInterestRate;
 window.updateDownPayment = updateDownPayment;
+window.updateAmortization = updateAmortization;
+window.updateManagementFee = updateManagementFee;
+window.calculateMortgagePayment = calculateMortgagePayment;
 window.toggleMethodology = toggleMethodology;
