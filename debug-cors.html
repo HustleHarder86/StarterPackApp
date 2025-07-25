@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CORS Debug Tool - StarterPackApp</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold mb-8">Railway API CORS Debug Tool</h1>
+        
+        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+            <h2 class="text-xl font-semibold mb-4">Current Environment</h2>
+            <div class="space-y-2">
+                <p><strong>Current Origin:</strong> <span id="current-origin" class="font-mono text-blue-600"></span></p>
+                <p><strong>Railway API URL:</strong> <span id="api-url" class="font-mono text-blue-600"></span></p>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+            <h2 class="text-xl font-semibold mb-4">Test CORS Configuration</h2>
+            <button id="test-cors" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                Test CORS Endpoint
+            </button>
+            <div id="cors-result" class="mt-4 hidden">
+                <pre class="bg-gray-100 p-4 rounded overflow-x-auto text-sm"></pre>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+            <h2 class="text-xl font-semibold mb-4">Test Health Endpoint</h2>
+            <button id="test-health" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
+                Test Health Check
+            </button>
+            <div id="health-result" class="mt-4 hidden">
+                <pre class="bg-gray-100 p-4 rounded overflow-x-auto text-sm"></pre>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+            <h2 class="text-xl font-semibold mb-4">Test Protected Endpoint</h2>
+            <input type="text" id="auth-token" placeholder="Firebase Auth Token (optional)" 
+                   class="w-full px-3 py-2 border rounded mb-4">
+            <button id="test-protected" class="bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600">
+                Test Protected Route
+            </button>
+            <div id="protected-result" class="mt-4 hidden">
+                <pre class="bg-gray-100 p-4 rounded overflow-x-auto text-sm"></pre>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <h2 class="text-xl font-semibold mb-4">Console Output</h2>
+            <div id="console-output" class="bg-black text-green-400 p-4 rounded font-mono text-sm h-64 overflow-y-auto">
+                <p>Console output will appear here...</p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Configuration
+        const RAILWAY_API_URL = 'https://starterpackapp-production.up.railway.app';
+        const LOCAL_API_URL = 'http://localhost:3000';
+        
+        // Determine which API to use
+        const apiUrl = window.location.hostname === 'localhost' ? LOCAL_API_URL : RAILWAY_API_URL;
+        
+        // Update UI
+        document.getElementById('current-origin').textContent = window.location.origin;
+        document.getElementById('api-url').textContent = apiUrl;
+        
+        // Console logger
+        function log(message, data = null, type = 'info') {
+            const console = document.getElementById('console-output');
+            const timestamp = new Date().toISOString().split('T')[1].split('.')[0];
+            const entry = document.createElement('div');
+            entry.className = type === 'error' ? 'text-red-400' : type === 'success' ? 'text-green-400' : 'text-gray-300';
+            entry.innerHTML = `[${timestamp}] ${message}`;
+            if (data) {
+                entry.innerHTML += `<br><pre class="ml-4 text-xs">${JSON.stringify(data, null, 2)}</pre>`;
+            }
+            console.appendChild(entry);
+            console.scrollTop = console.scrollHeight;
+        }
+        
+        // Test CORS configuration
+        document.getElementById('test-cors').addEventListener('click', async () => {
+            const resultDiv = document.getElementById('cors-result');
+            const pre = resultDiv.querySelector('pre');
+            
+            log('Testing CORS configuration...');
+            
+            try {
+                const response = await fetch(`${apiUrl}/api/debug/cors-config`, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include'
+                });
+                
+                const data = await response.json();
+                
+                log('CORS test successful', data, 'success');
+                
+                pre.textContent = JSON.stringify(data, null, 2);
+                resultDiv.classList.remove('hidden');
+                
+                // Highlight issues
+                if (!data.isAllowed) {
+                    pre.innerHTML += '\n\n⚠️ WARNING: Your origin is not in the allowed list!';
+                    pre.innerHTML += '\n\nTo fix this, add your origin to ALLOWED_ORIGINS in Railway:';
+                    pre.innerHTML += `\n${window.location.origin}`;
+                }
+                
+            } catch (error) {
+                log('CORS test failed', { error: error.message }, 'error');
+                pre.textContent = `Error: ${error.message}\n\nThis likely means CORS is blocking the request.`;
+                resultDiv.classList.remove('hidden');
+            }
+        });
+        
+        // Test health endpoint
+        document.getElementById('test-health').addEventListener('click', async () => {
+            const resultDiv = document.getElementById('health-result');
+            const pre = resultDiv.querySelector('pre');
+            
+            log('Testing health endpoint...');
+            
+            try {
+                const response = await fetch(`${apiUrl}/health`, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+                
+                const data = await response.json();
+                
+                log('Health check successful', data, 'success');
+                
+                pre.textContent = JSON.stringify(data, null, 2);
+                resultDiv.classList.remove('hidden');
+                
+            } catch (error) {
+                log('Health check failed', { error: error.message }, 'error');
+                pre.textContent = `Error: ${error.message}`;
+                resultDiv.classList.remove('hidden');
+            }
+        });
+        
+        // Test protected endpoint
+        document.getElementById('test-protected').addEventListener('click', async () => {
+            const resultDiv = document.getElementById('protected-result');
+            const pre = resultDiv.querySelector('pre');
+            const token = document.getElementById('auth-token').value;
+            
+            log('Testing protected endpoint...');
+            
+            const headers = {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            };
+            
+            if (token) {
+                headers['Authorization'] = `Bearer ${token}`;
+            }
+            
+            try {
+                const response = await fetch(`${apiUrl}/api/analysis/property`, {
+                    method: 'POST',
+                    headers: headers,
+                    body: JSON.stringify({
+                        property: {
+                            address: 'Test Address',
+                            price: 500000
+                        }
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    log('Protected endpoint test successful', data, 'success');
+                } else {
+                    log('Protected endpoint returned error', data, 'error');
+                }
+                
+                pre.textContent = `Status: ${response.status}\n\n${JSON.stringify(data, null, 2)}`;
+                resultDiv.classList.remove('hidden');
+                
+            } catch (error) {
+                log('Protected endpoint test failed', { error: error.message }, 'error');
+                pre.textContent = `Error: ${error.message}`;
+                resultDiv.classList.remove('hidden');
+            }
+        });
+        
+        // Initial log
+        log('CORS Debug Tool loaded');
+        log(`Testing against: ${apiUrl}`);
+    </script>
+</body>
+</html>

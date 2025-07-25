@@ -89,10 +89,9 @@ app.use('/api/analysis', require('./routes/analysis'));
 app.use('/api/reports', require('./routes/reports'));
 app.use('/api/appreciation', require('./routes/appreciation'));
 
-// Only enable debug routes in development
-if (config.nodeEnv !== 'production') {
-  app.use('/api/debug', require('./routes/debug'));
-}
+// Debug routes
+app.use('/api/debug', require('./routes/debug'));
+app.use('/api/debug', require('./routes/debug-cors'));
 
 // Debug route to list all available routes
 app.get('/api/debug/routes', (req, res) => {
