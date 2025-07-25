@@ -46,9 +46,8 @@ class AirbnbScraperService {
       locationQueries: [location],
       locale: 'en-US',
       currency: 'CAD',
-      // Property specifications - exact bedroom match
-      minBedrooms: bedrooms,  // Minimum bedrooms
-      maxBedrooms: bedrooms,  // Maximum bedrooms - creates exact match
+      // Property specifications - ±1 bedroom range for better results
+      minBedrooms: Math.max(1, bedrooms - 1),  // One less bedroom minimum
       minBathrooms: Math.max(1, Math.floor(bathrooms - 0.5)), // Allow half bathroom difference, ensure integer
       // Date logic - 30 days out for check-in, 7 night stay
       checkIn: options.checkIn || this.getCheckInDate(),

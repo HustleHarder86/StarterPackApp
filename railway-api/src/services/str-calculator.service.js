@@ -84,14 +84,62 @@ class STRCalculatorService {
       // Must have a price
       if (!listing.price || listing.price <= 0) return false;
       
-      // Exact bedroom match only
-      if (listing.bedrooms !== property.bedrooms) return false;
+      // ±1 bedroom range (e.g., for 5BR property, allow 4-6BR)
+      const minBedrooms = Math.max(1, property.bedrooms - 1);
+      const maxBedrooms = property.bedrooms + 1;
+      if (listing.bedrooms < minBedrooms || listing.bedrooms > maxBedrooms) return false;
+      
+      // City filtering - only show comparables from the same city
+      const propertyCity = property.address?.city?.toLowerCase().trim();
+      const listingCity = this.extractCityFromListing(listing);
+      if (propertyCity && listingCity && propertyCity !== listingCity) {
+        return false;
+      }
       
       // No rating filter - include all listings regardless of rating
       // This gives a more realistic view of the market
       
       return true;
     });
+  }
+
+  /**
+   * Extract city from listing data
+   * @param {Object} listing - Airbnb listing
+   * @returns {string} City name in lowercase
+   */
+  extractCityFromListing(listing) {
+    // Try to extract city from various possible fields
+    let city = null;
+    
+    // Check title/name for city patterns
+    if (listing.title || listing.name) {
+      const text = (listing.title || listing.name).toLowerCase();
+      // Common city patterns in Airbnb titles
+      const cityMatch = text.match(/(?:in|near|downtown|)\s*([a-z\s]+?)(?:\s*,|\s*-|\s*\||\s*$)/i);
+      if (cityMatch) {
+        city = cityMatch[1];
+      }
+    }
+    
+    // Check location object
+    if (listing.location?.city) {
+      city = listing.location.city;
+    }
+    
+    // Check address
+    if (listing.address?.city) {
+      city = listing.address.city;
+    }
+    
+    // Clean up city name
+    if (city) {
+      return city.toLowerCase().trim()
+        .replace(/\s+/g, ' ')  // Normalize whitespace
+        .replace(/[^\w\s]/g, ''); // Remove special characters
+    }
+    
+    return null;
   }
 
   /**

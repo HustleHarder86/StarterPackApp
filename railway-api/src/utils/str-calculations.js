@@ -14,11 +14,18 @@ function filterComparables(listings, targetProperty) {
   const targetBedrooms = targetProperty.bedrooms || 2;
   const targetBathrooms = targetProperty.bathrooms || 1;
   const targetType = targetProperty.propertyType || 'House';
+  const targetCity = targetProperty.address?.city?.toLowerCase().trim();
   
   // Score and filter listings
   const scoredListings = listings
     .map(listing => {
       let score = 0;
+      
+      // City filtering - only include same city listings
+      const listingCity = extractCityFromListing(listing);
+      if (targetCity && listingCity && targetCity !== listingCity) {
+        return null; // Exclude listings from different cities
+      }
       
       // Bedroom similarity (40% weight)
       const bedroomDiff = Math.abs((listing.bedrooms || 0) - targetBedrooms);
@@ -66,11 +73,50 @@ function filterComparables(listings, targetProperty) {
         similarityScore: score
       };
     })
-    .filter(listing => listing.similarityScore >= 10) // Minimum 10% match - more inclusive
+    .filter(listing => listing !== null && listing.similarityScore >= 10) // Minimum 10% match - more inclusive
     .sort((a, b) => b.similarityScore - a.similarityScore);
   
   // Return top matches (max 20)
   return scoredListings.slice(0, 20);
+}
+
+/**
+ * Extract city from listing data
+ * @param {Object} listing - Airbnb listing
+ * @returns {string} City name in lowercase
+ */
+function extractCityFromListing(listing) {
+  // Try to extract city from various possible fields
+  let city = null;
+  
+  // Check title/name for city patterns
+  if (listing.title || listing.name) {
+    const text = (listing.title || listing.name).toLowerCase();
+    // Common city patterns in Airbnb titles
+    const cityMatch = text.match(/(?:in|near|downtown|)\s*([a-z\s]+?)(?:\s*,|\s*-|\s*\||\s*$)/i);
+    if (cityMatch) {
+      city = cityMatch[1];
+    }
+  }
+  
+  // Check location object
+  if (listing.location?.city) {
+    city = listing.location.city;
+  }
+  
+  // Check address
+  if (listing.address?.city) {
+    city = listing.address.city;
+  }
+  
+  // Clean up city name
+  if (city) {
+    return city.toLowerCase().trim()
+      .replace(/\s+/g, ' ')  // Normalize whitespace
+      .replace(/[^\w\s]/g, ''); // Remove special characters
+  }
+  
+  return null;
 }
 
 /**
