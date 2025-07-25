@@ -139,7 +139,7 @@ export const InteractiveFinancialCalculator = ({
             <p class="text-sm text-blue-800 mb-4">Adjust these values to match your specific financing scenario.</p>
             
             <!-- Editable Assumptions Grid -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
               <!-- Interest Rate -->
               <div>
                 <label class="block text-sm font-medium text-blue-900 mb-1">
@@ -192,25 +192,6 @@ export const InteractiveFinancialCalculator = ({
                          class="w-20 px-2 py-1 border border-blue-300 rounded text-right font-semibold text-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
                          onchange="updateAmortization(this.value)">
                   <span class="ml-1 text-blue-900 font-medium">years</span>
-                </div>
-              </div>
-              
-              <!-- Property Management -->
-              <div>
-                <label class="block text-sm font-medium text-blue-900 mb-1">
-                  Property Management Fee
-                </label>
-                <div class="flex items-center">
-                  <input type="number" 
-                         id="managementFeeInput" 
-                         value="10"
-                         min="0" 
-                         max="25" 
-                         step="1"
-                         class="w-20 px-2 py-1 border border-blue-300 rounded text-right font-semibold text-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                         oninput="updateManagementFee(this.value)">
-                  <span class="ml-1 text-blue-900 font-medium">%</span>
-                  <span class="ml-2 text-sm text-blue-800">of revenue</span>
                 </div>
               </div>
             </div>
@@ -291,7 +272,44 @@ export const InteractiveFinancialCalculator = ({
           ${generateExpenseRow('Property Tax', 'propertyTax', expenseValues.propertyTax, dataSources.propertyTax, actualPropertyData, actualCosts)}
           ${generateExpenseRow('Insurance', 'insurance', expenseValues.insurance, dataSources.insurance, actualPropertyData, actualCosts)}
           ${generateExpenseRow('HOA/Condo Fees', 'hoaFees', expenseValues.hoaFees, dataSources.hoaFees, actualPropertyData, actualCosts)}
-          ${generateExpenseRow('Property Management (10%)', 'propertyMgmt', expenseValues.propertyMgmt, dataSources.propertyMgmt, actualPropertyData, actualCosts)}
+          <div class="flex items-center justify-between expense-row">
+            <span class="text-sm text-gray-600 flex items-center flex-wrap">
+              <span>Property Management</span>
+              <span class="ml-2">
+                <input type="number" 
+                       id="managementFeeInput" 
+                       value="10"
+                       min="0" 
+                       max="25" 
+                       step="1"
+                       class="w-12 px-1 py-0.5 border border-gray-300 rounded text-center text-sm font-medium"
+                       oninput="updateManagementFee(this.value)">
+                <span class="text-gray-600 ml-1">%</span>
+              </span>
+              <span class="text-xs text-purple-600 ml-1 whitespace-nowrap" title="Data source">• calculated</span>
+              <div class="tooltip inline-block ml-1">
+                <span class="help-icon text-gray-400 hover:text-gray-600 cursor-help">?</span>
+                <span class="tooltiptext">
+                  <strong>Property management fee:</strong><br>
+                  Professional property management services.<br>
+                  <br>
+                  STR: 10% of revenue (default)<br>
+                  Covers guest communication, check-ins, issues<br>
+                  <br>
+                  LTR: 8-10% of rent<br>
+                  Handles tenant screening, rent collection<br>
+                  <br>
+                  Adjust percentage based on your management plan
+                </span>
+              </div>
+            </span>
+            <div class="flex items-center flex-shrink-0">
+              <span class="text-gray-400 text-sm mr-1">$</span>
+              <input type="number" id="propertyMgmt" value="${expenseValues.propertyMgmt}" 
+                     class="w-20 px-2 py-1 border border-gray-200 rounded text-right text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                     onchange="updateFinancialCalculations()">
+            </div>
+          </div>
           ${generateExpenseRow('Utilities', 'utilities', expenseValues.utilities, dataSources.utilities, actualPropertyData, actualCosts)}
           ${generateExpenseRow('Cleaning & Turnover', 'cleaning', expenseValues.cleaning, dataSources.cleaning, actualPropertyData, actualCosts)}
           ${generateExpenseRow('Maintenance & Repairs', 'maintenance', expenseValues.maintenance, dataSources.maintenance, actualPropertyData, actualCosts)}
