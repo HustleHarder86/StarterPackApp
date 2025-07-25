@@ -55,10 +55,8 @@ class AirbnbScraperService {
       // No guest count - let Airbnb handle defaults
     };
     
-    // Only add price filters if explicitly provided
-    if (options.priceMin !== undefined && options.priceMin !== null) {
-      input.priceMin = options.priceMin;
-    }
+    // Add price filters - minimum $50 to avoid invalid listings
+    input.priceMin = options.priceMin || 50;  // Default minimum $50/night
     if (options.priceMax !== undefined && options.priceMax !== null) {
       input.priceMax = options.priceMax;
     }
@@ -271,7 +269,7 @@ class AirbnbScraperService {
           isSuperhost: item.host?.is_superhost || false
         }
       };
-    }).filter(listing => listing.price > 0); // Filter out listings with no price
+    }).filter(listing => listing.price >= 50); // Filter out listings with no price or unrealistic prices
   }
 
   /**

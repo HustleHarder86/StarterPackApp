@@ -266,9 +266,17 @@ export function updateManagementFee(percent) {
   const monthlyRevenue = parseFloat(document.getElementById('monthlyRevenue')?.value) || 0;
   const mgmtFee = Math.round(monthlyRevenue * (mgmtPercent / 100));
   
+  console.log('UpdateManagementFee:', {
+    percent: mgmtPercent,
+    monthlyRevenue,
+    calculatedFee: mgmtFee
+  });
+  
   const propertyMgmtEl = document.getElementById('propertyMgmt');
   if (propertyMgmtEl) {
     propertyMgmtEl.value = mgmtFee;
+    // Trigger input event to ensure the calculator updates
+    propertyMgmtEl.dispatchEvent(new Event('input', { bubbles: true }));
     updateFinancialCalculations();
   }
 }

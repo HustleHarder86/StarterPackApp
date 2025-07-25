@@ -156,7 +156,6 @@ export const InteractiveFinancialCalculator = ({
                          onchange="updateInterestRate(this.value)">
                   <span class="ml-1 text-blue-900 font-medium">%</span>
                 </div>
-                <span class="text-xs text-blue-700 mt-1">Current market: 6-7%</span>
               </div>
               
               <!-- Down Payment -->
@@ -176,7 +175,6 @@ export const InteractiveFinancialCalculator = ({
                   <span class="ml-1 text-blue-900 font-medium">%</span>
                   <span class="ml-2 text-sm text-blue-800">($<span id="downPaymentAmount">${downPayment.toLocaleString()}</span>)</span>
                 </div>
-                <span class="text-xs text-blue-700 mt-1">Minimum: 5% (20% avoids CMHC)</span>
               </div>
               
               <!-- Amortization Period -->
@@ -195,7 +193,6 @@ export const InteractiveFinancialCalculator = ({
                          onchange="updateAmortization(this.value)">
                   <span class="ml-1 text-blue-900 font-medium">years</span>
                 </div>
-                <span class="text-xs text-blue-700 mt-1">Typical: 25-30 years</span>
               </div>
               
               <!-- Property Management -->
@@ -215,7 +212,6 @@ export const InteractiveFinancialCalculator = ({
                   <span class="ml-1 text-blue-900 font-medium">%</span>
                   <span class="ml-2 text-sm text-blue-800">of revenue</span>
                 </div>
-                <span class="text-xs text-blue-700 mt-1">STR typical: 10-15%</span>
               </div>
             </div>
             
