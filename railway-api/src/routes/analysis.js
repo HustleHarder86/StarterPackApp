@@ -354,8 +354,8 @@ router.post('/property', optionalAuth, async (req, res, next) => {
                 { ltrRent: strPropertyData.monthlyRent }
               );
               
-              // Format comparables
-              const formattedComparables = strAnalysis.comparables.slice(0, 5).map(comp => ({
+              // Format comparables - TEMPORARY DEBUG: Show ALL comparables
+              const formattedComparables = strAnalysis.comparables.map(comp => ({
                 id: comp.id,
                 title: comp.title,
                 nightlyRate: comp.price || comp.nightly_price,

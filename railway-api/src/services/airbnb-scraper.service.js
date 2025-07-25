@@ -236,41 +236,9 @@ class AirbnbScraperService {
                       parseFloat(item.price.toString().replace(/[^\d.]/g, ''));
       }
 
-      // Extract bedrooms - prioritize text parsing over potentially incorrect API data
-      const combinedText = `${item.name || ''} ${item.title || ''} ${item.additionalInfo || ''}`;
-      
-      let bedrooms = null;
-      
-      // First, try to extract from text with comprehensive patterns
-      bedrooms = this.extractNumber(combinedText, /(\d+)\s*(?:bedroom|bedrooms|bd|br|BR|bed|beds)/i) ||
-                 this.extractNumber(combinedText, /(\d+)BR/i) ||
-                 this.extractNumber(combinedText, /(\d+)\s*(?:bdrm|bdr)/i) ||
-                 this.extractNumber(combinedText, /(\d+)\s*(?:bed\b)/i);
-      
-      // If text parsing failed, try API data as backup
-      if (!bedrooms) {
-        bedrooms = item.bedrooms || item.beds || null;
-      }
-      
-      // Handle special cases
-      if (!bedrooms) {
-        if (combinedText.match(/studio/i)) {
-          bedrooms = 0;
-        } else {
-          bedrooms = 2; // Conservative default
-        }
-      }
-      
-      // Log bedroom extraction for debugging
-      if (item.name && bedrooms !== (item.bedrooms || item.beds)) {
-        console.log(`Bedroom extraction override: "${item.name}" - API: ${item.bedrooms || item.beds}, Extracted: ${bedrooms}`);
-      }
-      
-      // Try multiple patterns for bathrooms
-      const bathrooms = item.bathrooms || 
-                       this.extractNumber(combinedText, /(\d+(?:\.\d)?)\s*(?:bathroom|bath|ba|BA)/i) ||
-                       this.extractNumber(combinedText, /(\d+(?:\.\d)?)BA/i) || 
-                       1; // Default to 1
+      // TEMPORARY DEBUG: Use raw API data without extraction
+      const bedrooms = item.bedrooms || item.beds || 0;
+      const bathrooms = item.bathrooms || 1;
 
       // Extract room type
       const roomType = item.roomType || item.room_type || item.property_type || 'Entire place';
