@@ -1055,6 +1055,11 @@
                         headers['Authorization'] = `Bearer ${await window.appState.currentUser.getIdToken()}`;
                     }
                     
+                    // Set timeout to 5 minutes (300 seconds) to match backend
+                    const timeoutId = setTimeout(() => {
+                        window.appState.currentAnalysisController.abort();
+                    }, 300000); // 5 minutes
+                    
                     const response = await fetch(railwayUrl, {
                         method: 'POST',
                         headers: headers,
@@ -1068,6 +1073,9 @@
                         }),
                         signal: window.appState.currentAnalysisController.signal
                     });
+                    
+                    // Clear timeout if request completes
+                    clearTimeout(timeoutId);
                     
                     if (!response.ok) {
                         throw new Error(`Analysis failed: ${response.statusText}`);
@@ -1149,7 +1157,15 @@
                     }
                     
                     if (error.name === 'AbortError') {
-                        console.log('Analysis was cancelled');
+                        console.log('Analysis was cancelled or timed out');
+                        this.showError('Analysis is taking longer than expected. This can happen with complex properties. Please try again or contact support if the issue persists.');
+                        return;
+                    }
+                    
+                    // Check for connection reset error
+                    if (error.message.includes('Failed to fetch') || error.message.includes('ERR_CONNECTION_RESET')) {
+                        console.error('Connection error:', error);
+                        this.showError('Connection lost while analyzing property. The analysis may have completed successfully. Please refresh the page and check your analysis history, or try again.');
                         return;
                     }
                     
