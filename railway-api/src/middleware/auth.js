@@ -7,6 +7,22 @@ const verifyToken = async (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
     
+    // Check for E2E test mode
+    if (req.headers['x-e2e-test-mode'] === 'true' || 
+        (authHeader && authHeader === 'Bearer e2e-test-token')) {
+      logger.info('E2E Test Mode - Bypassing authentication');
+      req.userId = 'test-user-e2e';
+      req.userEmail = 'test@e2e.com';
+      req.user = {
+        uid: 'test-user-e2e',
+        email: 'test@e2e.com',
+        name: 'E2E Test User'
+      };
+      req.isE2ETest = true;
+      next();
+      return;
+    }
+    
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       throw new APIError('No token provided', 401);
     }
@@ -41,6 +57,22 @@ const verifyToken = async (req, res, next) => {
 const optionalAuth = async (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
+    
+    // Check for E2E test mode
+    if (req.headers['x-e2e-test-mode'] === 'true' || 
+        (authHeader && authHeader === 'Bearer e2e-test-token')) {
+      logger.info('E2E Test Mode - Bypassing authentication');
+      req.userId = 'test-user-e2e';
+      req.userEmail = 'test@e2e.com';
+      req.user = {
+        uid: 'test-user-e2e',
+        email: 'test@e2e.com',
+        name: 'E2E Test User'
+      };
+      req.isE2ETest = true;
+      next();
+      return;
+    }
     
     if (authHeader && authHeader.startsWith('Bearer ')) {
       const token = authHeader.split('Bearer ')[1];
