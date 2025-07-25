@@ -46,17 +46,22 @@ class AirbnbScraperService {
       locationQueries: [location],
       locale: 'en-US',
       currency: 'CAD',
-      // Price range - fixed defaults for simplicity
-      priceMin: options.priceMin || 50,
-      priceMax: options.priceMax || 500,
-      // Property specifications - exact match from listing
-      minBedrooms: Math.max(1, bedrooms - 1),  // Search for slightly fewer bedrooms for more results
+      // Property specifications - exact bedroom match
+      minBedrooms: bedrooms,  // Exact match for bedrooms
       minBathrooms: Math.max(1, Math.floor(bathrooms - 0.5)), // Allow half bathroom difference, ensure integer
       // Date logic - 30 days out for check-in, 7 night stay
       checkIn: options.checkIn || this.getCheckInDate(),
       checkOut: options.checkOut || this.getCheckOutDate()
       // No guest count - let Airbnb handle defaults
     };
+    
+    // Only add price filters if explicitly provided
+    if (options.priceMin !== undefined && options.priceMin !== null) {
+      input.priceMin = options.priceMin;
+    }
+    if (options.priceMax !== undefined && options.priceMax !== null) {
+      input.priceMax = options.priceMax;
+    }
     
     // Only add optional parameters if explicitly provided
     if (options.children !== undefined) input.children = options.children;

@@ -84,9 +84,8 @@ class STRCalculatorService {
       // Must have a price
       if (!listing.price || listing.price <= 0) return false;
       
-      // Prefer exact bedroom match, but allow ±1
-      const bedroomDiff = Math.abs(listing.bedrooms - property.bedrooms);
-      if (bedroomDiff > 1) return false;
+      // Exact bedroom match only
+      if (listing.bedrooms !== property.bedrooms) return false;
       
       // No rating filter - include all listings regardless of rating
       // This gives a more realistic view of the market
