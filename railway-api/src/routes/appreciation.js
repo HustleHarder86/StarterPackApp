@@ -1,13 +1,13 @@
 const express = require('express');
 const { PerplexityService } = require('../services/perplexityService');
-const { validateApiKey } = require('../middleware/auth');
+const { verifyToken } = require('../middleware/auth');
 
 const router = express.Router();
 
 /**
  * Fetch real-time property appreciation data using Perplexity AI
  */
-router.post('/real-time', validateApiKey, async (req, res) => {
+router.post('/real-time', verifyToken, async (req, res) => {
   try {
     const { address, propertyType, city, province } = req.body;
     
