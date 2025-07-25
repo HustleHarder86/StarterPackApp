@@ -229,7 +229,7 @@ class ComponentLoader {
                 
                 ${showLTR ? `
                   <!-- LTR Content -->
-                  <div id="ltr-content" class="tab-content ${!showSTR && showLTR ? '' : 'hidden'}">
+                  <div id="ltr-content" class="tab-content hidden">
                     ${ltrHtml}
                   </div>
                 ` : ''}
@@ -274,19 +274,30 @@ class ComponentLoader {
         
         <!-- Tab Switching Script -->
         <script>
+          // Ensure switchTab is available globally
           window.switchTab = function(tabName) {
             console.log('Switching to tab:', tabName);
+            
+            // Debug: Log all tab contents found
+            const allTabContents = document.querySelectorAll('.tab-content');
+            console.log('Found tab contents:', allTabContents.length);
+            allTabContents.forEach(content => {
+              console.log('Tab content:', content.id, 'Hidden:', content.classList.contains('hidden'));
+            });
             
             // Update tab buttons
             document.querySelectorAll('.tab-button').forEach(btn => {
               btn.classList.remove('border-blue-500', 'text-blue-600', 'active');
-              btn.classList.add('border-transparent', 'text-gray-500');
+              btn.classList.add('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
             });
             
             const activeTab = document.getElementById(tabName + '-tab');
             if (activeTab) {
-              activeTab.classList.remove('border-transparent', 'text-gray-500');
+              activeTab.classList.remove('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
               activeTab.classList.add('border-blue-500', 'text-blue-600', 'active');
+              console.log('Activated tab button:', tabName + '-tab');
+            } else {
+              console.error('Tab button not found:', tabName + '-tab');
             }
             
             // Update tab content
@@ -297,6 +308,9 @@ class ComponentLoader {
             const activeContent = document.getElementById(tabName + '-content');
             if (activeContent) {
               activeContent.classList.remove('hidden');
+              console.log('Showed content:', tabName + '-content');
+            } else {
+              console.error('Tab content not found:', tabName + '-content');
             }
             
             // Store active tab in session
@@ -304,12 +318,15 @@ class ComponentLoader {
             
             // Initialize investment planning scripts if switching to investment tab
             if (tabName === 'investment') {
+              console.log('Initializing investment planning scripts...');
               setTimeout(() => {
                 if (window.calculateCapitalGains) {
                   window.calculateCapitalGains();
+                  console.log('Called calculateCapitalGains');
                 }
                 if (window.updateScenarios) {
                   window.updateScenarios();
+                  console.log('Called updateScenarios');
                 }
               }, 100);
             }
