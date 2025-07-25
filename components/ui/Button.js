@@ -52,12 +52,24 @@ export const Button = ({
 
 export const ActionButton = ({ action, icon, label, description, variant = 'primary' }) => {
   return `
-    <div class="card card-interactive p-lg text-left hover:scale-105 transition-transform cursor-pointer" onclick="${action}">
-      <div class="flex items-center gap-md mb-sm">
-        <span class="text-2xl">${icon}</span>
-        <div class="text-xl font-bold text-gray-900">${label}</div>
+    <div class="card card-interactive p-lg text-left hover:scale-105 transition-all duration-200 cursor-pointer group" 
+         onclick="${action}"
+         role="button"
+         tabindex="0"
+         onkeypress="if(event.key === 'Enter' || event.key === ' ') ${action}">
+      <div class="flex items-start gap-md">
+        <span class="text-2xl flex-shrink-0 group-hover:scale-110 transition-transform">${icon}</span>
+        <div class="flex-1">
+          <div class="text-lg font-bold text-gray-900 mb-xs group-hover:text-blue-600 transition-colors">${label}</div>
+          <div class="text-sm text-gray-600 leading-relaxed">${description}</div>
+        </div>
       </div>
-      <div class="text-sm text-gray-600">${description}</div>
+      <div class="mt-md flex items-center text-xs text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity">
+        <span>Click to proceed</span>
+        <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+        </svg>
+      </div>
     </div>
   `;
 };
@@ -108,19 +120,26 @@ export const AnalyzeButton = (onclick = '') => Button({
 
 export const MobileActionButtons = () => {
   return `
-    <div class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-lg grid grid-cols-2 gap-md z-40">
-      ${Button({
-        children: '💾 Save Analysis',
-        variant: 'primary',
-        onclick: 'saveAnalysis()',
-        className: 'w-full'
-      })}
-      ${Button({
-        children: '📊 Full Report',
-        variant: 'secondary',
-        onclick: 'generateReport()',
-        className: 'w-full'
-      })}
+    <div class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-lg z-40">
+      <div class="grid grid-cols-2 gap-md mb-sm">
+        ${Button({
+          children: '💾 Save',
+          variant: 'primary',
+          onclick: 'saveAnalysis()',
+          className: 'w-full',
+          title: 'Save to Portfolio'
+        })}
+        ${Button({
+          children: '📊 PDF Report',
+          variant: 'secondary',
+          onclick: 'generateReport()',
+          className: 'w-full',
+          title: 'Generate PDF Report'
+        })}
+      </div>
+      <div class="text-xs text-center text-gray-500">
+        Tap to save analysis or download professional PDF report
+      </div>
     </div>
   `;
 };

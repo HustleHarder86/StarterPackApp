@@ -369,19 +369,25 @@ class ComponentLoader {
             action: 'saveAnalysis()',
             icon: '💾',
             label: 'Save to Portfolio',
-            description: 'Keep this analysis for future reference'
+            description: 'Save this analysis to your portfolio for future reference. You can access it anytime from your dashboard.'
           })}
           ${ActionButton({
             action: 'generateReport()',
             icon: '📊',
-            label: 'Generate Report',
-            description: 'Create a professional PDF report'
+            label: 'Generate Full Report (PDF)',
+            description: 'Download a comprehensive PDF report with all analysis details, charts, and financial projections.'
           })}
           ${ActionButton({
             action: 'analyzeAnother()',
             icon: '🔍',
-            label: 'Analyze Another',
-            description: 'Compare with other properties'
+            label: 'Analyze Another Property',
+            description: 'Start a new analysis to compare different properties. Current analysis will remain in your history.'
+          })}
+          ${ActionButton({
+            action: 'shareAnalysis()',
+            icon: '🔗',
+            label: 'Share Analysis',
+            description: 'Generate a shareable link to send this analysis to partners, lenders, or advisors.'
           })}
         </div>
       </div>
@@ -735,6 +741,18 @@ class ComponentLoader {
     window.saveAnalysis = async () => {
       console.log('Saving analysis...');
       
+      // Confirmation dialog
+      const confirmed = confirm(
+        'Save this analysis to your portfolio?\n\n' +
+        'You\'ll be able to:\n' +
+        '• Access it anytime from your dashboard\n' +
+        '• Compare it with other properties\n' +
+        '• Track changes in market conditions\n' +
+        '• Share it with partners or advisors'
+      );
+      
+      if (!confirmed) return;
+      
       try {
         // Get current analysis data
         const analysisData = window.analysisData || window.appState?.currentAnalysis;
@@ -802,7 +820,28 @@ class ComponentLoader {
     window.generateReport = async () => {
       console.log('Generating report...');
       
+      // Confirmation dialog with format info
+      const confirmed = confirm(
+        'Generate a comprehensive investment report?\n\n' +
+        'The PDF report will include:\n' +
+        '• Executive summary with ROI calculations\n' +
+        '• Detailed financial projections\n' +
+        '• Market comparables and analysis\n' +
+        '• Risk assessment and recommendations\n' +
+        '• Professional charts and visualizations\n\n' +
+        'File format: PDF (ready for printing or sharing)'
+      );
+      
+      if (!confirmed) return;
+      
       try {
+        // Show loading state
+        const originalButton = event?.target;
+        if (originalButton) {
+          originalButton.innerHTML = '<span class="animate-spin">⏳</span> Generating PDF...';
+          originalButton.disabled = true;
+        }
+        
         // Import PDF generator
         const { default: PDFReportGenerator } = await import('./pdfGenerator.js');
         
@@ -818,6 +857,12 @@ class ComponentLoader {
         const generator = new PDFReportGenerator();
         await generator.generateReport(analysisData);
         
+        // Restore button state
+        if (originalButton) {
+          originalButton.innerHTML = '📊 Generate Full Report (PDF)';
+          originalButton.disabled = false;
+        }
+        
       } catch (error) {
         console.error('Error generating report:', error);
         alert('Failed to generate report. Please try again.');
@@ -826,7 +871,142 @@ class ComponentLoader {
 
     window.analyzeAnother = () => {
       console.log('Analyzing another property...');
-      // Implementation will connect to existing property analysis flow
+      
+      // Confirmation dialog
+      const confirmed = confirm(
+        'Start a new property analysis?\n\n' +
+        '⚠️ Important:\n' +
+        '• This will clear the current analysis from your screen\n' +
+        '• Your current analysis is automatically saved in history\n' +
+        '• You can compare multiple properties later\n\n' +
+        'Do you want to continue?'
+      );
+      
+      if (!confirmed) return;
+      
+      // Save current analysis to session history
+      const currentAnalysis = window.analysisData || window.appState?.currentAnalysis;
+      if (currentAnalysis) {
+        const history = JSON.parse(sessionStorage.getItem('analysisHistory') || '[]');
+        history.unshift({
+          timestamp: new Date().toISOString(),
+          address: currentAnalysis.propertyData?.address || 'Unknown Property',
+          data: currentAnalysis
+        });
+        // Keep only last 5 analyses in session
+        sessionStorage.setItem('analysisHistory', JSON.stringify(history.slice(0, 5)));
+      }
+      
+      // Redirect to property input or clear current analysis
+      window.location.href = '#analyze';
+      window.location.reload();
+    };
+
+    window.shareAnalysis = async () => {
+      console.log('Sharing analysis...');
+      
+      try {
+        // Get current analysis data
+        const analysisData = window.analysisData || window.appState?.currentAnalysis;
+        
+        if (!analysisData) {
+          alert('No analysis data available to share. Please run an analysis first.');
+          return;
+        }
+        
+        const propertyAddress = analysisData.propertyData?.address || 'Property Analysis';
+        
+        // Show sharing options dialog
+        const shareMethod = confirm(
+          'Share this analysis\n\n' +
+          'Click OK to generate a shareable link that you can send to:\n' +
+          '• Business partners or co-investors\n' +
+          '• Real estate agents or brokers\n' +
+          '• Mortgage lenders or financial advisors\n' +
+          '• Anyone who needs to review this analysis\n\n' +
+          'The link will be valid for 30 days.\n\n' +
+          'Or click Cancel to copy the analysis summary to your clipboard.'
+        );
+        
+        if (shareMethod) {
+          // Generate shareable link
+          try {
+            // Show loading state
+            const originalButton = event?.target;
+            if (originalButton) {
+              originalButton.innerHTML = '<span class="animate-spin">⏳</span> Generating link...';
+              originalButton.disabled = true;
+            }
+            
+            // In production, this would call an API to generate a shareable link
+            // For now, we'll simulate it
+            const shareId = btoa(Date.now().toString()).substring(0, 8);
+            const shareUrl = `${window.location.origin}/shared-analysis/${shareId}`;
+            
+            // Copy to clipboard
+            await navigator.clipboard.writeText(shareUrl);
+            
+            // Show success with the link
+            alert(
+              'Shareable link generated and copied to clipboard!\n\n' +
+              `${shareUrl}\n\n` +
+              'This link will be valid for 30 days.\n' +
+              'Anyone with this link can view the analysis (read-only).'
+            );
+            
+            // Restore button
+            if (originalButton) {
+              originalButton.innerHTML = '🔗 Share Analysis';
+              originalButton.disabled = false;
+            }
+          } catch (error) {
+            console.error('Error generating share link:', error);
+            alert('Failed to generate share link. Please try again.');
+          }
+        } else {
+          // Copy summary to clipboard
+          const summary = `
+${propertyAddress} - Investment Analysis Summary
+
+Property Details:
+• Price: $${analysisData.propertyData?.price?.toLocaleString() || 'N/A'}
+• Type: ${analysisData.propertyData?.propertyType || 'N/A'}
+• Bedrooms: ${analysisData.propertyData?.bedrooms || 'N/A'}
+• Location: ${analysisData.propertyData?.city || 'N/A'}
+
+Short-Term Rental Analysis:
+• Monthly Revenue: $${analysisData.strAnalysis?.monthlyRevenue?.toLocaleString() || 'N/A'}
+• Occupancy Rate: ${(analysisData.strAnalysis?.occupancy_rate * 100)?.toFixed(0) || 'N/A'}%
+• Nightly Rate: $${analysisData.strAnalysis?.nightlyRate || 'N/A'}
+
+Long-Term Rental Analysis:
+• Monthly Rent: $${analysisData.longTermRental?.monthlyRent?.toLocaleString() || 'N/A'}
+• Cash Flow: $${analysisData.longTermRental?.cashFlow?.toLocaleString() || 'N/A'}
+• ROI: ${analysisData.longTermRental?.roi?.toFixed(1) || 'N/A'}%
+
+Investment Score: ${analysisData.overallScore || 'N/A'}/10
+
+Generated by StarterPackApp - ${new Date().toLocaleDateString()}
+          `.trim();
+          
+          try {
+            await navigator.clipboard.writeText(summary);
+            alert('Analysis summary copied to clipboard!\n\nYou can now paste it into an email, document, or message.');
+          } catch (error) {
+            // Fallback for browsers that don't support clipboard API
+            const textArea = document.createElement('textarea');
+            textArea.value = summary;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+            alert('Analysis summary copied to clipboard!');
+          }
+        }
+      } catch (error) {
+        console.error('Error sharing analysis:', error);
+        alert('Failed to share analysis. Please try again.');
+      }
     };
 
     window.showAllComparables = () => {

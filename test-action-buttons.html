@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Enhanced Action Buttons</title>
+    <link rel="stylesheet" href="/styles/design-system.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+    <div class="container mx-auto p-8">
+        <h1 class="text-3xl font-bold mb-8">Enhanced Action Buttons Test</h1>
+        
+        <!-- Test the action buttons -->
+        <div id="action-buttons-container"></div>
+        
+        <!-- Mock data for testing -->
+        <div class="mt-8 p-4 bg-gray-100 rounded">
+            <h3 class="font-bold mb-2">Test Controls:</h3>
+            <button onclick="loadActionButtons()" class="btn btn-primary">Load Action Buttons</button>
+            <button onclick="testSaveAnalysis()" class="btn btn-secondary ml-2">Test Save</button>
+            <button onclick="testGenerateReport()" class="btn btn-secondary ml-2">Test Report</button>
+            <button onclick="testAnalyzeAnother()" class="btn btn-secondary ml-2">Test Analyze Another</button>
+            <button onclick="testShareAnalysis()" class="btn btn-secondary ml-2">Test Share</button>
+        </div>
+    </div>
+
+    <script type="module">
+        // Import the component loader and button module
+        import ComponentLoader from './js/modules/componentLoader.js';
+        import * as ButtonModule from './components/ui/Button.js';
+        
+        // Create mock analysis data
+        window.analysisData = {
+            propertyData: {
+                address: '123 Main St, Toronto, ON',
+                price: 850000,
+                propertyType: 'Condo',
+                bedrooms: 3,
+                city: 'Toronto'
+            },
+            strAnalysis: {
+                monthlyRevenue: 5800,
+                occupancy_rate: 0.75,
+                nightlyRate: 250
+            },
+            longTermRental: {
+                monthlyRent: 3200,
+                cashFlow: 450,
+                roi: 8.5
+            },
+            overallScore: 8.5
+        };
+        
+        window.appState = {
+            currentAnalysis: window.analysisData
+        };
+        
+        // Load action buttons
+        window.loadActionButtons = async () => {
+            const loader = new ComponentLoader();
+            const container = document.getElementById('action-buttons-container');
+            container.innerHTML = loader.generateActionButtons(ButtonModule);
+            loader.attachEventHandlers();
+        };
+        
+        // Test functions
+        window.testSaveAnalysis = () => {
+            console.log('Testing save analysis with confirmation...');
+            window.saveAnalysis();
+        };
+        
+        window.testGenerateReport = () => {
+            console.log('Testing generate report with PDF info...');
+            window.generateReport();
+        };
+        
+        window.testAnalyzeAnother = () => {
+            console.log('Testing analyze another with warning...');
+            window.analyzeAnother();
+        };
+        
+        window.testShareAnalysis = () => {
+            console.log('Testing share analysis...');
+            window.shareAnalysis();
+        };
+        
+        // Auto-load on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            loadActionButtons();
+        });
+    </script>
+</body>
+</html>
