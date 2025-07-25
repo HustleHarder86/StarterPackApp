@@ -82,8 +82,18 @@ class STRCalculatorService {
   filterQualityComparables(listings, property) {
     const logger = require('./logger.service');
     
-    logger.info(`Starting filterQualityComparables with ${listings.length} listings for ${property.bedrooms}BR property in ${property.address?.city}`);
+    logger.info(`🚨 DEBUG MODE: Returning ALL ${listings.length} listings without filtering for ${property.bedrooms}BR property in ${property.address?.city}`);
     
+    // Log each listing for debugging
+    listings.forEach((listing, index) => {
+      logger.info(`Listing ${index + 1}: "${listing.title}" - ${listing.bedrooms}BR, $${listing.price}/night, City: ${this.extractCityFromListing(listing) || 'unknown'}`);
+    });
+    
+    // TEMPORARY: Return all listings without any filtering
+    return listings;
+    
+    /*
+    // COMMENTED OUT - Original filtering logic (restore later)
     const results = listings.filter(listing => {
       // Must have a price
       if (!listing.price || listing.price <= 0) {
@@ -116,6 +126,7 @@ class STRCalculatorService {
     
     logger.info(`Filtered from ${listings.length} to ${results.length} quality comparables`);
     return results;
+    */
   }
 
   /**

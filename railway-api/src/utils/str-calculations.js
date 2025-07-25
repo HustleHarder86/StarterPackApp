@@ -11,6 +11,18 @@
 function filterComparables(listings, targetProperty) {
   if (!listings || listings.length === 0) return [];
   
+  console.log(`🚨 DEBUG MODE: Returning ALL ${listings.length} listings without similarity scoring`);
+  
+  // TEMPORARY: Return all listings with basic similarity scores for display
+  const scoredListings = listings.map(listing => ({
+    ...listing,
+    similarityScore: 50 // Give all listings a neutral score for display
+  }));
+  
+  return scoredListings;
+  
+  /*
+  // COMMENTED OUT - Original similarity scoring logic (restore later)
   const targetBedrooms = targetProperty.bedrooms || 2;
   const targetBathrooms = targetProperty.bathrooms || 1;
   const targetType = targetProperty.propertyType || 'House';
@@ -78,6 +90,7 @@ function filterComparables(listings, targetProperty) {
   
   // Return top matches (max 20)
   return scoredListings.slice(0, 20);
+  */
 }
 
 /**
