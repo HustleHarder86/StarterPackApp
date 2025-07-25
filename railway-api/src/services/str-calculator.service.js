@@ -88,12 +88,8 @@ class STRCalculatorService {
       const bedroomDiff = Math.abs(listing.bedrooms - property.bedrooms);
       if (bedroomDiff > 1) return false;
       
-      // Must have decent rating if available (but many new listings have 4.5 default)
-      if (listing.rating && listing.rating < 4.0) return false;
-      
-      // For new listings without reviews, still include them
-      // Only exclude if they have reviews but very few
-      if (listing.reviewsCount > 0 && listing.reviewsCount < 3) return false;
+      // No rating filter - include all listings regardless of rating
+      // This gives a more realistic view of the market
       
       return true;
     });
