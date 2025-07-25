@@ -41,31 +41,31 @@ export function PropertyConfirmation(propertyData, onConfirm, onCancel) {
                     </div>
                     
                     <!-- Property Details Section -->
-                    <div class="p-8">
-                        <!-- Property Image and Info Grid -->
-                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-                            <!-- Property Image -->
-                            ${propertyData.imageUrl ? `
-                            <div class="order-2 lg:order-1">
-                                <div class="relative h-64 rounded-lg overflow-hidden shadow-lg bg-gray-100">
-                                    <img src="${propertyData.imageUrl}" 
+                    <div class="p-6">
+                        <!-- Property Image and Info Grid - Compact Layout -->
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
+                            <!-- Property Image - Smaller size -->
+                            ${(propertyData.imageUrl || propertyData.mainImage) ? `
+                            <div class="lg:col-span-1">
+                                <div class="relative h-48 lg:h-40 rounded-lg overflow-hidden shadow-lg bg-gray-100">
+                                    <img src="${propertyData.imageUrl || propertyData.mainImage}" 
                                          alt="${propertyData.address || 'Property'}" 
                                          class="w-full h-full object-cover"
-                                         onerror="this.parentElement.innerHTML='<div class=\\'w-full h-full bg-gray-200 flex items-center justify-center\\'>    <svg class=\\'w-16 h-16 text-gray-400\\' fill=\\'none\\' stroke=\\'currentColor\\' viewBox=\\'0 0 24 24\\'>        <path stroke-linecap=\\'round\\' stroke-linejoin=\\'round\\' stroke-width=\\'2\\' d=\\'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6\\' />    </svg></div>'">
+                                         onerror="this.parentElement.innerHTML='<div class=\\'w-full h-full bg-gray-200 flex items-center justify-center\\'>    <svg class=\\'w-12 h-12 text-gray-400\\' fill=\\'none\\' stroke=\\'currentColor\\' viewBox=\\'0 0 24 24\\'>        <path stroke-linecap=\\'round\\' stroke-linejoin=\\'round\\' stroke-width=\\'2\\' d=\\'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6\\' />    </svg></div>'">
                                 </div>
                             </div>
                             ` : `
-                            <div class="order-2 lg:order-1">
-                                <div class="w-full h-64 bg-gray-200 rounded-lg flex items-center justify-center">
-                                    <svg class="w-16 h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <div class="lg:col-span-1">
+                                <div class="w-full h-48 lg:h-40 bg-gray-200 rounded-lg flex items-center justify-center">
+                                    <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                                     </svg>
                                 </div>
                             </div>
                             `}
                             
-                            <!-- Property Info Card -->
-                            <div class="bg-gray-50 rounded-lg p-6 order-1 lg:order-2">
+                            <!-- Property Info Card - Takes up more space -->
+                            <div class="bg-gray-50 rounded-lg p-4 lg:col-span-2">
                                 <h2 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
                                     <svg class="w-5 h-5 mr-2 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
@@ -121,17 +121,17 @@ export function PropertyConfirmation(propertyData, onConfirm, onCancel) {
                         </div>
                         
                         <!-- Analysis Type Selection -->
-                        <div class="mb-8">
-                            <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                        <div class="mb-6">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-3 flex items-center">
                                 <svg class="w-5 h-5 mr-2 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
                                 </svg>
                                 Select Analysis Type
                             </h3>
                             
-                            <div class="space-y-3">
+                            <div class="space-y-2">
                                 <!-- Complete Analysis Option -->
-                                <label class="relative flex items-start p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-blue-300 hover:bg-blue-50 transition-all">
+                                <label class="relative flex items-start p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-blue-300 hover:bg-blue-50 transition-all">
                                     <input type="radio" name="analysisType" value="both" checked class="mt-1 mr-3 text-blue-600">
                                     <div class="flex-1">
                                         <div class="flex items-center">
@@ -149,7 +149,7 @@ export function PropertyConfirmation(propertyData, onConfirm, onCancel) {
                                 </label>
                                 
                                 <!-- LTR Only Option -->
-                                <label class="relative flex items-start p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-blue-300 hover:bg-blue-50 transition-all">
+                                <label class="relative flex items-start p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-blue-300 hover:bg-blue-50 transition-all">
                                     <input type="radio" name="analysisType" value="ltr" class="mt-1 mr-3 text-blue-600">
                                     <div class="flex-1">
                                         <div class="flex items-center">
@@ -161,7 +161,7 @@ export function PropertyConfirmation(propertyData, onConfirm, onCancel) {
                                 </label>
                                 
                                 <!-- STR Only Option -->
-                                <label class="relative flex items-start p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-blue-300 hover:bg-blue-50 transition-all">
+                                <label class="relative flex items-start p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-blue-300 hover:bg-blue-50 transition-all">
                                     <input type="radio" name="analysisType" value="str" class="mt-1 mr-3 text-blue-600">
                                     <div class="flex-1">
                                         <div class="flex items-center">
