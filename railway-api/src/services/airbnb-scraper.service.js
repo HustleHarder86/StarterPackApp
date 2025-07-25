@@ -204,20 +204,35 @@ class AirbnbScraperService {
         const datasetId = status.data.defaultDatasetId;
         const resultsUrl = `${this.apiUrl}/datasets/${datasetId}/items`;
         
+        logger.info(`Run succeeded! Fetching results from dataset: ${datasetId}`);
+        logger.info(`Results URL: ${resultsUrl}`);
+        
         const resultsResponse = await fetch(resultsUrl, {
           headers: { 'Authorization': `Bearer ${this.apiKey}` },
           signal: controller.signal
         });
 
+        logger.info(`Results fetch response status: ${resultsResponse.status}`);
+
         if (!resultsResponse.ok) {
-          throw new Error(`Failed to fetch results: ${resultsResponse.status}`);
+          const errorText = await resultsResponse.text();
+          logger.error(`Failed to fetch results: ${resultsResponse.status} - ${errorText}`);
+          throw new Error(`Failed to fetch results: ${resultsResponse.status} - ${errorText}`);
         }
 
-        return await resultsResponse.json();
+        const results = await resultsResponse.json();
+        logger.info(`Successfully fetched ${Array.isArray(results) ? results.length : 'unknown'} results`);
+        return results;
       }
 
       if (status.data.status === 'FAILED' || status.data.status === 'ABORTED') {
+        logger.error(`Actor run failed with status: ${status.data.status}`, status.data);
         throw new Error(`Actor run ${status.data.status}`);
+      }
+      
+      // Log other statuses we're seeing
+      if (attempt > 10) {
+        logger.info(`Still waiting... Current status: ${status.data.status}, startedAt: ${status.data.startedAt}, finishedAt: ${status.data.finishedAt}`);
       }
     }
 
