@@ -434,6 +434,116 @@ class ComponentLoader {
       targetContainer.innerHTML = analysisLayout;
       this.attachEventHandlers();
       
+      // Define switchTab function globally
+      window.switchTab = function(tabName) {
+        console.log('Switching to tab:', tabName);
+        
+        // Debug: Log all tab contents found
+        const allTabContents = document.querySelectorAll('.tab-content');
+        console.log('Found tab contents:', allTabContents.length);
+        allTabContents.forEach(content => {
+          console.log('Tab content:', content.id, 'Hidden:', content.classList.contains('hidden'));
+        });
+        
+        // Update tab buttons for new design
+        document.querySelectorAll('.tab-button').forEach(btn => {
+          // Remove active classes
+          btn.classList.remove('bg-white', 'text-blue-700', 'shadow-md', 'border-blue-300', 'transform', 'scale-105');
+          btn.classList.add('bg-gray-50', 'text-gray-600', 'border-gray-200');
+          
+          // Remove checkmark if exists
+          const checkmark = btn.querySelector('.text-green-500');
+          if (checkmark) checkmark.remove();
+          
+          // Update icon to inactive state
+          const icon = btn.querySelector('.text-xl');
+          if (icon) {
+            if (btn.id === 'str-tab') icon.textContent = '🏡';
+            else if (btn.id === 'ltr-tab') icon.textContent = '🏢';
+          }
+          
+          // Update subtitle color
+          const subtitle = btn.querySelector('.text-xs');
+          if (subtitle) {
+            subtitle.classList.remove('text-blue-600');
+            subtitle.classList.add('text-gray-500');
+          }
+        });
+        
+        const activeTab = document.getElementById(tabName + '-tab');
+        if (activeTab) {
+          // Add active classes
+          activeTab.classList.remove('bg-gray-50', 'text-gray-600', 'border-gray-200');
+          activeTab.classList.add('bg-white', 'text-blue-700', 'shadow-md', 'border-blue-300', 'transform', 'scale-105');
+          
+          // Add checkmark if not already present
+          if (!activeTab.querySelector('.text-green-500')) {
+            const checkmark = document.createElement('span');
+            checkmark.className = 'ml-2 text-green-500';
+            checkmark.textContent = '✓';
+            activeTab.appendChild(checkmark);
+          }
+          
+          // Update icon to active state
+          const icon = activeTab.querySelector('.text-xl');
+          if (icon) {
+            if (tabName === 'str') icon.textContent = '🏠';
+            else if (tabName === 'ltr') icon.textContent = '🏘️';
+            else if (tabName === 'investment') icon.textContent = '📈';
+          }
+          
+          // Update subtitle color
+          const subtitle = activeTab.querySelector('.text-xs');
+          if (subtitle) {
+            subtitle.classList.remove('text-gray-500');
+            subtitle.classList.add('text-blue-600');
+          }
+          
+          console.log('Activated tab button:', tabName + '-tab');
+        } else {
+          console.error('Tab button not found:', tabName + '-tab');
+        }
+        
+        // Update tab content
+        document.querySelectorAll('.tab-content').forEach(content => {
+          content.classList.add('hidden');
+        });
+        
+        const activeContent = document.getElementById(tabName + '-content');
+        if (activeContent) {
+          activeContent.classList.remove('hidden');
+          console.log('Showed content:', tabName + '-content');
+        } else {
+          console.error('Tab content not found:', tabName + '-content');
+        }
+        
+        // Store active tab in session
+        sessionStorage.setItem('activeRentalTab', tabName);
+        
+        // Initialize investment planning scripts if switching to investment tab
+        if (tabName === 'investment') {
+          console.log('Initializing investment planning scripts...');
+          setTimeout(() => {
+            if (window.calculateCapitalGains) {
+              window.calculateCapitalGains();
+              console.log('Called calculateCapitalGains');
+            }
+            if (window.updateScenarios) {
+              window.updateScenarios();
+              console.log('Called updateScenarios');
+            }
+          }, 100);
+        }
+      };
+      
+      // Restore active tab if exists
+      setTimeout(() => {
+        const activeTab = sessionStorage.getItem('activeRentalTab');
+        if (activeTab && (activeTab === 'ltr' || activeTab === 'investment')) {
+          window.switchTab(activeTab);
+        }
+      }, 100);
+      
       // Initialize enhanced financial summary after DOM is updated
       setTimeout(async () => {
         // Initialize the financial summary chart and metrics
