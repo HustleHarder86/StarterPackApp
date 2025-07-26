@@ -1,0 +1,20 @@
+{
+  "timestamp": "2025-07-26T14:17:34.030Z",
+  "tests": [
+    {
+      "name": "Login",
+      "status": "FAILED",
+      "error": "Waiting for selector `#login-email` failed: Waiting failed: 30000ms exceeded"
+    }
+  ],
+  "screenshots": [
+    "/home/amy/StarterPackApp/tests/e2e/screenshots/login-test/2025-07-26/01-initial-load.png",
+    "/home/amy/StarterPackApp/tests/e2e/screenshots/login-test/2025-07-26/04-login-failed.png"
+  ],
+  "errors": [
+    {
+      "step": "login",
+      "error": "Waiting for selector `#login-email` failed: Waiting failed: 30000ms exceeded"
+    }
+  ]
+}

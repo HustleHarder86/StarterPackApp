@@ -1,15 +1,12 @@
 // api/submit-analysis.js
 // Handle demo analysis submissions from ROI Finder
 
-export default async function handler(req, res) {
-  // Set CORS headers
-  res.setHeader('Access-Control-Allow-Credentials', true);
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST,OPTIONS');
-  res.setHeader(
-    'Access-Control-Allow-Headers',
-    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
-  );
+const { applyCorsHeaders } = require('../utils/cors-config.js');
+const { optionalAuth } = require('../utils/auth-middleware-cjs.js');
+
+module.exports = async function handler(req, res) {
+  // Apply proper CORS headers
+  applyCorsHeaders(req, res);
 
   if (req.method === 'OPTIONS') {
     res.status(200).end();
@@ -21,6 +18,9 @@ export default async function handler(req, res) {
   }
 
   try {
+    // Optional authentication - allows both authenticated and unauthenticated submissions
+    await optionalAuth(req, res, () => {});
+    
     const { name, email, address } = req.body;
 
     if (!name || !email || !address) {
@@ -43,16 +43,24 @@ export default async function handler(req, res) {
 
     const db = admin.firestore();
 
-    // Save lead information
+    // Save lead information with user context if available
     const leadId = `lead_${Date.now()}`;
-    await db.collection('leads').doc(leadId).set({
+    const leadData = {
       name,
       email,
       propertyAddress: address,
       createdAt: admin.firestore.FieldValue.serverTimestamp(),
       status: 'demo_analysis',
       source: 'roi_finder'
-    });
+    };
+    
+    // Add user ID if authenticated
+    if (req.user) {
+      leadData.userId = req.user.uid;
+      leadData.userEmail = req.user.email;
+    }
+    
+    await db.collection('leads').doc(leadId).set(leadData);
 
     // For demo purposes, we'll return success immediately
     // The actual analysis will be triggered from the frontend

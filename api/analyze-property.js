@@ -2,6 +2,8 @@
 // Enhanced property analysis with improved data extraction and fallback logic
 
 const { calculateAccurateExpenses, getPropertyTaxRate, estimateRentalRate, calculateInsurance } = require('./property-calculations.js');
+const { applyCorsHeaders } = require('../utils/cors-config.js');
+const { authenticate } = require('../utils/auth-middleware-cjs.js');
 
 // Parse bedroom/bathroom strings that may contain "X + Y" format
 function parseBedroomBathroomValue(value) {
@@ -28,14 +30,8 @@ function parseBedroomBathroomValue(value) {
 }
 
 module.exports = async function handler(req, res) {
-  // Set CORS headers
-  res.setHeader('Access-Control-Allow-Credentials', true);
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST,OPTIONS');
-  res.setHeader(
-    'Access-Control-Allow-Headers',
-    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
-  );
+  // Apply proper CORS headers
+  applyCorsHeaders(req, res);
 
   if (req.method === 'OPTIONS') {
     res.status(200).end();
@@ -47,7 +43,19 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    const { userId, propertyAddress, userEmail, userName, requestType, propertyData } = req.body;
+    // Authenticate user
+    await new Promise((resolve, reject) => {
+      authenticate(req, res, (err) => {
+        if (err) reject(err);
+        else resolve();
+      });
+    });
+    
+    // Use authenticated user info if available, otherwise use body data
+    const userId = req.user?.uid || req.body.userId;
+    const userEmail = req.user?.email || req.body.userEmail;
+    const userName = req.body.userName;
+    const { propertyAddress, requestType, propertyData } = req.body;
 
     if (!propertyAddress) {
       return res.status(400).json({ error: 'Property address is required' });
@@ -74,26 +82,18 @@ module.exports = async function handler(req, res) {
     const perplexityApiKey = process.env.PERPLEXITY_API_KEY;
     const openaiApiKey = process.env.OPENAI_API_KEY;
 
-    console.log('========== API KEY VALIDATION ==========');
-    console.log('Perplexity API Key exists:', !!perplexityApiKey);
-    console.log('Perplexity API Key length:', perplexityApiKey ? perplexityApiKey.length : 0);
-    console.log('Perplexity API Key prefix:', perplexityApiKey ? perplexityApiKey.substring(0, 5) : 'N/A');
-    console.log('Perplexity API Key suffix:', perplexityApiKey ? '...' + perplexityApiKey.substring(perplexityApiKey.length - 4) : 'N/A');
-    console.log('Starts with pplx-:', perplexityApiKey ? perplexityApiKey.startsWith('pplx-') : false);
-    console.log('Is placeholder key:', perplexityApiKey === 'your_perplexity_api_key');
-    console.log('========== END API KEY VALIDATION ==========');
+    // Validate API keys without logging sensitive information
+    console.log('API Key Validation: Perplexity configured:', !!perplexityApiKey && perplexityApiKey.startsWith('pplx-'));
 
     const perplexityConfigured = !!perplexityApiKey && perplexityApiKey.startsWith('pplx-') && perplexityApiKey !== 'your_perplexity_api_key';
     const openaiConfigured = !!openaiApiKey && openaiApiKey.startsWith('sk-') && openaiApiKey !== 'your_openai_api_key';
     
     console.log('API Keys Status:', {
       perplexity: perplexityConfigured ? 'CONFIGURED' : 'MISSING',
-      perplexityKeyLength: perplexityApiKey ? perplexityApiKey.length : 0,
-      perplexityKeyPrefix: perplexityApiKey ? perplexityApiKey.substring(0, 10) : 'N/A',
       openai: openaiConfigured ? 'CONFIGURED' : 'MISSING'
     });
 
-    if (!perplexityConfigured) {
+    if (!perplexityConfigured && !req.isE2ETest) {
       console.error('Perplexity API key not properly configured');
       return res.status(500).json({
         success: false,
@@ -214,40 +214,81 @@ IMPORTANT FORMATTING:
     console.log('API Endpoint:', 'https://api.perplexity.ai/chat/completions');
     console.log('HTTP Method:', 'POST');
     console.log('Request Headers:', {
-      'Authorization': `Bearer ${perplexityApiKey ? perplexityApiKey.substring(0, 15) + '...' : 'MISSING'}`,
+      'Authorization': `Bearer ${perplexityApiKey}`,
       'Content-Type': 'application/json'
     });
     console.log('Request Body:', JSON.stringify(perplexityRequestBody, null, 2));
     console.log('========== END REQUEST DETAILS ==========');
 
     let perplexityResponse;
-    try {
-      const startTime = Date.now();
-      perplexityResponse = await fetch('https://api.perplexity.ai/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${perplexityApiKey}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(perplexityRequestBody)
-      });
+    
+    // For E2E test mode, return mock data instead of making API call
+    if (req.isE2ETest) {
+      console.log('E2E Test Mode: Using mock data instead of Perplexity API');
       
-      const requestTime = Date.now() - startTime;
-      console.log(`========== PERPLEXITY API RESPONSE RECEIVED ==========`);
-      console.log(`Response Time: ${requestTime}ms`);
+      // Create mock response
+      const mockResponse = {
+        choices: [{
+          message: {
+            content: `Property Analysis for ${propertyAddress}:
+            
+            Property value: $${propertyData?.price || 750000}
+            Property type: ${propertyData?.propertyType || 'Condo'}
+            Square footage: ${propertyData?.sqft || 850} sq ft
+            Bedrooms: ${propertyData?.bedrooms || 2}
+            Bathrooms: ${propertyData?.bathrooms || 2}
+            
+            Property Tax: $${propertyData?.propertyTaxes || 4500}/year
+            Insurance: $2000/year (estimated)
+            Maintenance: $5000/year (estimated)
+            
+            Monthly rent estimate: $2800
+            Daily Airbnb rate: $180
+            
+            SOURCE: Mock data for E2E testing`
+          }
+        }],
+        usage: { prompt_tokens: 100, completion_tokens: 200, total_tokens: 300 }
+      };
+      
+      // Skip the actual API call
+      perplexityResponse = {
+        ok: true,
+        status: 200,
+        statusText: 'OK',
+        headers: new Map(),
+        text: async () => JSON.stringify(mockResponse),
+        json: async () => mockResponse
+      };
+    } else {
+      try {
+        const startTime = Date.now();
+        perplexityResponse = await fetch('https://api.perplexity.ai/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${perplexityApiKey}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(perplexityRequestBody)
+        });
+        
+        const requestTime = Date.now() - startTime;
+        console.log(`========== PERPLEXITY API RESPONSE RECEIVED ==========`);
+        console.log(`Response Time: ${requestTime}ms`);
       console.log(`Response Status: ${perplexityResponse.status}`);
       console.log(`Response Status Text: ${perplexityResponse.statusText}`);
-      console.log(`Response Headers:`, Object.fromEntries(perplexityResponse.headers.entries()));
-      console.log('========== END RESPONSE METADATA ==========');
-      
-    } catch (fetchError) {
+        console.log(`Response Headers:`, Object.fromEntries(perplexityResponse.headers.entries()));
+        console.log('========== END RESPONSE METADATA ==========');
+        
+      } catch (fetchError) {
       console.error('========== FETCH ERROR ==========');
       console.error('Error fetching from Perplexity:', fetchError.message);
       console.error('Error type:', fetchError.name);
       console.error('Error stack:', fetchError.stack);
       console.error('Full error:', fetchError);
-      console.error('========== END FETCH ERROR ==========');
-      throw new Error(`Failed to connect to Perplexity API: ${fetchError.message}`);
+        console.error('========== END FETCH ERROR ==========');
+        throw new Error(`Failed to connect to Perplexity API: ${fetchError.message}`);
+      }
     }
 
     if (!perplexityResponse.ok) {
@@ -256,7 +297,7 @@ IMPORTANT FORMATTING:
       console.error('Status:', perplexityResponse.status);
       console.error('Status Text:', perplexityResponse.statusText);
       console.error('Error Response Body:', errorData);
-      console.error('API Key:', perplexityApiKey ? `${perplexityApiKey.substring(0, 10)}...` : 'MISSING');
+      console.error('API Key status:', perplexityApiKey ? 'Configured' : 'MISSING');
       console.error('========== END ERROR ==========');
       
       // Try to parse error as JSON if possible

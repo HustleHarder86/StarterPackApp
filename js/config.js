@@ -27,7 +27,14 @@ const features = {
   extensionIntegration: true
 };
 
+// Timeout configuration (in milliseconds)
+const TIMEOUTS = {
+  ANALYSIS_REQUEST: 300000, // 5 minutes
+  DEFAULT_REQUEST: 30000,   // 30 seconds
+  LONG_OPERATION: 600000    // 10 minutes
+};
+
 // Export for use in modules
 if (typeof module !== 'undefined' && module.exports) {
-  module.exports = { authHeaders, firebaseConfig, features };
+  module.exports = { authHeaders, firebaseConfig, features, TIMEOUTS };
 }

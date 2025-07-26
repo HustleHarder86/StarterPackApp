@@ -1,0 +1,149 @@
+{
+  "timestamp": "2025-07-26T12:31:44.371Z",
+  "tests": [
+    {
+      "viewport": {
+        "name": "iPhone-SE",
+        "width": 375,
+        "height": 667
+      },
+      "checks": {
+        "horizontalScroll": {
+          "hasHorizontalScroll": false,
+          "documentWidth": 375,
+          "viewportWidth": 375,
+          "bodyWidth": 375,
+          "overflowX": "hidden",
+          "htmlOverflowX": "hidden",
+          "overflowingElements": []
+        },
+        "touchTargets": {
+          "totalInteractive": 27,
+          "belowMinimum": 0,
+          "percentage": "100.0",
+          "topIssues": []
+        },
+        "formSpacing": {
+          "inputCount": 8,
+          "avgSpacing": "72.4",
+          "minSpacing": 40,
+          "maxSpacing": 104,
+          "avgInputHeight": "51.9",
+          "minInputHeight": 47,
+          "fontSizes": [
+            "16px"
+          ]
+        },
+        "containerOverflow": {
+          "totalContainers": 8,
+          "overflowing": 0,
+          "issues": []
+        },
+        "cssFixes": {
+          "htmlOverflowX": "hidden",
+          "bodyOverflowX": "hidden",
+          "htmlMaxWidth": "375px",
+          "bodyMaxWidth": "375px",
+          "mobileFixesLoaded": true,
+          "viewportMeta": "width=device-width, initial-scale=1.0"
+        }
+      }
+    },
+    {
+      "viewport": {
+        "name": "Pixel-5",
+        "width": 393,
+        "height": 851
+      },
+      "checks": {
+        "horizontalScroll": {
+          "hasHorizontalScroll": false,
+          "documentWidth": 393,
+          "viewportWidth": 393,
+          "bodyWidth": 393,
+          "overflowX": "hidden",
+          "htmlOverflowX": "hidden",
+          "overflowingElements": []
+        },
+        "touchTargets": {
+          "totalInteractive": 27,
+          "belowMinimum": 0,
+          "percentage": "100.0",
+          "topIssues": []
+        },
+        "formSpacing": {
+          "inputCount": 8,
+          "avgSpacing": "72.4",
+          "minSpacing": 40,
+          "maxSpacing": 104,
+          "avgInputHeight": "51.9",
+          "minInputHeight": 47,
+          "fontSizes": [
+            "16px"
+          ]
+        },
+        "containerOverflow": {
+          "totalContainers": 8,
+          "overflowing": 0,
+          "issues": []
+        },
+        "cssFixes": {
+          "htmlOverflowX": "hidden",
+          "bodyOverflowX": "hidden",
+          "htmlMaxWidth": "393px",
+          "bodyMaxWidth": "393px",
+          "mobileFixesLoaded": true,
+          "viewportMeta": "width=device-width, initial-scale=1.0"
+        }
+      }
+    },
+    {
+      "viewport": {
+        "name": "iPhone-14-Pro",
+        "width": 428,
+        "height": 926
+      },
+      "checks": {
+        "horizontalScroll": {
+          "hasHorizontalScroll": false,
+          "documentWidth": 428,
+          "viewportWidth": 428,
+          "bodyWidth": 428,
+          "overflowX": "hidden",
+          "htmlOverflowX": "hidden",
+          "overflowingElements": []
+        },
+        "touchTargets": {
+          "totalInteractive": 27,
+          "belowMinimum": 0,
+          "percentage": "100.0",
+          "topIssues": []
+        },
+        "formSpacing": {
+          "inputCount": 8,
+          "avgSpacing": "67.3",
+          "minSpacing": 40,
+          "maxSpacing": 104,
+          "avgInputHeight": "51.9",
+          "minInputHeight": 47,
+          "fontSizes": [
+            "16px"
+          ]
+        },
+        "containerOverflow": {
+          "totalContainers": 8,
+          "overflowing": 0,
+          "issues": []
+        },
+        "cssFixes": {
+          "htmlOverflowX": "hidden",
+          "bodyOverflowX": "hidden",
+          "htmlMaxWidth": "428px",
+          "bodyMaxWidth": "428px",
+          "mobileFixesLoaded": true,
+          "viewportMeta": "width=device-width, initial-scale=1.0"
+        }
+      }
+    }
+  ]
+}

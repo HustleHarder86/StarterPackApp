@@ -59,8 +59,7 @@ export function updateFinancialCalculations() {
   if (annualIncomeEl) annualIncomeEl.textContent = '$' + annualIncome.toLocaleString();
   if (cashReturnEl) cashReturnEl.textContent = cashReturn.toFixed(1) + '%';
 
-  // Property Management fee is now user-editable only
-  // No automatic recalculation based on revenue percentage
+  // Property Management fee is user-editable only
 
   // Update Platform fees based on revenue (3%)
   if (document.activeElement?.id !== 'platformFees') {

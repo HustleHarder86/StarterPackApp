@@ -1,0 +1,17 @@
+{
+  "authBypassed": false,
+  "formFilled": false,
+  "formSubmitted": false,
+  "resultsReceived": false,
+  "tabsTested": {
+    "str": false,
+    "ltr": false,
+    "investment": false
+  },
+  "interactiveElements": 0,
+  "mobileResponsive": false,
+  "issues": [
+    "Console Error: Failed to load resource: the server responded with a status of 404 ()",
+    "Authentication was not bypassed with e2e_test_mode=true parameter"
+  ]
+}

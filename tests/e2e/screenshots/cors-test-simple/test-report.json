@@ -1,0 +1,40 @@
+{
+  "timestamp": "2025-07-26T15:24:34.612Z",
+  "url": "https://starter-pack-1ud71kr9p-hustleharder86s-projects.vercel.app/roi-finder.html?e2e_test_mode=true",
+  "networkErrors": [
+    {
+      "url": "https://real-estate-app-production-ba5c.up.railway.app/api/analysis/property",
+      "failure": {
+        "errorText": "net::ERR_FAILED"
+      }
+    },
+    {
+      "url": "https://real-estate-app-production-ba5c.up.railway.app/api/analysis/property",
+      "failure": {
+        "errorText": "net::ERR_FAILED"
+      }
+    }
+  ],
+  "apiCalls": [
+    {
+      "url": "https://starter-pack-1ud71kr9p-hustleharder86s-projects.vercel.app/api/config",
+      "status": 200,
+      "statusText": ""
+    },
+    {
+      "url": "https://real-estate-app-production-ba5c.up.railway.app/api/analysis/property",
+      "status": 500,
+      "statusText": ""
+    },
+    {
+      "url": "https://real-estate-app-production-ba5c.up.railway.app/api/analysis/property",
+      "status": 500,
+      "statusText": ""
+    }
+  ],
+  "errorMessages": [],
+  "screenshots": [
+    "01-page-loaded.png",
+    "02-after-click.png"
+  ]
+}

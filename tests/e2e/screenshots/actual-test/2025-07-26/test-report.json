@@ -1,0 +1,57 @@
+{
+  "timestamp": "2025-07-26T11:43:36.070Z",
+  "tests": {
+    "pageLoad": {
+      "success": false,
+      "error": "page.waitForTimeout is not a function"
+    },
+    "authentication": {
+      "success": true,
+      "loginVisible": false
+    },
+    "propertyForm": {
+      "success": false,
+      "error": "page.waitForTimeout is not a function"
+    },
+    "formSubmission": {
+      "success": false,
+      "error": "page.waitForTimeout is not a function"
+    },
+    "responsiveness": {
+      "success": false,
+      "error": "page.waitForTimeout is not a function"
+    },
+    "security": {
+      "success": false,
+      "error": "Node is either not clickable or not an Element"
+    }
+  },
+  "errors": [
+    "Page load: page.waitForTimeout is not a function",
+    "Property form: page.waitForTimeout is not a function",
+    "Form submission: page.waitForTimeout is not a function",
+    "Responsiveness: page.waitForTimeout is not a function",
+    "Security: Node is either not clickable or not an Element"
+  ],
+  "warnings": [
+    "Console error: Failed to load resource: net::ERR_FILE_NOT_FOUND",
+    "Console error: Failed to load resource: net::ERR_FILE_NOT_FOUND",
+    "Console error: Failed to initialize Firebase: JSHandle@error",
+    "Console error: Firebase initialization failed: JSHandle@error",
+    "Console error: Failed to load resource: net::ERR_FILE_NOT_FOUND",
+    "Console error: Failed to load resource: net::ERR_FILE_NOT_FOUND",
+    "Console error: Failed to initialize Firebase: JSHandle@error",
+    "Console error: Firebase initialization failed: JSHandle@error",
+    "Console error: Failed to load resource: net::ERR_FILE_NOT_FOUND",
+    "Console error: Failed to load resource: net::ERR_FILE_NOT_FOUND",
+    "Console error: Failed to load resource: net::ERR_FILE_NOT_FOUND",
+    "Console error: Failed to initialize Firebase: JSHandle@error",
+    "Console error: Firebase initialization failed: JSHandle@error",
+    "Console error: Failed to load resource: net::ERR_FILE_NOT_FOUND",
+    "Console error: Failed to load resource: net::ERR_FILE_NOT_FOUND",
+    "Console error: Failed to load resource: net::ERR_FILE_NOT_FOUND",
+    "Console error: Failed to initialize Firebase: JSHandle@error",
+    "Console error: Firebase initialization failed: JSHandle@error",
+    "Console error: Failed to load resource: net::ERR_FILE_NOT_FOUND"
+  ]
+}

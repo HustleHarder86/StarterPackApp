@@ -1,0 +1,100 @@
+{
+  "timestamp": "2025-07-26T11:38:07.913Z",
+  "tests": {
+    "pageLoad": {
+      "desktop": {
+        "success": false,
+        "errors": [
+          "Page returned status 404",
+          "Critical element missing: #property-form",
+          "Critical element missing: #addressInput",
+          "Critical element missing: #analyzeButton",
+          "Critical element missing: .hero-section",
+          "JavaScript modules not loaded properly"
+        ],
+        "viewport": "desktop"
+      },
+      "mobile": {
+        "success": false,
+        "errors": [
+          "Page returned status 404",
+          "Critical element missing: #property-form",
+          "Critical element missing: #addressInput",
+          "Critical element missing: #analyzeButton",
+          "Critical element missing: .hero-section",
+          "JavaScript modules not loaded properly"
+        ],
+        "viewport": "mobile"
+      }
+    },
+    "formFunctionality": {
+      "success": false,
+      "errors": [
+        "Form functionality error: No element found for selector: #addressInput"
+      ]
+    },
+    "authentication": {
+      "success": false,
+      "errors": [
+        "Authentication flow error: No element found for selector: #addressInput"
+      ]
+    },
+    "apiIntegration": {
+      "success": false,
+      "errors": [
+        "API integration error: No element found for selector: #analyzeButton"
+      ]
+    },
+    "resultsDisplay": {
+      "success": false,
+      "errors": [
+        "Results display error: No element found for selector: #addressInput"
+      ]
+    },
+    "mobileResponsiveness": [
+      {
+        "device": "desktop",
+        "viewport": {
+          "width": 1920,
+          "height": 1080
+        },
+        "success": true,
+        "errors": []
+      },
+      {
+        "device": "tablet",
+        "viewport": {
+          "width": 768,
+          "height": 1024
+        },
+        "success": false,
+        "errors": [
+          "Horizontal overflow detected on tablet"
+        ]
+      },
+      {
+        "device": "mobile",
+        "viewport": {
+          "width": 375,
+          "height": 812
+        },
+        "success": false,
+        "errors": [
+          "Horizontal overflow detected on mobile"
+        ]
+      }
+    ],
+    "errorHandling": {
+      "success": false,
+      "errors": [
+        "Error handling test failed: No element found for selector: #addressInput"
+      ]
+    },
+    "security": {
+      "success": false,
+      "errors": [
+        "Security test error: No element found for selector: #addressInput"
+      ]
+    }
+  }
+}

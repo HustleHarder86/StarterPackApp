@@ -2,15 +2,11 @@
 // Public configuration endpoint for client-side access
 // This safely exposes only non-sensitive configuration values
 
-export default function handler(req, res) {
-  // Set CORS headers
-  res.setHeader('Access-Control-Allow-Credentials', true);
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS');
-  res.setHeader(
-    'Access-Control-Allow-Headers',
-    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
-  );
+const { applyCorsHeaders } = require('../utils/cors-config.js');
+
+module.exports = function handler(req, res) {
+  // Apply proper CORS headers
+  applyCorsHeaders(req, res);
 
   if (req.method === 'OPTIONS') {
     res.status(200).end();

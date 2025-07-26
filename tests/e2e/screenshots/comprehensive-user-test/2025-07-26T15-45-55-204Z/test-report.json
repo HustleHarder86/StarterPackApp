@@ -1,0 +1,23 @@
+{
+  "timestamp": "2025-07-26T15:45:56.014Z",
+  "url": "https://starter-pack-kvr6zbo9n-hustleharder86s-projects.vercel.app/roi-finder.html?e2e_test_mode=true",
+  "issues": {
+    "critical": [
+      "Property form not visible on page load",
+      "Form not visible or accessible on mobile"
+    ],
+    "high": [],
+    "medium": [],
+    "low": []
+  },
+  "workingWell": [
+    "All images load successfully",
+    "Mobile view has no horizontal scroll"
+  ],
+  "recommendations": [
+    "URGENT: Address critical issues blocking core functionality",
+    "Add loading states for better user feedback",
+    "Implement proper error messages for failed operations",
+    "Consider adding a demo mode for new users"
+  ]
+}

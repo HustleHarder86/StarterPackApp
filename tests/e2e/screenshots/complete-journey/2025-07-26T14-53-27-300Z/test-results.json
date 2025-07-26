@@ -1,0 +1,38 @@
+{
+  "timestamp": "2025-07-26T14-53-27-300Z",
+  "url": "https://starter-pack-cf80kci6b-hustleharder86s-projects.vercel.app/roi-finder.html",
+  "issues": [
+    {
+      "type": "Console Error",
+      "severity": "Medium",
+      "description": "Failed to load resource: the server responded with a status of 404 ()",
+      "timestamp": "2025-07-26T14:53:29.698Z"
+    },
+    {
+      "type": "Authentication Bypass",
+      "severity": "High",
+      "description": "e2e_test=true parameter does not bypass authentication as expected",
+      "timestamp": "2025-07-26T14:53:36.704Z"
+    },
+    {
+      "type": "Test Execution",
+      "severity": "Critical",
+      "description": "SyntaxError: Failed to execute 'querySelector' on 'Document': 'button:has-text(\"Sign In\"), button:has-text(\"Login\"), form:first-of-type button[type=\"submit\"]' is not a valid selector.",
+      "stack": "DOMException: SyntaxError: Failed to execute 'querySelector' on 'Document': 'button:has-text(\"Sign In\"), button:has-text(\"Login\"), form:first-of-type button[type=\"submit\"]' is not a valid selector.\n    at evaluateHandle (evaluateHandle at CSSQueryHandler.queryOne (/home/amy/StarterPackApp/node_modules/puppeteer-core/lib/cjs/puppeteer/common/QueryHandler.js:137:73), <anonymous>:1:15)\n    at #evaluate (/home/amy/StarterPackApp/node_modules/puppeteer-core/lib/cjs/puppeteer/cdp/ExecutionContext.js:391:56)\n    at async ExecutionContext.evaluateHandle (/home/amy/StarterPackApp/node_modules/puppeteer-core/lib/cjs/puppeteer/cdp/ExecutionContext.js:329:16)\n    at async IsolatedWorld.evaluateHandle (/home/amy/StarterPackApp/node_modules/puppeteer-core/lib/cjs/puppeteer/cdp/IsolatedWorld.js:89:16)\n    at async CdpJSHandle.evaluateHandle (/home/amy/StarterPackApp/node_modules/puppeteer-core/lib/cjs/puppeteer/api/JSHandle.js:157:20)\n    at async CdpElementHandle.evaluateHandle (/home/amy/StarterPackApp/node_modules/puppeteer-core/lib/cjs/puppeteer/api/ElementHandle.js:351:20)\n    at async CSSQueryHandler.queryOne (/home/amy/StarterPackApp/node_modules/puppeteer-core/lib/cjs/puppeteer/common/QueryHandler.js:137:59)\n    at async CdpElementHandle.$ (/home/amy/StarterPackApp/node_modules/puppeteer-core/lib/cjs/puppeteer/api/ElementHandle.js:406:21)\n    at async CdpElementHandle.<anonymous> (/home/amy/StarterPackApp/node_modules/puppeteer-core/lib/cjs/puppeteer/api/ElementHandle.js:132:24)\n    at async CdpFrame.$ (/home/amy/StarterPackApp/node_modules/puppeteer-core/lib/cjs/puppeteer/api/Frame.js:402:20)",
+      "timestamp": "2025-07-26T14:53:37.400Z"
+    }
+  ],
+  "functionalityStatus": {},
+  "uiUxAssessment": {
+    "loginPage": {
+      "visualDesign": 8,
+      "usability": 7,
+      "consistency": 8,
+      "notes": "Clean dual-form layout with clear CTAs. Good use of white space."
+    }
+  },
+  "screenshots": {
+    "initialLoad": "/home/amy/StarterPackApp/tests/e2e/screenshots/complete-journey/2025-07-26T14-53-27-300Z/01-initial-load.png"
+  },
+  "recommendations": []
+}

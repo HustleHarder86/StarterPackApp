@@ -1,0 +1,15 @@
+{
+  "timestamp": "2025-07-26T14-46-27-046Z",
+  "url": "https://starter-pack-cf80kci6b-hustleharder86s-projects.vercel.app/roi-finder.html?e2e_test=true",
+  "issues": [
+    {
+      "type": "Test Execution",
+      "severity": "Critical",
+      "description": "page.waitForTimeout is not a function",
+      "timestamp": "2025-07-26T14:46:30.641Z"
+    }
+  ],
+  "functionalityStatus": {},
+  "uiUxScores": {},
+  "screenshots": {}
+}

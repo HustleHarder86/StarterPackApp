@@ -1,0 +1,47 @@
+{
+  "timestamp": "2025-07-26T11:41:17.969Z",
+  "fileExists": true,
+  "pageLoaded": true,
+  "elementsFound": {
+    "form": false,
+    "addressInput": false,
+    "purchasePrice": false,
+    "propertyTax": false,
+    "analyzeButton": false,
+    "authModal": false
+  },
+  "formFunctionality": false,
+  "authModalWorks": false,
+  "errors": [
+    "Form functionality error: No element found for selector: #addressInput",
+    "Auth flow error: No element found for selector: #analyzeButton",
+    "XSS test error: No element found for selector: #addressInput",
+    "Auth bypass test error: No element found for selector: #addressInput"
+  ],
+  "consoleErrors": [
+    "Failed to load resource: net::ERR_FILE_NOT_FOUND",
+    "Failed to load resource: net::ERR_FILE_NOT_FOUND",
+    "Failed to initialize Firebase: JSHandle@error",
+    "Firebase initialization failed: JSHandle@error",
+    "Failed to fetch dynamically imported module: file:///js/modules/navigationProtection.js",
+    "Failed to load resource: net::ERR_FILE_NOT_FOUND",
+    "Failed to load resource: net::ERR_FILE_NOT_FOUND",
+    "Failed to load resource: net::ERR_FILE_NOT_FOUND",
+    "Failed to initialize Firebase: JSHandle@error",
+    "Firebase initialization failed: JSHandle@error",
+    "Failed to fetch dynamically imported module: file:///js/modules/navigationProtection.js",
+    "Failed to load resource: net::ERR_FILE_NOT_FOUND",
+    "Failed to load resource: net::ERR_FILE_NOT_FOUND",
+    "Failed to load resource: net::ERR_FILE_NOT_FOUND",
+    "Failed to initialize Firebase: JSHandle@error",
+    "Firebase initialization failed: JSHandle@error",
+    "Failed to fetch dynamically imported module: file:///js/modules/navigationProtection.js",
+    "Failed to load resource: net::ERR_FILE_NOT_FOUND",
+    "Failed to load resource: net::ERR_FILE_NOT_FOUND",
+    "Failed to load resource: net::ERR_FILE_NOT_FOUND",
+    "Failed to initialize Firebase: JSHandle@error",
+    "Firebase initialization failed: JSHandle@error",
+    "Failed to fetch dynamically imported module: file:///js/modules/navigationProtection.js",
+    "Failed to load resource: net::ERR_FILE_NOT_FOUND"
+  ]
+}

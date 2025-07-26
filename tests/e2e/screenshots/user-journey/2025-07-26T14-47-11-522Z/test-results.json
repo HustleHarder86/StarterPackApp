@@ -1,0 +1,18 @@
+{
+  "timestamp": "2025-07-26T14-47-11-522Z",
+  "url": "https://starter-pack-cf80kci6b-hustleharder86s-projects.vercel.app/roi-finder.html?e2e_test=true",
+  "issues": [
+    {
+      "type": "Test Execution",
+      "severity": "Critical",
+      "description": "SyntaxError: Failed to execute 'querySelector' on 'Document': 'button[type=\"submit\"], input[type=\"submit\"], button:has-text(\"Analyze\"), button:has-text(\"Submit\")' is not a valid selector.",
+      "timestamp": "2025-07-26T14:47:18.469Z"
+    }
+  ],
+  "functionalityStatus": {},
+  "uiUxScores": {},
+  "screenshots": {
+    "initialLoad": "/home/amy/StarterPackApp/tests/e2e/screenshots/user-journey/2025-07-26T14-47-11-522Z/01-initial-load-desktop.png",
+    "initialLoadMobile": "/home/amy/StarterPackApp/tests/e2e/screenshots/user-journey/2025-07-26T14-47-11-522Z/02-initial-load-mobile.png"
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "timestamp": "2025-07-26T12:33:25.154Z",
+  "formValidation": {
+    "requiredField": {
+      "hasError": false,
+      "hasRedBorder": false,
+      "errorIcon": false
+    },
+    "numberRange": {
+      "hasError": true,
+      "errorText": "\n            \n                \n            \n            Price must be between $10,000 and $100,000,000\n        ",
+      "value": "999999999999"
+    },
+    "successIndicator": {
+      "hasGreenBorder": true,
+      "hasCheckmark": true
+    }
+  },
+  "errorDisplay": {
+    "visible": true,
+    "hasIcon": true,
+    "iconText": "\n                        🌐\n                    ",
+    "hasTitle": true,
+    "titleText": "\n                        Connection Problem\n                    ",
+    "hasMessage": true,
+    "messageText": "\n                        Unable to connect to our servers. Please check your internet connection.\n                    ",
+    "hasTroubleshooting": true,
+    "troubleshootingSteps": 3,
+    "hasActionButtons": true,
+    "buttonCount": 2,
+    "hasSupport": true,
+    "supportEmail": "\n                                    support@starterpackapp.com\n                                 ↗",
+    "hasErrorId": true
+  },
+  "errorRecovery": {},
+  "summary": {
+    "passed": 3,
+    "failed": 2,
+    "total": 7
+  },
+  "authError": {
+    "visible": false,
+    "message": ""
+  }
+}

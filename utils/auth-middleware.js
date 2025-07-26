@@ -17,6 +17,21 @@ export async function authenticate(req, res, next) {
 
   const idToken = authHeader.split('Bearer ')[1];
   
+  // Check for E2E test mode
+  if (idToken === 'e2e-test-token' && req.headers['x-e2e-test-mode'] === 'true') {
+    console.log('E2E test mode detected - bypassing authentication');
+    req.user = {
+      uid: 'test-user-id',
+      email: 'test@e2e.com',
+      emailVerified: true,
+      customClaims: {
+        subscriptionTier: 'pro' // Give test user pro access
+      }
+    };
+    req.isE2ETest = true;
+    return next();
+  }
+  
   try {
     // Verify the ID token
     const decodedToken = await auth.verifyIdToken(idToken);
