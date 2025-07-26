@@ -36,7 +36,7 @@ test.describe('Comprehensive StarterPackApp E2E Tests', () => {
     await screenshot(page, '01-initial-load', 'form');
     
     // Verify form is pre-filled
-    const addressValue = await page.inputValue('input[placeholder*="123 Main Street"]');
+    const addressValue = await page.inputValue('#property-address');
     expect(addressValue).toBe('123 Test St, Toronto, Ontario M5V3A8');
     console.log('✅ Form pre-filled with test data');
     
