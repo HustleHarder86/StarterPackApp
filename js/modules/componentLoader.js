@@ -188,53 +188,100 @@ class ComponentLoader {
           </div>
 
           <div class="max-w-7xl mx-auto px-4 lg:px-6" style="overflow-x: hidden;">
-            <!-- Rental Analysis -->
+            <!-- Enhanced Rental Analysis Tabs -->
             <div class="mb-8">
-              <!-- Tab Navigation - Always show tabs for better UX -->
-              <div class="border-b border-gray-200 overflow-x-auto">
-                <nav class="-mb-px flex space-x-4 md:space-x-8 min-w-max" aria-label="Tabs">
-                  <button
-                    id="str-tab"
-                    onclick="window.switchTab('str')"
-                    class="tab-button ${showSTR ? 'active border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'} whitespace-nowrap py-3 md:py-4 px-2 md:px-3 border-b-2 font-medium text-xs md:text-sm"
-                  >
-                    <span class="hidden sm:inline">Short-Term Rental</span>
-                    <span class="sm:hidden">STR</span>
-                  </button>
-                  <button
-                    id="ltr-tab"
-                    onclick="window.switchTab('ltr')"
-                    class="tab-button ${showLTR && !showSTR ? 'active border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'} whitespace-nowrap py-3 md:py-4 px-2 md:px-3 border-b-2 font-medium text-xs md:text-sm"
-                  >
-                    <span class="hidden sm:inline">Long-Term Rental</span>
-                    <span class="sm:hidden">LTR</span>
-                  </button>
-                  <button
-                    id="investment-tab"
-                    onclick="window.switchTab('investment')"
-                    class="tab-button border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-3 md:py-4 px-2 md:px-3 border-b-2 font-medium text-xs md:text-sm"
-                  >
-                    <span class="hidden sm:inline">Investment Planning</span>
-                    <span class="sm:hidden">Planning</span>
-                  </button>
-                </nav>
-              </div>
-                
-              <!-- Tab Content -->
-              <div class="mt-6">
-                <!-- STR Content -->
-                <div id="str-content" class="tab-content">
-                  ${airbnbHtml}
+              <!-- Tab Navigation with Better Visibility -->
+              <div class="bg-white rounded-lg shadow-lg">
+                <div class="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 rounded-t-lg border-b border-gray-200">
+                  <h2 class="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                    <span class="text-2xl">📊</span>
+                    Rental Analysis Options
+                  </h2>
+                  
+                  <!-- Enhanced Tab Buttons -->
+                  <div class="flex flex-wrap gap-2">
+                    <!-- STR Tab -->
+                    <button
+                      id="str-tab"
+                      onclick="window.switchTab('str')"
+                      class="tab-button ${showSTR ? 'bg-white text-blue-700 shadow-md border-blue-300 transform scale-105' : 'bg-gray-50 text-gray-600 hover:bg-white hover:text-gray-800 hover:shadow-sm border-gray-200'} 
+                      flex items-center gap-2 px-4 py-3 rounded-lg border-2 font-medium transition-all duration-200 group"
+                    >
+                      <span class="text-xl group-hover:scale-110 transition-transform">
+                        ${showSTR ? '🏠' : '🏡'}
+                      </span>
+                      <div class="text-left">
+                        <div class="font-semibold">Short-Term Rental</div>
+                        <div class="text-xs ${showSTR ? 'text-blue-600' : 'text-gray-500'}">
+                          Airbnb & VRBO Analysis
+                        </div>
+                      </div>
+                      ${showSTR ? '<span class="ml-2 text-green-500">✓</span>' : ''}
+                    </button>
+                    
+                    <!-- LTR Tab -->
+                    <button
+                      id="ltr-tab"
+                      onclick="window.switchTab('ltr')"
+                      class="tab-button ${showLTR && !showSTR ? 'bg-white text-blue-700 shadow-md border-blue-300 transform scale-105' : 'bg-gray-50 text-gray-600 hover:bg-white hover:text-gray-800 hover:shadow-sm border-gray-200'} 
+                      flex items-center gap-2 px-4 py-3 rounded-lg border-2 font-medium transition-all duration-200 group"
+                    >
+                      <span class="text-xl group-hover:scale-110 transition-transform">
+                        ${showLTR && !showSTR ? '🏘️' : '🏢'}
+                      </span>
+                      <div class="text-left">
+                        <div class="font-semibold">Long-Term Rental</div>
+                        <div class="text-xs ${showLTR && !showSTR ? 'text-blue-600' : 'text-gray-500'}">
+                          Traditional Rental Income
+                        </div>
+                      </div>
+                      ${showLTR && !showSTR ? '<span class="ml-2 text-green-500">✓</span>' : ''}
+                    </button>
+                    
+                    <!-- Investment Tab -->
+                    <button
+                      id="investment-tab"
+                      onclick="window.switchTab('investment')"
+                      class="tab-button bg-gray-50 text-gray-600 hover:bg-white hover:text-gray-800 hover:shadow-sm border-gray-200 
+                      flex items-center gap-2 px-4 py-3 rounded-lg border-2 font-medium transition-all duration-200 group"
+                    >
+                      <span class="text-xl group-hover:scale-110 transition-transform">
+                        📊
+                      </span>
+                      <div class="text-left">
+                        <div class="font-semibold">Investment Planning</div>
+                        <div class="text-xs text-gray-500">
+                          ROI & Tax Calculator
+                        </div>
+                      </div>
+                    </button>
+                  </div>
+                  
+                  <!-- Helper Text -->
+                  <p class="text-sm text-gray-600 mt-3 flex items-center gap-1">
+                    <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    Click any tab above to explore different rental strategies and investment options
+                  </p>
                 </div>
                 
-                <!-- LTR Content -->
-                <div id="ltr-content" class="tab-content hidden">
-                  ${ltrHtml}
-                </div>
-                
-                <!-- Investment Planning Content - Always available -->
-                <div id="investment-content" class="tab-content hidden">
-                  ${investmentPlanningHtml}
+                <!-- Tab Content with Padding -->
+                <div class="p-6">
+                  <!-- STR Content -->
+                  <div id="str-content" class="tab-content">
+                    ${airbnbHtml}
+                  </div>
+                  
+                  <!-- LTR Content -->
+                  <div id="ltr-content" class="tab-content hidden">
+                    ${ltrHtml}
+                  </div>
+                  
+                  <!-- Investment Planning Content - Always available -->
+                  <div id="investment-content" class="tab-content hidden">
+                    ${investmentPlanningHtml}
+                  </div>
                 </div>
               </div>
             </div>
@@ -283,16 +330,58 @@ class ComponentLoader {
               console.log('Tab content:', content.id, 'Hidden:', content.classList.contains('hidden'));
             });
             
-            // Update tab buttons
+            // Update tab buttons for new design
             document.querySelectorAll('.tab-button').forEach(btn => {
-              btn.classList.remove('border-blue-500', 'text-blue-600', 'active');
-              btn.classList.add('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
+              // Remove active classes
+              btn.classList.remove('bg-white', 'text-blue-700', 'shadow-md', 'border-blue-300', 'transform', 'scale-105');
+              btn.classList.add('bg-gray-50', 'text-gray-600', 'border-gray-200');
+              
+              // Remove checkmark if exists
+              const checkmark = btn.querySelector('.text-green-500');
+              if (checkmark) checkmark.remove();
+              
+              // Update icon to inactive state
+              const icon = btn.querySelector('.text-xl');
+              if (icon) {
+                if (btn.id === 'str-tab') icon.textContent = '🏡';
+                else if (btn.id === 'ltr-tab') icon.textContent = '🏢';
+              }
+              
+              // Update subtitle color
+              const subtitle = btn.querySelector('.text-xs');
+              if (subtitle) {
+                subtitle.classList.remove('text-blue-600');
+                subtitle.classList.add('text-gray-500');
+              }
             });
             
             const activeTab = document.getElementById(tabName + '-tab');
             if (activeTab) {
-              activeTab.classList.remove('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
-              activeTab.classList.add('border-blue-500', 'text-blue-600', 'active');
+              // Add active classes
+              activeTab.classList.remove('bg-gray-50', 'text-gray-600', 'border-gray-200');
+              activeTab.classList.add('bg-white', 'text-blue-700', 'shadow-md', 'border-blue-300', 'transform', 'scale-105');
+              
+              // Add checkmark
+              const checkmark = document.createElement('span');
+              checkmark.className = 'ml-2 text-green-500';
+              checkmark.textContent = '✓';
+              activeTab.appendChild(checkmark);
+              
+              // Update icon to active state
+              const icon = activeTab.querySelector('.text-xl');
+              if (icon) {
+                if (tabName === 'str') icon.textContent = '🏠';
+                else if (tabName === 'ltr') icon.textContent = '🏘️';
+                else if (tabName === 'investment') icon.textContent = '📈';
+              }
+              
+              // Update subtitle color
+              const subtitle = activeTab.querySelector('.text-xs');
+              if (subtitle) {
+                subtitle.classList.remove('text-gray-500');
+                subtitle.classList.add('text-blue-600');
+              }
+              
               console.log('Activated tab button:', tabName + '-tab');
             } else {
               console.error('Tab button not found:', tabName + '-tab');
