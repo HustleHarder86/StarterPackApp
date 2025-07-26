@@ -1003,7 +1003,11 @@
                 try {
                     const analysisDoc = await db.collection('analyses').doc(analysisId).get();
                     if (analysisDoc.exists) {
-                        const analysisData = analysisDoc.data();
+                        let analysisData = analysisDoc.data();
+                        
+                        // Apply the same data mapping as in analyzeProperty
+                        analysisData = this.mapAnalysisData(analysisData);
+                        
                         window.appState.currentAnalysis = analysisData;
                         // Also set window.analysisData for compatibility with showAllComparables
                         window.analysisData = analysisData;
@@ -1029,6 +1033,8 @@
             
             showAppropriateView() {
                 if (window.appState.currentAnalysis) {
+                    // Ensure data mapping is applied
+                    window.appState.currentAnalysis = this.mapAnalysisData(window.appState.currentAnalysis);
                     this.renderAnalysisResults(window.appState.currentAnalysis);
                 } else {
                     this.showPropertyInput();
@@ -1206,39 +1212,10 @@
                     }
                     
                     const result = await response.json();
-                    const analysisData = result.data || result;
+                    let analysisData = result.data || result;
                     
-                    // Map API response fields to frontend expectations
-                    if (analysisData.short_term_rental) {
-                        analysisData.strAnalysis = analysisData.short_term_rental;
-                        
-                        // Ensure proper field mapping for comparables
-                        if (analysisData.strAnalysis.comparables) {
-                            analysisData.strAnalysis.comparables = analysisData.strAnalysis.comparables.map(comp => ({
-                                ...comp,
-                                nightly_rate: comp.nightlyRate || comp.nightly_rate || comp.price,
-                                occupancy_rate: comp.occupancyRate || comp.occupancy_rate || 0.70,
-                                monthly_revenue: comp.monthlyRevenue || comp.monthly_revenue || 0,
-                                area: comp.area || comp.neighborhood || 'Local Area'
-                            }));
-                        }
-                        
-                        // Map top-level STR fields
-                        if (analysisData.strAnalysis.daily_rate !== undefined) {
-                            analysisData.strAnalysis.avgNightlyRate = analysisData.strAnalysis.daily_rate;
-                        }
-                        if (analysisData.strAnalysis.occupancy_rate !== undefined) {
-                            analysisData.strAnalysis.occupancyRate = analysisData.strAnalysis.occupancy_rate * 100; // Convert to percentage
-                        }
-                        if (analysisData.strAnalysis.monthly_revenue !== undefined) {
-                            analysisData.strAnalysis.monthlyRevenue = analysisData.strAnalysis.monthly_revenue;
-                        }
-                    }
-                    
-                    // Map long-term rental data
-                    if (analysisData.long_term_rental) {
-                        analysisData.longTermRental = analysisData.long_term_rental;
-                    }
+                    // Apply data mapping
+                    analysisData = this.mapAnalysisData(analysisData);
                     
                     console.log('Transformed analysis data:', analysisData);
                     
@@ -1410,6 +1387,65 @@
                     validator.attachToForm('login-form');
                     validator.attachToForm('signup-form');
                 }
+            }
+            
+            mapAnalysisData(analysisData) {
+                // Map API response fields to frontend expectations
+                if (analysisData.short_term_rental) {
+                    analysisData.strAnalysis = analysisData.short_term_rental;
+                    
+                    // Ensure proper field mapping for comparables
+                    if (analysisData.strAnalysis.comparables) {
+                        analysisData.strAnalysis.comparables = analysisData.strAnalysis.comparables.map(comp => ({
+                            ...comp,
+                            nightly_rate: comp.nightlyRate || comp.nightly_rate || comp.price,
+                            occupancy_rate: comp.occupancyRate || comp.occupancy_rate || 0.70,
+                            monthly_revenue: comp.monthlyRevenue || comp.monthly_revenue || 0,
+                            area: comp.area || comp.neighborhood || 'Local Area'
+                        }));
+                    }
+                    
+                    // Map top-level STR fields
+                    if (analysisData.strAnalysis.daily_rate !== undefined) {
+                        analysisData.strAnalysis.avgNightlyRate = analysisData.strAnalysis.daily_rate;
+                        analysisData.strAnalysis.nightlyRate = analysisData.strAnalysis.daily_rate;
+                    }
+                    if (analysisData.strAnalysis.occupancy_rate !== undefined) {
+                        analysisData.strAnalysis.occupancyRate = analysisData.strAnalysis.occupancy_rate * 100; // Convert to percentage
+                    }
+                    if (analysisData.strAnalysis.annual_revenue !== undefined) {
+                        analysisData.strAnalysis.monthlyRevenue = Math.round(analysisData.strAnalysis.annual_revenue / 12);
+                    }
+                }
+                
+                // Map long-term rental data
+                if (analysisData.long_term_rental) {
+                    analysisData.longTermRental = analysisData.long_term_rental;
+                    
+                    // Map LTR fields
+                    if (analysisData.longTermRental.monthly_rent !== undefined) {
+                        analysisData.longTermRental.monthlyRent = analysisData.longTermRental.monthly_rent;
+                    }
+                    if (analysisData.longTermRental.annual_profit !== undefined) {
+                        analysisData.longTermRental.cashFlow = Math.round(analysisData.longTermRental.annual_profit / 12);
+                    }
+                    if (analysisData.longTermRental.annual_revenue !== undefined && analysisData.property_details?.estimated_value) {
+                        analysisData.longTermRental.roi = (analysisData.longTermRental.annual_profit / analysisData.property_details.estimated_value) * 100;
+                    }
+                }
+                
+                // Map property data if needed
+                if (analysisData.property_details && !analysisData.propertyData) {
+                    analysisData.propertyData = {
+                        ...analysisData.property_details,
+                        price: analysisData.property_details.estimated_value,
+                        address: analysisData.propertyAddress || analysisData.property_address,
+                        propertyTaxes: analysisData.costs?.property_tax_annual,
+                        condoFees: analysisData.costs?.hoa_monthly
+                    };
+                }
+                
+                return analysisData;
             }
             
             attachEventListeners() {
