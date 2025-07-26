@@ -361,11 +361,13 @@ class ComponentLoader {
               activeTab.classList.remove('bg-gray-50', 'text-gray-600', 'border-gray-200');
               activeTab.classList.add('bg-white', 'text-blue-700', 'shadow-md', 'border-blue-300', 'transform', 'scale-105');
               
-              // Add checkmark
-              const checkmark = document.createElement('span');
-              checkmark.className = 'ml-2 text-green-500';
-              checkmark.textContent = '✓';
-              activeTab.appendChild(checkmark);
+              // Add checkmark if not already present
+              if (!activeTab.querySelector('.text-green-500')) {
+                const checkmark = document.createElement('span');
+                checkmark.className = 'ml-2 text-green-500';
+                checkmark.textContent = '✓';
+                activeTab.appendChild(checkmark);
+              }
               
               // Update icon to active state
               const icon = activeTab.querySelector('.text-xl');
