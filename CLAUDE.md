@@ -50,6 +50,11 @@ git checkout -b claude/description-YYYYMMDD_HHMMSS
 - Use `VisualDebugger` for UI debugging
 - Run `node tests/e2e/screenshot-analyzer.js report` for analysis
 
+**📚 IMPORTANT: Test Debugging Guide**
+- See [TEST-AGENT-LEARNINGS.md](./tests/e2e/TEST-AGENT-LEARNINGS.md) for debugging patterns
+- Contains lessons from real debugging sessions
+- Includes data structure mismatch solutions, E2E test tips, and common pitfalls
+
 ## 🎯 CORE PRINCIPLE: Real Listing Data
 
 **ALWAYS use actual property data from listings:**
@@ -144,9 +149,10 @@ const ComponentName = ({ props }) => {
 ## TROUBLESHOOTING
 
 - **API Failures**: Check env vars and keys
-- **UI Issues**: Use self-debugging tests
+- **UI Issues**: Use self-debugging tests (see [TEST-AGENT-LEARNINGS.md](./tests/e2e/TEST-AGENT-LEARNINGS.md))
 - **Data Missing**: Fix extraction, don't estimate
 - **Performance**: Check API calls and images
+- **Tab/Content Issues**: Check data mapping - backend uses snake_case, frontend expects camelCase
 
 ---
 
