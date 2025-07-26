@@ -5,9 +5,9 @@
 // Allowed origins based on environment
 const getAllowedOrigins = () => {
   const origins = [
-    'https://investorprops.vercel.app',
-    'https://investorprops.com',
-    'https://www.investorprops.com'
+    'https://starterpackapp.vercel.app',
+    'https://starterpackapp.com',
+    'https://www.starterpackapp.com'
   ];
   
   // Add development origins
@@ -37,13 +37,17 @@ export function applyCorsHeaders(req, res) {
   // Check if origin is allowed
   if (allowedOrigins.includes(origin)) {
     res.setHeader('Access-Control-Allow-Origin', origin);
+  } else if (origin && origin.includes('vercel.app')) {
+    // Allow all Vercel preview deployments
+    console.log(`CORS: Allowing Vercel preview deployment: ${origin}`);
+    res.setHeader('Access-Control-Allow-Origin', origin);
   } else if (process.env.NODE_ENV !== 'production') {
     // In development, allow any origin but log it
     console.warn(`CORS: Allowing unregistered origin in development: ${origin}`);
     res.setHeader('Access-Control-Allow-Origin', origin || '*');
   } else {
     // In production, use the primary domain as fallback
-    res.setHeader('Access-Control-Allow-Origin', 'https://investorprops.vercel.app');
+    res.setHeader('Access-Control-Allow-Origin', 'https://starterpackapp.vercel.app');
   }
   
   // Set other CORS headers
@@ -115,6 +119,9 @@ export function getCorsConfig() {
       const allowedOrigins = getAllowedOrigins();
       
       if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else if (origin && origin.includes('vercel.app')) {
+        console.log(`CORS: Allowing Vercel preview deployment: ${origin}`);
         callback(null, true);
       } else if (process.env.NODE_ENV !== 'production') {
         console.warn(`CORS: Allowing unregistered origin in development: ${origin}`);
