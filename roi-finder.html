@@ -1185,12 +1185,15 @@
                         method: 'POST',
                         headers: headers,
                         body: JSON.stringify({
-                            propertyAddress: propertyData.address,
+                            propertyAddress: propertyData.address, // Required by API
                             propertyData: propertyData,
                             requestType: isTestMode ? 'e2e-test' : 'authenticated',
                             analysisType: analysisType,
                             includeStrAnalysis: analysisType === 'both' || analysisType === 'str',
-                            isE2ETest: isTestMode
+                            isE2ETest: isTestMode,
+                            userId: isTestMode ? 'test-user-id' : window.appState.currentUser?.uid,
+                            userEmail: isTestMode ? 'test@e2e.com' : window.appState.currentUser?.email,
+                            userName: isTestMode ? 'Test User' : window.appState.currentUser?.displayName
                         }),
                         signal: window.appState.currentAnalysisController.signal
                     });
