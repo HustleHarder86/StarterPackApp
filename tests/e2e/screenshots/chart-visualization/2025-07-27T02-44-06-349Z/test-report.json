@@ -1,0 +1,30 @@
+{
+  "timestamp": "2025-07-27T02:44:52.491Z",
+  "screenshotDir": "/home/amy/StarterPackApp/tests/e2e/screenshots/chart-visualization/2025-07-27T02-44-06-349Z",
+  "results": {
+    "desktop": {
+      "ltr": {
+        "rentalComparison": "Check screenshots for rendering",
+        "expenseBreakdown": "Check screenshots for rendering",
+        "cashFlowProjection": "Check screenshots for rendering",
+        "hoverStates": "Check hover screenshots"
+      },
+      "investment": {
+        "breakEvenAnalysis": "Check screenshots for rendering",
+        "equityBuildup": "Check screenshots for rendering",
+        "roiMatrix": "Check screenshots for rendering",
+        "hoverStates": "Check hover screenshots"
+      }
+    },
+    "mobile": {
+      "ltr": "Check mobile screenshots for responsive layout",
+      "investment": "Check mobile screenshots for responsive layout"
+    }
+  },
+  "notes": [
+    "Review all screenshots for proper chart rendering",
+    "Check hover states show tooltips correctly",
+    "Verify mobile layout is responsive",
+    "Ensure all data is displayed accurately"
+  ]
+}
