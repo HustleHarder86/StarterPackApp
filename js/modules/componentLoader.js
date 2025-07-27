@@ -131,18 +131,42 @@ class ComponentLoader {
         useMockData: false  // Ensure real data is used
       }) : '<div class="text-center text-gray-500 py-12"><p class="text-lg">Short-term rental analysis was not included in this report.</p><p class="mt-2">Re-run the analysis with STR option selected to see Airbnb comparables.</p></div>';
       
-      const ltrHtml = analysisData.longTermRental ? ltrModule.LongTermRentalAnalysis({ 
-        analysis: analysisData
-      }) : '<div class="text-center text-gray-500 py-12"><p class="text-lg">Long-term rental analysis was not included in this report.</p><p class="mt-2">Re-run the analysis with LTR option selected to see rental estimates.</p></div>';
+      // Import chart modules dynamically
+      let ltrChartsModule = null;
+      let investmentChartsModule = null;
+      
+      try {
+        ltrChartsModule = await import('./ltrCharts.js');
+        investmentChartsModule = await import('./investmentCharts.js');
+      } catch (error) {
+        console.log('Chart modules not loaded:', error);
+      }
+      
+      // Generate LTR content with enhanced charts
+      const ltrHtml = analysisData.longTermRental ? `
+        ${ltrModule.LongTermRentalAnalysis({ analysis: analysisData })}
+        <div class="space-y-6 mt-6">
+          ${ltrChartsModule ? ltrChartsModule.createRentalComparisonChart(analysisData) : ''}
+          ${ltrChartsModule ? ltrChartsModule.createExpenseBreakdownChart(analysisData.costs || {}) : ''}
+          ${ltrChartsModule ? ltrChartsModule.createCashFlowProjection(analysisData) : ''}
+        </div>
+      ` : '<div class="text-center text-gray-500 py-12"><p class="text-lg">Long-term rental analysis was not included in this report.</p><p class="mt-2">Re-run the analysis with LTR option selected to see rental estimates.</p></div>';
       
       // Use EnhancedFinancialSummary for proper data handling
       const financialHtml = financialModule.EnhancedFinancialSummary ? 
         financialModule.EnhancedFinancialSummary({ analysis: analysisData }) :
         financialModule.FinancialSummaryFromAnalysis({ analysis: analysisData });
       
-      // Generate Investment Planning components
+      // Generate Investment Planning components with enhanced charts
       const investmentPlanningHtml = `
         <div class="space-y-6">
+          <!-- Enhanced Investment Charts -->
+          ${investmentChartsModule ? `
+            ${investmentChartsModule.createBreakEvenChart(analysisData)}
+            ${investmentChartsModule.createEquityBuildupChart(analysisData)}
+            ${investmentChartsModule.createROIComparisonMatrix(analysisData)}
+          ` : ''}
+          
           <!-- Property Appreciation Chart - New! -->
           ${appreciationModule.PropertyAppreciationChart({
             propertyData: analysisData.propertyData || {},
