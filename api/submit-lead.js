@@ -1,3 +1,6 @@
+import { applyCorsHeaders } from '../../utils/cors-config.js';
+
+import { apiLimits } from '../utils/rate-limiter.js';
 // File: api/submit-lead.js
 // Enhanced version with detailed logging
 
@@ -6,10 +9,10 @@ export default async function handler(req, res) {
   console.log('Method:', req.method);
   console.log('Body:', req.body);
   
+  // Apply proper CORS headers
+  
+  applyCorsHeaders(req, res);
   // Set CORS headers
-  res.setHeader('Access-Control-Allow-Credentials', true);
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST,OPTIONS');
   res.setHeader(
     'Access-Control-Allow-Headers',
     'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
@@ -20,6 +23,14 @@ export default async function handler(req, res) {
     res.status(200).end();
     return;
   }
+
+  // Apply rate limiting
+  await new Promise((resolve, reject) => {
+    apiLimits.read(req, res, (err) => {
+      if (err) reject(err);
+      else resolve();
+    });
+  });
 
   if (req.method !== 'POST') {
     console.log('Invalid method:', req.method);

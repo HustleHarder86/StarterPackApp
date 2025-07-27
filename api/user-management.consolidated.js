@@ -10,6 +10,7 @@
 import admin from 'firebase-admin';
 import { applyCorsHeaders } from '../utils/cors-config.js';
 
+import { apiLimits } from '../utils/rate-limiter.js';
 // Initialize Firebase Admin (singleton pattern)
 let adminInitialized = false;
 
@@ -39,6 +40,14 @@ export default async function handler(req, res) {
     return;
   }
 
+
+  // Apply rate limiting
+  await new Promise((resolve, reject) => {
+    apiLimits.properties(req, res, (err) => {
+      if (err) reject(err);
+      else resolve();
+    });
+  });
   if (req.method !== 'POST' && req.method !== 'GET') {
     return res.status(405).json({ error: 'Method not allowed' });
   }

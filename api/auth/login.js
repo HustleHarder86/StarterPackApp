@@ -1,7 +1,9 @@
 import { initializeApp, cert } from 'firebase-admin/app';
 import { getAuth } from 'firebase-admin/auth';
 import { getFirestore } from 'firebase-admin/firestore';
+import { applyCorsHeaders } from '../../utils/cors-config.js';
 
+import { apiLimits } from '../utils/rate-limiter.js';
 // Initialize Firebase Admin if not already initialized
 let db;
 try {
@@ -19,20 +21,22 @@ try {
 }
 
 export default async function handler(req, res) {
-  // Set CORS headers
-  res.setHeader('Access-Control-Allow-Credentials', true);
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
-  res.setHeader(
-    'Access-Control-Allow-Headers',
-    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization'
-  );
+  // Apply proper CORS headers
+  applyCorsHeaders(req, res);
 
   // Handle OPTIONS request
   if (req.method === 'OPTIONS') {
     res.status(200).end();
     return;
   }
+
+  // Apply rate limiting
+  await new Promise((resolve, reject) => {
+    apiLimits.auth(req, res, (err) => {
+      if (err) reject(err);
+      else resolve();
+    });
+  });
 
   // Only allow POST
   if (req.method !== 'POST') {
@@ -61,7 +65,7 @@ export default async function handler(req, res) {
     console.error('Login error:', error);
     return res.status(500).json({ 
       error: 'Authentication failed',
-      details: error.message 
+      details: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
     });
   }
 }

@@ -1,3 +1,5 @@
+import { apiLimits } from '../utils/rate-limiter.js';
+
 // File: api/submit-contact.mjs (for Vercel)
 
 export default async function handler(req, res) {

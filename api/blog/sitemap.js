@@ -1,5 +1,6 @@
 import { getFirebaseAdmin } from '../../utils/firebase-admin.js';
 
+import { apiLimits } from '../utils/rate-limiter.js';
 export default async function handler(req, res) {
   // Only allow GET requests
   if (req.method !== 'GET') {

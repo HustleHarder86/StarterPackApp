@@ -1,9 +1,12 @@
+import { applyCorsHeaders } from '../../utils/cors-config.js';
+
+import { apiLimits } from '../utils/rate-limiter.js';
 // api/debug-firebase.js
 // Enhanced debug endpoint to test Firebase configuration
 
 export default async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  
+  // Apply proper CORS headers
+  applyCorsHeaders(req, res);
   const response = {
     timestamp: new Date().toISOString(),
     method: req.method,

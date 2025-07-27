@@ -1,10 +1,12 @@
+import { applyCorsHeaders } from '../../utils/cors-config.js';
+
+import { apiLimits } from '../utils/rate-limiter.js';
 // Simplified property ingest endpoint for browser extension
 // This version works without Firebase Admin SDK verification
 export default async function handler(req, res) {
+  // Apply proper CORS headers
+  applyCorsHeaders(req, res);
   // Set CORS headers
-  res.setHeader('Access-Control-Allow-Credentials', true);
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST,OPTIONS');
   res.setHeader(
     'Access-Control-Allow-Headers',
     'Authorization, Content-Type'
@@ -14,6 +16,14 @@ export default async function handler(req, res) {
     res.status(200).end();
     return;
   }
+
+  // Apply rate limiting
+  await new Promise((resolve, reject) => {
+    apiLimits.properties(req, res, (err) => {
+      if (err) reject(err);
+      else resolve();
+    });
+  });
 
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });

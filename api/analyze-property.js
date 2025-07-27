@@ -2,6 +2,7 @@
 // Proxy to Railway API for heavy property analysis processing
 
 const { applyCorsHeaders } = require('../utils/cors-config.js');
+const crypto = require('crypto');
 
 module.exports = async function handler(req, res) {
   // Apply proper CORS headers
@@ -25,17 +26,17 @@ module.exports = async function handler(req, res) {
     
     console.log('[Vercel Proxy] Railway endpoint:', endpoint);
     
-    // Forward the request to Railway
+    // Forward the request to Railway with internal auth
     const response = await fetch(endpoint, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         // Forward auth headers
         'Authorization': req.headers.authorization || '',
-        // Add internal API key if configured
-        ...(process.env.RAILWAY_API_KEY && {
-          'X-API-Key': process.env.RAILWAY_API_KEY
-        })
+        // Add internal API key for service authentication
+        'X-Internal-API-Key': process.env.INTERNAL_API_KEY || '',
+        'X-Service': 'vercel',
+        'X-Request-ID': req.headers['x-request-id'] || crypto.randomUUID()
       },
       body: JSON.stringify(req.body)
     });

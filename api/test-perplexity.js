@@ -1,3 +1,5 @@
+import { apiLimits } from '../utils/rate-limiter.js';
+
 export default async function handler(req, res) {
   const perplexityApiKey = process.env.PERPLEXITY_API_KEY;
 

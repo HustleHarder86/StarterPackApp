@@ -1,9 +1,12 @@
+import { applyCorsHeaders } from '../../utils/cors-config.js';
+
+import { apiLimits } from '../utils/rate-limiter.js';
 // File: api/debug.js
 // Simple debug endpoint to test what's deployed
 
 export default async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  
+  // Apply proper CORS headers
+  applyCorsHeaders(req, res);
   const response = {
     timestamp: new Date().toISOString(),
     method: req.method,

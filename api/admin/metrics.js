@@ -8,6 +8,7 @@ import { queryLogs } from '../../utils/logger.js';
 import { withCors } from '../../utils/cors-config.js';
 import { getFirestore } from 'firebase-admin/firestore';
 
+import { apiLimits } from '../utils/rate-limiter.js';
 const db = getFirestore();
 
 export default async function handler(req, res) {
@@ -18,6 +19,14 @@ export default async function handler(req, res) {
     return res.status(200).end();
   }
   
+  // Apply rate limiting
+  await new Promise((resolve, reject) => {
+    apiLimits.read(req, res, (err) => {
+      if (err) reject(err);
+      else resolve();
+    });
+  });
+
   if (req.method !== 'GET') {
     return res.status(405).json({ error: 'Method not allowed' });
   }

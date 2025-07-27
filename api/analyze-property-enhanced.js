@@ -46,10 +46,10 @@ import { getAuth } from 'firebase-admin/auth';
 import { cacheable, cacheKeys, setInCache, getFromCache } from '../utils/cache-manager.js';
 import { loggers } from '../utils/logger.js';
 import { validateAddress, ValidationError } from '../utils/validators.js';
-import { withCors } from '../utils/cors-config.js';
+import { applyCorsHeaders } from '../utils/cors-config.js';
 import { errorHandler } from '../utils/error-handler.js';
 import { monitorAPICall, Timer } from '../utils/performance-monitor.js';
-
+import { apiLimits } from '../utils/rate-limiter.js';
 // Initialize Firebase Admin if not already initialized
 let db;
 try {
@@ -72,19 +72,22 @@ export default async function handler(req, res) {
     path: req.url
   });
   const logger = loggers.api.child('analyze-property');
-  // Set CORS headers
-  res.setHeader('Access-Control-Allow-Credentials', true);
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST,OPTIONS');
-  res.setHeader(
-    'Access-Control-Allow-Headers',
-    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization'
-  );
+  
+  // Apply proper CORS headers
+  applyCorsHeaders(req, res);
 
   if (req.method === 'OPTIONS') {
     res.status(200).end();
     return;
   }
+
+  // Apply rate limiting
+  await new Promise((resolve, reject) => {
+    apiLimits.analysis(req, res, (err) => {
+      if (err) reject(err);
+      else resolve();
+    });
+  });
 
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });

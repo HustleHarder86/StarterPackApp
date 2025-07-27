@@ -1,3 +1,5 @@
+import { apiLimits } from '../utils/rate-limiter.js';
+
 // api/stripe-webhook.js
 // Stripe webhook handler for subscription events (works without Stripe keys)
 
