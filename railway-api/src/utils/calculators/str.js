@@ -100,9 +100,11 @@ function calculateDetailedSTRExpenses(annualRevenue, property) {
   // Property-specific costs
   const propertySpecific = {
     propertyTax: property.propertyTaxes || (property.price * 0.01), // 1% if not provided
-    hoaFees: (property.condoFees || property.hoaFees || 0) * 12,
-    mortgage: 0 // To be calculated separately if financing
+    hoaFees: (property.condoFees || property.hoaFees || 0) * 12
   };
+  
+  // Note: Mortgage is intentionally not included here as it's a financing cost, not an operating expense
+  // It will be added at the display layer to show true cash flow
   
   // Calculate totals
   const totalRevenueBased = Object.values(revenueBased).reduce((sum, cost) => sum + cost, 0);

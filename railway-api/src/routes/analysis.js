@@ -372,10 +372,14 @@ router.post('/property', optionalAuth, async (req, res, next) => {
                 monthlyRevenue: Math.round((comp.price || comp.nightly_price) * 30.4 * (comp.occupancy_rate || 0.70))
               }));
               
-              // Add STR data to result
+              // Add STR data to result with mortgage info from main financial calculations
               result.strAnalysis = {
                 ...strAnalysis,
-                comparables: formattedComparables
+                comparables: formattedComparables,
+                // Include mortgage information for cash flow calculation
+                mortgagePayment: result.monthlyExpenses?.mortgage || 0,
+                totalMonthlyExpenses: (strAnalysis.expenses?.monthly?.total || 0) + (result.monthlyExpenses?.mortgage || 0),
+                netCashFlow: strAnalysis.monthlyRevenue - ((strAnalysis.expenses?.monthly?.total || 0) + (result.monthlyExpenses?.mortgage || 0))
               };
               
               result.regulations = {

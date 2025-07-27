@@ -168,9 +168,9 @@ export const AirbnbListingsMockup = ({
             <div class="text-xs text-gray-600">Average occupancy</div>
           </div>
           <div>
-            <div class="text-sm font-medium text-gray-500 mb-1">Projected Advantage</div>
-            <div class="text-2xl font-bold ${stats.advantage === 'N/A' ? 'text-gray-400' : 'text-green-600'}">${stats.advantage || 'N/A'}</div>
-            <div class="text-xs text-gray-600">over long-term rental</div>
+            <div class="text-sm font-medium text-gray-500 mb-1">Net Advantage</div>
+            <div class="text-2xl font-bold ${stats.netAdvantage === 'N/A' ? 'text-gray-400' : stats.netAdvantage.startsWith('+') ? 'text-green-600' : 'text-red-600'}">${stats.netAdvantage || 'N/A'}</div>
+            <div class="text-xs text-gray-600">vs long-term rental</div>
           </div>
           <div>
             <div class="text-2xl font-bold ${stats.avgRating === 'N/A' ? 'text-gray-400' : 'text-gray-900'}">${stats.avgRating || 'N/A'}</div>
@@ -186,19 +186,84 @@ export const AirbnbHeroSectionMockup = ({ analysis }) => {
   const comparables = analysis?.strAnalysis?.comparables || analysis?.short_term_rental?.comparables || [];
   const strData = analysis?.strAnalysis || analysis?.short_term_rental || {};
   const ltrData = analysis?.longTermRental || analysis?.long_term_rental || {};
+  const cashFlow = analysis?.cashFlow || {};
+  const monthlyExpenses = analysis?.monthlyExpenses || {};
+  
+  // Extract financial data
+  const monthlyRevenue = strData.monthly_revenue || strData.monthlyRevenue || 0;
+  const operatingExpenses = strData.expenses?.monthly?.total || strData.net_monthly_income ? (monthlyRevenue - (strData.net_monthly_income || 0)) : 0;
+  const mortgagePayment = strData.mortgagePayment || monthlyExpenses.mortgage || 0;
+  const totalExpenses = operatingExpenses + mortgagePayment;
+  const netCashFlow = strData.netCashFlow || (monthlyRevenue - totalExpenses);
+  
+  // Get LTR cash flow for comparison
+  const ltrCashFlow = cashFlow.monthly || 0;
   
   // Calculate stats from actual data or show N/A
   const stats = {
     avgRate: strData.avg_nightly_rate ? `$${strData.avg_nightly_rate}` : strData.avgNightlyRate ? `$${strData.avgNightlyRate}` : 'N/A',
     avgOccupancy: strData.occupancy_rate ? `${Math.round(strData.occupancy_rate * 100)}%` : strData.avgOccupancy ? `${strData.avgOccupancy}%` : 'N/A',
-    advantage: (strData.monthly_revenue || strData.monthlyRevenue) && (ltrData.monthly_rent || ltrData.monthlyRent)
-      ? `+$${((strData.monthly_revenue || strData.monthlyRevenue) - (ltrData.monthly_rent || ltrData.monthlyRent)).toLocaleString()}/mo`
+    netAdvantage: netCashFlow !== undefined && ltrCashFlow !== undefined 
+      ? `${netCashFlow - ltrCashFlow >= 0 ? '+' : ''}$${Math.abs(netCashFlow - ltrCashFlow).toLocaleString()}/mo`
       : 'N/A',
     avgRating: strData.avgRating || (comparables.length > 0 && comparables[0].rating ? `${comparables[0].rating}★` : 'N/A')
   };
 
   return `
     <div class="max-w-7xl mx-auto px-4 lg:px-6 mt-6" style="overflow-x: hidden;">
+      <!-- Cash Flow Breakdown Alert -->
+      ${monthlyRevenue > 0 ? (netCashFlow < 0 ? `
+      <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+        <h4 class="text-lg font-semibold text-red-900 mb-3 flex items-center">
+          <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+          </svg>
+          Negative STR Cash Flow
+        </h4>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+          <div>
+            <p class="text-red-700 font-medium">Monthly Revenue</p>
+            <p class="text-2xl font-bold text-gray-900">+$${monthlyRevenue.toLocaleString()}</p>
+          </div>
+          <div>
+            <p class="text-red-700 font-medium">Total Expenses</p>
+            <p class="text-2xl font-bold text-gray-900">-$${totalExpenses.toLocaleString()}</p>
+            <p class="text-xs text-gray-600 mt-1">Including $${mortgagePayment.toLocaleString()} mortgage</p>
+          </div>
+          <div>
+            <p class="text-red-700 font-medium">Net Cash Flow</p>
+            <p class="text-2xl font-bold text-red-600">-$${Math.abs(netCashFlow).toLocaleString()}</p>
+            <p class="text-xs text-gray-600 mt-1">Monthly shortfall</p>
+          </div>
+        </div>
+      </div>
+      ` : `
+      <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+        <h4 class="text-lg font-semibold text-green-900 mb-3 flex items-center">
+          <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+          </svg>
+          Positive STR Cash Flow
+        </h4>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+          <div>
+            <p class="text-green-700 font-medium">Monthly Revenue</p>
+            <p class="text-2xl font-bold text-gray-900">+$${monthlyRevenue.toLocaleString()}</p>
+          </div>
+          <div>
+            <p class="text-green-700 font-medium">Total Expenses</p>
+            <p class="text-2xl font-bold text-gray-900">-$${totalExpenses.toLocaleString()}</p>
+            <p class="text-xs text-gray-600 mt-1">Including $${mortgagePayment.toLocaleString()} mortgage</p>
+          </div>
+          <div>
+            <p class="text-green-700 font-medium">Net Cash Flow</p>
+            <p class="text-2xl font-bold text-green-600">+$${netCashFlow.toLocaleString()}</p>
+            <p class="text-xs text-gray-600 mt-1">Monthly profit</p>
+          </div>
+        </div>
+      </div>
+      `) : ''}
+      
       <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 lg:p-6">
         ${AirbnbListingsMockup({ comparables, stats })}
       </div>
