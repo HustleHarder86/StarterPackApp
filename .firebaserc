@@ -1,5 +1,9 @@
 {
   "projects": {
-    "default": "your-firebase-project-id"
-  }
+    "default": "real-estate-roi-app",
+    "Staging": "real-estate-roi-app"
+  },
+  "targets": {},
+  "etags": {},
+  "dataconnectEmulatorConfig": {}
 }

@@ -202,14 +202,16 @@ export function createCashFlowProjection(analysisData) {
   
   // Project 12 months
   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  let cumulativeTotal = 0;
+  
   const projections = months.map((month, index) => {
     // Factor in vacancy (assume 5% vacancy rate)
     const vacancyFactor = Math.random() > 0.05 ? 1 : 0;
     const revenue = monthlyRent * vacancyFactor;
     const netCashFlow = revenue - monthlyExpenses;
-    const cumulative = (index === 0 ? 0 : projections[index - 1]?.cumulative || 0) + netCashFlow;
+    cumulativeTotal += netCashFlow;
     
-    return { month, revenue, expenses: monthlyExpenses, netCashFlow, cumulative };
+    return { month, revenue, expenses: monthlyExpenses, netCashFlow, cumulative: cumulativeTotal };
   });
   
   const maxValue = Math.max(...projections.map(p => Math.max(p.revenue, Math.abs(p.cumulative))));
