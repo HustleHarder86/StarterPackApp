@@ -1,0 +1,16 @@
+{
+  "timestamp": "2025-07-27T20:43:25.240Z",
+  "url": "http://localhost:8080/roi-finder.html",
+  "errors": {
+    "console": [
+      "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "Failed to initialize Firebase: JSHandle@error",
+      "Firebase initialization failed: JSHandle@error",
+      "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "An invalid form control with name='' is not focusable.",
+      "An invalid form control with name='' is not focusable."
+    ],
+    "temporalDeadZone": []
+  },
+  "bugFixed": true
+}

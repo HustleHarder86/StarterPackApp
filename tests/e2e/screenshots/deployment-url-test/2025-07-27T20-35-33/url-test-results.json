@@ -1,0 +1,67 @@
+[
+  {
+    "url": "https://investorprops.vercel.app",
+    "status": 404,
+    "finalUrl": "https://investorprops.vercel.app/",
+    "pageTitle": "404: NOT_FOUND",
+    "hasForm": false,
+    "bodyPreview": "404: NOT_FOUND\nCode: DEPLOYMENT_NOT_FOUND\nID: cle1::vwd87-1753648534942-65feb125edd6\n\nThis deploymen",
+    "success": false
+  },
+  {
+    "url": "https://investorprops.vercel.app/",
+    "status": 404,
+    "finalUrl": "https://investorprops.vercel.app/",
+    "pageTitle": "404: NOT_FOUND",
+    "hasForm": false,
+    "bodyPreview": "404: NOT_FOUND\nCode: DEPLOYMENT_NOT_FOUND\nID: cle1::vwd87-1753648537122-ffd252fbc6b7\n\nThis deploymen",
+    "success": false
+  },
+  {
+    "url": "https://investorprops.vercel.app/index.html",
+    "status": 404,
+    "finalUrl": "https://investorprops.vercel.app/index.html",
+    "pageTitle": "404: NOT_FOUND",
+    "hasForm": false,
+    "bodyPreview": "404: NOT_FOUND\nCode: DEPLOYMENT_NOT_FOUND\nID: cle1::dmndm-1753648539279-075b003c3dc0\n\nThis deploymen",
+    "success": false
+  },
+  {
+    "url": "https://investorprops.vercel.app/roi-finder.html",
+    "status": 404,
+    "finalUrl": "https://investorprops.vercel.app/roi-finder.html",
+    "pageTitle": "404: NOT_FOUND",
+    "hasForm": false,
+    "bodyPreview": "404: NOT_FOUND\nCode: DEPLOYMENT_NOT_FOUND\nID: cle1::gr7gl-1753648541433-7e09c7de9d6a\n\nThis deploymen",
+    "success": false
+  },
+  {
+    "url": "https://investorprops.vercel.app/roi-finder",
+    "status": 404,
+    "finalUrl": "https://investorprops.vercel.app/roi-finder",
+    "pageTitle": "404: NOT_FOUND",
+    "hasForm": false,
+    "bodyPreview": "404: NOT_FOUND\nCode: DEPLOYMENT_NOT_FOUND\nID: cle1::nf9jk-1753648543670-41b9afc9402e\n\nThis deploymen",
+    "success": false
+  },
+  {
+    "url": "https://investorprops.com",
+    "error": "Navigation timeout of 15000 ms exceeded",
+    "success": false
+  },
+  {
+    "url": "https://www.investorprops.com",
+    "error": "net::ERR_NAME_NOT_RESOLVED at https://www.investorprops.com",
+    "success": false
+  },
+  {
+    "url": "https://starterpackapp.vercel.app",
+    "error": "net::ERR_NAME_NOT_RESOLVED at https://starterpackapp.vercel.app",
+    "success": false
+  },
+  {
+    "url": "https://starterpackapp.vercel.app/roi-finder.html",
+    "error": "net::ERR_NAME_NOT_RESOLVED at https://starterpackapp.vercel.app/roi-finder.html",
+    "success": false
+  }
+]

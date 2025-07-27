@@ -1,0 +1,64 @@
+{
+  "timestamp": "2025-07-27T20:21:10.804Z",
+  "url": "https://starter-pack-app.vercel.app/roi-finder.html",
+  "testData": {
+    "address": "123 Test Street, Toronto, ON M5V 3A8",
+    "price": "750000",
+    "bedrooms": "2",
+    "bathrooms": "2",
+    "squareFeet": "1200",
+    "propertyTaxes": "6000",
+    "condoFees": "500"
+  },
+  "results": {
+    "pageLoad": true,
+    "authentication": true,
+    "formVisible": true,
+    "formFill": true,
+    "formSubmit": true,
+    "analysisComplete": true,
+    "tabs": {
+      "overview": {
+        "loaded": false,
+        "hasContent": false,
+        "errors": [
+          "Tab button not found"
+        ]
+      },
+      "longTermRental": {
+        "loaded": false,
+        "hasContent": false,
+        "hasCharts": false,
+        "errors": [
+          "Tab button not found"
+        ]
+      },
+      "investmentAnalysis": {
+        "loaded": false,
+        "hasContent": false,
+        "hasCharts": false,
+        "errors": [
+          "Tab button not found"
+        ]
+      },
+      "shortTermRental": {
+        "loaded": false,
+        "hasContent": false,
+        "errors": [
+          "Tab button not found"
+        ]
+      },
+      "financialCalculator": {
+        "loaded": false,
+        "hasContent": false,
+        "errors": [
+          "Tab button not found"
+        ]
+      }
+    }
+  },
+  "errors": [
+    "Failed to load resource: the server responded with a status of 404 ()"
+  ],
+  "screenshots": []
+}

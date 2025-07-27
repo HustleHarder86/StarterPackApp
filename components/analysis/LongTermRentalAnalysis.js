@@ -31,6 +31,18 @@ export const LongTermRentalAnalysis = ({
   const demandLevel = marketInsights.demand_level || marketInsights.demandLevel || 'High';
   const typicalTenant = marketInsights.typical_tenant || marketInsights.typicalTenant || 'Young families and professionals';
   
+  // Extract cash flow and financial metrics
+  const cashFlow = analysis.cashFlow || {};
+  const monthlyExpenses = analysis.monthlyExpenses || {};
+  const metrics = analysis.metrics || {};
+  
+  // Cash flow values
+  const monthlyCashFlow = cashFlow.monthly || 0;
+  const annualCashFlow = cashFlow.annual || 0;
+  const totalMonthlyExpenses = monthlyExpenses.total || 0;
+  const mortgagePayment = monthlyExpenses.mortgage || 0;
+  const operatingExpenses = totalMonthlyExpenses - mortgagePayment;
+  
   // Extract city name and province for display
   const cityName = address.split(',')[1]?.trim() || 'this area';
   const province = address.split(',')[2]?.trim() || 'Ontario';
@@ -185,19 +197,88 @@ export const LongTermRentalAnalysis = ({
         </div>
       </div>
 
+      <!-- Cash Flow Breakdown Alert -->
+      ${monthlyCashFlow < 0 ? `
+      <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+        <h4 class="text-lg font-semibold text-red-900 mb-3 flex items-center">
+          <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+          </svg>
+          Negative Cash Flow Property
+        </h4>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+          <div>
+            <p class="text-red-700 font-medium">Monthly Rent</p>
+            <p class="text-2xl font-bold text-gray-900">+$${monthlyRent.toLocaleString()}</p>
+          </div>
+          <div>
+            <p class="text-red-700 font-medium">Total Expenses</p>
+            <p class="text-2xl font-bold text-gray-900">-$${totalMonthlyExpenses.toLocaleString()}</p>
+            <p class="text-xs text-gray-600 mt-1">Including $${mortgagePayment.toLocaleString()} mortgage</p>
+          </div>
+          <div>
+            <p class="text-red-700 font-medium">Net Cash Flow</p>
+            <p class="text-2xl font-bold text-red-600">-$${Math.abs(monthlyCashFlow).toLocaleString()}</p>
+            <p class="text-xs text-gray-600 mt-1">Monthly shortfall</p>
+          </div>
+        </div>
+      </div>
+      ` : `
+      <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+        <h4 class="text-lg font-semibold text-green-900 mb-3 flex items-center">
+          <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+          </svg>
+          Positive Cash Flow Property
+        </h4>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+          <div>
+            <p class="text-green-700 font-medium">Monthly Rent</p>
+            <p class="text-2xl font-bold text-gray-900">+$${monthlyRent.toLocaleString()}</p>
+          </div>
+          <div>
+            <p class="text-green-700 font-medium">Total Expenses</p>
+            <p class="text-2xl font-bold text-gray-900">-$${totalMonthlyExpenses.toLocaleString()}</p>
+            <p class="text-xs text-gray-600 mt-1">Including $${mortgagePayment.toLocaleString()} mortgage</p>
+          </div>
+          <div>
+            <p class="text-green-700 font-medium">Net Cash Flow</p>
+            <p class="text-2xl font-bold text-green-600">+$${monthlyCashFlow.toLocaleString()}</p>
+            <p class="text-xs text-gray-600 mt-1">Monthly profit</p>
+          </div>
+        </div>
+      </div>
+      `}
+
       <!-- Market Analysis Cards -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         ${Card({
           children: `
-            <h4 class="font-semibold text-gray-800 mb-4">Rental Income Projections</h4>
+            <h4 class="font-semibold text-gray-800 mb-4">Income & Cash Flow Analysis</h4>
             <div class="space-y-3">
               <div class="flex justify-between items-center pb-2 border-b">
                 <span class="text-sm text-gray-600">Monthly Gross Rent</span>
                 <span class="font-semibold">$${monthlyRent.toLocaleString()}</span>
               </div>
               <div class="flex justify-between items-center pb-2 border-b">
-                <span class="text-sm text-gray-600">Annual Gross Income</span>
-                <span class="font-semibold">$${annualRent.toLocaleString()}</span>
+                <span class="text-sm text-gray-600">Operating Expenses</span>
+                <span class="font-semibold text-gray-600">-$${operatingExpenses.toLocaleString()}</span>
+              </div>
+              <div class="flex justify-between items-center pb-2 border-b">
+                <span class="text-sm text-gray-600">Operating Income</span>
+                <span class="font-semibold ${(monthlyRent - operatingExpenses) >= 0 ? 'text-green-600' : 'text-red-600'}">
+                  $${(monthlyRent - operatingExpenses).toLocaleString()}
+                </span>
+              </div>
+              <div class="flex justify-between items-center pb-2 border-b">
+                <span class="text-sm text-gray-600">Mortgage Payment</span>
+                <span class="font-semibold text-gray-600">-$${mortgagePayment.toLocaleString()}</span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-sm font-semibold text-gray-800">Net Cash Flow</span>
+                <span class="font-bold text-lg ${monthlyCashFlow >= 0 ? 'text-green-600' : 'text-red-600'}">
+                  ${monthlyCashFlow >= 0 ? '+' : ''}$${monthlyCashFlow.toLocaleString()}
+                </span>
               </div>
               <div class="flex justify-between items-center pb-2 border-b">
                 <span class="text-sm text-gray-600">Annual Increase Limit</span>

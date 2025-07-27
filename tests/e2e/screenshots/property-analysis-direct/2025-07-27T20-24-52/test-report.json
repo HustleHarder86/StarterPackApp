@@ -1,0 +1,51 @@
+{
+  "timestamp": "2025-07-27T20:24:52.936Z",
+  "url": "https://starter-pack-app.vercel.app/analyze-property.html",
+  "testData": {
+    "address": "123 Test Street, Toronto, ON M5V 3A8",
+    "price": "750000",
+    "bedrooms": "2",
+    "bathrooms": "2",
+    "squareFeet": "1200",
+    "propertyTaxes": "6000",
+    "condoFees": "500"
+  },
+  "results": {
+    "pageLoad": true,
+    "formVisible": false,
+    "formFill": false,
+    "formSubmit": false,
+    "analysisComplete": false,
+    "tabs": {
+      "overview": {
+        "loaded": false,
+        "hasContent": false,
+        "errors": []
+      },
+      "longTermRental": {
+        "loaded": false,
+        "hasContent": false,
+        "hasCharts": false,
+        "errors": []
+      },
+      "investmentAnalysis": {
+        "loaded": false,
+        "hasContent": false,
+        "hasCharts": false,
+        "errors": []
+      },
+      "shortTermRental": {
+        "loaded": false,
+        "hasContent": false,
+        "errors": []
+      },
+      "financialCalculator": {
+        "loaded": false,
+        "hasContent": false,
+        "errors": []
+      }
+    }
+  },
+  "errors": [],
+  "screenshots": []
+}

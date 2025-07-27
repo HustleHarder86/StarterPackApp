@@ -1,0 +1,17 @@
+{
+  "timestamp": "2025-07-27T20:34:34.075Z",
+  "url": "https://investorprops.vercel.app/roi-finder.html",
+  "screenshotDir": "/home/amy/StarterPackApp/tests/e2e/screenshots/bug-fix-verification/2025-07-27T20-34-20",
+  "consoleErrors": [
+    "Failed to load resource: the server responded with a status of 404 ()",
+    "Failed to load resource: the server responded with a status of 404 ()"
+  ],
+  "testResults": {
+    "pageLoaded": true,
+    "formFound": false,
+    "analysisCompleted": false,
+    "ltrTabFound": false,
+    "chartsRendered": false,
+    "jsErrors": []
+  }
+}
