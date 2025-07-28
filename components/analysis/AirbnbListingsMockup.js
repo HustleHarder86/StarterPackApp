@@ -188,6 +188,15 @@ export const AirbnbHeroSectionMockup = ({ analysis }) => {
   const ltrData = analysis?.longTermRental || analysis?.long_term_rental || {};
   const cashFlow = analysis?.cashFlow || {};
   const monthlyExpenses = analysis?.monthlyExpenses || {};
+  const propertyData = analysis?.propertyData || analysis?.property_data || {};
+  
+  // Extract property details
+  const propertyAddress = propertyData.address || 'Property Address';
+  const bedrooms = propertyData.bedrooms || 2;
+  const bathrooms = propertyData.bathrooms || 2;
+  const sqft = propertyData.squareFeet || propertyData.square_feet || propertyData.sqft || 'N/A';
+  const propertyImage = propertyData.imageUrl || propertyData.image_url || 
+    'https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=800&h=600&fit=crop';
   
   // Extract financial data
   const monthlyRevenue = strData.monthly_revenue || strData.monthlyRevenue || 0;
@@ -198,6 +207,9 @@ export const AirbnbHeroSectionMockup = ({ analysis }) => {
   
   // Get LTR cash flow for comparison
   const ltrCashFlow = cashFlow.monthly || 0;
+  
+  // Get metrics for ROI display
+  const metrics = analysis?.metrics || {};
   
   // Calculate stats from actual data or show N/A
   const stats = {
@@ -211,6 +223,111 @@ export const AirbnbHeroSectionMockup = ({ analysis }) => {
 
   return `
     <div class="max-w-7xl mx-auto px-4 lg:px-6 mt-6" style="overflow-x: hidden;">
+      <!-- Property Header Section -->
+      <div class="bg-gradient-to-r from-purple-600 to-purple-700 rounded-xl p-6 mb-6 text-white">
+        <div class="flex flex-col md:flex-row items-start md:items-center gap-6">
+          <!-- Property Image -->
+          <div class="w-full md:w-1/3 lg:w-1/4">
+            <img 
+              src="${propertyImage}" 
+              alt="${propertyAddress}" 
+              class="w-full h-48 md:h-32 lg:h-40 object-cover rounded-lg shadow-lg"
+              onerror="this.src='https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=800&h=600&fit=crop'"
+            />
+          </div>
+          
+          <!-- Property Details -->
+          <div class="flex-1">
+            <div class="flex items-start justify-between">
+              <div>
+                <h1 class="text-2xl md:text-3xl font-bold mb-2">Property Investment Analysis</h1>
+                <p class="text-lg opacity-90 mb-3">${propertyAddress}</p>
+                <div class="flex flex-wrap gap-4 text-sm">
+                  <span class="flex items-center gap-1">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+                    </svg>
+                    ${bedrooms} Bedrooms
+                  </span>
+                  <span class="flex items-center gap-1">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M10 2a1 1 0 00-1 1v1a1 1 0 002 0V3a1 1 0 00-1-1zM4 4h3a3 3 0 006 0h3a2 2 0 012 2v9a2 2 0 01-2 2H4a2 2 0 01-2-2V6a2 2 0 012-2zm2.5 7a1.5 1.5 0 100-3 1.5 1.5 0 000 3zm2.45 4a2.5 2.5 0 10-4.9 0h4.9zM12 9a1 1 0 100 2h3a1 1 0 100-2h-3zm-1 4a1 1 0 011-1h2a1 1 0 110 2h-2a1 1 0 01-1-1z" clip-rule="evenodd" />
+                    </svg>
+                    ${bathrooms} Bathrooms
+                  </span>
+                  <span class="flex items-center gap-1">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
+                    </svg>
+                    ${sqft !== 'N/A' ? sqft + ' sq ft' : 'Size N/A'}
+                  </span>
+                </div>
+              </div>
+              <div class="text-right">
+                <span class="inline-flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur rounded-full text-sm font-bold">
+                  <span class="inline-block w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+                  LIVE DATA
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Rental Analysis Options - Tab Style -->
+      <div class="mb-6">
+        <div class="flex flex-wrap gap-2 p-1.5 bg-gray-100 rounded-lg">
+          <!-- Short-Term Rental Tab (Active) -->
+          <button class="flex-1 min-w-[150px] flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-lg font-medium transition-all duration-200 transform hover:scale-[1.02] shadow-sm">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+            </svg>
+            <span>Short-Term Rental</span>
+          </button>
+          
+          <!-- Long-Term Rental Tab -->
+          <button class="flex-1 min-w-[150px] flex items-center justify-center gap-2 px-4 py-3 bg-white text-gray-700 rounded-lg font-medium transition-all duration-200 hover:bg-purple-50 hover:text-purple-700">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+            </svg>
+            <span>Long-Term Rental</span>
+          </button>
+          
+          <!-- Investment Analysis Tab -->
+          <button class="flex-1 min-w-[150px] flex items-center justify-center gap-2 px-4 py-3 bg-white text-gray-700 rounded-lg font-medium transition-all duration-200 hover:bg-purple-50 hover:text-purple-700">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+            </svg>
+            <span>Investment Analysis</span>
+          </button>
+        </div>
+        
+        <!-- Tab Content Info -->
+        <div class="mt-4 p-4 bg-purple-50 rounded-lg border border-purple-200">
+          <div class="flex items-start gap-3">
+            <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0">
+              <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+              </svg>
+            </div>
+            <div class="flex-1">
+              <h4 class="font-semibold text-gray-900 mb-1">Short-Term Rental Analysis</h4>
+              <p class="text-sm text-gray-600 mb-2">Maximize your investment potential with vacation rental income from Airbnb & VRBO</p>
+              <div class="flex items-center gap-4 text-sm">
+                <div>
+                  <span class="text-gray-500">Est. Revenue:</span>
+                  <span class="font-bold text-purple-600 ml-1">$${monthlyRevenue.toLocaleString()}/mo</span>
+                </div>
+                <div>
+                  <span class="text-gray-500">Occupancy:</span>
+                  <span class="font-bold text-gray-900 ml-1">75%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
       <!-- Cash Flow Breakdown Alert -->
       ${monthlyRevenue > 0 ? (netCashFlow < 0 ? `
       <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
@@ -264,9 +381,305 @@ export const AirbnbHeroSectionMockup = ({ analysis }) => {
       </div>
       `) : ''}
       
+      <!-- 2-Column Layout: Chart and Calculator -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        <!-- Left Column: Revenue Bar Chart -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <h3 class="text-lg font-bold text-gray-900 mb-4">Revenue Comparison</h3>
+          <div class="relative h-64 mb-4">
+            <!-- Bar Chart Container -->
+            <canvas id="str-revenue-chart" width="400" height="300"></canvas>
+          </div>
+          <div class="text-center text-sm text-gray-600">
+            <p>Average nightly rate: <span class="font-bold text-purple-600">${stats.avgRate}</span></p>
+            <p>Average occupancy: <span class="font-bold text-purple-600">${stats.avgOccupancy}</span></p>
+          </div>
+        </div>
+        
+        <!-- Right Column: Financial Calculator -->
+        <div id="str-calculator-section" class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <h3 class="text-lg font-bold text-gray-900 mb-4">STR Revenue Calculator</h3>
+          
+          <div class="space-y-4">
+            <!-- Nightly Rate Input -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">
+                Average Nightly Rate
+              </label>
+              <div class="relative">
+                <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">$</span>
+                <input 
+                  type="number" 
+                  id="str-nightly-rate"
+                  value="${strData.avgNightlyRate || strData.avg_nightly_rate || 220}"
+                  class="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500"
+                />
+              </div>
+            </div>
+            
+            <!-- Occupancy Rate Slider -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">
+                Occupancy Rate: <span id="occupancy-display" class="text-purple-600 font-bold">75%</span>
+              </label>
+              <input 
+                type="range" 
+                id="str-occupancy-slider"
+                min="40" 
+                max="95" 
+                value="75"
+                class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
+              />
+              <div class="flex justify-between text-xs text-gray-500 mt-1">
+                <span>40%</span>
+                <span>95%</span>
+              </div>
+            </div>
+            
+            <!-- Results Display -->
+            <div class="border-t pt-4 space-y-3">
+              <div class="flex justify-between items-center">
+                <span class="text-sm text-gray-600">Monthly Revenue</span>
+                <span class="text-lg font-bold text-purple-600" id="monthly-revenue-display">
+                  $${monthlyRevenue.toLocaleString()}
+                </span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-sm text-gray-600">Annual Revenue</span>
+                <span class="text-lg font-bold text-gray-900" id="annual-revenue-display">
+                  $${(monthlyRevenue * 12).toLocaleString()}
+                </span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-sm text-gray-600">vs Long-Term Rental</span>
+                <span class="text-lg font-bold ${monthlyRevenue > (ltrData.monthly_rent || ltrData.monthlyRent || 3100) ? 'text-green-600' : 'text-red-600'}" id="advantage-display">
+                  ${monthlyRevenue > (ltrData.monthly_rent || ltrData.monthlyRent || 3100) ? '+' : ''}$${Math.abs(monthlyRevenue - (ltrData.monthly_rent || ltrData.monthlyRent || 3100)).toLocaleString()}/mo
+                </span>
+              </div>
+            </div>
+            
+            <!-- Reset Button -->
+            <div class="pt-4">
+              <button 
+                id="reset-calculator"
+                class="w-full px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium text-sm transition-colors duration-200 flex items-center justify-center gap-2"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                </svg>
+                Reset to Default
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Floating Change Assumptions Button -->
+      <div id="floating-button-container" class="fixed bottom-8 right-8 z-50 opacity-0 transition-opacity duration-300">
+        <button 
+          id="change-assumptions-btn"
+          class="bg-gradient-to-r from-purple-600 to-purple-700 text-white px-6 py-3 rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 flex items-center gap-2"
+          onclick="scrollToCalculator()"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+          </svg>
+          <span class="font-medium">Change Assumptions</span>
+        </button>
+      </div>
+      
+      <!-- Airbnb Listings -->
       <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 lg:p-6">
         ${AirbnbListingsMockup({ comparables, stats })}
       </div>
+      
+      <!-- Chart and Calculator Scripts -->
+      <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+      <script>
+        // Initialize revenue comparison chart
+        const ctx = document.getElementById('str-revenue-chart');
+        if (ctx) {
+          const chart = new Chart(ctx.getContext('2d'), {
+            type: 'bar',
+            data: {
+              labels: ['Short-Term Rental', 'Long-Term Rental'],
+              datasets: [{
+                label: 'Monthly Revenue',
+                data: [${monthlyRevenue}, ${ltrData.monthly_rent || ltrData.monthlyRent || 3100}],
+                backgroundColor: ['#9333ea', '#6b7280'],
+                borderRadius: 8
+              }]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: { display: false },
+                tooltip: {
+                  callbacks: {
+                    label: function(context) {
+                      return '$' + context.parsed.y.toLocaleString() + '/mo';
+                    }
+                  }
+                }
+              },
+              scales: {
+                y: {
+                  beginAtZero: true,
+                  ticks: {
+                    callback: function(value) {
+                      return '$' + value.toLocaleString();
+                    }
+                  }
+                }
+              }
+            }
+          });
+          
+          // Calculator functionality
+          const nightlyRateInput = document.getElementById('str-nightly-rate');
+          const occupancySlider = document.getElementById('str-occupancy-slider');
+          const occupancyDisplay = document.getElementById('occupancy-display');
+          const monthlyRevenueDisplay = document.getElementById('monthly-revenue-display');
+          const annualRevenueDisplay = document.getElementById('annual-revenue-display');
+          const advantageDisplay = document.getElementById('advantage-display');
+          
+          function updateCalculations() {
+            const nightlyRate = parseFloat(nightlyRateInput.value) || 0;
+            const occupancyRate = parseFloat(occupancySlider.value) / 100;
+            const monthlyRevenue = Math.round(nightlyRate * 30.4 * occupancyRate);
+            const annualRevenue = monthlyRevenue * 12;
+            const ltrRent = ${ltrData.monthly_rent || ltrData.monthlyRent || 3100};
+            const advantage = monthlyRevenue - ltrRent;
+            
+            occupancyDisplay.textContent = occupancySlider.value + '%';
+            monthlyRevenueDisplay.textContent = '$' + monthlyRevenue.toLocaleString();
+            annualRevenueDisplay.textContent = '$' + annualRevenue.toLocaleString();
+            
+            if (advantage >= 0) {
+              advantageDisplay.textContent = '+$' + advantage.toLocaleString() + '/mo';
+              advantageDisplay.className = 'text-lg font-bold text-green-600';
+            } else {
+              advantageDisplay.textContent = '-$' + Math.abs(advantage).toLocaleString() + '/mo';
+              advantageDisplay.className = 'text-lg font-bold text-red-600';
+            }
+            
+            // Update chart
+            chart.data.datasets[0].data[0] = monthlyRevenue;
+            chart.update();
+            
+            // Update the main financial calculator with new STR revenue
+            const mainRevenueInput = document.getElementById('monthlyRevenue');
+            if (mainRevenueInput) {
+              mainRevenueInput.value = monthlyRevenue;
+              
+              // Also update STR-specific expenses based on new revenue
+              const propertyMgmtInput = document.getElementById('propertyMgmt');
+              const suppliesInput = document.getElementById('supplies');
+              const platformFeesInput = document.getElementById('platformFees');
+              
+              if (propertyMgmtInput) propertyMgmtInput.value = Math.round(monthlyRevenue * 0.10); // 10% management
+              if (suppliesInput) suppliesInput.value = Math.round(monthlyRevenue * 0.04); // 4% supplies
+              if (platformFeesInput) platformFeesInput.value = Math.round(monthlyRevenue * 0.03); // 3% platform fees
+              
+              // Trigger the main calculator update
+              if (window.updateFinancialCalculations) {
+                window.updateFinancialCalculations();
+              }
+            }
+          }
+          
+          nightlyRateInput.addEventListener('input', updateCalculations);
+          occupancySlider.addEventListener('input', updateCalculations);
+          
+          // Reset button functionality
+          const resetButton = document.getElementById('reset-calculator');
+          if (resetButton) {
+            resetButton.addEventListener('click', function() {
+              // Reset to default values
+              nightlyRateInput.value = ${strData.avgNightlyRate || strData.avg_nightly_rate || 220};
+              occupancySlider.value = 75;
+              
+              // Update the calculations with default values
+              updateCalculations();
+              
+              // Also trigger initial calculation to sync with main calculator
+              updateCalculations();
+            });
+          }
+          
+          // Initial sync with main calculator
+          updateCalculations();
+          
+          // Floating button functionality
+          const floatingButton = document.getElementById('floating-button-container');
+          const calculatorSection = document.getElementById('str-calculator-section');
+          
+          // Show/hide floating button based on scroll position
+          window.addEventListener('scroll', function() {
+            if (calculatorSection) {
+              const rect = calculatorSection.getBoundingClientRect();
+              const isVisible = rect.top < window.innerHeight && rect.bottom > 0;
+              
+              if (!isVisible && window.scrollY > 200) {
+                floatingButton.style.opacity = '1';
+              } else {
+                floatingButton.style.opacity = '0';
+              }
+            }
+          });
+          
+          // Scroll to calculator function
+          window.scrollToCalculator = function() {
+            if (calculatorSection) {
+              calculatorSection.scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'center' 
+              });
+              
+              // Flash the calculator to draw attention
+              calculatorSection.style.transition = 'all 0.3s ease';
+              calculatorSection.style.transform = 'scale(1.02)';
+              calculatorSection.style.boxShadow = '0 20px 25px -5px rgba(147, 51, 234, 0.1), 0 10px 10px -5px rgba(147, 51, 234, 0.04)';
+              
+              setTimeout(() => {
+                calculatorSection.style.transform = 'scale(1)';
+                calculatorSection.style.boxShadow = '';
+              }, 300);
+            }
+          };
+        }
+      </script>
+      
+      <style>
+        .slider {
+          -webkit-appearance: none;
+          width: 100%;
+          height: 8px;
+          background: #e5e7eb;
+          outline: none;
+          opacity: 0.9;
+          transition: opacity 0.2s;
+        }
+        .slider:hover { opacity: 1; }
+        .slider::-webkit-slider-thumb {
+          -webkit-appearance: none;
+          appearance: none;
+          width: 20px;
+          height: 20px;
+          background: #9333ea;
+          cursor: pointer;
+          border-radius: 50%;
+        }
+        .slider::-moz-range-thumb {
+          width: 20px;
+          height: 20px;
+          background: #9333ea;
+          cursor: pointer;
+          border-radius: 50%;
+        }
+      </style>
     </div>
   `;
 };
