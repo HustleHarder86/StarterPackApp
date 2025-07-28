@@ -211,7 +211,7 @@ class ComponentLoader {
       const sqft = propertyData.squareFeet || propertyData.square_feet || propertyData.sqft || 'N/A';
       const propertyAddress = propertyData.address || 'Property Address';
       
-      // Enhanced image extraction with more fallbacks
+      // Enhanced image extraction with more fallbacks (NO DEFAULT)
       const propertyImage = propertyData.mainImage || 
         propertyData.image || 
         propertyData.imageUrl || 
@@ -222,7 +222,7 @@ class ComponentLoader {
         analysisData.property?.mainImage ||
         analysisData.property?.image ||
         analysisData.propertyImage ||
-        'https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=400&h=300&fit=crop';
+        null; // No default - will show nothing if no image found
       
       // Debug log to help troubleshoot
       console.log('[Property Header] Image search:', {
@@ -230,7 +230,8 @@ class ComponentLoader {
         'propertyData.image': propertyData.image,
         'analysisData.mainImage': analysisData.mainImage,
         'analysisData.property?.mainImage': analysisData.property?.mainImage,
-        'Final selected': propertyImage
+        'Final selected': propertyImage,
+        'Image found': !!propertyImage
       });
       
       // Create reusable property header
@@ -238,15 +239,16 @@ class ComponentLoader {
         <div class="bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-xl mb-6 shadow-lg overflow-hidden">
           <div class="p-6">
             <div class="flex flex-col lg:flex-row items-center gap-6">
-              <!-- Property Image -->
+              <!-- Property Image - Only show if image exists -->
+              ${propertyImage ? `
               <div class="w-full lg:w-64 h-48 rounded-lg overflow-hidden shadow-xl">
                 <img 
                   src="${propertyImage}" 
                   alt="Property" 
                   class="w-full h-full object-cover"
-                  onerror="this.src='https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=400&h=300&fit=crop'"
                 />
               </div>
+              ` : ''}
               
               <!-- Property Details -->
               <div class="flex-1 text-center lg:text-left">

@@ -195,9 +195,8 @@ export const AirbnbHeroSectionMockup = ({ analysis }) => {
   const bedrooms = propertyData.bedrooms || 2;
   const bathrooms = propertyData.bathrooms || 2;
   const sqft = propertyData.squareFeet || propertyData.square_feet || propertyData.sqft || 'N/A';
-  // Fix image extraction - check all possible field names
-  const propertyImage = propertyData.mainImage || propertyData.image || propertyData.imageUrl || propertyData.image_url || 
-    'https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=800&h=600&fit=crop';
+  // Fix image extraction - check all possible field names (NO DEFAULT)
+  const propertyImage = propertyData.mainImage || propertyData.image || propertyData.imageUrl || propertyData.image_url || null;
   
   // Debug logging to help troubleshoot
   console.log('[STR Tab] Property data:', propertyData);
