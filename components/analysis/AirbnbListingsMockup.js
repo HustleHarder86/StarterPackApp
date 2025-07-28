@@ -227,57 +227,7 @@ export const AirbnbHeroSectionMockup = ({ analysis }) => {
   };
 
   return `
-    <div class="max-w-7xl mx-auto px-4 lg:px-6 mt-6" style="overflow-x: hidden;">
-      <!-- Property Header Section -->
-      <div class="bg-gradient-to-r from-purple-600 to-purple-700 rounded-xl p-6 mb-6 text-white">
-        <div class="flex flex-col md:flex-row items-start md:items-center gap-6">
-          <!-- Property Image -->
-          <div class="w-full md:w-1/3 lg:w-1/4">
-            <img 
-              src="${propertyImage}" 
-              alt="${propertyAddress}" 
-              class="w-full h-48 md:h-32 lg:h-40 object-cover rounded-lg shadow-lg"
-              onerror="this.src='https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=800&h=600&fit=crop'"
-            />
-          </div>
-          
-          <!-- Property Details -->
-          <div class="flex-1">
-            <div class="flex items-start justify-between">
-              <div>
-                <h1 class="text-2xl md:text-3xl font-bold mb-2">Property Investment Analysis</h1>
-                <p class="text-lg opacity-90 mb-3">${propertyAddress}</p>
-                <div class="flex flex-wrap gap-4 text-sm">
-                  <span class="flex items-center gap-1">
-                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
-                    </svg>
-                    ${bedrooms} ${bedrooms === 1 ? 'Bedroom' : 'Bedrooms'}
-                  </span>
-                  <span class="flex items-center gap-1">
-                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                      <path fill-rule="evenodd" d="M10 2a1 1 0 00-1 1v1a1 1 0 002 0V3a1 1 0 00-1-1zM4 4h3a3 3 0 006 0h3a2 2 0 012 2v9a2 2 0 01-2 2H4a2 2 0 01-2-2V6a2 2 0 012-2zm2.5 7a1.5 1.5 0 100-3 1.5 1.5 0 000 3zm2.45 4a2.5 2.5 0 10-4.9 0h4.9zM12 9a1 1 0 100 2h3a1 1 0 100-2h-3zm-1 4a1 1 0 011-1h2a1 1 0 110 2h-2a1 1 0 01-1-1z" clip-rule="evenodd" />
-                    </svg>
-                    ${bathrooms} ${bathrooms === 1 ? 'Bathroom' : 'Bathrooms'}
-                  </span>
-                  <span class="flex items-center gap-1">
-                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                      <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
-                    </svg>
-                    ${sqft !== 'N/A' ? sqft.toLocaleString() + ' sq ft' : 'Size N/A'}
-                  </span>
-                </div>
-              </div>
-              <div class="text-right">
-                <span class="inline-flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur rounded-full text-sm font-bold">
-                  <span class="inline-block w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
-                  LIVE DATA
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+    <div class="max-w-7xl mx-auto px-4 lg:px-6" style="overflow-x: hidden;">
       
       
       <!-- Cash Flow Breakdown Alert -->

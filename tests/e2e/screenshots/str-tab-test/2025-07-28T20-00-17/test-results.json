@@ -1,0 +1,9 @@
+{
+  "testUrl": "https://starter-pack-app.vercel.app/roi-finder.html",
+  "timestamp": "2025-07-28T20:00:18.407Z",
+  "screenshots": [],
+  "issues": [],
+  "uiScores": {},
+  "functionality": {},
+  "error": "Navigation timeout of 30000 ms exceeded"
+}

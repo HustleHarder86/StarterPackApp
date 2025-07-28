@@ -172,8 +172,10 @@ async function analyzeUIUX() {
     try {
         const page = await browser.newPage();
         
-        // Go to the app
-        await page.goto('http://localhost:3000/roi-finder.html', { waitUntil: 'networkidle2' });
+        // Go to the deployed app
+        const testUrl = 'https://starter-pack-app.vercel.app/roi-finder.html?e2e_test_mode=true';
+        console.log(`Navigating to: ${testUrl}`);
+        await page.goto(testUrl, { waitUntil: 'networkidle2', timeout: 60000 });
         await new Promise(resolve => setTimeout(resolve, 2000));
         
         // Inject mock data and render analysis

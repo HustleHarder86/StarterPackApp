@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financial Calculator Complete Fix Test</title>
+    
+    <!-- External Dependencies -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Design System -->
+    <link rel="stylesheet" href="../styles/design-system.css">
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto p-4 max-w-7xl">
+        <h1 class="text-3xl font-bold mb-8 text-center">Financial Calculator Fix Test</h1>
+        
+        <!-- Test with complete analysis data -->
+        <script>
+            window.analysisData = {
+                propertyData: {
+                    price: 850000,
+                    propertyTaxes: 8500,
+                    condoFees: 450,
+                    downPayment: 170000,
+                    address: "123 Test Street, Toronto, ON"
+                },
+                costs: {
+                    mortgage: 4200,
+                    insurance: 250,
+                    utilities: 200,
+                    maintenance: 300,
+                    other: 150,
+                    totalMonthly: 7576
+                },
+                strAnalysis: {
+                    monthlyRevenue: 5400,
+                    occupancyRate: 75,
+                    averageNightlyRate: 240
+                },
+                longTermRental: {
+                    monthlyRent: 3100
+                },
+                analysisType: 'str'
+            };
+        </script>
+        
+        <!-- Render components -->
+        <div id="financial-summary-container" class="mb-8"></div>
+        
+        <!-- Load and initialize everything -->
+        <script type="module">
+            import { EnhancedFinancialSummary } from '../components/analysis/EnhancedFinancialSummary.js';
+            import { initializeEnhancedFinancialCalculator } from '../js/modules/financialCalculatorCharts.js';
+            
+            // Render the enhanced financial summary (includes calculator)
+            const summaryContainer = document.getElementById('financial-summary-container');
+            const summaryHtml = EnhancedFinancialSummary({ 
+                analysis: window.analysisData,
+                className: '' 
+            });
+            summaryContainer.innerHTML = summaryHtml;
+            
+            // Wait for DOM and Chart.js, then initialize
+            const initializeAll = () => {
+                // Initialize revenue comparison chart in summary
+                const ctx = document.getElementById('revenueChart')?.getContext('2d');
+                if (ctx && window.Chart) {
+                    new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: ['Short-Term Rental', 'Long-Term Rental'],
+                            datasets: [{
+                                data: [5400 * 12, 3100 * 12],
+                                backgroundColor: ['#10b981', '#9ca3af'],
+                                borderRadius: 8,
+                                borderSkipped: false,
+                                barThickness: 60
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: { display: false }
+                            },
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    grid: {
+                                        display: true,
+                                        color: 'rgba(0, 0, 0, 0.05)'
+                                    },
+                                    ticks: {
+                                        callback: function(value) {
+                                            return '$' + value.toLocaleString();
+                                        }
+                                    }
+                                },
+                                x: {
+                                    grid: {
+                                        display: false
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+                
+                // Initialize enhanced financial calculator
+                initializeEnhancedFinancialCalculator();
+                
+                console.log('All components initialized!');
+                
+                // Debug check
+                setTimeout(() => {
+                    const chart = document.getElementById('annual-revenue-chart');
+                    const grid = document.querySelector('.grid.lg\\:grid-cols-2');
+                    const metrics = document.querySelector('.grid.lg\\:grid-cols-4');
+                    
+                    console.log('Debug Check Results:');
+                    console.log('- Annual Revenue Chart found:', !!chart);
+                    console.log('- 2-Column Grid found:', !!grid);
+                    console.log('- Key Metrics Grid found:', !!metrics);
+                    
+                    if (grid) {
+                        const computedStyle = window.getComputedStyle(grid);
+                        console.log('- Grid display:', computedStyle.display);
+                        console.log('- Grid columns:', computedStyle.gridTemplateColumns);
+                    }
+                }, 1000);
+            };
+            
+            // Wait for Chart.js to load
+            if (window.Chart) {
+                setTimeout(initializeAll, 100);
+            } else {
+                window.addEventListener('load', () => {
+                    setTimeout(initializeAll, 100);
+                });
+            }
+        </script>
+    </div>
+</body>
+</html>

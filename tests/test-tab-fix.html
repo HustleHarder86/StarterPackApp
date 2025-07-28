@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tab Navigation Fix Test</title>
+    <link href="../styles/tailwind-compiled.css" rel="stylesheet">
+    <link href="../styles/design-system.css" rel="stylesheet">
+    <style>
+        /* Additional styles for testing */
+        .tab-content.hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="container mx-auto p-4">
+        <h1 class="text-2xl font-bold mb-4">Testing Tab Navigation Fix</h1>
+        
+        <div id="analysis-results"></div>
+    </div>
+
+    <!-- Load required scripts -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <script type="module">
+        import ComponentLoader from '../js/modules/componentLoader.js';
+        
+        // Mock analysis data
+        const mockAnalysisData = {
+            analysisType: 'both',
+            propertyData: {
+                price: 850000,
+                address: "123 Test St, Toronto, ON",
+                propertyType: "Condo",
+                bedrooms: 3,
+                city: "Toronto"
+            },
+            strAnalysis: {
+                monthlyRevenue: 8500,
+                occupancy_rate: 0.75,
+                nightlyRate: 350,
+                comparables: [
+                    {
+                        title: "Luxury Downtown Condo",
+                        nightly_rate: 400,
+                        monthly_revenue: 9200,
+                        occupancy_rate: 0.8,
+                        bedrooms: 3,
+                        rating: 4.9,
+                        reviewCount: 45
+                    }
+                ]
+            },
+            longTermRental: {
+                monthlyRent: 3500,
+                cashFlow: 1200,
+                roi: 5.2
+            },
+            costs: {
+                totalMonthly: 2300
+            },
+            overallScore: 8.5
+        };
+        
+        // Test the component loader
+        const loader = new ComponentLoader();
+        const container = document.getElementById('analysis-results');
+        
+        // Add strChartsModule to window for testing
+        window.strChartsModule = {
+            initializeSTRComponents: (data) => {
+                console.log('Mock STR components initialized with data:', data);
+            }
+        };
+        
+        loader.renderAnalysisResults(mockAnalysisData, container).then(() => {
+            console.log('Analysis rendered successfully!');
+            
+            // Test tab switching after a delay
+            setTimeout(() => {
+                console.log('Testing tab switch to LTR...');
+                window.switchTab('ltr');
+                
+                setTimeout(() => {
+                    console.log('Testing tab switch to Investment...');
+                    window.switchTab('investment');
+                    
+                    setTimeout(() => {
+                        console.log('Testing tab switch back to STR...');
+                        window.switchTab('str');
+                    }, 2000);
+                }, 2000);
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

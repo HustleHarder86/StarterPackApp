@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test STR Property Header</title>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+    <div id="root"></div>
+    
+    <script type="module">
+        import { AirbnbHeroSectionMockup } from './components/analysis/AirbnbListingsMockup.js';
+        
+        // Test data with property image
+        const testAnalysis = {
+            // Test both property_data and propertyData to ensure mapping works
+            property_data: {
+                address: '123 Main Street, Toronto, ON M5V 3A8',
+                price: 850000,
+                bedrooms: 3,
+                bathrooms: 2.5,
+                sqft: 1850,
+                mainImage: 'https://photos.zolo.ca/1080-greenwood-avenue-unit-309-toronto-C8196906-1-p.jpg?2024-10-17+20%3A51%3A40',
+                propertyType: 'Condo'
+            },
+            strAnalysis: {
+                avgNightlyRate: 220,
+                occupancy_rate: 0.75,
+                monthly_revenue: 4950,
+                comparables: [
+                    {
+                        title: '3BR Luxury Condo in Downtown',
+                        nightly_rate: 250,
+                        occupancy_rate: 0.85,
+                        monthly_revenue: 6375,
+                        rating: 4.9,
+                        image_url: { url: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=600' }
+                    }
+                ]
+            },
+            longTermRental: {
+                monthly_rent: 3100
+            },
+            costs: {
+                mortgage: 2800,
+                property_tax_annual: 5490,
+                hoa_monthly: 450
+            }
+        };
+        
+        // Simulate the mapAnalysisData function from roi-finder.html
+        function mapAnalysisData(analysisData) {
+            // Map property data if needed
+            if (analysisData.property_data && !analysisData.propertyData) {
+                analysisData.propertyData = {
+                    ...analysisData.property_data,
+                    // Ensure mainImage is mapped correctly
+                    mainImage: analysisData.property_data.mainImage || analysisData.property_data.image || analysisData.property_data.imageUrl
+                };
+            }
+            return analysisData;
+        }
+        
+        // Apply mapping
+        const mappedAnalysis = mapAnalysisData(testAnalysis);
+        
+        // Render the component
+        const container = document.getElementById('root');
+        container.innerHTML = AirbnbHeroSectionMockup({ analysis: mappedAnalysis });
+        
+        // Initialize STR calculator
+        const script = document.createElement('script');
+        script.src = './js/modules/strCharts.js';
+        script.type = 'module';
+        document.body.appendChild(script);
+        
+        // Log for debugging
+        console.log('Test analysis data:', mappedAnalysis);
+        console.log('Property data:', mappedAnalysis.propertyData);
+        console.log('Main image URL:', mappedAnalysis.propertyData?.mainImage);
+    </script>
+</body>
+</html>

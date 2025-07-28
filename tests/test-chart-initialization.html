@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chart Initialization Test</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .chart-container { background: #f5f5f5; padding: 20px; margin-bottom: 20px; border-radius: 8px; }
+        .status { padding: 10px; margin: 10px 0; border-radius: 4px; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .warning { background: #fff3cd; color: #856404; }
+        h2 { color: #333; }
+        canvas { max-height: 300px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Chart Initialization Test</h1>
+        
+        <div id="status"></div>
+        
+        <div class="chart-container">
+            <h2>STR Revenue Chart</h2>
+            <canvas id="str-revenue-chart" width="400" height="200"></canvas>
+            <div id="str-status"></div>
+        </div>
+        
+        <div class="chart-container">
+            <h2>Annual Revenue Chart</h2>
+            <canvas id="annual-revenue-chart" width="400" height="200"></canvas>
+            <div id="annual-status"></div>
+        </div>
+        
+        <button onclick="testChartInitialization()">Test Chart Initialization</button>
+        <button onclick="testWithDelay()">Test with Delay (simulates late Chart.js load)</button>
+    </div>
+
+    <script type="module">
+        import { initializeSTRChart } from '../js/modules/strCharts.js';
+        import { initializeAnnualRevenueChart } from '../js/modules/financialCalculatorCharts.js';
+        
+        window.testChartInitialization = async function() {
+            const statusEl = document.getElementById('status');
+            statusEl.innerHTML = '';
+            
+            // Test 1: Check if Chart.js is loaded
+            if (window.Chart) {
+                statusEl.innerHTML += '<div class="status success">✓ Chart.js is loaded</div>';
+            } else {
+                statusEl.innerHTML += '<div class="status error">✗ Chart.js is NOT loaded</div>';
+                return;
+            }
+            
+            // Test 2: Initialize STR Chart
+            try {
+                const strData = {
+                    strAnalysis: {
+                        monthlyRevenue: 5400,
+                        monthly_revenue: 5400
+                    },
+                    longTermRental: {
+                        monthlyRent: 3100,
+                        monthly_rent: 3100
+                    }
+                };
+                
+                initializeSTRChart(strData);
+                document.getElementById('str-status').innerHTML = '<div class="status success">✓ STR Chart initialized</div>';
+            } catch (error) {
+                document.getElementById('str-status').innerHTML = `<div class="status error">✗ STR Chart error: ${error.message}</div>`;
+                console.error('STR Chart error:', error);
+            }
+            
+            // Test 3: Initialize Annual Revenue Chart
+            try {
+                // Add mock input elements for the chart
+                if (!document.getElementById('monthlyRevenue')) {
+                    const mockInputs = `
+                        <input type="hidden" id="monthlyRevenue" value="5400">
+                        <input type="hidden" id="mortgage" value="4200">
+                        <input type="hidden" id="propertyTax" value="708">
+                        <input type="hidden" id="insurance" value="250">
+                        <input type="hidden" id="hoaFees" value="450">
+                        <input type="hidden" id="propertyMgmt" value="540">
+                        <input type="hidden" id="utilities" value="200">
+                        <input type="hidden" id="cleaning" value="400">
+                        <input type="hidden" id="maintenance" value="300">
+                        <input type="hidden" id="supplies" value="216">
+                        <input type="hidden" id="platformFees" value="162">
+                        <input type="hidden" id="otherExpenses" value="150">
+                    `;
+                    document.body.insertAdjacentHTML('beforeend', mockInputs);
+                }
+                
+                initializeAnnualRevenueChart();
+                document.getElementById('annual-status').innerHTML = '<div class="status success">✓ Annual Revenue Chart initialized</div>';
+            } catch (error) {
+                document.getElementById('annual-status').innerHTML = `<div class="status error">✗ Annual Revenue Chart error: ${error.message}</div>`;
+                console.error('Annual Revenue Chart error:', error);
+            }
+        };
+        
+        window.testWithDelay = function() {
+            const statusEl = document.getElementById('status');
+            
+            // Temporarily remove Chart.js to simulate late loading
+            const chartBackup = window.Chart;
+            window.Chart = undefined;
+            
+            statusEl.innerHTML = '<div class="status warning">⏳ Simulating Chart.js not loaded yet...</div>';
+            
+            // Try to initialize charts (should retry)
+            testChartInitialization();
+            
+            // Restore Chart.js after 1 second
+            setTimeout(() => {
+                window.Chart = chartBackup;
+                statusEl.innerHTML += '<div class="status success">✓ Chart.js now available</div>';
+            }, 1000);
+        };
+        
+        // Auto-test on load
+        window.addEventListener('load', () => {
+            setTimeout(testChartInitialization, 500);
+        });
+    </script>
+</body>
+</html>

@@ -208,21 +208,12 @@ class ComponentLoader {
       const analysisLayout = `
         <div class="min-h-screen bg-gray-50" style="overflow-x: hidden;">
           
-          <!-- Investment Verdict - Full Width with Header -->
-          <div class="mb-6">
-            ${verdictHtml}
-          </div>
-
-          <div class="max-w-7xl mx-auto px-4 lg:px-6" style="overflow-x: hidden;">
-            <!-- Enhanced Rental Analysis Tabs -->
+          <div class="max-w-7xl mx-auto px-4 lg:px-6 pt-6" style="overflow-x: hidden;">
+            <!-- Enhanced Rental Analysis Tabs as Main Header -->
             <div class="mb-8">
-              <!-- Tab Navigation with Better Visibility -->
+              <!-- Tab Navigation -->
               <div class="bg-white rounded-lg shadow-lg">
-                <div class="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 rounded-t-lg border-b border-gray-200">
-                  <h2 class="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
-                    <span class="text-2xl">📊</span>
-                    Rental Analysis Options
-                  </h2>
+                <div class="p-4 rounded-t-lg border-b border-gray-200">
                   
                   <!-- Enhanced Tab Buttons -->
                   <div class="flex flex-wrap gap-2">

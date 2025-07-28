@@ -1,0 +1,8 @@
+{
+  "url": "https://starter-pack-app.vercel.app/roi-finder.html",
+  "timestamp": "2025-07-28T20:02:14.511Z",
+  "visualFindings": [],
+  "functionalityChecks": [],
+  "recommendations": [],
+  "error": "page.waitForTimeout is not a function"
+}

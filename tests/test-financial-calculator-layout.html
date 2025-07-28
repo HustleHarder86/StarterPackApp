@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financial Calculator Layout Test</title>
+    
+    <!-- External Dependencies -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Design System -->
+    <link rel="stylesheet" href="../styles/design-system.css">
+    
+    <style>
+        /* Debug styles */
+        .debug-border {
+            border: 2px solid red;
+        }
+        .debug-border-blue {
+            border: 2px solid blue;
+        }
+        .debug-border-green {
+            border: 2px solid green;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto p-4">
+        <h1 class="text-2xl font-bold mb-4">Financial Calculator Layout Test</h1>
+        
+        <!-- Test Analysis Data -->
+        <script>
+            const testAnalysisData = {
+                propertyData: {
+                    price: 850000,
+                    propertyTaxes: 8500,
+                    condoFees: 450,
+                    downPayment: 170000
+                },
+                costs: {
+                    mortgage: 4200,
+                    insurance: 250,
+                    utilities: 200,
+                    maintenance: 300,
+                    other: 150
+                },
+                strAnalysis: {
+                    monthlyRevenue: 5400
+                },
+                longTermRental: {
+                    monthlyRent: 3100
+                },
+                analysisType: 'str'
+            };
+        </script>
+        
+        <!-- Load and render the calculator -->
+        <div id="calculator-container"></div>
+        
+        <!-- Load the component modules -->
+        <script type="module">
+            import { EnhancedFinancialCalculator } from '../components/calculator/EnhancedFinancialCalculator.js';
+            import { initializeEnhancedFinancialCalculator } from '../js/modules/financialCalculatorCharts.js';
+            
+            // Render the calculator
+            const container = document.getElementById('calculator-container');
+            const html = EnhancedFinancialCalculator({ analysisData: testAnalysisData });
+            container.innerHTML = html;
+            
+            // Initialize chart functionality
+            setTimeout(() => {
+                initializeEnhancedFinancialCalculator();
+            }, 100);
+            
+            // Debug: Check if grid classes are working
+            setTimeout(() => {
+                const gridElement = document.querySelector('.grid.grid-cols-1.lg\\:grid-cols-2');
+                if (gridElement) {
+                    console.log('Grid element found:', gridElement);
+                    console.log('Computed styles:', window.getComputedStyle(gridElement));
+                    
+                    // Add debug borders
+                    gridElement.classList.add('debug-border');
+                    gridElement.querySelectorAll('> div').forEach((child, index) => {
+                        child.classList.add(index === 0 ? 'debug-border-blue' : 'debug-border-green');
+                    });
+                }
+                
+                // Check key metrics grid
+                const metricsGrid = document.querySelector('.grid.grid-cols-2.lg\\:grid-cols-4');
+                if (metricsGrid) {
+                    console.log('Metrics grid found:', metricsGrid);
+                    console.log('Metrics grid styles:', window.getComputedStyle(metricsGrid));
+                }
+            }, 500);
+        </script>
+    </div>
+</body>
+</html>
