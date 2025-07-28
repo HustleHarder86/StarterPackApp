@@ -55,6 +55,13 @@ git checkout -b claude/description-YYYYMMDD_HHMMSS
 - Contains lessons from real debugging sessions
 - Includes data structure mismatch solutions, E2E test tips, and common pitfalls
 
+## 🎨 UI FIX WORKFLOW - MANDATORY
+
+**For ALL UI changes, follow the workflow in [UI-FIX-WORKFLOW.md](./UI-FIX-WORKFLOW.md)**
+- Create mock first → Implement → Test locally → Validate with agents → Then push
+- This prevents UI breakage and ensures quality
+- NEVER skip the validation step with code-reviewer and ui-ux-tester agents
+
 ## 🎯 CORE PRINCIPLE: Real Listing Data
 
 **ALWAYS use actual property data from listings:**

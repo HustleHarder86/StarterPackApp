@@ -156,20 +156,6 @@ export const EnhancedFinancialSummary = ({
 
   return `
     <div class="space-y-2xl">
-      <!-- Annual Revenue Comparison -->
-      ${Card({
-        children: `
-          <h3 class="text-xl font-bold text-gray-900 mb-lg">Annual Revenue Comparison</h3>
-          <div class="revenue-chart-container mb-lg">
-            <canvas id="revenueChart"></canvas>
-          </div>
-          <div class="text-center text-sm text-gray-600">
-            Projected annual advantage: <span class="font-bold text-green-600">+$${annualDifference.toLocaleString()}</span> with short-term rental
-          </div>
-        `,
-        className: 'mb-xl'
-      })}
-
       <!-- Enhanced Financial Calculator -->
       <div class="mb-xl">
         ${EnhancedFinancialCalculator({ analysisData: analysis })}
@@ -221,19 +207,6 @@ export const EnhancedFinancialSummary = ({
     <!-- Styles -->
 
     <style>
-      .revenue-chart-container {
-        height: 250px;
-        position: relative;
-        max-width: 100%;
-        overflow: hidden;
-      }
-      
-      @media (max-width: 768px) {
-        .revenue-chart-container {
-          height: 200px;
-        }
-      }
-      
       /* Responsive metric cards */
       @media (max-width: 1024px) {
         #capRateValue, #roiValue, #cashFlowValue, #breakEvenValue {
@@ -297,50 +270,6 @@ export const FinancialSummaryFromAnalysis = ({ analysis }) => {
 
 // Initialize function to be called after component is rendered
 export const initializeEnhancedFinancialSummary = () => {
-  // Initialize revenue comparison chart
-  const ctx = document.getElementById('revenueChart')?.getContext('2d');
-  if (ctx && window.Chart) {
-    const revenueChart = new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: ['Short-Term Rental', 'Long-Term Rental'],
-        datasets: [{
-          data: [window.analysisData.strRevenue * 12, window.analysisData.ltrRevenue * 12],
-          backgroundColor: ['#10b981', '#9ca3af'],
-          borderRadius: 8,
-          borderSkipped: false,
-          barThickness: 60
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: { display: false }
-        },
-        scales: {
-          y: {
-            beginAtZero: true,
-            grid: {
-              display: true,
-              color: 'rgba(0, 0, 0, 0.05)'
-            },
-            ticks: {
-              callback: function(value) {
-                return '$' + value.toLocaleString();
-              }
-            }
-          },
-          x: {
-            grid: {
-              display: false
-            }
-          }
-        }
-      }
-    });
-  }
-
   // Initialize financial calculator
   if (typeof initializeFinancialCalculator === 'function') {
     initializeFinancialCalculator();
