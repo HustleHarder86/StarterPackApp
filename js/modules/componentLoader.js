@@ -210,8 +210,28 @@ class ComponentLoader {
       const bathrooms = propertyData.bathrooms || 2;
       const sqft = propertyData.squareFeet || propertyData.square_feet || propertyData.sqft || 'N/A';
       const propertyAddress = propertyData.address || 'Property Address';
-      const propertyImage = propertyData.mainImage || propertyData.image || propertyData.imageUrl || propertyData.image_url || 
+      
+      // Enhanced image extraction with more fallbacks
+      const propertyImage = propertyData.mainImage || 
+        propertyData.image || 
+        propertyData.imageUrl || 
+        propertyData.image_url || 
+        analysisData.mainImage ||
+        analysisData.image ||
+        analysisData.imageUrl ||
+        analysisData.property?.mainImage ||
+        analysisData.property?.image ||
+        analysisData.propertyImage ||
         'https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=400&h=300&fit=crop';
+      
+      // Debug log to help troubleshoot
+      console.log('[Property Header] Image search:', {
+        'propertyData.mainImage': propertyData.mainImage,
+        'propertyData.image': propertyData.image,
+        'analysisData.mainImage': analysisData.mainImage,
+        'analysisData.property?.mainImage': analysisData.property?.mainImage,
+        'Final selected': propertyImage
+      });
       
       // Create reusable property header
       const propertyHeaderHtml = `
