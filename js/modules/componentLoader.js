@@ -593,12 +593,12 @@ class ComponentLoader {
           financialModule.initializeEnhancedFinancialSummary();
         }
         
-        // Import and initialize the financial calculator
+        // Import and initialize the enhanced financial calculator with charts
         try {
-          const { initializeFinancialCalculator } = await import('./financialCalculatorInit.js');
-          initializeFinancialCalculator();
+          const { initializeEnhancedFinancialCalculator } = await import('./financialCalculatorCharts.js');
+          initializeEnhancedFinancialCalculator();
         } catch (error) {
-          console.error('Failed to initialize financial calculator:', error);
+          console.error('Failed to initialize enhanced financial calculator:', error);
         }
       }, 100);
 

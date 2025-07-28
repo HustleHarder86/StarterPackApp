@@ -6,7 +6,7 @@
 import { Card } from '../ui/Card.js';
 import { MetricBadge } from '../ui/Badge.js';
 import { Button } from '../ui/Button.js';
-import { InteractiveFinancialCalculator, financialCalculatorScript, financialCalculatorStyles } from './InteractiveFinancialCalculator.js';
+import { EnhancedFinancialCalculator } from '../calculator/EnhancedFinancialCalculator.js';
 import { RatingTooltip, InfoTooltip } from '../ui/Tooltip.js';
 import { RatingLegend, CompactRatingLegend } from '../ui/RatingLegend.js';
 
@@ -170,16 +170,9 @@ export const EnhancedFinancialSummary = ({
         className: 'mb-xl'
       })}
 
-      <!-- Interactive Financial Calculator -->
+      <!-- Enhanced Financial Calculator -->
       <div class="mb-xl">
-        ${InteractiveFinancialCalculator({
-          monthlyRevenue: strRevenue,
-          expenses: expenses,
-          propertyPrice: propertyPrice,
-          downPayment: downPayment,
-          propertyData: propertyData,
-          costs: costs
-        })}
+        ${EnhancedFinancialCalculator({ analysisData: analysis })}
       </div>
 
       <!-- Key Metrics with Indicators -->
@@ -226,7 +219,6 @@ export const EnhancedFinancialSummary = ({
     </div>
 
     <!-- Styles -->
-    ${financialCalculatorStyles}
 
     <style>
       .revenue-chart-container {
