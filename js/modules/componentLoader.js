@@ -222,10 +222,19 @@ class ComponentLoader {
         analysisData.property?.mainImage ||
         analysisData.property?.image ||
         analysisData.propertyImage ||
+        analysisData.propertyDetails?.mainImage ||
+        analysisData.property_details?.mainImage ||
         null; // No default - will show nothing if no image found
       
-      // Debug log to help troubleshoot
-      console.log('[Property Header] Image search:', {
+      // Debug log to help troubleshoot - log entire objects to see structure
+      console.log('[Property Header] Full data structures:', {
+        'analysisData': analysisData,
+        'propertyData': propertyData,
+        'analysisData.propertyDetails': analysisData.propertyDetails,
+        'analysisData.property_details': analysisData.property_details
+      });
+      
+      console.log('[Property Header] Image search results:', {
         'propertyData.mainImage': propertyData.mainImage,
         'propertyData.image': propertyData.image,
         'analysisData.mainImage': analysisData.mainImage,
