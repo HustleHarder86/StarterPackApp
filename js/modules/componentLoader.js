@@ -134,10 +134,12 @@ class ComponentLoader {
       // Import chart modules dynamically
       let ltrChartsModule = null;
       let investmentChartsModule = null;
+      let strChartsModule = null;
       
       try {
         ltrChartsModule = await import('./ltrCharts.js');
         investmentChartsModule = await import('./investmentCharts.js');
+        strChartsModule = await import('./strCharts.js');
       } catch (error) {
         console.log('Chart modules not loaded:', error);
       }
@@ -458,6 +460,14 @@ class ComponentLoader {
       targetContainer.innerHTML = analysisLayout;
       this.attachEventHandlers();
       
+      // Initialize STR components after DOM is ready
+      setTimeout(() => {
+        if (strChartsModule && strChartsModule.initializeSTRComponents) {
+          console.log('Initializing STR components');
+          strChartsModule.initializeSTRComponents(analysisData);
+        }
+      }, 100);
+      
       // Define switchTab function globally
       window.switchTab = function(tabName) {
         console.log('Switching to tab:', tabName);
@@ -556,6 +566,14 @@ class ComponentLoader {
               window.updateScenarios();
               console.log('Called updateScenarios');
             }
+          }, 100);
+        }
+        
+        // Re-initialize STR components if switching to STR tab
+        if (tabName === 'str' && strChartsModule && strChartsModule.initializeSTRComponents) {
+          setTimeout(() => {
+            console.log('Re-initializing STR components for tab switch');
+            strChartsModule.initializeSTRComponents(analysisData);
           }, 100);
         }
       };
