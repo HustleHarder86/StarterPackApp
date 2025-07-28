@@ -195,7 +195,7 @@ export const AirbnbHeroSectionMockup = ({ analysis }) => {
   const bedrooms = propertyData.bedrooms || 2;
   const bathrooms = propertyData.bathrooms || 2;
   const sqft = propertyData.squareFeet || propertyData.square_feet || propertyData.sqft || 'N/A';
-  const propertyImage = propertyData.imageUrl || propertyData.image_url || 
+  const propertyImage = propertyData.mainImage || propertyData.imageUrl || propertyData.image_url || 
     'https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=800&h=600&fit=crop';
   
   // Extract financial data
@@ -274,59 +274,6 @@ export const AirbnbHeroSectionMockup = ({ analysis }) => {
         </div>
       </div>
       
-      <!-- Rental Analysis Options - Tab Style -->
-      <div class="mb-6">
-        <div class="flex flex-wrap gap-2 p-1.5 bg-gray-100 rounded-lg">
-          <!-- Short-Term Rental Tab (Active) -->
-          <button class="flex-1 min-w-[150px] flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-lg font-medium transition-all duration-200 transform hover:scale-[1.02] shadow-sm">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-            </svg>
-            <span>Short-Term Rental</span>
-          </button>
-          
-          <!-- Long-Term Rental Tab -->
-          <button class="flex-1 min-w-[150px] flex items-center justify-center gap-2 px-4 py-3 bg-white text-gray-700 rounded-lg font-medium transition-all duration-200 hover:bg-purple-50 hover:text-purple-700">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
-            </svg>
-            <span>Long-Term Rental</span>
-          </button>
-          
-          <!-- Investment Analysis Tab -->
-          <button class="flex-1 min-w-[150px] flex items-center justify-center gap-2 px-4 py-3 bg-white text-gray-700 rounded-lg font-medium transition-all duration-200 hover:bg-purple-50 hover:text-purple-700">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-            </svg>
-            <span>Investment Analysis</span>
-          </button>
-        </div>
-        
-        <!-- Tab Content Info -->
-        <div class="mt-4 p-4 bg-purple-50 rounded-lg border border-purple-200">
-          <div class="flex items-start gap-3">
-            <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0">
-              <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-              </svg>
-            </div>
-            <div class="flex-1">
-              <h4 class="font-semibold text-gray-900 mb-1">Short-Term Rental Analysis</h4>
-              <p class="text-sm text-gray-600 mb-2">Maximize your investment potential with vacation rental income from Airbnb & VRBO</p>
-              <div class="flex items-center gap-4 text-sm">
-                <div>
-                  <span class="text-gray-500">Est. Revenue:</span>
-                  <span class="font-bold text-purple-600 ml-1">$${monthlyRevenue.toLocaleString()}/mo</span>
-                </div>
-                <div>
-                  <span class="text-gray-500">Occupancy:</span>
-                  <span class="font-bold text-gray-900 ml-1">75%</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
       
       <!-- Cash Flow Breakdown Alert -->
       ${monthlyRevenue > 0 ? (netCashFlow < 0 ? `
