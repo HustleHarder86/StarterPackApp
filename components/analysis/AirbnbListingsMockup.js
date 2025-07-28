@@ -407,12 +407,12 @@ export const AirbnbHeroSectionMockup = ({ analysis }) => {
                 Average Nightly Rate
               </label>
               <div class="relative">
-                <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">$</span>
+                <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 z-10">$</span>
                 <input 
                   type="number" 
                   id="str-nightly-rate"
                   value="${strData.avgNightlyRate || strData.avg_nightly_rate || 220}"
-                  class="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500"
+                  class="w-full pl-7 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500"
                 />
               </div>
             </div>
