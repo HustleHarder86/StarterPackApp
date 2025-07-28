@@ -83,10 +83,10 @@ export const EnhancedFinancialCalculator = ({ analysisData = {} }) => {
       <!-- 2-Column Layout -->
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <!-- Left Column: Annual Revenue Chart -->
-        <div class="bg-gray-50 rounded-lg p-6">
+        <div class="bg-gray-50 rounded-lg p-6 border border-gray-200">
           <h3 class="text-lg font-bold text-gray-900 mb-4">Annual Cash Flow Analysis</h3>
-          <div class="relative h-64 mb-4">
-            <canvas id="annual-revenue-chart" width="400" height="300"></canvas>
+          <div class="relative h-64 mb-4 bg-white rounded-lg p-4">
+            <canvas id="annual-revenue-chart" class="w-full h-full"></canvas>
           </div>
           <div class="space-y-2 text-sm">
             <div class="flex justify-between">
@@ -107,10 +107,10 @@ export const EnhancedFinancialCalculator = ({ analysisData = {} }) => {
         </div>
         
         <!-- Right Column: Financial Inputs -->
-        <div class="bg-gray-50 rounded-lg p-6">
+        <div class="bg-gray-50 rounded-lg p-6 border border-gray-200">
           <h3 class="text-lg font-bold text-gray-900 mb-4">Adjust Financial Assumptions</h3>
           
-          <div class="space-y-4 max-h-96 overflow-y-auto pr-2">
+          <div class="space-y-4 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
             <!-- Revenue Section -->
             <div class="bg-white rounded-lg p-4 border border-gray-200">
               <h4 class="font-semibold text-gray-700 mb-3">Revenue</h4>
@@ -331,5 +331,41 @@ export const EnhancedFinancialCalculator = ({ analysisData = {} }) => {
         style="display: none;"
       ></div>
     </div>
+    
+    <!-- Custom styles for scrollbar and layout fixes -->
+    <style>
+      /* Custom scrollbar for financial inputs */
+      .custom-scrollbar::-webkit-scrollbar {
+        width: 6px;
+      }
+      
+      .custom-scrollbar::-webkit-scrollbar-track {
+        background: #f3f4f6;
+        border-radius: 3px;
+      }
+      
+      .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #d1d5db;
+        border-radius: 3px;
+      }
+      
+      .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: #9ca3af;
+      }
+      
+      /* Ensure proper grid layout on all screens */
+      @media (min-width: 1024px) {
+        .grid.lg\\:grid-cols-2 {
+          display: grid !important;
+          grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        }
+      }
+      
+      /* Fix canvas container */
+      #annual-revenue-chart {
+        max-width: 100%;
+        height: 100%;
+      }
+    </style>
   `;
 };

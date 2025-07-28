@@ -1150,6 +1150,135 @@
                 });
             }
             
+            async pollForSTRResults(analysisId) {
+                const maxAttempts = 60; // Poll for up to 5 minutes
+                const pollInterval = 5000; // Check every 5 seconds
+                let attempts = 0;
+                
+                const pollTimer = setInterval(async () => {
+                    attempts++;
+                    
+                    try {
+                        const response = await fetch(`/api/check-str-status?analysisId=${analysisId}`, {
+                            headers: {
+                                'Authorization': `Bearer ${await window.appState.currentUser.getIdToken()}`
+                            }
+                        });
+                        
+                        if (!response.ok) {
+                            console.error('Failed to check STR status:', response.status);
+                            if (attempts >= maxAttempts) {
+                                clearInterval(pollTimer);
+                                this.showSTRTimeout();
+                            }
+                            return;
+                        }
+                        
+                        const result = await response.json();
+                        
+                        if (result.status === 'completed' && result.strData) {
+                            clearInterval(pollTimer);
+                            console.log('STR analysis completed, updating UI...');
+                            
+                            // Update the analysis data with STR results
+                            if (window.appState.currentAnalysis) {
+                                window.appState.currentAnalysis.strAnalysis = result.strData;
+                                window.appState.currentAnalysis.strPending = false;
+                                window.analysisData = window.appState.currentAnalysis;
+                                
+                                // Update the STR tab if it's currently visible
+                                await this.updateSTRTabData(result.strData);
+                            }
+                        } else if (result.status === 'failed') {
+                            clearInterval(pollTimer);
+                            console.error('STR analysis failed:', result.error);
+                            this.showSTRError(result.error);
+                        } else if (attempts >= maxAttempts) {
+                            clearInterval(pollTimer);
+                            this.showSTRTimeout();
+                        }
+                    } catch (error) {
+                        console.error('Error polling for STR results:', error);
+                        if (attempts >= maxAttempts) {
+                            clearInterval(pollTimer);
+                            this.showSTRTimeout();
+                        }
+                    }
+                }, pollInterval);
+                
+                // Store timer reference for cleanup
+                window.appState.strPollTimer = pollTimer;
+            }
+            
+            async updateSTRTabData(strData) {
+                // Check if STR tab is currently active
+                const activeTab = document.querySelector('[data-tab].active');
+                if (activeTab && activeTab.dataset.tab === 'str') {
+                    // Re-render the STR tab with new data
+                    const tabContent = document.getElementById('str-content');
+                    if (tabContent) {
+                        tabContent.innerHTML = `
+                            <div class="text-center py-4">
+                                <div class="text-green-600 mb-2">✓ STR Analysis Complete!</div>
+                                <div class="text-sm text-gray-600">Updating display...</div>
+                            </div>
+                        `;
+                        
+                        // Small delay for visual feedback
+                        await new Promise(resolve => setTimeout(resolve, 500));
+                        
+                        // Re-render with actual data
+                        await this.renderAnalysisResults(window.appState.currentAnalysis);
+                    }
+                } else {
+                    // Just show a notification that STR data is ready
+                    const notification = document.createElement('div');
+                    notification.className = 'fixed bottom-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50';
+                    notification.innerHTML = '✓ Short-term rental analysis complete!';
+                    document.body.appendChild(notification);
+                    
+                    setTimeout(() => {
+                        notification.remove();
+                    }, 5000);
+                }
+            }
+            
+            showSTRTimeout() {
+                const strTab = document.getElementById('str-content');
+                if (strTab) {
+                    strTab.innerHTML = `
+                        <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-center">
+                            <h3 class="text-lg font-semibold text-yellow-900 mb-2">STR Analysis Taking Longer Than Expected</h3>
+                            <p class="text-yellow-700 mb-4">The Airbnb market analysis is taking longer than usual. This can happen in busy markets.</p>
+                            <button onclick="window.app.retrySTRAnalysis()" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">
+                                Retry Analysis
+                            </button>
+                        </div>
+                    `;
+                }
+            }
+            
+            showSTRError(error) {
+                const strTab = document.getElementById('str-content');
+                if (strTab) {
+                    strTab.innerHTML = `
+                        <div class="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
+                            <h3 class="text-lg font-semibold text-red-900 mb-2">STR Analysis Failed</h3>
+                            <p class="text-red-700 mb-4">${error || 'Unable to retrieve Airbnb market data at this time.'}</p>
+                            <button onclick="window.app.retrySTRAnalysis()" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">
+                                Retry Analysis
+                            </button>
+                        </div>
+                    `;
+                }
+            }
+            
+            async retrySTRAnalysis() {
+                // Implement retry logic for STR only
+                console.log('Retrying STR analysis...');
+                // This would need to be implemented on the backend
+            }
+            
             async analyzeProperty(propertyData, analysisType = 'both') {
                 // Store for retry functionality
                 window.appState.lastPropertyData = propertyData;
@@ -1225,6 +1354,8 @@
                     window.appState.currentAnalysis = analysisData;
                     // Also set window.analysisData for compatibility with showAllComparables
                     window.analysisData = analysisData;
+                    
+                    // No need for polling with 5-minute timeout
                     
                     // Complete the loading state
                     if (window.appState.loadingState) {
@@ -1435,7 +1566,13 @@
                 }
                 
                 // Map property data if needed
-                if (analysisData.property_details && !analysisData.propertyData) {
+                if (analysisData.property_data && !analysisData.propertyData) {
+                    analysisData.propertyData = {
+                        ...analysisData.property_data,
+                        // Ensure mainImage is mapped correctly
+                        mainImage: analysisData.property_data.mainImage || analysisData.property_data.image || analysisData.property_data.imageUrl
+                    };
+                } else if (analysisData.property_details && !analysisData.propertyData) {
                     analysisData.propertyData = {
                         ...analysisData.property_details,
                         price: analysisData.property_details.estimated_value,

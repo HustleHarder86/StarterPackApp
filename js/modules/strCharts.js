@@ -19,6 +19,13 @@ export function initializeSTRChart(data = {}) {
     return;
   }
 
+  // Check if Chart.js is loaded
+  if (!window.Chart) {
+    console.error('Chart.js not loaded yet, retrying in 500ms');
+    setTimeout(() => initializeSTRChart(data), 500);
+    return;
+  }
+
   // Extract data with fallbacks
   const strData = data.strAnalysis || data.short_term_rental || {};
   const ltrData = data.longTermRental || data.long_term_rental || {};
@@ -98,7 +105,13 @@ export function updateSTRCalculator(analysisData = {}) {
   const ltrData = analysisData.longTermRental || analysisData.long_term_rental || {};
   
   const defaultNightlyRate = strData.avgNightlyRate || strData.avg_nightly_rate || 220;
+  const defaultOccupancy = strData.occupancy_rate ? Math.round(strData.occupancy_rate * 100) : 75;
   const ltrRent = ltrData.monthlyRent || ltrData.monthly_rent || 3100;
+  
+  // Set initial occupancy value
+  if (occupancySlider) {
+    occupancySlider.value = defaultOccupancy;
+  }
 
   function updateCalculations() {
     const nightlyRate = parseFloat(nightlyRateInput.value) || 0;
@@ -106,6 +119,10 @@ export function updateSTRCalculator(analysisData = {}) {
     const monthlyRevenue = Math.round(nightlyRate * 30.4 * occupancyRate);
     const annualRevenue = monthlyRevenue * 12;
     const advantage = monthlyRevenue - ltrRent;
+    
+    // Update slider fill color
+    const sliderValue = ((occupancySlider.value - occupancySlider.min) / (occupancySlider.max - occupancySlider.min)) * 100;
+    occupancySlider.style.setProperty('--value', sliderValue + '%');
     
     // Update displays
     if (occupancyDisplay) occupancyDisplay.textContent = occupancySlider.value + '%';
@@ -158,7 +175,7 @@ export function updateSTRCalculator(analysisData = {}) {
     resetButton.addEventListener('click', function() {
       // Reset to default values
       nightlyRateInput.value = defaultNightlyRate;
-      occupancySlider.value = 75;
+      occupancySlider.value = defaultOccupancy;
       
       // Update the calculations with default values
       updateCalculations();

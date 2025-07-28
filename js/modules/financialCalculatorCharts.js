@@ -6,21 +6,71 @@
 let annualRevenueChart = null;
 
 /**
+ * Helper function to calculate total monthly expenses
+ */
+function calculateTotalMonthlyExpenses() {
+  const mortgage = parseFloat(document.getElementById('mortgage')?.value) || 0;
+  const propertyTax = parseFloat(document.getElementById('propertyTax')?.value) || 0;
+  const insurance = parseFloat(document.getElementById('insurance')?.value) || 0;
+  const hoaFees = parseFloat(document.getElementById('hoaFees')?.value) || 0;
+  const propertyMgmt = parseFloat(document.getElementById('propertyMgmt')?.value) || 0;
+  const utilities = parseFloat(document.getElementById('utilities')?.value) || 0;
+  const cleaning = parseFloat(document.getElementById('cleaning')?.value) || 0;
+  const maintenance = parseFloat(document.getElementById('maintenance')?.value) || 0;
+  const supplies = parseFloat(document.getElementById('supplies')?.value) || 0;
+  const platformFees = parseFloat(document.getElementById('platformFees')?.value) || 0;
+  const otherExpenses = parseFloat(document.getElementById('otherExpenses')?.value) || 0;
+  
+  return mortgage + propertyTax + insurance + hoaFees + propertyMgmt + 
+         utilities + cleaning + maintenance + supplies + 
+         platformFees + otherExpenses;
+}
+
+/**
  * Initialize the annual revenue comparison chart
  */
 export function initializeAnnualRevenueChart() {
   const canvas = document.getElementById('annual-revenue-chart');
-  if (!canvas || !window.Chart) {
-    console.log('Chart.js not loaded or canvas not found');
+  if (!canvas) {
+    console.error('Annual revenue chart canvas not found');
     return;
   }
+  
+  if (!window.Chart) {
+    console.error('Chart.js not loaded yet, retrying in 500ms');
+    setTimeout(() => initializeAnnualRevenueChart(), 500);
+    return;
+  }
+  
+  // Ensure canvas has proper dimensions
+  const container = canvas.parentElement;
+  if (container) {
+    canvas.width = container.offsetWidth;
+    canvas.height = container.offsetHeight;
+  }
 
-  // Get data from attributes
+  // Get data from attributes or calculate from current values
   const dataContainer = document.getElementById('financial-calc-data');
-  if (!dataContainer) return;
-
-  const annualRevenue = parseFloat(dataContainer.dataset.annualRevenue) || 0;
-  const annualExpenses = parseFloat(dataContainer.dataset.annualExpenses) || 0;
+  let annualRevenue = 0;
+  let annualExpenses = 0;
+  
+  if (dataContainer) {
+    annualRevenue = parseFloat(dataContainer.dataset.annualRevenue) || 0;
+    annualExpenses = parseFloat(dataContainer.dataset.annualExpenses) || 0;
+  } else {
+    // Calculate from current input values
+    const monthlyRevenue = parseFloat(document.getElementById('monthlyRevenue')?.value) || 5400;
+    const totalMonthlyExpenses = calculateTotalMonthlyExpenses() || 7576; // Default from typical values
+    annualRevenue = monthlyRevenue * 12;
+    annualExpenses = totalMonthlyExpenses * 12;
+    
+    // If still zero, use default values for initial display
+    if (annualRevenue === 0) {
+      annualRevenue = 64800; // Default $5400/mo * 12
+      annualExpenses = 90912; // Default expenses
+    }
+  }
+  
   const netCashFlow = annualRevenue - annualExpenses;
 
   // Destroy existing chart if it exists
@@ -58,17 +108,45 @@ export function initializeAnnualRevenueChart() {
               const prefix = context.dataIndex === 2 && context.parsed.y < 0 ? '-' : '';
               return prefix + '$' + value.toLocaleString() + '/year';
             }
-          }
+          },
+          backgroundColor: 'rgba(0, 0, 0, 0.8)',
+          padding: 12,
+          cornerRadius: 8
         }
       },
       scales: {
         y: {
           beginAtZero: true,
+          grid: {
+            color: 'rgba(0, 0, 0, 0.05)',
+            drawBorder: false
+          },
           ticks: {
             callback: function(value) {
               return '$' + Math.abs(value).toLocaleString();
+            },
+            font: {
+              size: 12
+            },
+            padding: 8
+          }
+        },
+        x: {
+          grid: {
+            display: false
+          },
+          ticks: {
+            font: {
+              size: 12,
+              weight: 500
             }
           }
+        }
+      },
+      layout: {
+        padding: {
+          top: 10,
+          bottom: 10
         }
       }
     }
@@ -146,11 +224,23 @@ function updateKeyMetrics(monthlyRevenue, totalExpenses, netCashFlow, annualCash
   }
 
   // Update ROI metric (need to get down payment from somewhere)
-  const downPayment = window.analysisData?.propertyData?.downPayment || 170000;
+  const dataContainer = document.getElementById('financial-calc-data');
+  const propertyPrice = window.analysisData?.propertyData?.price || 850000;
+  const downPayment = window.analysisData?.propertyData?.downPayment || (propertyPrice * 0.2);
   const cashReturn = downPayment > 0 ? ((annualCashFlow / downPayment) * 100).toFixed(1) : 0;
   const roiMetric = document.querySelector('.bg-gradient-to-br.from-blue-50 .text-2xl');
   if (roiMetric) {
     roiMetric.textContent = cashReturn + '%';
+  }
+  
+  // Update Cap Rate metric
+  const annualRevenue = monthlyRevenue * 12;
+  const annualExpenses = totalExpenses * 12;
+  const netOperatingIncome = annualRevenue - annualExpenses + (parseFloat(document.getElementById('mortgage')?.value || 0) * 12);
+  const capRate = propertyPrice > 0 ? ((netOperatingIncome / propertyPrice) * 100).toFixed(1) : 0;
+  const capRateMetric = document.querySelector('.bg-gradient-to-br.from-purple-50 .text-2xl');
+  if (capRateMetric) {
+    capRateMetric.textContent = capRate + '%';
   }
 
   // Update break-even metric

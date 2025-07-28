@@ -195,8 +195,13 @@ export const AirbnbHeroSectionMockup = ({ analysis }) => {
   const bedrooms = propertyData.bedrooms || 2;
   const bathrooms = propertyData.bathrooms || 2;
   const sqft = propertyData.squareFeet || propertyData.square_feet || propertyData.sqft || 'N/A';
-  const propertyImage = propertyData.mainImage || propertyData.imageUrl || propertyData.image_url || 
+  // Fix image extraction - check all possible field names
+  const propertyImage = propertyData.mainImage || propertyData.image || propertyData.imageUrl || propertyData.image_url || 
     'https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=800&h=600&fit=crop';
+  
+  // Debug logging to help troubleshoot
+  console.log('[STR Tab] Property data:', propertyData);
+  console.log('[STR Tab] Property image URL:', propertyImage);
   
   // Extract financial data
   const monthlyRevenue = strData.monthly_revenue || strData.monthlyRevenue || 0;
@@ -247,19 +252,19 @@ export const AirbnbHeroSectionMockup = ({ analysis }) => {
                     <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                       <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
                     </svg>
-                    ${bedrooms} Bedrooms
+                    ${bedrooms} ${bedrooms === 1 ? 'Bedroom' : 'Bedrooms'}
                   </span>
                   <span class="flex items-center gap-1">
                     <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                       <path fill-rule="evenodd" d="M10 2a1 1 0 00-1 1v1a1 1 0 002 0V3a1 1 0 00-1-1zM4 4h3a3 3 0 006 0h3a2 2 0 012 2v9a2 2 0 01-2 2H4a2 2 0 01-2-2V6a2 2 0 012-2zm2.5 7a1.5 1.5 0 100-3 1.5 1.5 0 000 3zm2.45 4a2.5 2.5 0 10-4.9 0h4.9zM12 9a1 1 0 100 2h3a1 1 0 100-2h-3zm-1 4a1 1 0 011-1h2a1 1 0 110 2h-2a1 1 0 01-1-1z" clip-rule="evenodd" />
                     </svg>
-                    ${bathrooms} Bathrooms
+                    ${bathrooms} ${bathrooms === 1 ? 'Bathroom' : 'Bathrooms'}
                   </span>
                   <span class="flex items-center gap-1">
                     <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                       <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
                     </svg>
-                    ${sqft !== 'N/A' ? sqft + ' sq ft' : 'Size N/A'}
+                    ${sqft !== 'N/A' ? sqft.toLocaleString() + ' sq ft' : 'Size N/A'}
                   </span>
                 </div>
               </div>
@@ -333,13 +338,28 @@ export const AirbnbHeroSectionMockup = ({ analysis }) => {
         <!-- Left Column: Revenue Bar Chart -->
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
           <h3 class="text-lg font-bold text-gray-900 mb-4">Revenue Comparison</h3>
-          <div class="relative h-64 mb-4">
+          <div class="relative h-64 mb-6">
             <!-- Bar Chart Container -->
             <canvas id="str-revenue-chart" width="400" height="300"></canvas>
           </div>
-          <div class="text-center text-sm text-gray-600">
-            <p>Average nightly rate: <span class="font-bold text-purple-600">${stats.avgRate}</span></p>
-            <p>Average occupancy: <span class="font-bold text-purple-600">${stats.avgOccupancy}</span></p>
+          
+          <!-- Stats Summary Below Chart -->
+          <div class="bg-gray-50 rounded-lg p-4 space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-sm text-gray-600">Average Nightly Rate</span>
+              <span class="text-sm font-bold text-purple-600">${stats.avgRate}</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-sm text-gray-600">Average Occupancy</span>
+              <span class="text-sm font-bold text-purple-600">${stats.avgOccupancy}</span>
+            </div>
+            <div class="h-px bg-gray-200 my-2"></div>
+            <div class="flex items-center justify-between">
+              <span class="text-sm font-medium text-gray-700">Market Performance</span>
+              <span class="text-sm font-bold ${monthlyRevenue > (ltrData.monthly_rent || ltrData.monthlyRent || 3100) ? 'text-green-600' : 'text-orange-600'}">
+                ${monthlyRevenue > (ltrData.monthly_rent || ltrData.monthlyRent || 3100) ? 'Strong' : 'Moderate'}
+              </span>
+            </div>
           </div>
         </div>
         
@@ -354,12 +374,13 @@ export const AirbnbHeroSectionMockup = ({ analysis }) => {
                 Average Nightly Rate
               </label>
               <div class="relative">
-                <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 z-10">$</span>
+                <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 pointer-events-none" style="z-index: 1;">$</span>
                 <input 
                   type="number" 
                   id="str-nightly-rate"
                   value="${strData.avgNightlyRate || strData.avg_nightly_rate || 220}"
-                  class="w-full pl-7 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500"
+                  class="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500"
+                  style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;"
                 />
               </div>
             </div>
@@ -452,6 +473,7 @@ export const AirbnbHeroSectionMockup = ({ analysis }) => {
       ></div>
       
       <style>
+        /* Enhanced Slider Styling */
         .slider {
           -webkit-appearance: none;
           width: 100%;
@@ -460,23 +482,98 @@ export const AirbnbHeroSectionMockup = ({ analysis }) => {
           outline: none;
           opacity: 0.9;
           transition: opacity 0.2s;
+          border-radius: 4px;
+          position: relative;
         }
+        
         .slider:hover { opacity: 1; }
+        
+        /* Purple track fill for webkit browsers */
+        .slider::-webkit-slider-runnable-track {
+          height: 8px;
+          background: #e5e7eb;
+          border-radius: 4px;
+        }
+        
+        /* Purple thumb for webkit browsers */
         .slider::-webkit-slider-thumb {
           -webkit-appearance: none;
           appearance: none;
-          width: 20px;
-          height: 20px;
+          width: 24px;
+          height: 24px;
           background: #9333ea;
           cursor: pointer;
           border-radius: 50%;
+          margin-top: -8px;
+          box-shadow: 0 2px 4px rgba(147, 51, 234, 0.3);
+          transition: all 0.2s ease;
         }
+        
+        .slider::-webkit-slider-thumb:hover {
+          background: #7c3aed;
+          transform: scale(1.1);
+          box-shadow: 0 4px 8px rgba(147, 51, 234, 0.4);
+        }
+        
+        /* Purple track fill for Firefox */
+        .slider::-moz-range-track {
+          height: 8px;
+          background: #e5e7eb;
+          border-radius: 4px;
+        }
+        
+        /* Purple thumb for Firefox */
         .slider::-moz-range-thumb {
-          width: 20px;
-          height: 20px;
+          width: 24px;
+          height: 24px;
           background: #9333ea;
           cursor: pointer;
           border-radius: 50%;
+          border: none;
+          box-shadow: 0 2px 4px rgba(147, 51, 234, 0.3);
+          transition: all 0.2s ease;
+        }
+        
+        .slider::-moz-range-thumb:hover {
+          background: #7c3aed;
+          transform: scale(1.1);
+          box-shadow: 0 4px 8px rgba(147, 51, 234, 0.4);
+        }
+        
+        /* Purple progress fill using CSS trick */
+        .slider {
+          background-image: linear-gradient(to right, #9333ea 0%, #9333ea var(--value, 50%), #e5e7eb var(--value, 50%), #e5e7eb 100%);
+        }
+        
+        /* Currency input styling */
+        input[type="number"] {
+          -moz-appearance: textfield;
+          padding-left: 1.75rem;
+        }
+        
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button {
+          -webkit-appearance: none;
+          margin: 0;
+        }
+        
+        /* Reset button styling */
+        #reset-calculator {
+          background-color: #f3f4f6;
+          color: #374151;
+          transition: all 0.2s ease;
+        }
+        
+        #reset-calculator:hover {
+          background-color: #e5e7eb;
+          color: #111827;
+          transform: translateY(-1px);
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        #reset-calculator:active {
+          transform: translateY(0);
+          box-shadow: none;
         }
       </style>
     </div>

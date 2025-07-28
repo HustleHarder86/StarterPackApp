@@ -230,7 +230,7 @@ class ComponentLoader {
                     <button
                       id="str-tab"
                       onclick="window.switchTab('str')"
-                      class="tab-button ${showSTR ? 'bg-white text-blue-700 shadow-md border-blue-300 transform scale-105' : 'bg-gray-50 text-gray-600 hover:bg-white hover:text-gray-800 hover:shadow-sm border-gray-200'} 
+                      class="tab-button ${showSTR ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg border-transparent transform scale-105' : 'bg-gray-50 text-gray-600 hover:bg-white hover:text-gray-800 hover:shadow-sm border-gray-200'} 
                       flex items-center gap-2 px-4 py-3 rounded-lg border-2 font-medium transition-all duration-200 group"
                     >
                       <span class="text-xl group-hover:scale-110 transition-transform">
@@ -238,18 +238,18 @@ class ComponentLoader {
                       </span>
                       <div class="text-left">
                         <div class="font-semibold">Short-Term Rental</div>
-                        <div class="text-xs ${showSTR ? 'text-blue-600' : 'text-gray-500'}">
+                        <div class="text-xs ${showSTR ? 'text-blue-100' : 'text-gray-500'}">
                           Airbnb & VRBO Analysis
                         </div>
                       </div>
-                      ${showSTR ? '<span class="ml-2 text-green-500">✓</span>' : ''}
+                      ${showSTR ? '<span class="ml-2 text-white">✓</span>' : ''}
                     </button>
                     
                     <!-- LTR Tab -->
                     <button
                       id="ltr-tab"
                       onclick="window.switchTab('ltr')"
-                      class="tab-button ${showLTR && !showSTR ? 'bg-white text-blue-700 shadow-md border-blue-300 transform scale-105' : 'bg-gray-50 text-gray-600 hover:bg-white hover:text-gray-800 hover:shadow-sm border-gray-200'} 
+                      class="tab-button ${showLTR && !showSTR ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg border-transparent transform scale-105' : 'bg-gray-50 text-gray-600 hover:bg-white hover:text-gray-800 hover:shadow-sm border-gray-200'} 
                       flex items-center gap-2 px-4 py-3 rounded-lg border-2 font-medium transition-all duration-200 group"
                     >
                       <span class="text-xl group-hover:scale-110 transition-transform">
@@ -257,11 +257,11 @@ class ComponentLoader {
                       </span>
                       <div class="text-left">
                         <div class="font-semibold">Long-Term Rental</div>
-                        <div class="text-xs ${showLTR && !showSTR ? 'text-blue-600' : 'text-gray-500'}">
+                        <div class="text-xs ${showLTR && !showSTR ? 'text-blue-100' : 'text-gray-500'}">
                           Traditional Rental Income
                         </div>
                       </div>
-                      ${showLTR && !showSTR ? '<span class="ml-2 text-green-500">✓</span>' : ''}
+                      ${showLTR && !showSTR ? '<span class="ml-2 text-white">✓</span>' : ''}
                     </button>
                     
                     <!-- Investment Tab -->
@@ -345,115 +345,7 @@ class ComponentLoader {
         
         <!-- Tab Switching Script -->
         <script>
-          // Ensure switchTab is available globally
-          window.switchTab = function(tabName) {
-            console.log('Switching to tab:', tabName);
-            
-            // Debug: Log all tab contents found
-            const allTabContents = document.querySelectorAll('.tab-content');
-            console.log('Found tab contents:', allTabContents.length);
-            allTabContents.forEach(content => {
-              console.log('Tab content:', content.id, 'Hidden:', content.classList.contains('hidden'));
-            });
-            
-            // Update tab buttons for new design
-            document.querySelectorAll('.tab-button').forEach(btn => {
-              // Remove active classes
-              btn.classList.remove('bg-white', 'text-blue-700', 'shadow-md', 'border-blue-300', 'transform', 'scale-105');
-              btn.classList.add('bg-gray-50', 'text-gray-600', 'border-gray-200');
-              
-              // Remove checkmark if exists
-              const checkmark = btn.querySelector('.text-green-500');
-              if (checkmark) checkmark.remove();
-              
-              // Update icon to inactive state
-              const icon = btn.querySelector('.text-xl');
-              if (icon) {
-                if (btn.id === 'str-tab') icon.textContent = '🏡';
-                else if (btn.id === 'ltr-tab') icon.textContent = '🏢';
-              }
-              
-              // Update subtitle color
-              const subtitle = btn.querySelector('.text-xs');
-              if (subtitle) {
-                subtitle.classList.remove('text-blue-600');
-                subtitle.classList.add('text-gray-500');
-              }
-            });
-            
-            const activeTab = document.getElementById(tabName + '-tab');
-            if (activeTab) {
-              // Add active classes
-              activeTab.classList.remove('bg-gray-50', 'text-gray-600', 'border-gray-200');
-              activeTab.classList.add('bg-white', 'text-blue-700', 'shadow-md', 'border-blue-300', 'transform', 'scale-105');
-              
-              // Add checkmark if not already present
-              if (!activeTab.querySelector('.text-green-500')) {
-                const checkmark = document.createElement('span');
-                checkmark.className = 'ml-2 text-green-500';
-                checkmark.textContent = '✓';
-                activeTab.appendChild(checkmark);
-              }
-              
-              // Update icon to active state
-              const icon = activeTab.querySelector('.text-xl');
-              if (icon) {
-                if (tabName === 'str') icon.textContent = '🏠';
-                else if (tabName === 'ltr') icon.textContent = '🏘️';
-                else if (tabName === 'investment') icon.textContent = '📈';
-              }
-              
-              // Update subtitle color
-              const subtitle = activeTab.querySelector('.text-xs');
-              if (subtitle) {
-                subtitle.classList.remove('text-gray-500');
-                subtitle.classList.add('text-blue-600');
-              }
-              
-              console.log('Activated tab button:', tabName + '-tab');
-            } else {
-              console.error('Tab button not found:', tabName + '-tab');
-            }
-            
-            // Update tab content
-            document.querySelectorAll('.tab-content').forEach(content => {
-              content.classList.add('hidden');
-            });
-            
-            const activeContent = document.getElementById(tabName + '-content');
-            if (activeContent) {
-              activeContent.classList.remove('hidden');
-              console.log('Showed content:', tabName + '-content');
-            } else {
-              console.error('Tab content not found:', tabName + '-content');
-            }
-            
-            // Store active tab in session
-            sessionStorage.setItem('activeRentalTab', tabName);
-            
-            // Initialize investment planning scripts if switching to investment tab
-            if (tabName === 'investment') {
-              console.log('Initializing investment planning scripts...');
-              setTimeout(() => {
-                if (window.calculateCapitalGains) {
-                  window.calculateCapitalGains();
-                  console.log('Called calculateCapitalGains');
-                }
-                if (window.updateScenarios) {
-                  window.updateScenarios();
-                  console.log('Called updateScenarios');
-                }
-              }, 100);
-            }
-          }
-          
-          // Restore active tab if exists
-          setTimeout(() => {
-            const activeTab = sessionStorage.getItem('activeRentalTab');
-            if (activeTab && (activeTab === 'ltr' || activeTab === 'investment')) {
-              window.switchTab(activeTab);
-            }
-          }, 100);
+          // Tab switching is handled in the main script after this
         </script>
       `;
 
@@ -464,7 +356,18 @@ class ComponentLoader {
       setTimeout(() => {
         if (strChartsModule && strChartsModule.initializeSTRComponents) {
           console.log('Initializing STR components');
-          strChartsModule.initializeSTRComponents(analysisData);
+          // Wait for Chart.js to be available
+          const waitForChartJs = (retries = 10) => {
+            if (window.Chart) {
+              strChartsModule.initializeSTRComponents(analysisData);
+            } else if (retries > 0) {
+              console.log('Waiting for Chart.js to load...', retries);
+              setTimeout(() => waitForChartJs(retries - 1), 200);
+            } else {
+              console.error('Chart.js failed to load after multiple retries');
+            }
+          };
+          waitForChartJs();
         }
       }, 100);
       
@@ -481,12 +384,12 @@ class ComponentLoader {
         
         // Update tab buttons for new design
         document.querySelectorAll('.tab-button').forEach(btn => {
-          // Remove active classes
-          btn.classList.remove('bg-white', 'text-blue-700', 'shadow-md', 'border-blue-300', 'transform', 'scale-105');
+          // Remove active classes - including gradient backgrounds
+          btn.classList.remove('bg-gradient-to-r', 'from-blue-600', 'to-purple-600', 'bg-white', 'text-white', 'text-blue-700', 'shadow-lg', 'shadow-md', 'border-transparent', 'border-blue-300', 'transform', 'scale-105');
           btn.classList.add('bg-gray-50', 'text-gray-600', 'border-gray-200');
           
           // Remove checkmark if exists
-          const checkmark = btn.querySelector('.text-green-500');
+          const checkmark = btn.querySelector('.text-white, .text-green-500');
           if (checkmark) checkmark.remove();
           
           // Update icon to inactive state
@@ -499,21 +402,21 @@ class ComponentLoader {
           // Update subtitle color
           const subtitle = btn.querySelector('.text-xs');
           if (subtitle) {
-            subtitle.classList.remove('text-blue-600');
+            subtitle.classList.remove('text-blue-100', 'text-blue-600');
             subtitle.classList.add('text-gray-500');
           }
         });
         
         const activeTab = document.getElementById(tabName + '-tab');
         if (activeTab) {
-          // Add active classes
+          // Add active classes with gradient background
           activeTab.classList.remove('bg-gray-50', 'text-gray-600', 'border-gray-200');
-          activeTab.classList.add('bg-white', 'text-blue-700', 'shadow-md', 'border-blue-300', 'transform', 'scale-105');
+          activeTab.classList.add('bg-gradient-to-r', 'from-blue-600', 'to-purple-600', 'text-white', 'shadow-lg', 'border-transparent', 'transform', 'scale-105');
           
           // Add checkmark if not already present
-          if (!activeTab.querySelector('.text-green-500')) {
+          if (!activeTab.querySelector('.text-white')) {
             const checkmark = document.createElement('span');
-            checkmark.className = 'ml-2 text-green-500';
+            checkmark.className = 'ml-2 text-white';
             checkmark.textContent = '✓';
             activeTab.appendChild(checkmark);
           }
@@ -530,7 +433,7 @@ class ComponentLoader {
           const subtitle = activeTab.querySelector('.text-xs');
           if (subtitle) {
             subtitle.classList.remove('text-gray-500');
-            subtitle.classList.add('text-blue-600');
+            subtitle.classList.add('text-blue-100');
           }
           
           console.log('Activated tab button:', tabName + '-tab');
@@ -573,7 +476,18 @@ class ComponentLoader {
         if (tabName === 'str' && strChartsModule && strChartsModule.initializeSTRComponents) {
           setTimeout(() => {
             console.log('Re-initializing STR components for tab switch');
-            strChartsModule.initializeSTRComponents(analysisData);
+            // Ensure Chart.js is available before re-initializing
+            if (window.Chart) {
+              strChartsModule.initializeSTRComponents(analysisData);
+            } else {
+              console.error('Chart.js not available for tab switch');
+              // Try once more after a delay
+              setTimeout(() => {
+                if (window.Chart) {
+                  strChartsModule.initializeSTRComponents(analysisData);
+                }
+              }, 500);
+            }
           }, 100);
         }
       };
@@ -596,7 +510,18 @@ class ComponentLoader {
         // Import and initialize the enhanced financial calculator with charts
         try {
           const { initializeEnhancedFinancialCalculator } = await import('./financialCalculatorCharts.js');
-          initializeEnhancedFinancialCalculator();
+          // Wait for Chart.js before initializing
+          const waitForChartJs = (retries = 10) => {
+            if (window.Chart) {
+              initializeEnhancedFinancialCalculator();
+            } else if (retries > 0) {
+              console.log('Waiting for Chart.js for financial calculator...', retries);
+              setTimeout(() => waitForChartJs(retries - 1), 200);
+            } else {
+              console.error('Chart.js failed to load for financial calculator');
+            }
+          };
+          waitForChartJs();
         } catch (error) {
           console.error('Failed to initialize enhanced financial calculator:', error);
         }
