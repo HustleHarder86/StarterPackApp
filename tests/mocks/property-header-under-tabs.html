@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Property Header Under Tabs Mock</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background-color: #f9fafb; }
+        .tab-content { display: none; }
+        .tab-content:not(.hidden) { display: block; }
+        @keyframes pulse-subtle { 
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        .animate-pulse-subtle { animation: pulse-subtle 2s ease-in-out infinite; }
+    </style>
+</head>
+<body class="p-8">
+    <div class="max-w-7xl mx-auto">
+        <h1 class="text-2xl font-bold mb-6">Mock: Property Header Positioned Under Tabs</h1>
+        
+        <!-- Rental Analysis Tabs -->
+        <div class="bg-white rounded-lg shadow-lg mb-6">
+            <!-- Tab Navigation at Top -->
+            <div class="p-4 rounded-t-lg border-b border-gray-200">
+                <h3 class="text-xl font-bold text-gray-900 mb-3">Rental Analysis Options</h3>
+                <div class="flex flex-wrap gap-2">
+                    <!-- STR Tab (Active) -->
+                    <button class="bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg border-transparent transform scale-105 flex items-center gap-2 px-4 py-3 rounded-lg border-2 font-medium transition-all duration-200">
+                        <span class="text-xl">🏠</span>
+                        <div class="text-left">
+                            <div class="font-semibold">Short-Term Rental</div>
+                            <div class="text-xs text-blue-100">Airbnb & VRBO Analysis</div>
+                        </div>
+                        <span class="ml-2 text-white">✓</span>
+                    </button>
+                    
+                    <!-- LTR Tab -->
+                    <button class="bg-gray-50 text-gray-600 hover:bg-white hover:text-gray-800 hover:shadow-sm border-gray-200 flex items-center gap-2 px-4 py-3 rounded-lg border-2 font-medium transition-all duration-200">
+                        <span class="text-xl">🏢</span>
+                        <div class="text-left">
+                            <div class="font-semibold">Long-Term Rental</div>
+                            <div class="text-xs text-gray-500">Traditional Rental Income</div>
+                        </div>
+                    </button>
+                    
+                    <!-- Investment Tab -->
+                    <button class="bg-gray-50 text-gray-600 hover:bg-white hover:text-gray-800 hover:shadow-sm border-gray-200 flex items-center gap-2 px-4 py-3 rounded-lg border-2 font-medium transition-all duration-200">
+                        <span class="text-xl">📊</span>
+                        <div class="text-left">
+                            <div class="font-semibold">Investment Planning</div>
+                            <div class="text-xs text-gray-500">ROI & Tax Calculator</div>
+                        </div>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Tab Content -->
+            <div class="p-6">
+                <!-- STR Content (Active) -->
+                <div class="tab-content" style="display: block;">
+                    <!-- ✅ PROPERTY HEADER HERE - Under Tabs -->
+                    <div class="bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-xl mb-6 shadow-lg overflow-hidden">
+                        <div class="p-6">
+                            <div class="flex flex-col lg:flex-row items-center gap-6">
+                                <!-- Property Image -->
+                                <div class="w-full lg:w-64 h-48 rounded-lg overflow-hidden shadow-xl">
+                                    <img 
+                                        src="https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=400&h=300&fit=crop" 
+                                        alt="Property" 
+                                        class="w-full h-full object-cover"
+                                    />
+                                </div>
+                                
+                                <!-- Property Details -->
+                                <div class="flex-1 text-center lg:text-left">
+                                    <h1 class="text-3xl font-bold mb-2">Property Investment Analysis</h1>
+                                    <p class="text-xl mb-4">2302 - 82, DALHOUSIE STREET Toronto, Ontario, M5B 0C5</p>
+                                    
+                                    <div class="flex flex-wrap gap-4 justify-center lg:justify-start">
+                                        <div class="flex items-center gap-2">
+                                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                                <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path>
+                                            </svg>
+                                            <span>2 Bedrooms</span>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M7 2a1 1 0 00-.707 1.707L7 4.414v3.758a1 1 0 01-.293.707l-4 4C.817 14.769 2.156 18 4.828 18h10.343c2.673 0 4.012-3.231 2.122-5.121l-4-4A1 1 0 0113 8.172V4.414l.707-.707A1 1 0 0013 2h-6zm2 6.172V4h2v4.172a3 3 0 00.879 2.12l1.027 1.028a4 4 0 00-2.171.102l-.47.156a4 4 0 01-2.53 0l-.563-.187a1.993 1.993 0 00-.114-.035l1.063-1.063A3 3 0 009 8.172z" clip-rule="evenodd"></path>
+                                            </svg>
+                                            <span>2 Bathrooms</span>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                                <path d="M3 12v3c0 1.657 3.134 3 7 3s7-1.343 7-3v-3c0 1.657-3.134 3-7 3s-7-1.343-7-3z"></path>
+                                                <path d="M3 7v3c0 1.657 3.134 3 7 3s7-1.343 7-3V7c0 1.657-3.134 3-7 3S3 8.657 3 7z"></path>
+                                                <path d="M17 5c0 1.657-3.134 3-7 3S3 6.657 3 5s3.134-3 7-3 7 1.343 7 3z"></path>
+                                            </svg>
+                                            <span>650 sq ft</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Live Data Badge -->
+                                <div class="flex flex-col items-center gap-2">
+                                    <span class="inline-flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur text-white text-sm font-bold rounded-full shadow-lg animate-pulse-subtle">
+                                        <span class="inline-block w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+                                        LIVE DATA
+                                    </span>
+                                    <span class="text-xs text-white/80">Updated just now</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Rest of STR Content -->
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                        <h3 class="text-lg font-bold text-gray-900 mb-4">Revenue Comparison</h3>
+                        <p class="text-gray-600">STR analysis content would go here...</p>
+                    </div>
+                </div>
+                
+                <!-- LTR Content (Hidden) -->
+                <div class="tab-content hidden">
+                    <!-- Same Property Header -->
+                    <div class="bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-xl mb-6 shadow-lg overflow-hidden">
+                        <!-- Same content as STR tab -->
+                    </div>
+                    <p>LTR content...</p>
+                </div>
+                
+                <!-- Investment Content (Hidden) -->
+                <div class="tab-content hidden">
+                    <!-- Same Property Header -->
+                    <div class="bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-xl mb-6 shadow-lg overflow-hidden">
+                        <!-- Same content as STR tab -->
+                    </div>
+                    <p>Investment content...</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Visual Guide -->
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <h4 class="font-semibold text-blue-900 mb-2">Mock Structure:</h4>
+            <ul class="space-y-1 text-blue-800">
+                <li>1️⃣ Tab Navigation at top of white container</li>
+                <li>2️⃣ Property Header INSIDE tab content area (not above tabs)</li>
+                <li>3️⃣ Property Header appears in ALL tabs (STR, LTR, Investment)</li>
+                <li>4️⃣ Purple gradient background with actual property image</li>
+                <li>5️⃣ Live Data badge with animation</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

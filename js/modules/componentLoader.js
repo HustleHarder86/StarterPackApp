@@ -203,6 +203,72 @@ class ComponentLoader {
       
       const shareModalHtml = shareModule.ShareModal();
       const actionsHtml = this.generateActionButtons(buttonModule);
+      
+      // Extract property data for header
+      const propertyData = analysisData.propertyData || analysisData.property_data || {};
+      const bedrooms = propertyData.bedrooms || 2;
+      const bathrooms = propertyData.bathrooms || 2;
+      const sqft = propertyData.squareFeet || propertyData.square_feet || propertyData.sqft || 'N/A';
+      const propertyAddress = propertyData.address || 'Property Address';
+      const propertyImage = propertyData.mainImage || propertyData.image || propertyData.imageUrl || propertyData.image_url || 
+        'https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=400&h=300&fit=crop';
+      
+      // Create reusable property header
+      const propertyHeaderHtml = `
+        <div class="bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-xl mb-6 shadow-lg overflow-hidden">
+          <div class="p-6">
+            <div class="flex flex-col lg:flex-row items-center gap-6">
+              <!-- Property Image -->
+              <div class="w-full lg:w-64 h-48 rounded-lg overflow-hidden shadow-xl">
+                <img 
+                  src="${propertyImage}" 
+                  alt="Property" 
+                  class="w-full h-full object-cover"
+                  onerror="this.src='https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=400&h=300&fit=crop'"
+                />
+              </div>
+              
+              <!-- Property Details -->
+              <div class="flex-1 text-center lg:text-left">
+                <h1 class="text-3xl font-bold mb-2">Property Investment Analysis</h1>
+                <p class="text-xl mb-4">${propertyAddress}</p>
+                
+                <div class="flex flex-wrap gap-4 justify-center lg:justify-start">
+                  <div class="flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path>
+                    </svg>
+                    <span>${bedrooms} Bedrooms</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M7 2a1 1 0 00-.707 1.707L7 4.414v3.758a1 1 0 01-.293.707l-4 4C.817 14.769 2.156 18 4.828 18h10.343c2.673 0 4.012-3.231 2.122-5.121l-4-4A1 1 0 0113 8.172V4.414l.707-.707A1 1 0 0013 2h-6zm2 6.172V4h2v4.172a3 3 0 00.879 2.12l1.027 1.028a4 4 0 00-2.171.102l-.47.156a4 4 0 01-2.53 0l-.563-.187a1.993 1.993 0 00-.114-.035l1.063-1.063A3 3 0 009 8.172z" clip-rule="evenodd"></path>
+                    </svg>
+                    <span>${bathrooms} Bathrooms</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M3 12v3c0 1.657 3.134 3 7 3s7-1.343 7-3v-3c0 1.657-3.134 3-7 3s-7-1.343-7-3z"></path>
+                      <path d="M3 7v3c0 1.657 3.134 3 7 3s7-1.343 7-3V7c0 1.657-3.134 3-7 3S3 8.657 3 7z"></path>
+                      <path d="M17 5c0 1.657-3.134 3-7 3S3 6.657 3 5s3.134-3 7-3 7 1.343 7 3z"></path>
+                    </svg>
+                    <span>${sqft} sq ft</span>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Live Data Badge -->
+              <div class="flex flex-col items-center gap-2">
+                <span class="inline-flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur text-white text-sm font-bold rounded-full shadow-lg animate-pulse-subtle">
+                  <span class="inline-block w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+                  LIVE DATA
+                </span>
+                <span class="text-xs text-white/80">Updated just now</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
 
       // Render the complete analysis layout
       const analysisLayout = `
@@ -287,16 +353,19 @@ class ComponentLoader {
                 <div class="p-6">
                   <!-- STR Content -->
                   <div id="str-content" class="tab-content">
+                    ${propertyHeaderHtml}
                     ${airbnbHtml}
                   </div>
                   
                   <!-- LTR Content -->
                   <div id="ltr-content" class="tab-content hidden">
+                    ${propertyHeaderHtml}
                     ${ltrHtml}
                   </div>
                   
                   <!-- Investment Planning Content - Always available -->
                   <div id="investment-content" class="tab-content hidden">
+                    ${propertyHeaderHtml}
                     ${investmentPlanningHtml}
                   </div>
                 </div>
@@ -338,6 +407,16 @@ class ComponentLoader {
         <script>
           // Tab switching is handled in the main script after this
         </script>
+        
+        <style>
+          @keyframes pulse-subtle { 
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+          }
+          .animate-pulse-subtle { 
+            animation: pulse-subtle 2s ease-in-out infinite; 
+          }
+        </style>
       `;
 
       targetContainer.innerHTML = analysisLayout;

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Property Header Under Tabs</title>
+    <link rel="stylesheet" href="../styles/design-system.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { background-color: #f9fafb; }
+        .tab-content { display: none; }
+        .tab-content:not(.hidden) { display: block; }
+        @keyframes pulse-subtle { 
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        .animate-pulse-subtle { 
+            animation: pulse-subtle 2s ease-in-out infinite; 
+        }
+    </style>
+</head>
+<body>
+    <div class="min-h-screen bg-gray-50 py-8">
+        <div class="max-w-7xl mx-auto px-4">
+            <h1 class="text-2xl font-bold mb-6">Test: Property Header Under Tabs</h1>
+            
+            <div id="analysis-container">Loading...</div>
+        </div>
+    </div>
+
+    <script type="module">
+        // Mock analysis data with real property image
+        const mockAnalysisData = {
+            propertyData: {
+                address: '2302 - 82, DALHOUSIE STREET Toronto, Ontario, M5B 0C5',
+                price: 635000,
+                bedrooms: 2,
+                bathrooms: 2,
+                squareFeet: 650,
+                propertyTaxes: 5490,
+                condoFees: 480,
+                mainImage: 'https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=800&h=600&fit=crop'
+            },
+            strAnalysis: {
+                monthlyRevenue: 8704,
+                avgNightlyRate: 409,
+                occupancy_rate: 0.71,
+                comparables: [
+                    {
+                        title: "Luxury 2BR Downtown Toronto",
+                        nightly_rate: 261,
+                        occupancy_rate: 0.90,
+                        monthly_revenue: 7047,
+                        bedrooms: 2,
+                        bathrooms: 2,
+                        rating: 4.9,
+                        reviewCount: 89,
+                        image_url: { url: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=600&h=400&fit=crop' },
+                        url: '#'
+                    }
+                ]
+            },
+            longTermRental: {
+                monthlyRent: 3132,
+                cashFlow: -5572
+            },
+            costs: {
+                totalMonthly: 2464,
+                property_tax_annual: 5490,
+                insurance_annual: 2540,
+                hoa_monthly: 480
+            },
+            metrics: {},
+            overallScore: 8.2,
+            analysisType: 'both'
+        };
+
+        // Store analysis data globally
+        window.analysisData = mockAnalysisData;
+
+        // Load component loader and render
+        async function loadAnalysis() {
+            try {
+                const componentLoaderModule = await import('../js/modules/componentLoader.js');
+                const loader = new componentLoaderModule.default();
+                
+                // Render analysis results
+                await loader.renderAnalysisResults(mockAnalysisData, document.getElementById('analysis-container'));
+                
+                console.log('Analysis rendered successfully');
+                
+            } catch (error) {
+                console.error('Error loading analysis:', error);
+                document.getElementById('analysis-container').innerHTML = `
+                    <div class="text-red-600 p-4 bg-red-50 rounded">
+                        Error loading analysis: ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        // Stub functions for testing
+        window.saveAnalysis = () => alert('Save analysis - test mode');
+        window.generateReport = () => alert('Generate report - test mode');
+        window.shareAnalysis = () => alert('Share analysis - test mode');
+        window.analyzeAnother = () => alert('Analyze another - test mode');
+        window.showAllComparables = () => alert('Show all comparables - test mode');
+        window.scrollToCalculator = () => {
+            document.getElementById('str-calculator-section')?.scrollIntoView({ behavior: 'smooth' });
+        };
+        window.toggleDetailedAnalysis = () => {
+            console.log('Toggle detailed analysis');
+        };
+
+        // Load on page ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', loadAnalysis);
+        } else {
+            loadAnalysis();
+        }
+    </script>
+</body>
+</html>

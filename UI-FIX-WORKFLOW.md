@@ -33,11 +33,26 @@ This workflow should be followed for ALL UI fixes to ensure quality and prevent 
   - Event handler consistency
   - Script dependencies
   
-- **Run ui-ux-tester agent** to:
+- **Run ui-ux-tester agent** (OPTIONAL - see below):
   - Capture screenshots of the fix
   - Validate visual appearance
   - Check for responsive issues
   - Verify no console errors
+
+#### When to Skip UI Testing:
+✅ **SKIP for low-risk changes:**
+- Simple element removals
+- Text content updates
+- Minor CSS adjustments
+- Changes already validated by code-reviewer
+
+❌ **ALWAYS TEST for:**
+- New components or features
+- Layout/structure changes
+- Interactive elements (forms, buttons, sliders)
+- Chart/visualization updates
+- Mobile responsiveness changes
+- Anything using animations or transitions
 
 ### 6. **Fix Issues Found**
 - Address ALL discrepancies identified by agents
@@ -78,7 +93,7 @@ Before committing any UI fix:
 - [ ] Implementation matches mock structure
 - [ ] Local test file works correctly
 - [ ] Code-reviewer agent found no issues
-- [ ] UI-UX-tester agent validated appearance
+- [ ] UI-UX-tester agent validated appearance (if required - see Step 5)
 - [ ] No console errors
 - [ ] Responsive design maintained
 - [ ] Existing functionality preserved
