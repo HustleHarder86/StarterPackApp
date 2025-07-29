@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test LTR Component Direct</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body class="bg-gray-50 p-8">
+  <div id="root"></div>
+
+  <script type="text/babel">
+    // Mock analysis data
+    const mockAnalysis = {
+      propertyData: {
+        address: "123 Main St, Toronto, Ontario",
+        bedrooms: 3,
+        bathrooms: 2,
+        squareFeet: 1500,
+        price: 850000
+      },
+      longTermRental: {
+        monthlyRent: 3100,
+        annualRent: 37200,
+        vacancyRate: 2.1,
+        marketInsights: {
+          rent_growth: 5.2,
+          demand_level: 'High',
+          typical_tenant: 'Young families'
+        }
+      },
+      cashFlow: {
+        monthly: 500,
+        annual: 6000
+      },
+      monthlyExpenses: {
+        total: 2600,
+        mortgage: 2000
+      },
+      metrics: {
+        capRate: 4.2,
+        totalROI: 12.5
+      },
+      strProjection: {
+        monthlyRevenue: 5045
+      }
+    };
+
+    // Import and render the component
+    import('/components/analysis/LongTermRentalAnalysis.js').then(module => {
+      const { LongTermRentalAnalysis } = module;
+      const container = document.getElementById('root');
+      
+      // Render using React
+      const element = React.createElement(LongTermRentalAnalysis, {
+        analysis: mockAnalysis,
+        className: ''
+      });
+      
+      ReactDOM.render(element, container);
+    }).catch(error => {
+      console.error('Error loading component:', error);
+      document.getElementById('root').innerHTML = `
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+          Error loading component: ${error.message}
+        </div>
+      `;
+    });
+  </script>
+</body>
+</html>

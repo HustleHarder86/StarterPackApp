@@ -314,7 +314,26 @@ export const LongTermRentalAnalysis = ({
         <div class="bg-white border border-gray-200 rounded-lg p-6">
           <h3 class="font-semibold text-gray-800 mb-4">Revenue Comparison</h3>
           
-          <div class="relative h-48 mb-4">
+          <!-- Fallback HTML chart -->
+          <div id="revenue-comparison-html" class="relative h-48 mb-4 flex items-end justify-around">
+            <div class="text-center">
+              <div class="bg-gradient-to-t from-purple-600 to-purple-400 w-20 rounded-t-lg relative transition-all duration-500" 
+                   style="height: ${Math.round((strRevenue / Math.max(strRevenue, monthlyRent)) * 160)}px;">
+                <span class="absolute -top-8 left-0 right-0 text-sm font-bold">$${strRevenue.toLocaleString()}</span>
+              </div>
+              <p class="mt-2 text-sm font-medium">STR</p>
+            </div>
+            <div class="text-center">
+              <div class="bg-gradient-to-t from-blue-600 to-blue-400 w-20 rounded-t-lg relative transition-all duration-500" 
+                   style="height: ${Math.round((monthlyRent / Math.max(strRevenue, monthlyRent)) * 160)}px;">
+                <span class="absolute -top-8 left-0 right-0 text-sm font-bold">$${monthlyRent.toLocaleString()}</span>
+              </div>
+              <p class="mt-2 text-sm font-medium">LTR</p>
+            </div>
+          </div>
+          
+          <!-- Canvas element (hidden by default, shown when Chart.js loads) -->
+          <div class="relative h-48 mb-4 hidden" id="revenue-comparison-canvas-container">
             <canvas id="revenue-comparison-chart" style="width: 100%; height: 100%;"></canvas>
           </div>
           
@@ -635,12 +654,20 @@ export const LongTermRentalAnalysis = ({
         try {
           const canvas = document.getElementById('revenue-comparison-chart');
           if (!canvas) {
-            console.log('Revenue comparison canvas not found');
+            console.log('Revenue comparison canvas not found, using HTML fallback');
             return;
           }
           if (typeof Chart === 'undefined') {
-            console.log('Chart.js not loaded');
+            console.log('Chart.js not loaded, using HTML fallback');
             return;
+          }
+          
+          // Hide HTML chart and show canvas
+          const htmlChart = document.getElementById('revenue-comparison-html');
+          const canvasContainer = document.getElementById('revenue-comparison-canvas-container');
+          if (htmlChart && canvasContainer) {
+            htmlChart.style.display = 'none';
+            canvasContainer.classList.remove('hidden');
           }
           
           // Check if chart already exists using Chart.js method
@@ -785,6 +812,21 @@ export const LongTermRentalAnalysis = ({
         document.getElementById('str-higher-text').innerHTML = 
           'Short-term rental potential is <span class="font-semibold text-purple-600">' + 
           strHigherPct + '% higher</span>';
+        
+        // Update HTML chart
+        const strBar = document.querySelector('#revenue-comparison-html .from-purple-600');
+        const ltrBar = document.querySelector('#revenue-comparison-html .from-blue-600');
+        if (strBar && ltrBar) {
+          const maxValue = Math.max(strMonthly, rent);
+          strBar.style.height = Math.round((strMonthly / maxValue) * 160) + 'px';
+          ltrBar.style.height = Math.round((rent / maxValue) * 160) + 'px';
+          
+          // Update values
+          const strValue = strBar.querySelector('span');
+          const ltrValue = ltrBar.querySelector('span');
+          if (strValue) strValue.textContent = '$' + strMonthly.toLocaleString();
+          if (ltrValue) ltrValue.textContent = '$' + rent.toLocaleString();
+        }
         
         // Update chart if exists
         if (window.revenueComparisonChart) {

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LTR HTML Chart Test</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 p-8">
+  <div class="max-w-4xl mx-auto">
+    <h1 class="text-2xl font-bold mb-6">LTR Revenue Comparison - HTML Fallback Test</h1>
+    
+    <!-- Test the HTML chart directly -->
+    <div class="bg-white border border-gray-200 rounded-lg p-6">
+      <h3 class="font-semibold text-gray-800 mb-4">Revenue Comparison</h3>
+      
+      <!-- HTML chart (always visible) -->
+      <div id="revenue-comparison-html" class="relative h-48 mb-4 flex items-end justify-around">
+        <div class="text-center">
+          <div class="bg-gradient-to-t from-purple-600 to-purple-400 w-20 rounded-t-lg relative transition-all duration-500" 
+               style="height: 160px;">
+            <span class="absolute -top-8 left-0 right-0 text-sm font-bold">$5,045</span>
+          </div>
+          <p class="mt-2 text-sm font-medium">STR</p>
+        </div>
+        <div class="text-center">
+          <div class="bg-gradient-to-t from-blue-600 to-blue-400 w-20 rounded-t-lg relative transition-all duration-500" 
+               style="height: 98px;">
+            <span class="absolute -top-8 left-0 right-0 text-sm font-bold">$3,100</span>
+          </div>
+          <p class="mt-2 text-sm font-medium">LTR</p>
+        </div>
+      </div>
+      
+      <p class="text-center text-gray-700">
+        Short-term rental potential is <span class="font-semibold text-purple-600">63% higher</span>
+      </p>
+    </div>
+
+    <!-- Interactive test -->
+    <div class="mt-6 bg-white p-4 rounded">
+      <h3 class="font-bold mb-2">Test Interactive Updates:</h3>
+      <button onclick="updateChart(2500)" class="bg-blue-500 text-white px-4 py-2 rounded mr-2">Set LTR to $2,500</button>
+      <button onclick="updateChart(4000)" class="bg-blue-500 text-white px-4 py-2 rounded">Set LTR to $4,000</button>
+    </div>
+  </div>
+
+  <script>
+    function updateChart(ltrValue) {
+      const strValue = 5045;
+      const maxValue = Math.max(strValue, ltrValue);
+      
+      const strBar = document.querySelector('#revenue-comparison-html .from-purple-600');
+      const ltrBar = document.querySelector('#revenue-comparison-html .from-blue-600');
+      
+      if (strBar && ltrBar) {
+        strBar.style.height = Math.round((strValue / maxValue) * 160) + 'px';
+        ltrBar.style.height = Math.round((ltrValue / maxValue) * 160) + 'px';
+        
+        const ltrLabel = ltrBar.querySelector('span');
+        if (ltrLabel) ltrLabel.textContent = '$' + ltrValue.toLocaleString();
+        
+        const percentage = Math.round((strValue - ltrValue) / ltrValue * 100);
+        document.querySelector('.text-purple-600').textContent = percentage + '% higher';
+      }
+    }
+  </script>
+</body>
+</html>
