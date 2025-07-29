@@ -8,7 +8,6 @@ import { MetricBadge } from '../ui/Badge.js';
 import { Button } from '../ui/Button.js';
 import { EnhancedFinancialCalculator } from '../calculator/EnhancedFinancialCalculator.js';
 import { RatingTooltip, InfoTooltip } from '../ui/Tooltip.js';
-import { RatingLegend, CompactRatingLegend } from '../ui/RatingLegend.js';
 
 // Store analysis data globally for script access
 window.analysisData = {
@@ -161,28 +160,6 @@ export const EnhancedFinancialSummary = ({
         ${EnhancedFinancialCalculator({ analysisData: analysis })}
       </div>
 
-      <!-- Key Metrics with Indicators -->
-      ${Card({
-        children: `
-          <h3 class="text-lg lg:text-xl font-bold text-gray-900 mb-lg lg:mb-xl">Key Metrics</h3>
-          <div class="grid grid-cols-2 lg:grid-cols-4 gap-md lg:gap-lg">
-            ${generateMetricWithIndicator('Cap Rate', capRate.toFixed(1) + '%', 'capRate', capRate)}
-            ${generateMetricWithIndicator('Annual ROI', cashOnCashReturn.toFixed(1) + '%', 'roi', cashOnCashReturn)}
-            ${generateMetricWithIndicator('Monthly Cash Flow', '$' + netCashFlow.toLocaleString(), 'cashFlow', netCashFlow)}
-            ${generateMetricWithIndicator('Break-even Occupancy', breakEvenOccupancy.toFixed(0) + '%', 'breakEven', breakEvenOccupancy)}
-          </div>
-        `,
-        className: 'mb-xl'
-      })}
-      
-      <!-- Rating Legend -->
-      <div class="mb-xl">
-        ${RatingLegend({ 
-          showMetrics: ['capRate', 'roi', 'cashFlow', 'breakEven'],
-          collapsed: true 
-        })}
-      </div>
-
       <!-- Action Buttons with Share -->
       ${Card({
         children: `
@@ -243,25 +220,6 @@ export const EnhancedFinancialSummary = ({
   `;
 };
 
-function generateMetricWithIndicator(label, value, metricType, numericValue) {
-  // We'll update this later with actual ratings from the calculator
-  return `
-    <div class="text-center">
-      <div id="${metricType}Value" class="text-2xl font-bold text-blue-600">${value}</div>
-      <div class="text-sm text-gray-600 flex items-center justify-center gap-1">
-        ${label}
-      </div>
-      <div id="${metricType}Indicator" class="mt-2 inline-block">
-        <span class="inline-flex items-center gap-1 px-2 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium">
-          <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-          </svg>
-          Calculating...
-        </span>
-      </div>
-    </div>
-  `;
-}
 
 // Export helper function to convert analysis data
 export const FinancialSummaryFromAnalysis = ({ analysis }) => {

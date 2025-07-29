@@ -27,7 +27,7 @@ export const EnhancedFinancialCalculator = ({ analysisData = {} }) => {
     : (strData.monthlyRevenue || strData.monthly_revenue || 5400);
   
   // Extract expense values with proper fallbacks - check monthly_expenses first
-  const monthlyMortgage = monthlyExpenses.mortgage || costs.mortgage || costs.mortgagePayment || 2970;
+  const monthlyMortgage = monthlyExpenses.mortgage || costs.mortgage || costs.mortgagePayment || 0;
   const propertyTax = monthlyExpenses.property_tax || Math.round((propertyData.propertyTaxes || propertyData.property_taxes || costs.property_tax_annual || 6350) / 12);
   const insurance = monthlyExpenses.insurance || costs.insurance || 132;
   const hoaFees = propertyData.condoFees || propertyData.condo_fees || monthlyExpenses.hoa || 536;
