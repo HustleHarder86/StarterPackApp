@@ -1290,8 +1290,10 @@
                     // Create an AbortController for cancellation
                     window.appState.currentAnalysisController = new AbortController();
                     
-                    // Use Vercel API endpoint which will proxy to Railway
-                    const apiUrl = '/api/analyze-property';
+                    // Use Railway API directly for heavy processing (per CLAUDE.md architecture)
+                    // This avoids Vercel timeout limitations
+                    const railwayApiUrl = 'https://real-estate-app-production-ba5c.up.railway.app';
+                    const apiUrl = `${railwayApiUrl}/api/analysis/property`;
                     
                     // Check if in E2E test mode
                     const urlParams = new URLSearchParams(window.location.search);
@@ -1299,7 +1301,9 @@
                     
                     // Build headers - handle test mode differently
                     const headers = {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'X-Service': 'vercel-frontend',
+                        'X-Request-ID': crypto.randomUUID()
                     };
                     
                     // In test mode, use a test token. In production, use real auth
