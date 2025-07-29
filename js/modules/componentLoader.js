@@ -544,6 +544,14 @@ class ComponentLoader {
         // Store active tab in session
         sessionStorage.setItem('activeRentalTab', tabName);
         
+        // Refresh financial calculator for tab context
+        if (window.refreshFinancialCalculator) {
+          setTimeout(() => {
+            console.log('Refreshing financial calculator for tab:', tabName);
+            window.refreshFinancialCalculator();
+          }, 50);
+        }
+        
         // Initialize investment planning scripts if switching to investment tab
         if (tabName === 'investment') {
           console.log('Initializing investment planning scripts...');
@@ -609,6 +617,31 @@ class ComponentLoader {
             }
           };
           waitForChartJs();
+          
+          // Create refresh function for tab switches
+          window.refreshFinancialCalculator = async () => {
+            try {
+              // Re-render the financial calculator with current tab context
+              const financialContainer = document.querySelector('.mb-8');
+              if (financialContainer && financialModule.EnhancedFinancialSummary) {
+                const updatedHtml = financialModule.EnhancedFinancialSummary({ analysis: analysisData });
+                financialContainer.innerHTML = updatedHtml;
+                
+                // Re-initialize calculator after re-render
+                if (financialModule.initializeEnhancedFinancialSummary) {
+                  financialModule.initializeEnhancedFinancialSummary();
+                }
+                
+                // Re-initialize charts
+                const { initializeEnhancedFinancialCalculator } = await import('./financialCalculatorCharts.js');
+                if (window.Chart) {
+                  initializeEnhancedFinancialCalculator();
+                }
+              }
+            } catch (error) {
+              console.error('Failed to refresh financial calculator:', error);
+            }
+          };
         } catch (error) {
           console.error('Failed to initialize enhanced financial calculator:', error);
         }

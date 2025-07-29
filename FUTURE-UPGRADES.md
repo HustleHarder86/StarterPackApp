@@ -99,6 +99,78 @@ This document tracks potential future enhancements and features for the StarterP
 
 ---
 
+### 6. Multi-Unit Property Detection 🔴
+**Date Added**: 2025-01-29  
+**Priority**: High  
+**Estimated Effort**: Medium (2-3 days)
+
+**Description**: Intelligent parsing of bedroom descriptions to identify multi-unit rental opportunities.
+
+**Implementation Details**:
+- Parse "1 + 1 bedroom" format to detect above/below ground units
+- Recognize this indicates potential for two separate rental units
+- Calculate enhanced profitability scenarios:
+  - Dual STR units (e.g., upstairs Airbnb + basement suite)
+  - Mixed STR/LTR strategy
+  - House hacking opportunities
+- Update UI to show multi-unit analysis when detected
+
+**Example Scenarios**:
+- "2 + 1 bedrooms" = Main floor unit (2BR) + basement suite (1BR)
+- "3 + 2 bedrooms" = Potential duplex configuration
+- Calculate separate revenue streams for each unit
+
+**Benefits**:
+- Identifies hidden income potential
+- More accurate ROI for multi-unit properties  
+- Helps investors find house hacking opportunities
+- Better analysis for properties with in-law suites
+
+---
+
+### 7. AI-Powered Property Assistant Chatbot 🔴
+**Date Added**: 2025-01-29  
+**Priority**: High  
+**Estimated Effort**: Large (1-2 weeks)
+
+**Description**: Context-aware AI chatbot that answers property-specific questions using real-time research.
+
+**Core Features**:
+- Maintains context of currently analyzed property (address, city, type)
+- Answers location-specific regulatory questions
+- Provides real-time research using AI APIs (Perplexity, GPT-4)
+- Remembers conversation history during session
+
+**Example Use Cases**:
+- "What are the requirements for adding a separate entrance in this municipality?"
+- "Can I legally create a basement suite at this address?"
+- "What permits do I need for STR in this neighborhood?"
+- "Are there any upcoming zoning changes in this area?"
+- "What's the process for severing this lot?"
+- "Can I add a laneway house on this property?"
+
+**Technical Implementation**:
+- Floating chat widget on analysis pages
+- Pass property context (address, zoning, city) to AI
+- Use Perplexity API for real-time municipal research
+- Cache common questions per municipality
+- Provide source links for all answers
+
+**Benefits**:
+- Instant answers to complex regulatory questions
+- Reduces need to search multiple government websites
+- Personalized to specific property and location
+- Helps identify opportunities (suite potential, zoning changes)
+- Saves hours of research time
+
+**Integration Points**:
+- Appears after property analysis is complete
+- Pre-populated with property context
+- Can reference analysis data (price, size, current zoning)
+- Links to relevant sections of the app
+
+---
+
 ## Ideas Under Consideration
 
 ### Mobile App Development

@@ -28,7 +28,17 @@ export const EnhancedFinancialCalculator = ({ analysisData = {} }) => {
   
   // Determine which revenue to use based on analysis type
   const analysisType = analysisData.analysisType || 'both';
-  const monthlyRevenue = analysisType === 'ltr' 
+  
+  // Check active tab - default to STR if not found
+  const activeTabElement = typeof document !== 'undefined' ? 
+    document.querySelector('.tab-button:not(.bg-gray-50)') || 
+    document.querySelector('[class*="from-blue-600"][class*="to-purple-600"]') : null;
+  const activeTabId = activeTabElement ? activeTabElement.id : 'str-tab';
+  const isSTRTab = activeTabId === 'str-tab';
+  const isLTRTab = activeTabId === 'ltr-tab';
+  
+  // Use tab context to determine revenue source
+  const monthlyRevenue = isLTRTab && ltrData.monthlyRent
     ? (ltrData.monthlyRent || ltrData.monthly_rent || 3100)
     : (strData.monthlyRevenue || strData.monthly_revenue || 5400);
   
@@ -50,11 +60,12 @@ export const EnhancedFinancialCalculator = ({ analysisData = {} }) => {
     'maintenance': maintenance
   });
   
-  // STR-specific expenses (only if STR analysis)
-  const propertyMgmt = analysisType === 'str' ? Math.round(monthlyRevenue * 0.10) : 0;
-  const cleaning = analysisType === 'str' ? 400 : 0;
-  const supplies = analysisType === 'str' ? Math.round(monthlyRevenue * 0.04) : 0;
-  const platformFees = analysisType === 'str' ? Math.round(monthlyRevenue * 0.03) : 0;
+  // STR-specific expenses (show on STR tab or when analysisType is str/both)
+  const showSTRExpenses = isSTRTab || analysisType === 'str' || (analysisType === 'both' && !isLTRTab);
+  const propertyMgmt = showSTRExpenses ? Math.round(monthlyRevenue * 0.10) : 0;
+  const cleaning = showSTRExpenses ? 400 : 0;
+  const supplies = showSTRExpenses ? Math.round(monthlyRevenue * 0.04) : 0;
+  const platformFees = showSTRExpenses ? Math.round(monthlyRevenue * 0.03) : 0;
   const otherExpenses = costs.other || 150;
   
   // Calculate totals
@@ -142,7 +153,7 @@ export const EnhancedFinancialCalculator = ({ analysisData = {} }) => {
               <h4 class="font-semibold text-gray-700 mb-3">Revenue</h4>
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">
-                  Monthly ${analysisType === 'str' ? 'STR' : 'Rental'} Revenue
+                  Monthly ${showSTRExpenses ? 'STR' : 'Rental'} Revenue
                 </label>
                 <div class="relative">
                   <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 z-10">$</span>
@@ -228,7 +239,7 @@ export const EnhancedFinancialCalculator = ({ analysisData = {} }) => {
             <div class="bg-white rounded-lg p-4 border border-gray-200">
               <h4 class="font-semibold text-gray-700 mb-3">Operating Expenses</h4>
               <div class="space-y-3">
-                ${analysisType === 'str' ? `
+                ${showSTRExpenses ? `
                 <div class="grid grid-cols-2 gap-3">
                   <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">
@@ -294,7 +305,7 @@ export const EnhancedFinancialCalculator = ({ analysisData = {} }) => {
                   </div>
                 </div>
                 
-                ${analysisType === 'str' ? `
+                ${showSTRExpenses ? `
                 <div class="grid grid-cols-2 gap-3">
                   <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">
@@ -354,6 +365,8 @@ export const EnhancedFinancialCalculator = ({ analysisData = {} }) => {
         data-annual-revenue="${annualRevenue}"
         data-annual-expenses="${annualExpenses}"
         data-analysis-type="${analysisType}"
+        data-active-tab="${activeTabId}"
+        data-show-str-expenses="${showSTRExpenses}"
         style="display: none;"
       ></div>
     </div>
@@ -401,11 +414,12 @@ export const EnhancedFinancialCalculator = ({ analysisData = {} }) => {
           <ul class="space-y-1.5 ml-4 text-sm">
             <li>• Property Tax: <span class="font-medium text-green-700">ACTUAL from Realtor.ca</span> ${propertyData.propertyTaxes ? `($${safeFormatCurrency(propertyData.propertyTaxes)}/year)` : ''}</li>
             <li>• HOA/Condo Fees: ${hoaFees > 0 ? `<span class="font-medium text-green-700">ACTUAL from Realtor.ca</span> ($${hoaFees}/month)` : '<span class="font-medium text-gray-600">Not applicable</span>'}</li>
-            <li>• Insurance: <span class="font-medium text-amber-700">CALCULATED</span> (STR rate, 25% higher than standard)</li>
+            <li>• Insurance: <span class="font-medium text-amber-700">CALCULATED</span> (${showSTRExpenses ? 'STR rate, 25% higher than standard' : 'Standard homeowner rate'})</li>
             <li>• Utilities: <span class="font-medium text-amber-700">CALCULATED</span> (Higher for STR usage)</li>
           </ul>
         </div>
         
+        ${showSTRExpenses ? `
         <!-- STR Operating Expenses -->
         <div class="space-y-2">
           <h4 class="font-semibold text-blue-900">STR Operating Expenses</h4>
@@ -417,6 +431,18 @@ export const EnhancedFinancialCalculator = ({ analysisData = {} }) => {
             <li>• Maintenance: <span class="font-medium text-amber-700">CALCULATED</span> at 1.5% of property value/year</li>
           </ul>
         </div>
+        ` : `
+        <!-- LTR Operating Expenses -->
+        <div class="space-y-2">
+          <h4 class="font-semibold text-blue-900">LTR Operating Expenses</h4>
+          <ul class="space-y-1.5 ml-4 text-sm">
+            <li>• Property Management: <span class="font-medium text-gray-600">Not included</span> (self-managed)</li>
+            <li>• Vacancy Allowance: <span class="font-medium text-amber-700">CALCULATED</span> at 5% annually</li>
+            <li>• Maintenance: <span class="font-medium text-amber-700">CALCULATED</span> at 1% of property value/year</li>
+            <li>• Utilities: <span class="font-medium text-gray-600">Tenant pays</span></li>
+          </ul>
+        </div>
+        `}
         
         <!-- Customization Note -->
         <div class="space-y-2">
