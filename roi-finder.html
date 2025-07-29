@@ -1150,6 +1150,73 @@
                 });
             }
             
+            async pollForResults(jobId, progressTracker) {
+                const maxAttempts = 60; // Poll for up to 5 minutes
+                const pollInterval = 3000; // Check every 3 seconds
+                let attempts = 0;
+                
+                return new Promise((resolve, reject) => {
+                    const pollTimer = setInterval(async () => {
+                        attempts++;
+                        
+                        try {
+                            const response = await fetch(`/api/analyze-property-status?jobId=${jobId}`, {
+                                signal: window.appState.currentAnalysisController?.signal
+                            });
+                            
+                            if (!response.ok) {
+                                console.error('Failed to check job status:', response.status);
+                                if (attempts >= maxAttempts) {
+                                    clearInterval(pollTimer);
+                                    reject(new Error('Analysis timeout: The analysis is taking longer than expected.'));
+                                }
+                                return;
+                            }
+                            
+                            const status = await response.json();
+                            console.log(`Polling attempt ${attempts}: ${status.status}`, status.elapsedSeconds ? `(${status.elapsedSeconds}s)` : '');
+                            
+                            // Update progress based on elapsed time
+                            if (status.elapsedSeconds && progressTracker) {
+                                const progress = Math.min(90, (status.elapsedSeconds / 90) * 100); // Cap at 90%
+                                progressTracker.updateProgress(progress);
+                                
+                                // Update message based on elapsed time
+                                if (status.elapsedSeconds > 60) {
+                                    progressTracker.updateMessage('Analyzing Airbnb market data... Almost done!');
+                                } else if (status.elapsedSeconds > 30) {
+                                    progressTracker.updateMessage('Collecting comparable properties from Airbnb...');
+                                }
+                            }
+                            
+                            if (status.status === 'completed' && status.result) {
+                                clearInterval(pollTimer);
+                                console.log('Analysis completed successfully');
+                                let analysisData = status.result.data || status.result;
+                                
+                                // Apply data mapping
+                                analysisData = this.mapAnalysisData(analysisData);
+                                resolve(analysisData);
+                            } else if (status.status === 'failed') {
+                                clearInterval(pollTimer);
+                                const errorMessage = status.error?.details || status.error?.error || 'Analysis failed';
+                                reject(new Error(errorMessage));
+                            } else if (attempts >= maxAttempts) {
+                                clearInterval(pollTimer);
+                                reject(new Error('Analysis timeout: The analysis is taking longer than expected.'));
+                            }
+                            
+                        } catch (error) {
+                            console.error('Polling error:', error);
+                            if (attempts >= maxAttempts || error.name === 'AbortError') {
+                                clearInterval(pollTimer);
+                                reject(error);
+                            }
+                        }
+                    }, pollInterval);
+                });
+            },
+            
             async pollForSTRResults(analysisId) {
                 const maxAttempts = 60; // Poll for up to 5 minutes
                 const pollInterval = 5000; // Check every 5 seconds
@@ -1290,10 +1357,8 @@
                     // Create an AbortController for cancellation
                     window.appState.currentAnalysisController = new AbortController();
                     
-                    // Use Railway API directly for heavy processing (per CLAUDE.md architecture)
-                    // This avoids Vercel timeout limitations
-                    const railwayApiUrl = 'https://real-estate-app-production-ba5c.up.railway.app';
-                    const apiUrl = `${railwayApiUrl}/api/analysis/property`;
+                    // Use Vercel API endpoint which will handle async processing
+                    const apiUrl = '/api/analyze-property-async';
                     
                     // Check if in E2E test mode
                     const urlParams = new URLSearchParams(window.location.search);
@@ -1345,6 +1410,23 @@
                     }
                     
                     const result = await response.json();
+                    
+                    // Check if we got an async job response
+                    if (response.status === 202 && result.jobId) {
+                        console.log('Analysis started with job ID:', result.jobId);
+                        
+                        // Update loading state to show polling status
+                        if (window.appState.loadingState) {
+                            window.appState.loadingState.updateMessage('Analysis in progress... This may take up to 2 minutes for market data collection.');
+                        }
+                        
+                        // Poll for results
+                        const analysisData = await this.pollForResults(result.jobId, progressTracker);
+                        clearTimeout(timeoutId);
+                        return analysisData;
+                    }
+                    
+                    // Fallback for direct response (backward compatibility)
                     let analysisData = result.data || result;
                     
                     // Apply data mapping
