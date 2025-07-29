@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simple LTR Chart Test</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-50 p-8">
+  <div class="max-w-4xl mx-auto">
+    <h1 class="text-2xl font-bold mb-6">Simple LTR Chart Test</h1>
+    
+    <div id="ltr-content" class="space-y-6">
+      <!-- This simulates the LTR component structure -->
+    </div>
+    
+    <div id="debug" class="mt-8 p-4 bg-gray-100 rounded">
+      <h3 class="font-bold mb-2">Debug Info:</h3>
+    </div>
+  </div>
+
+  <script type="module">
+    const debugEl = document.getElementById('debug');
+    function log(msg) {
+      debugEl.innerHTML += `<div>${new Date().toISOString().substr(11, 8)} - ${msg}</div>`;
+    }
+    
+    async function runTest() {
+      try {
+        log('Loading LTR component...');
+        
+        // Import the component
+        const { LongTermRentalAnalysis } = await import('../components/analysis/LongTermRentalAnalysis.js');
+        
+        log('Creating test data...');
+        
+        // Test data
+        const analysis = {
+          propertyData: {
+            address: '123 Test St, Toronto, ON',
+            price: 850000,
+            bedrooms: 3,
+            bathrooms: 2,
+            propertyType: 'House',
+            squareFeet: 2000
+          },
+          longTermRental: {
+            monthlyRent: 3100,
+            annualRent: 37200,
+            vacancyRate: 2.1,
+            marketInsights: {
+              rent_growth: 5.2,
+              demand_level: 'High',
+              typical_tenant: 'Young families'
+            }
+          },
+          shortTermRental: {
+            monthlyRevenue: 5045,
+            annual_revenue: 60540
+          },
+          metrics: {
+            capRate: 4.5,
+            totalROI: 12.5
+          },
+          cashFlow: {
+            monthly: 450,
+            annual: 5400
+          },
+          monthlyExpenses: {
+            total: 2650,
+            mortgage: 2100
+          }
+        };
+        
+        log('Rendering LTR component...');
+        
+        // Render the component
+        const ltrHtml = LongTermRentalAnalysis({ analysis });
+        document.getElementById('ltr-content').innerHTML = ltrHtml;
+        
+        // Execute any script tags
+        const scripts = document.getElementById('ltr-content').getElementsByTagName('script');
+        for (let script of scripts) {
+          eval(script.textContent);
+        }
+        
+        log('Waiting for charts to initialize...');
+        
+        // Wait a bit for initialization
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        // Check charts
+        const revenueComparisonCanvas = document.getElementById('revenue-comparison-chart');
+        const ltrRevenueCanvas = document.getElementById('ltr-revenue-chart');
+        
+        log(`Revenue comparison canvas found: ${!!revenueComparisonCanvas}`);
+        log(`LTR revenue canvas found: ${!!ltrRevenueCanvas}`);
+        
+        if (revenueComparisonCanvas) {
+          const ctx = revenueComparisonCanvas.getContext('2d');
+          log(`Revenue comparison canvas has context: ${!!ctx}`);
+          log(`Revenue comparison canvas size: ${revenueComparisonCanvas.width}x${revenueComparisonCanvas.height}`);
+        }
+        
+        if (ltrRevenueCanvas) {
+          const ctx = ltrRevenueCanvas.getContext('2d');
+          log(`LTR revenue canvas has context: ${!!ctx}`);
+          log(`LTR revenue canvas size: ${ltrRevenueCanvas.width}x${ltrRevenueCanvas.height}`);
+        }
+        
+        // Check if functions are available
+        log(`window.initializeLTRChart exists: ${typeof window.initializeLTRChart === 'function'}`);
+        log(`window.initializeRevenueComparisonChart exists: ${typeof window.initializeRevenueComparisonChart === 'function'}`);
+        log(`window.LTRAnalysis exists: ${!!window.LTRAnalysis}`);
+        
+        // Try to manually initialize
+        if (typeof window.initializeRevenueComparisonChart === 'function') {
+          log('Manually calling initializeRevenueComparisonChart...');
+          window.initializeRevenueComparisonChart();
+        }
+        
+      } catch (error) {
+        log(`ERROR: ${error.message}`);
+        console.error(error);
+      }
+    }
+    
+    runTest();
+  </script>
+</body>
+</html>

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Direct LTR Chart Test</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-50 p-8">
+  <div class="max-w-2xl mx-auto">
+    <h1 class="text-2xl font-bold mb-6">Direct Chart Test - Should Show Two Bars</h1>
+    
+    <div class="bg-white border border-gray-200 rounded-lg p-6">
+      <h3 class="font-semibold text-gray-800 mb-4">Revenue Comparison</h3>
+      <div style="position: relative; height: 200px;">
+        <canvas id="test-chart"></canvas>
+      </div>
+      <p class="text-center text-gray-700 mt-4">
+        Short-term rental potential is <span class="font-semibold text-purple-600">63% higher</span>
+      </p>
+    </div>
+
+    <div class="mt-6 bg-yellow-50 p-4 rounded">
+      <h3 class="font-bold">Expected Result:</h3>
+      <ul class="list-disc list-inside">
+        <li>Purple bar labeled "STR" showing $5,045</li>
+        <li>Blue bar labeled "LTR" showing $3,100</li>
+        <li>Values displayed on top of bars</li>
+      </ul>
+    </div>
+  </div>
+
+  <script>
+    // Direct chart creation without any complexity
+    const ctx = document.getElementById('test-chart').getContext('2d');
+    
+    const chart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['STR', 'LTR'],
+        datasets: [{
+          data: [5045, 3100],
+          backgroundColor: ['#9333ea', '#3b82f6'],
+          borderRadius: 8,
+          barThickness: 80
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        layout: {
+          padding: { top: 30 }
+        },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                return '$' + context.parsed.y.toLocaleString() + '/mo';
+              }
+            }
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            max: 6000,
+            ticks: {
+              callback: function(value) {
+                return '$' + value.toLocaleString();
+              }
+            },
+            grid: {
+              color: 'rgba(0, 0, 0, 0.05)'
+            }
+          },
+          x: {
+            grid: { display: false }
+          }
+        },
+        animation: {
+          onComplete: function() {
+            const chart = this;
+            const ctx = chart.ctx;
+            ctx.font = "bold 16px system-ui";
+            ctx.fillStyle = '#000';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'bottom';
+            
+            chart.data.datasets.forEach((dataset, i) => {
+              const meta = chart.getDatasetMeta(i);
+              meta.data.forEach((bar, index) => {
+                const data = dataset.data[index];
+                ctx.fillText('$' + data.toLocaleString(), bar.x, bar.y - 5);
+              });
+            });
+          }
+        }
+      }
+    });
+    
+    console.log('Chart created:', chart);
+  </script>
+</body>
+</html>

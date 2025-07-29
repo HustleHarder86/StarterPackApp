@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LTR Tab - Revenue Comparison Chart Isolated Test</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    .chart-container {
+      position: relative;
+      height: 200px;
+      width: 100%;
+    }
+  </style>
+</head>
+<body class="bg-gray-50 p-8">
+  <div class="max-w-4xl mx-auto">
+    <h1 class="text-2xl font-bold mb-6">LTR Tab - Revenue Comparison Chart Test</h1>
+    
+    <!-- Isolated Revenue Comparison Chart -->
+    <div class="bg-white border border-gray-200 rounded-lg p-6 mb-6">
+      <h3 class="font-semibold text-gray-800 mb-4">Revenue Comparison</h3>
+      
+      <div class="chart-container mb-4">
+        <canvas id="revenue-comparison-chart"></canvas>
+      </div>
+      
+      <p id="str-higher-text" class="text-center text-gray-700">
+        Short-term rental potential is <span class="font-semibold text-purple-600">63% higher</span>
+      </p>
+    </div>
+
+    <!-- Debug Info -->
+    <div class="bg-gray-100 p-4 rounded">
+      <h3 class="font-semibold mb-2">Debug Info:</h3>
+      <div id="debug-info"></div>
+    </div>
+  </div>
+
+  <script>
+    // Test values matching the screenshot
+    const strMonthly = 5045;
+    const ltrMonthly = 3100;
+    const debugInfo = document.getElementById('debug-info');
+    
+    function log(message) {
+      debugInfo.innerHTML += `<div>${new Date().toISOString().substr(11, 8)} - ${message}</div>`;
+    }
+    
+    log('Starting chart initialization...');
+    
+    // Wait for DOM
+    window.addEventListener('DOMContentLoaded', function() {
+      log('DOM loaded, initializing chart...');
+      
+      try {
+        const canvas = document.getElementById('revenue-comparison-chart');
+        if (!canvas) {
+          log('ERROR: Canvas element not found!');
+          return;
+        }
+        log('Canvas element found');
+        
+        const ctx = canvas.getContext('2d');
+        log('Got 2D context');
+        
+        // Create chart with exact configuration from LTR component
+        const chart = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: ['STR', 'LTR'],
+            datasets: [{
+              data: [strMonthly, ltrMonthly],
+              backgroundColor: ['#9333ea', '#3b82f6'],
+              borderRadius: 8,
+              barThickness: 80
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            layout: {
+              padding: {
+                top: 30
+              }
+            },
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                callbacks: {
+                  label: function(context) {
+                    return '$' + context.parsed.y.toLocaleString() + '/mo';
+                  }
+                }
+              }
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                max: Math.max(strMonthly, ltrMonthly) * 1.2,
+                ticks: {
+                  callback: function(value) {
+                    return '$' + value.toLocaleString();
+                  }
+                },
+                grid: {
+                  color: 'rgba(0, 0, 0, 0.05)'
+                }
+              },
+              x: {
+                grid: {
+                  display: false
+                }
+              }
+            },
+            animation: {
+              onComplete: function() {
+                log('Animation complete, drawing labels...');
+                const chartInstance = this;
+                const ctx = chartInstance.ctx;
+                ctx.font = "bold 16px system-ui";
+                ctx.fillStyle = '#000';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'bottom';
+                
+                chartInstance.data.datasets.forEach(function(dataset, i) {
+                  const meta = chartInstance.getDatasetMeta(i);
+                  meta.data.forEach(function(bar, index) {
+                    const data = dataset.data[index];
+                    ctx.fillText('$' + data.toLocaleString(), bar.x, bar.y - 5);
+                  });
+                });
+                log('Labels drawn successfully');
+              }
+            }
+          }
+        });
+        
+        log('Chart created successfully');
+        
+      } catch (error) {
+        log('ERROR: ' + error.message);
+        console.error('Chart initialization error:', error);
+      }
+    });
+  </script>
+</body>
+</html>

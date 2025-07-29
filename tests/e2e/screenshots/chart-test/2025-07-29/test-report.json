@@ -1,0 +1,12 @@
+{
+  "timestamp": "2025-07-29T19:31:37.717Z",
+  "testResults": {
+    "passed": [],
+    "failed": [
+      "Test execution error: Navigation timeout of 30000 ms exceeded"
+    ],
+    "warnings": []
+  },
+  "screenshotDirectory": "/home/amy/StarterPackApp/tests/e2e/screenshots/chart-test/2025-07-29",
+  "recommendation": "Charts need attention - see failed tests above"
+}

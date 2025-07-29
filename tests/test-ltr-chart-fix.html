@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test LTR Chart Fix</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    .loading { animation: pulse 2s infinite; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+  </style>
+</head>
+<body class="bg-gray-50">
+  <div class="container mx-auto px-4 py-8">
+    <h1 class="text-2xl font-bold mb-6">Testing LTR Revenue Comparison Chart Fix</h1>
+    
+    <div id="test-status" class="mb-4 p-4 bg-blue-100 rounded">
+      <p class="loading">Loading components...</p>
+    </div>
+    
+    <div id="analysis-container" class="loading">
+      <p class="text-center">Initializing...</p>
+    </div>
+  </div>
+
+  <script type="module">
+    const statusEl = document.getElementById('test-status');
+    const containerEl = document.getElementById('analysis-container');
+    
+    function updateStatus(message, type = 'info') {
+      const color = type === 'error' ? 'red' : type === 'success' ? 'green' : 'blue';
+      statusEl.className = `mb-4 p-4 bg-${color}-100 rounded`;
+      statusEl.innerHTML = `<p class="text-${color}-800">${message}</p>`;
+    }
+    
+    async function loadTest() {
+      try {
+        updateStatus('Loading component loader...');
+        
+        // Import component loader
+        const ComponentLoaderModule = await import('../js/modules/componentLoader.js');
+        const loader = new ComponentLoaderModule.default();
+        
+        updateStatus('Creating test analysis data...');
+        
+        // Create test data
+        const testAnalysis = {
+          propertyData: {
+            address: '123 Test St, Toronto, ON',
+            price: 850000,
+            bedrooms: 3,
+            bathrooms: 2,
+            propertyType: 'House',
+            squareFeet: 2000
+          },
+          longTermRental: {
+            monthlyRent: 3100,
+            annualRent: 37200,
+            vacancyRate: 2.1,
+            marketInsights: {
+              rent_growth: 5.2,
+              demand_level: 'High',
+              typical_tenant: 'Young families'
+            }
+          },
+          shortTermRental: {
+            monthlyRevenue: 5045,
+            annual_revenue: 60540
+          },
+          metrics: {
+            capRate: 4.5,
+            totalROI: 12.5
+          },
+          cashFlow: {
+            monthly: 450,
+            annual: 5400
+          },
+          monthlyExpenses: {
+            total: 2650,
+            mortgage: 2100
+          }
+        };
+        
+        updateStatus('Rendering analysis view...');
+        
+        // Render the analysis
+        loader.renderAnalysisResults(testAnalysis, containerEl);
+        
+        // Wait for DOM to settle
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        updateStatus('Switching to LTR tab...');
+        
+        // Switch to LTR tab
+        if (window.switchTab) {
+          window.switchTab('ltr');
+          
+          // Wait for tab switch and chart initialization
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          
+          // Check if charts are rendered
+          const revenueComparisonCanvas = document.getElementById('revenue-comparison-chart');
+          const ltrRevenueCanvas = document.getElementById('ltr-revenue-chart');
+          
+          let issues = [];
+          
+          if (!revenueComparisonCanvas) {
+            issues.push('Revenue comparison canvas not found');
+          } else {
+            const ctx = revenueComparisonCanvas.getContext('2d');
+            if (!ctx || revenueComparisonCanvas.width === 0) {
+              issues.push('Revenue comparison canvas not initialized');
+            }
+          }
+          
+          if (!ltrRevenueCanvas) {
+            issues.push('LTR revenue projection canvas not found');
+          } else {
+            const ctx = ltrRevenueCanvas.getContext('2d');
+            if (!ctx || ltrRevenueCanvas.width === 0) {
+              issues.push('LTR revenue projection canvas not initialized');
+            }
+          }
+          
+          if (issues.length === 0) {
+            updateStatus('✅ SUCCESS: Both LTR charts are rendered correctly!', 'success');
+          } else {
+            updateStatus('❌ ISSUES FOUND:<br>' + issues.join('<br>'), 'error');
+          }
+          
+          // Log debug info
+          console.log('Chart.js available:', typeof Chart !== 'undefined');
+          console.log('initializeLTRChart available:', typeof window.initializeLTRChart);
+          console.log('initializeRevenueComparisonChart available:', typeof window.initializeRevenueComparisonChart);
+          console.log('LTRAnalysis.initializeCharts available:', window.LTRAnalysis && typeof window.LTRAnalysis.initializeCharts);
+          
+        } else {
+          updateStatus('❌ ERROR: switchTab function not found!', 'error');
+        }
+        
+      } catch (error) {
+        updateStatus(`❌ ERROR: ${error.message}`, 'error');
+        console.error('Test error:', error);
+      }
+    }
+    
+    // Start the test
+    loadTest();
+  </script>
+</body>
+</html>

@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Debug LTR Chart Issue</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    .log-entry { font-family: monospace; font-size: 12px; padding: 2px 0; }
+    .error { color: red; }
+    .success { color: green; }
+    .info { color: blue; }
+  </style>
+</head>
+<body class="bg-gray-50 p-8">
+  <div class="max-w-6xl mx-auto">
+    <h1 class="text-2xl font-bold mb-6">Debug LTR Revenue Comparison Chart</h1>
+    
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <!-- Left: Actual Component -->
+      <div>
+        <h2 class="text-lg font-semibold mb-4">Component Rendering</h2>
+        <div id="component-container" class="bg-white p-4 rounded shadow">
+          Loading component...
+        </div>
+      </div>
+      
+      <!-- Right: Debug Log -->
+      <div>
+        <h2 class="text-lg font-semibold mb-4">Debug Log</h2>
+        <div id="debug-log" class="bg-gray-100 p-4 rounded h-96 overflow-y-auto">
+        </div>
+      </div>
+    </div>
+    
+    <!-- Manual Controls -->
+    <div class="mt-6 bg-white p-4 rounded shadow">
+      <h3 class="font-semibold mb-4">Manual Controls</h3>
+      <div class="space-x-4">
+        <button onclick="manualInitChart()" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+          Initialize Chart Manually
+        </button>
+        <button onclick="checkChartStatus()" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">
+          Check Chart Status
+        </button>
+        <button onclick="testDirectChart()" class="px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-600">
+          Test Direct Chart Creation
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    const logEl = document.getElementById('debug-log');
+    const containerEl = document.getElementById('component-container');
+    
+    function log(msg, type = 'info') {
+      const entry = document.createElement('div');
+      entry.className = `log-entry ${type}`;
+      entry.textContent = `[${new Date().toISOString().substr(11, 8)}] ${msg}`;
+      logEl.appendChild(entry);
+      logEl.scrollTop = logEl.scrollHeight;
+      console.log(msg);
+    }
+    
+    window.manualInitChart = function() {
+      log('Attempting manual chart initialization...', 'info');
+      if (typeof window.initializeRevenueComparisonChart === 'function') {
+        window.initializeRevenueComparisonChart();
+      } else {
+        log('initializeRevenueComparisonChart not found on window', 'error');
+      }
+    };
+    
+    window.checkChartStatus = function() {
+      log('=== Chart Status Check ===', 'info');
+      
+      const canvas = document.getElementById('revenue-comparison-chart');
+      log(`Canvas element exists: ${!!canvas}`, canvas ? 'success' : 'error');
+      
+      if (canvas) {
+        log(`Canvas dimensions: ${canvas.width}x${canvas.height}`, 'info');
+        log(`Canvas parent dimensions: ${canvas.parentElement.offsetWidth}x${canvas.parentElement.offsetHeight}`, 'info');
+        log(`Canvas has chart property: ${!!canvas.chart}`, 'info');
+      }
+      
+      log(`Chart.js loaded: ${typeof Chart !== 'undefined'}`, typeof Chart !== 'undefined' ? 'success' : 'error');
+      log(`window.revenueComparisonChart exists: ${!!window.revenueComparisonChart}`, 'info');
+      log(`window.initializeRevenueComparisonChart exists: ${typeof window.initializeRevenueComparisonChart === 'function'}`, 'info');
+      log(`window.LTRAnalysis exists: ${!!window.LTRAnalysis}`, 'info');
+    };
+    
+    window.testDirectChart = function() {
+      log('Testing direct chart creation...', 'info');
+      
+      const canvas = document.getElementById('revenue-comparison-chart');
+      if (!canvas) {
+        log('Canvas not found', 'error');
+        return;
+      }
+      
+      try {
+        const ctx = canvas.getContext('2d');
+        new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: ['STR', 'LTR'],
+            datasets: [{
+              data: [5045, 3100],
+              backgroundColor: ['#9333ea', '#3b82f6']
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false
+          }
+        });
+        log('Direct chart creation successful!', 'success');
+      } catch (error) {
+        log(`Direct chart creation failed: ${error.message}`, 'error');
+      }
+    };
+    
+    async function loadComponent() {
+      try {
+        log('Starting component load...', 'info');
+        
+        // Import the component
+        const { LongTermRentalAnalysis } = await import('../components/analysis/LongTermRentalAnalysis.js');
+        log('Component imported successfully', 'success');
+        
+        // Create test data
+        const testData = {
+          propertyData: {
+            address: '123 Test St, Toronto, ON',
+            price: 850000,
+            bedrooms: 3,
+            bathrooms: 2,
+            propertyType: 'House',
+            squareFeet: 2000
+          },
+          longTermRental: {
+            monthlyRent: 3100,
+            annualRent: 37200,
+            vacancyRate: 2.1,
+            marketInsights: {
+              rent_growth: 5.2,
+              demand_level: 'High',
+              typical_tenant: 'Young families'
+            }
+          },
+          shortTermRental: {
+            monthlyRevenue: 5045,
+            annual_revenue: 60540
+          },
+          metrics: {
+            capRate: 4.5,
+            totalROI: 12.5
+          },
+          cashFlow: {
+            monthly: 450,
+            annual: 5400
+          },
+          monthlyExpenses: {
+            total: 2650,
+            mortgage: 2100
+          }
+        };
+        
+        log('Rendering component...', 'info');
+        
+        // Render just the relevant part
+        const fullHtml = LongTermRentalAnalysis({ analysis: testData });
+        
+        // Extract just the revenue comparison section
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = fullHtml;
+        
+        // Find the revenue comparison chart section
+        const chartSection = tempDiv.querySelector('.bg-white.border.border-gray-200.rounded-lg.p-6');
+        if (chartSection && chartSection.querySelector('#revenue-comparison-chart')) {
+          containerEl.innerHTML = chartSection.outerHTML;
+          log('Revenue comparison section rendered', 'success');
+        } else {
+          containerEl.innerHTML = fullHtml;
+          log('Full component rendered (chart section not found)', 'info');
+        }
+        
+        // Execute scripts
+        const scripts = tempDiv.getElementsByTagName('script');
+        log(`Found ${scripts.length} script tags`, 'info');
+        
+        for (let i = 0; i < scripts.length; i++) {
+          try {
+            log(`Executing script ${i + 1}...`, 'info');
+            eval(scripts[i].textContent);
+          } catch (error) {
+            log(`Script ${i + 1} error: ${error.message}`, 'error');
+          }
+        }
+        
+        // Wait a bit for async operations
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        log('Component load complete', 'success');
+        
+        // Check status
+        checkChartStatus();
+        
+      } catch (error) {
+        log(`Component load error: ${error.message}`, 'error');
+        console.error(error);
+      }
+    }
+    
+    // Monitor console for chart-related messages
+    const originalLog = console.log;
+    const originalError = console.error;
+    
+    console.log = function(...args) {
+      originalLog(...args);
+      const msg = args.join(' ');
+      if (msg.includes('chart') || msg.includes('Chart') || msg.includes('canvas')) {
+        log(`[Console] ${msg}`, 'info');
+      }
+    };
+    
+    console.error = function(...args) {
+      originalError(...args);
+      log(`[Console Error] ${args.join(' ')}`, 'error');
+    };
+    
+    // Start loading
+    loadComponent();
+  </script>
+</body>
+</html>

@@ -315,7 +315,7 @@ export const LongTermRentalAnalysis = ({
           <h3 class="font-semibold text-gray-800 mb-4">Revenue Comparison</h3>
           
           <div class="relative h-48 mb-4">
-            <canvas id="revenue-comparison-chart"></canvas>
+            <canvas id="revenue-comparison-chart" style="width: 100%; height: 100%;"></canvas>
           </div>
           
           <p id="str-higher-text" class="text-center text-gray-700">
@@ -528,12 +528,23 @@ export const LongTermRentalAnalysis = ({
       window.LTRAnalysis = window.LTRAnalysis || {};
       
       // Initialize revenue projection chart
-      function initializeLTRChart() {
+      window.initializeLTRChart = function initializeLTRChart() {
         const canvas = document.getElementById('ltr-revenue-chart');
-        if (canvas && typeof Chart !== 'undefined' && !canvas.chart) {
-          const ctx = canvas.getContext('2d');
-          const monthlyRent = ${monthlyRent};
-          const growthRate = ${effectiveGrowthRate} / 100;
+        if (!canvas || typeof Chart === 'undefined') {
+          console.log('LTR chart canvas or Chart.js not available');
+          return;
+        }
+        
+        // Check if chart already exists using Chart.js method
+        const existingChart = Chart.getChart(canvas);
+        if (existingChart) {
+          console.log('Destroying existing LTR chart');
+          existingChart.destroy();
+        }
+        
+        const ctx = canvas.getContext('2d');
+        const monthlyRent = ${monthlyRent};
+        const growthRate = ${effectiveGrowthRate} / 100;
           
           // Calculate 5-year projections
           const projections = [];
@@ -592,37 +603,58 @@ export const LongTermRentalAnalysis = ({
               }
             }
           });
-          canvas.chart = true; // Mark as initialized
         }
       }
+      
+      // Function to initialize all LTR charts
+      window.LTRAnalysis.initializeCharts = function() {
+        console.log('Initializing all LTR charts...');
+        if (typeof window.initializeLTRChart === 'function') {
+          window.initializeLTRChart();
+        }
+        if (typeof window.initializeRevenueComparisonChart === 'function') {
+          window.initializeRevenueComparisonChart();
+        }
+      };
       
       // Initialize on load and when dynamically added
       if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', function() {
-          initializeLTRChart();
-          initializeRevenueComparisonChart();
+          window.initializeLTRChart();
+          window.initializeRevenueComparisonChart();
         });
       } else {
         setTimeout(function() {
-          initializeLTRChart();
-          initializeRevenueComparisonChart();
+          window.initializeLTRChart();
+          window.initializeRevenueComparisonChart();
         }, 100); // Small delay for dynamic loading
       }
       
       // Initialize revenue comparison chart
-      function initializeRevenueComparisonChart() {
+      window.initializeRevenueComparisonChart = function initializeRevenueComparisonChart() {
         try {
           const canvas = document.getElementById('revenue-comparison-chart');
-          if (!canvas || typeof Chart === 'undefined') return;
+          if (!canvas) {
+            console.log('Revenue comparison canvas not found');
+            return;
+          }
+          if (typeof Chart === 'undefined') {
+            console.log('Chart.js not loaded');
+            return;
+          }
           
-          // Destroy existing chart if any
-          if (window.revenueComparisonChart) {
-            window.revenueComparisonChart.destroy();
+          // Check if chart already exists using Chart.js method
+          const existingChart = Chart.getChart(canvas);
+          if (existingChart) {
+            console.log('Destroying existing chart');
+            existingChart.destroy();
           }
           
           const ctx = canvas.getContext('2d');
           const strMonthly = ${strRevenue};
           const ltrMonthly = ${monthlyRent};
+          
+          console.log('Creating revenue comparison chart with data:', { strMonthly, ltrMonthly });
           
           window.revenueComparisonChart = new Chart(ctx, {
             type: 'bar',
@@ -691,7 +723,7 @@ export const LongTermRentalAnalysis = ({
               }
             }
           });
-          canvas.chart = true;
+          console.log('Revenue comparison chart created successfully');
         } catch (error) {
           console.error('Failed to initialize revenue comparison chart:', error);
         }

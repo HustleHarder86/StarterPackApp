@@ -585,6 +585,53 @@ class ComponentLoader {
             }
           }, 100);
         }
+        
+        // Initialize LTR charts when switching to LTR tab
+        if (tabName === 'ltr') {
+          // Add a small delay to ensure DOM is ready
+          setTimeout(() => {
+            console.log('Initializing LTR charts for tab switch');
+            
+            // First ensure the tab content is visible
+            const ltrContent = document.getElementById('ltr-content');
+            if (!ltrContent || ltrContent.classList.contains('hidden')) {
+              console.log('LTR content not visible, skipping chart init');
+              return;
+            }
+            
+            // Wait for canvas elements to be available
+            const checkAndInitialize = (retries = 5) => {
+              const revenueCanvas = document.getElementById('revenue-comparison-chart');
+              const projectionCanvas = document.getElementById('ltr-revenue-chart');
+              
+              if (revenueCanvas && projectionCanvas) {
+                console.log('Canvas elements found, initializing charts');
+                
+                // Initialize revenue comparison chart
+                if (typeof window.initializeRevenueComparisonChart === 'function') {
+                  window.initializeRevenueComparisonChart();
+                }
+                
+                // Initialize revenue projection chart
+                if (typeof window.initializeLTRChart === 'function') {
+                  window.initializeLTRChart();
+                }
+                
+                // Also check for any LTR-specific initialization functions
+                if (window.LTRAnalysis && window.LTRAnalysis.initializeCharts) {
+                  window.LTRAnalysis.initializeCharts();
+                }
+              } else if (retries > 0) {
+                console.log(`Canvas not ready, retrying... (${retries} attempts left)`);
+                setTimeout(() => checkAndInitialize(retries - 1), 200);
+              } else {
+                console.error('Failed to find canvas elements after multiple attempts');
+              }
+            };
+            
+            checkAndInitialize();
+          }, 150);
+        }
       };
       
       // Restore active tab if exists

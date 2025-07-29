@@ -2,173 +2,217 @@ const puppeteer = require('puppeteer');
 const fs = require('fs').promises;
 const path = require('path');
 
-// Create screenshots directory with timestamp
-const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
-const screenshotDir = path.join(__dirname, 'screenshots', 'ltr-manual-test', timestamp);
-
-async function ensureDir(dir) {
-  try {
-    await fs.mkdir(dir, { recursive: true });
-  } catch (error) {
-    console.error(`Error creating directory: ${error}`);
-  }
-}
-
-async function takeScreenshot(page, name, description) {
-  const filename = `${name}.png`;
-  const filepath = path.join(screenshotDir, filename);
-  await page.screenshot({ path: filepath, fullPage: true });
-  console.log(`📸 Screenshot: ${name} - ${description}`);
-  return filepath;
-}
-
-async function testLTRManually() {
-  console.log('🚀 Starting manual LTR UI/UX test...\n');
-  console.log('📌 Please ensure your test file is served at: http://localhost:8080/tests/test-ltr-option5-implementation.html\n');
-  
-  const browser = await puppeteer.launch({
-    headless: false, // Run in headed mode so you can see what's happening
-    args: ['--no-sandbox', '--disable-setuid-sandbox'],
-    defaultViewport: { width: 1920, height: 1080 }
-  });
-
-  try {
-    await ensureDir(screenshotDir);
+async function manualLTRTest() {
+    console.log('🔍 Manual LTR UI Test Starting...\n');
+    
+    const browser = await puppeteer.launch({
+        headless: false, // Show browser for manual observation
+        args: ['--no-sandbox', '--disable-setuid-sandbox'],
+        defaultViewport: { width: 1920, height: 1080 }
+    });
+    
     const page = await browser.newPage();
     
-    // Navigate to the absolute file path
-    const testFilePath = path.resolve(__dirname, '../../tests/test-ltr-option5-implementation.html');
-    console.log('Opening test file:', testFilePath);
+    // Create screenshots directory
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-').substring(0, 19);
+    const screenshotDir = path.join(__dirname, 'screenshots', 'ltr-manual-test', timestamp);
+    await fs.mkdir(screenshotDir, { recursive: true });
     
-    // Read the HTML content and serve it directly
-    const htmlContent = await fs.readFile(testFilePath, 'utf8');
-    await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
+    console.log('📁 Screenshots will be saved to:', screenshotDir);
     
-    // Wait for components to initialize
-    await new Promise(r => setTimeout(r, 3000));
-    
-    console.log('\n📱 Test 1: Initial Desktop View');
-    await takeScreenshot(page, '01-desktop-full', 'Full desktop view of LTR tab');
-    
-    // Check if LTR content loaded
-    const ltrContent = await page.$('#ltr-content');
-    if (!ltrContent) {
-      console.error('❌ LTR content container not found!');
-      return;
+    try {
+        // Navigate to the test page
+        console.log('\n1️⃣ Navigating to LTR test page...');
+        const testUrl = 'http://localhost:5173/tests/test-ltr-chart-fix.html';
+        
+        await page.goto(testUrl, {
+            waitUntil: 'domcontentloaded', // Don't wait for all network activity
+            timeout: 10000
+        });
+        
+        console.log('✅ Page loaded');
+        
+        // Wait a bit for JavaScript to initialize
+        await page.waitFor(3000);
+        
+        // Take initial screenshot
+        await page.screenshot({ 
+            path: path.join(screenshotDir, '01-initial-state.png'), 
+            fullPage: true 
+        });
+        console.log('📸 Initial screenshot taken');
+        
+        // Check page content
+        const pageContent = await page.evaluate(() => {
+            const statusEl = document.getElementById('test-status');
+            const containerEl = document.getElementById('analysis-container');
+            const errorEl = document.querySelector('.bg-red-100');
+            
+            return {
+                statusText: statusEl ? statusEl.textContent : 'No status element',
+                hasContainer: \!\!containerEl,
+                containerHTML: containerEl ? containerEl.innerHTML.substring(0, 500) : 'No container',
+                hasError: \!\!errorEl,
+                errorText: errorEl ? errorEl.textContent : null,
+                documentTitle: document.title,
+                bodyClasses: document.body.className
+            };
+        });
+        
+        console.log('\n📋 Page Content Analysis:');
+        console.log('Status:', pageContent.statusText);
+        console.log('Has Container:', pageContent.hasContainer);
+        console.log('Has Error:', pageContent.hasError);
+        if (pageContent.hasError) {
+            console.log('Error Text:', pageContent.errorText);
+        }
+        
+        // Check for tabs
+        console.log('\n2️⃣ Checking for tab buttons...');
+        const tabs = await page.$$eval('.tab-button', buttons => 
+            buttons.map(btn => ({
+                text: btn.textContent.trim(),
+                id: btn.id,
+                classes: btn.className
+            }))
+        );
+        
+        console.log(`Found ${tabs.length} tabs:`, tabs);
+        
+        if (tabs.length > 0) {
+            // Find LTR tab
+            const ltrTabIndex = tabs.findIndex(tab => tab.text.includes('Long-Term Rental'));
+            
+            if (ltrTabIndex >= 0) {
+                console.log(`\n3️⃣ Clicking LTR tab (index ${ltrTabIndex})...`);
+                const tabButtons = await page.$$('.tab-button');
+                await tabButtons[ltrTabIndex].click();
+                
+                // Wait for content to update
+                await page.waitFor(2000);
+                
+                // Take screenshot after clicking tab
+                await page.screenshot({ 
+                    path: path.join(screenshotDir, '02-after-ltr-click.png'), 
+                    fullPage: true 
+                });
+                console.log('📸 Screenshot after LTR tab click');
+                
+                // Check for chart elements
+                console.log('\n4️⃣ Checking for chart elements...');
+                const chartElements = await page.evaluate(() => {
+                    const elements = {
+                        revenueComparisonContainer: document.getElementById('revenue-comparison-container'),
+                        revenueComparisonChart: document.getElementById('revenue-comparison-chart'),
+                        ltrRevenueChart: document.getElementById('ltr-revenue-chart'),
+                        ltrContent: document.getElementById('ltr-content')
+                    };
+                    
+                    return {
+                        hasRevenueComparisonContainer: \!\!elements.revenueComparisonContainer,
+                        hasRevenueComparisonChart: \!\!elements.revenueComparisonChart,
+                        hasLTRRevenueChart: \!\!elements.ltrRevenueChart,
+                        hasLTRContent: \!\!elements.ltrContent,
+                        ltrContentVisible: elements.ltrContent ? \!elements.ltrContent.classList.contains('hidden') : false,
+                        containerDetails: elements.revenueComparisonContainer ? {
+                            id: elements.revenueComparisonContainer.id,
+                            className: elements.revenueComparisonContainer.className,
+                            innerHTML: elements.revenueComparisonContainer.innerHTML.substring(0, 200)
+                        } : null
+                    };
+                });
+                
+                console.log('Chart Elements:', chartElements);
+                
+                // If we found the revenue comparison container, take a focused screenshot
+                if (chartElements.hasRevenueComparisonContainer) {
+                    console.log('\n5️⃣ Taking focused screenshot of Revenue Comparison chart...');
+                    
+                    const container = await page.$('#revenue-comparison-container');
+                    if (container) {
+                        await container.scrollIntoViewIfNeeded();
+                        await page.waitFor(500);
+                        
+                        const box = await container.boundingBox();
+                        if (box) {
+                            await page.screenshot({
+                                path: path.join(screenshotDir, '03-revenue-comparison-focused.png'),
+                                clip: {
+                                    x: Math.max(0, box.x - 20),
+                                    y: Math.max(0, box.y - 20),
+                                    width: box.width + 40,
+                                    height: box.height + 40
+                                }
+                            });
+                            console.log('📸 Focused chart screenshot taken');
+                        }
+                    }
+                }
+                
+                // Test interactivity
+                console.log('\n6️⃣ Testing chart interactivity...');
+                const monthlyRentInput = await page.$('#monthlyRent');
+                if (monthlyRentInput) {
+                    console.log('Found monthly rent input, changing value...');
+                    await monthlyRentInput.click({ clickCount: 3 });
+                    await monthlyRentInput.type('2500');
+                    await page.waitFor(1000);
+                    
+                    await page.screenshot({ 
+                        path: path.join(screenshotDir, '04-after-rent-change.png'), 
+                        fullPage: true 
+                    });
+                    console.log('📸 Screenshot after rent change');
+                }
+            } else {
+                console.log('❌ Long-Term Rental tab not found');
+            }
+        } else {
+            console.log('❌ No tab buttons found on page');
+        }
+        
+        // Final summary
+        console.log('\n📊 Test Summary:');
+        console.log('- Test completed successfully');
+        console.log(`- Screenshots saved: ${screenshotDir}`);
+        console.log('- Check screenshots to verify chart rendering');
+        
+        // Keep browser open for manual inspection
+        console.log('\n👀 Browser will remain open for manual inspection.');
+        console.log('Press Ctrl+C to close when done.');
+        
+        // Wait indefinitely (user will close manually)
+        await new Promise(() => {});
+        
+    } catch (error) {
+        console.error('\n❌ Test failed:', error.message);
+        
+        // Take error screenshot
+        await page.screenshot({
+            path: path.join(screenshotDir, 'error-state.png'),
+            fullPage: true
+        });
+        
+        // Save error details
+        await fs.writeFile(
+            path.join(screenshotDir, 'error-details.json'),
+            JSON.stringify({
+                error: error.message,
+                stack: error.stack,
+                timestamp: new Date().toISOString()
+            }, null, 2)
+        );
+        
+        await browser.close();
     }
-    
-    // Check for revenue banner
-    const revenueBanner = await page.$('.revenue-banner');
-    if (revenueBanner) {
-      console.log('✅ Revenue banner found');
-      await page.evaluate(() => {
-        document.querySelector('.revenue-banner').scrollIntoView({ behavior: 'smooth', block: 'center' });
-      });
-      await new Promise(r => setTimeout(r, 500));
-      await takeScreenshot(page, '02-revenue-banner', 'Revenue banner section');
-    } else {
-      console.error('❌ Revenue banner not found');
-    }
-    
-    // Check key metrics
-    const metricsGrid = await page.$('.grid.grid-cols-2.md\\:grid-cols-4');
-    if (metricsGrid) {
-      console.log('✅ Key metrics grid found');
-      await page.evaluate(() => {
-        document.querySelector('.grid.grid-cols-2.md\\:grid-cols-4').scrollIntoView({ behavior: 'smooth', block: 'center' });
-      });
-      await new Promise(r => setTimeout(r, 500));
-      await takeScreenshot(page, '03-key-metrics', 'Key metrics display');
-    } else {
-      console.error('❌ Key metrics grid not found');
-    }
-    
-    // Check market panels
-    const marketPanels = await page.$$('.grid.md\\:grid-cols-2.gap-6 > div');
-    if (marketPanels.length > 0) {
-      console.log(`✅ Found ${marketPanels.length} market analysis panels`);
-      await page.evaluate(() => {
-        const panels = document.querySelector('.grid.md\\:grid-cols-2.gap-6');
-        if (panels) panels.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      });
-      await new Promise(r => setTimeout(r, 500));
-      await takeScreenshot(page, '04-market-panels', 'Market analysis panels');
-    }
-    
-    // Check chart
-    const chart = await page.$('#ltr-revenue-chart');
-    if (chart) {
-      console.log('✅ Revenue chart canvas found');
-      await page.evaluate(() => {
-        document.getElementById('ltr-revenue-chart').scrollIntoView({ behavior: 'smooth', block: 'center' });
-      });
-      await new Promise(r => setTimeout(r, 1000));
-      await takeScreenshot(page, '05-revenue-chart', 'Revenue projection chart');
-    } else {
-      console.error('❌ Revenue chart not found');
-    }
-    
-    // Check calculator
-    const calculator = await page.$('#ltr-calc-rent');
-    if (calculator) {
-      console.log('✅ Financial calculator found');
-      await page.evaluate(() => {
-        document.getElementById('ltr-calc-rent').scrollIntoView({ behavior: 'smooth', block: 'center' });
-      });
-      await new Promise(r => setTimeout(r, 500));
-      await takeScreenshot(page, '06-calculator', 'Financial calculator section');
-      
-      // Test calculator interaction
-      await page.click('#ltr-calc-rent');
-      await page.keyboard.down('Control');
-      await page.keyboard.press('A');
-      await page.keyboard.up('Control');
-      await page.type('#ltr-calc-rent', '4000');
-      
-      const recalcButton = await page.$('button[onclick="window.LTRAnalysis.recalculate()"]');
-      if (recalcButton) {
-        await recalcButton.click();
-        await new Promise(r => setTimeout(r, 500));
-        await takeScreenshot(page, '07-calculator-updated', 'Calculator after update');
-        console.log('✅ Calculator recalculation tested');
-      }
-    }
-    
-    // Check collapsible assumptions
-    const assumptionsButton = await page.$('button[onclick="window.LTRAnalysis.toggleAssumptions()"]');
-    if (assumptionsButton) {
-      console.log('✅ Assumptions toggle found');
-      await assumptionsButton.click();
-      await new Promise(r => setTimeout(r, 500));
-      await takeScreenshot(page, '08-assumptions-expanded', 'Expanded assumptions');
-      
-      await assumptionsButton.click();
-      await new Promise(r => setTimeout(r, 500));
-      await takeScreenshot(page, '09-assumptions-collapsed', 'Collapsed assumptions');
-    }
-    
-    // Test mobile view
-    console.log('\n📱 Testing mobile responsiveness...');
-    await page.setViewport({ width: 375, height: 812 });
-    await new Promise(r => setTimeout(r, 1000));
-    await page.evaluate(() => window.scrollTo(0, 0));
-    await takeScreenshot(page, '10-mobile-view', 'Mobile responsive view');
-    
-    // Tablet view
-    await page.setViewport({ width: 768, height: 1024 });
-    await new Promise(r => setTimeout(r, 1000));
-    await page.evaluate(() => window.scrollTo(0, 0));
-    await takeScreenshot(page, '11-tablet-view', 'Tablet responsive view');
-    
-    console.log('\n✅ Test completed successfully!');
-    console.log(`📸 Screenshots saved to: ${screenshotDir}`);
-    
-  } catch (error) {
-    console.error('❌ Test error:', error);
-  } finally {
-    await browser.close();
-  }
 }
 
 // Run the test
-testLTRManually().catch(console.error);
+console.log('StarterPackApp - Manual LTR UI Test');
+console.log('====================================\n');
+
+manualLTRTest().catch(error => {
+    console.error('Fatal error:', error);
+    process.exit(1);
+});
+EOF < /dev/null
