@@ -7,8 +7,18 @@ export const EnhancedFinancialCalculator = ({ analysisData = {} }) => {
   // Extract property and financial data
   const propertyData = analysisData.propertyData || {};
   const costs = analysisData.costs || {};
+  const monthlyExpenses = analysisData.monthly_expenses || analysisData.monthlyExpenses || {};
   const ltrData = analysisData.longTermRental || analysisData.long_term_rental || {};
   const strData = analysisData.strAnalysis || analysisData.short_term_rental || {};
+  
+  // Debug logging to trace mortgage value
+  console.log('[Financial Calculator] Data sources:', {
+    'monthlyExpenses': monthlyExpenses,
+    'monthlyExpenses.mortgage': monthlyExpenses.mortgage,
+    'costs': costs,
+    'costs.mortgage': costs.mortgage,
+    'analysisData': analysisData
+  });
   
   // Determine which revenue to use based on analysis type
   const analysisType = analysisData.analysisType || 'both';
@@ -16,13 +26,23 @@ export const EnhancedFinancialCalculator = ({ analysisData = {} }) => {
     ? (ltrData.monthlyRent || ltrData.monthly_rent || 3100)
     : (strData.monthlyRevenue || strData.monthly_revenue || 5400);
   
-  // Extract expense values with proper fallbacks
-  const monthlyMortgage = costs.mortgage || costs.mortgagePayment || 4200;
-  const propertyTax = Math.round((propertyData.propertyTaxes || propertyData.property_taxes || 8500) / 12);
-  const insurance = costs.insurance || 250;
-  const hoaFees = propertyData.condoFees || propertyData.condo_fees || 450;
-  const utilities = costs.utilities || 200;
-  const maintenance = costs.maintenance || 300;
+  // Extract expense values with proper fallbacks - check monthly_expenses first
+  const monthlyMortgage = monthlyExpenses.mortgage || costs.mortgage || costs.mortgagePayment || 2970;
+  const propertyTax = monthlyExpenses.property_tax || Math.round((propertyData.propertyTaxes || propertyData.property_taxes || costs.property_tax_annual || 6350) / 12);
+  const insurance = monthlyExpenses.insurance || costs.insurance || 132;
+  const hoaFees = propertyData.condoFees || propertyData.condo_fees || monthlyExpenses.hoa || 536;
+  const utilities = monthlyExpenses.utilities || costs.utilities || 150;
+  const maintenance = monthlyExpenses.maintenance || costs.maintenance || 265;
+  
+  // Debug final values
+  console.log('[Financial Calculator] Calculated values:', {
+    'monthlyMortgage': monthlyMortgage,
+    'propertyTax': propertyTax,
+    'insurance': insurance,
+    'hoaFees': hoaFees,
+    'utilities': utilities,
+    'maintenance': maintenance
+  });
   
   // STR-specific expenses (only if STR analysis)
   const propertyMgmt = analysisType === 'str' ? Math.round(monthlyRevenue * 0.10) : 0;
