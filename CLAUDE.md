@@ -11,10 +11,13 @@
    - Database operations, PDF generation
    - Any operation >1 second
 
-2. **Vercel** (`/api/`) - ONLY fast operations:
-   - Static file serving
+2. **Vercel** (`/api/`) - Proxy & fast operations:
+   - Proxies to Railway for analyze-property (with 300s timeout)
    - Simple form submissions
-   - ❌ NO external APIs or heavy processing
+   - Authentication layer
+   - ❌ NO direct external API calls
+
+**IMPORTANT**: The proxy pattern (Vercel → Railway) is proven and works reliably. Do NOT implement complex queue systems unless error rate exceeds 5%. See DEVELOPMENT-LEARNINGS.md for details.
 
 ## 📌 CURRENT STATUS - JULY 2025
 
