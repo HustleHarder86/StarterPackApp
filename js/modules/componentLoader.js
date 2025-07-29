@@ -212,7 +212,8 @@ class ComponentLoader {
       const propertyAddress = propertyData.address || 'Property Address';
       
       // Enhanced image extraction with more fallbacks (NO DEFAULT)
-      const propertyImage = propertyData.mainImage || 
+      const propertyImage = propertyData.main_image ||  // THIS IS THE ONE!
+        propertyData.mainImage || 
         propertyData.image || 
         propertyData.imageUrl || 
         propertyData.image_url || 
@@ -224,6 +225,7 @@ class ComponentLoader {
         analysisData.propertyImage ||
         analysisData.propertyDetails?.mainImage ||
         analysisData.property_details?.mainImage ||
+        analysisData.property_data?.main_image ||  // Also check property_data
         null; // No default - will show nothing if no image found
       
       // Debug log to help troubleshoot - log entire objects to see structure

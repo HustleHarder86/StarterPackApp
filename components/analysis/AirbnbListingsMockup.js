@@ -196,7 +196,7 @@ export const AirbnbHeroSectionMockup = ({ analysis }) => {
   const bathrooms = propertyData.bathrooms || 2;
   const sqft = propertyData.squareFeet || propertyData.square_feet || propertyData.sqft || 'N/A';
   // Fix image extraction - check all possible field names (NO DEFAULT)
-  const propertyImage = propertyData.mainImage || propertyData.image || propertyData.imageUrl || propertyData.image_url || null;
+  const propertyImage = propertyData.main_image || propertyData.mainImage || propertyData.image || propertyData.imageUrl || propertyData.image_url || null;
   
   // Debug logging to help troubleshoot
   console.log('[STR Tab] Property data:', propertyData);
