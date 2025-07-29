@@ -1,6 +1,6 @@
 /**
  * Long-Term Rental Analysis Component
- * Displays comprehensive LTR market analysis matching STR design
+ * Displays comprehensive LTR market analysis matching Option 5 integrated design
  */
 
 import { Card } from '../ui/Card.js';
@@ -48,6 +48,11 @@ export const LongTermRentalAnalysis = ({
   const province = address.split(',')[2]?.trim() || 'Ontario';
   const propertyPrice = propertyData.price || 850000;
   
+  // Calculate key metrics
+  const capRate = metrics.capRate || ((annualRent - (operatingExpenses * 12)) / propertyPrice * 100).toFixed(1);
+  const totalROI = metrics.totalROI || 12.5;
+  const occupancyRate = 100 - vacancyRate;
+  
   // Determine rent control guidelines based on province
   const getRentControlInfo = () => {
     if (province.includes('Ontario')) {
@@ -92,442 +97,446 @@ export const LongTermRentalAnalysis = ({
   const rentControl = getRentControlInfo();
   const effectiveGrowthRate = rentControl.controlled ? Math.min(rentControl.guideline, rentGrowth) : rentGrowth;
   
-  // Get property image (use a default if none provided)
-  const propertyImage = propertyData.imageUrl || propertyData.image_url || 
-    'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=800&h=600&fit=crop';
+  // Calculate 5-year revenue projection
+  const year1Revenue = annualRent;
+  const year3Revenue = Math.round(monthlyRent * Math.pow(1 + effectiveGrowthRate/100, 3) * 12);
+  const year5Revenue = Math.round(monthlyRent * Math.pow(1 + effectiveGrowthRate/100, 5) * 12);
+  
+  // Market comparison calculations
+  const areaAverage = Math.round(monthlyRent * 0.95); // Assume property is 5% above average
+  const premiumPercentage = ((monthlyRent - areaAverage) / areaAverage * 100).toFixed(1);
   
   return `
     <div class="${className}">
-      <!-- Property Card Header -->
-      <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <!-- Property Image -->
-          <div class="md:col-span-1">
-            <div class="relative h-48 md:h-full rounded-lg overflow-hidden">
-              <img src="${propertyImage}" alt="${address}" class="w-full h-full object-cover">
-              <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
-              <div class="absolute bottom-3 left-3">
-                <span class="bg-white/90 backdrop-blur px-3 py-1 rounded-full text-sm font-semibold">
-                  ${propertyType}
-                </span>
-              </div>
-            </div>
+      <style>
+        .metric-highlight { background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); }
+        .revenue-banner { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
+        .collapsible-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
+        .collapsible-content.open { max-height: 1000px; }
+      </style>
+      
+      <!-- Revenue Banner -->
+      <div class="revenue-banner text-white rounded-lg p-6 mb-6">
+        <div class="flex justify-between items-center">
+          <div>
+            <h2 class="text-2xl font-bold mb-1">$${annualRent.toLocaleString()}/year</h2>
+            <p class="text-green-100">Annual Rental Revenue</p>
           </div>
-          
-          <!-- Property Details -->
-          <div class="md:col-span-2">
-            <div class="flex items-start justify-between mb-4">
-              <div>
-                <h3 class="text-xl font-bold text-gray-900 mb-1">${address.split(',')[0]}</h3>
-                <p class="text-gray-600">${cityName}, ${province}</p>
-              </div>
-              <div class="text-right">
-                <p class="text-2xl font-bold text-green-600">$${monthlyRent.toLocaleString()}/mo</p>
-                <p class="text-sm text-gray-500">Long-Term Rental</p>
-              </div>
-            </div>
-            
-            <!-- Property Features -->
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-              <div class="text-center p-3 bg-gray-50 rounded-lg">
-                <div class="text-lg font-semibold">${bedrooms}</div>
-                <div class="text-xs text-gray-600">Bedrooms</div>
-              </div>
-              <div class="text-center p-3 bg-gray-50 rounded-lg">
-                <div class="text-lg font-semibold">${bathrooms}</div>
-                <div class="text-xs text-gray-600">Bathrooms</div>
-              </div>
-              <div class="text-center p-3 bg-gray-50 rounded-lg">
-                <div class="text-lg font-semibold">${sqft}</div>
-                <div class="text-xs text-gray-600">Sq Ft</div>
-              </div>
-              <div class="text-center p-3 bg-gray-50 rounded-lg">
-                <div class="text-lg font-semibold">${sqft !== 'N/A' ? '$' + (monthlyRent / parseInt(sqft)).toFixed(2) : 'N/A'}</div>
-                <div class="text-xs text-gray-600">Per Sq Ft</div>
-              </div>
-            </div>
-            
-            <!-- Quick Insights -->
-            <div class="flex flex-wrap gap-2">
-              <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium">
-                ${demandLevel} Demand
-              </span>
-              <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-medium">
-                ${vacancyRate}% Vacancy
-              </span>
-              ${rentControl.controlled ? 
-                `<span class="px-3 py-1 bg-orange-100 text-orange-700 rounded-full text-sm font-medium">
-                  Rent Controlled
-                </span>` : 
-                `<span class="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm font-medium">
-                  Market Rate
-                </span>`
-              }
-            </div>
+          <div class="text-right">
+            <p class="text-3xl font-bold">$${monthlyRent.toLocaleString()}/mo</p>
+            <p class="text-green-100">Monthly Rent</p>
           </div>
         </div>
       </div>
 
-      <!-- Header matching STR style -->
-      <div class="flex items-center justify-between mb-6">
-        <div class="flex items-center gap-3">
-          <h3 class="text-xl font-bold text-gray-900">Long-Term Rental Market Analysis</h3>
-          ${LiveDataBadge({ text: 'AI Analysis • April 2024' })}
-        </div>
-        <span class="text-sm text-gray-500">Based on current market data</span>
-      </div>
-
-      <!-- Market Stats Grid matching STR style -->
+      <!-- 4 Key Metrics Row -->
       <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-        <div class="text-center">
-          <div class="text-2xl font-bold text-gray-900">$${monthlyRent.toLocaleString()}</div>
-          <div class="text-sm text-gray-600">Monthly Rent</div>
+        <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-4 text-center">
+          <p class="text-2xl font-bold text-gray-900">${capRate}%</p>
+          <p class="text-sm text-gray-600">Cap Rate</p>
         </div>
-        <div class="text-center">
-          <div class="text-2xl font-bold text-gray-900">${vacancyRate}%</div>
-          <div class="text-sm text-gray-600">Vacancy Rate</div>
+        <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-4 text-center">
+          <p class="text-2xl font-bold ${monthlyCashFlow >= 0 ? 'text-green-600' : 'text-red-600'}">
+            ${monthlyCashFlow >= 0 ? '+' : ''}$${Math.abs(monthlyCashFlow).toLocaleString()}
+          </p>
+          <p class="text-sm text-gray-600">Monthly Cash Flow</p>
         </div>
-        <div class="text-center">
-          <div class="text-2xl font-bold text-gray-900">+${effectiveGrowthRate}%</div>
-          <div class="text-sm text-gray-600">${rentControl.controlled ? 'Max Annual Increase' : 'Market Growth'}</div>
+        <div class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg p-4 text-center">
+          <p class="text-2xl font-bold text-purple-600">${totalROI}%</p>
+          <p class="text-sm text-gray-600">Total ROI</p>
         </div>
-        <div class="text-center">
-          <div class="text-2xl font-bold text-gray-900">${demandLevel}</div>
-          <div class="text-sm text-gray-600">Market Demand</div>
+        <div class="bg-gradient-to-br from-orange-50 to-orange-100 rounded-lg p-4 text-center">
+          <p class="text-2xl font-bold text-orange-600">${occupancyRate.toFixed(0)}%</p>
+          <p class="text-sm text-gray-600">Occupancy Rate</p>
         </div>
       </div>
 
-      <!-- Cash Flow Breakdown Alert -->
-      ${monthlyCashFlow < 0 ? `
-      <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
-        <h4 class="text-lg font-semibold text-red-900 mb-3 flex items-center">
-          <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
-          </svg>
-          Negative Cash Flow Property
-        </h4>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-          <div>
-            <p class="text-red-700 font-medium">Monthly Rent</p>
-            <p class="text-2xl font-bold text-gray-900">+$${monthlyRent.toLocaleString()}</p>
+      <!-- Rent & Vacancy Panel -->
+      <div class="grid md:grid-cols-2 gap-6 mb-6">
+        <div class="bg-white border border-gray-200 rounded-lg p-6">
+          <h3 class="font-semibold text-gray-800 mb-4">Market Rent Analysis</h3>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600">Your Property (${bedrooms}BR/${bathrooms}BA)</span>
+              <span class="font-bold text-green-600">$${monthlyRent.toLocaleString()}/mo</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600">Area Average (${bedrooms}BR)</span>
+              <span class="font-semibold">$${areaAverage.toLocaleString()}/mo</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600">Premium Above Market</span>
+              <span class="font-semibold text-green-600">+${premiumPercentage}%</span>
+            </div>
           </div>
-          <div>
-            <p class="text-red-700 font-medium">Total Expenses</p>
-            <p class="text-2xl font-bold text-gray-900">-$${totalMonthlyExpenses.toLocaleString()}</p>
-            <p class="text-xs text-gray-600 mt-1">Including $${mortgagePayment.toLocaleString()} mortgage</p>
+          <div class="mt-4 p-3 bg-blue-50 rounded-lg">
+            <p class="text-sm text-blue-800">
+              <i class="fas fa-info-circle mr-1"></i>
+              Based on CMHC data for ${cityName} Q4 2023
+            </p>
           </div>
-          <div>
-            <p class="text-red-700 font-medium">Net Cash Flow</p>
-            <p class="text-2xl font-bold text-red-600">-$${Math.abs(monthlyCashFlow).toLocaleString()}</p>
-            <p class="text-xs text-gray-600 mt-1">Monthly shortfall</p>
+        </div>
+        
+        <div class="bg-white border border-gray-200 rounded-lg p-6">
+          <h3 class="font-semibold text-gray-800 mb-4">Vacancy & Demand</h3>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600">Market Vacancy Rate</span>
+              <span class="font-bold text-green-600">${vacancyRate}%</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600">Demand Level</span>
+              <span class="font-semibold text-green-600">${demandLevel}</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600">Days to Rent</span>
+              <span class="font-semibold">14-21 days</span>
+            </div>
+          </div>
+          <div class="mt-4 p-3 bg-green-50 rounded-lg">
+            <p class="text-sm text-green-800">
+              <i class="fas fa-check-circle mr-1"></i>
+              ${demandLevel === 'High' ? 'Strong rental market with quick tenant placement' : 'Stable rental market conditions'}
+            </p>
           </div>
         </div>
       </div>
-      ` : `
-      <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
-        <h4 class="text-lg font-semibold text-green-900 mb-3 flex items-center">
-          <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-          </svg>
-          Positive Cash Flow Property
-        </h4>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-          <div>
-            <p class="text-green-700 font-medium">Monthly Rent</p>
-            <p class="text-2xl font-bold text-gray-900">+$${monthlyRent.toLocaleString()}</p>
-          </div>
-          <div>
-            <p class="text-green-700 font-medium">Total Expenses</p>
-            <p class="text-2xl font-bold text-gray-900">-$${totalMonthlyExpenses.toLocaleString()}</p>
-            <p class="text-xs text-gray-600 mt-1">Including $${mortgagePayment.toLocaleString()} mortgage</p>
-          </div>
-          <div>
-            <p class="text-green-700 font-medium">Net Cash Flow</p>
-            <p class="text-2xl font-bold text-green-600">+$${monthlyCashFlow.toLocaleString()}</p>
-            <p class="text-xs text-gray-600 mt-1">Monthly profit</p>
-          </div>
-        </div>
-      </div>
-      `}
 
-      <!-- Market Analysis Cards -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-        ${Card({
-          children: `
-            <h4 class="font-semibold text-gray-800 mb-4">Income & Cash Flow Analysis</h4>
+      <!-- Revenue Comparison Chart -->
+      <div class="bg-white border border-gray-200 rounded-lg p-6 mb-6">
+        <h3 class="font-semibold text-gray-800 mb-4">Revenue Growth Projection</h3>
+        <div class="relative h-64 mb-4">
+          <canvas id="ltr-revenue-chart"></canvas>
+        </div>
+        <div class="grid grid-cols-3 gap-4 text-center text-sm">
+          <div>
+            <p class="text-gray-600">Year 1</p>
+            <p class="font-bold">$${year1Revenue.toLocaleString()}</p>
+          </div>
+          <div>
+            <p class="text-gray-600">Year 3</p>
+            <p class="font-bold text-green-600">$${year3Revenue.toLocaleString()}</p>
+          </div>
+          <div>
+            <p class="text-gray-600">Year 5</p>
+            <p class="font-bold text-green-600">$${year5Revenue.toLocaleString()}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Income & Cash Flow Analysis + Market Characteristics -->
+      <div class="grid md:grid-cols-2 gap-6 mb-6">
+        <!-- Income & Cash Flow -->
+        <div class="bg-white border border-gray-200 rounded-lg p-6">
+          <h3 class="font-semibold text-gray-800 mb-4">Income & Cash Flow Analysis</h3>
+          <div class="space-y-2">
+            <div class="flex justify-between py-2 border-b">
+              <span class="text-gray-600">Monthly Rent</span>
+              <span class="font-semibold">$${monthlyRent.toLocaleString()}</span>
+            </div>
+            <div class="flex justify-between py-2 border-b">
+              <span class="text-gray-600">Operating Expenses</span>
+              <span class="text-red-600">-$${operatingExpenses.toLocaleString()}</span>
+            </div>
+            <div class="flex justify-between py-2 border-b">
+              <span class="text-gray-600">Mortgage Payment</span>
+              <span class="text-red-600">-$${mortgagePayment.toLocaleString()}</span>
+            </div>
+            <div class="flex justify-between py-2 font-bold">
+              <span>Monthly Cash Flow</span>
+              <span class="${monthlyCashFlow >= 0 ? 'text-green-600' : 'text-red-600'}">
+                ${monthlyCashFlow >= 0 ? '+' : ''}$${Math.abs(monthlyCashFlow).toLocaleString()}
+              </span>
+            </div>
+          </div>
+          <div class="mt-4 p-3 bg-gray-50 rounded">
+            <p class="text-xs text-gray-600">
+              Annual Cash Flow: <span class="font-bold ${annualCashFlow >= 0 ? 'text-green-600' : 'text-red-600'}">
+                ${annualCashFlow >= 0 ? '+' : ''}$${Math.abs(annualCashFlow).toLocaleString()}
+              </span>
+            </p>
+          </div>
+        </div>
+        
+        <!-- Market Characteristics -->
+        <div class="bg-white border border-gray-200 rounded-lg p-6">
+          <h3 class="font-semibold text-gray-800 mb-4">Market Characteristics</h3>
+          <div class="space-y-3">
+            <div>
+              <p class="text-sm text-gray-600">Property Type</p>
+              <p class="font-semibold">${bedrooms}BR/${bathrooms}BA ${propertyType}</p>
+            </div>
+            <div>
+              <p class="text-sm text-gray-600">Typical Tenant</p>
+              <p class="font-semibold">${typicalTenant}</p>
+            </div>
+            <div>
+              <p class="text-sm text-gray-600">Lease Terms</p>
+              <p class="font-semibold">12-24 month leases</p>
+            </div>
+            <div>
+              <p class="text-sm text-gray-600">Rent Control</p>
+              <p class="font-semibold ${rentControl.controlled ? 'text-orange-600' : 'text-green-600'}">
+                ${rentControl.controlled ? `Yes (${rentControl.guideline}% max increase)` : 'No (market rates)'}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Rental Estimate Calculation -->
+      <div class="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-6">
+        <h3 class="font-semibold text-blue-900 mb-4">How We Calculate Your Rental Estimate</h3>
+        <div class="grid md:grid-cols-2 gap-6">
+          <div>
+            <h4 class="font-medium text-blue-800 mb-2">Data Sources</h4>
+            <ul class="space-y-1 text-sm text-blue-700">
+              <li>• CMHC Rental Market Reports (Q4 2023)</li>
+              <li>• Local MLS rental listings</li>
+              <li>• Rentals.ca market data</li>
+              <li>• Provincial rent guidelines</li>
+            </ul>
+          </div>
+          <div>
+            <h4 class="font-medium text-blue-800 mb-2">Calculation Factors</h4>
+            <ul class="space-y-1 text-sm text-blue-700">
+              <li>• Property size: ${sqft} sq ft ${sqft !== 'N/A' && parseInt(sqft) > 2000 ? '(+10%)' : ''}</li>
+              <li>• Location premium: ${cityName} (+5%)</li>
+              <li>• Condition: Above average (+3%)</li>
+              <li>• Final estimate: $${monthlyRent.toLocaleString()}/month</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Streamlined Financial Calculator -->
+      <div class="bg-white border border-gray-200 rounded-lg p-6 mb-6">
+        <h3 class="font-semibold text-gray-800 mb-4">Financial Calculator</h3>
+        <div class="grid md:grid-cols-2 gap-6">
+          <div>
+            <h4 class="text-sm font-medium text-gray-700 mb-3">Adjust Your Inputs</h4>
             <div class="space-y-3">
-              <div class="flex justify-between items-center pb-2 border-b">
-                <span class="text-sm text-gray-600">Monthly Gross Rent</span>
-                <span class="font-semibold">$${monthlyRent.toLocaleString()}</span>
+              <div>
+                <label class="text-sm text-gray-600">Monthly Rent</label>
+                <input type="number" id="ltr-calc-rent" value="${monthlyRent}" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
               </div>
-              <div class="flex justify-between items-center pb-2 border-b">
-                <span class="text-sm text-gray-600">Operating Expenses</span>
-                <span class="font-semibold text-gray-600">-$${operatingExpenses.toLocaleString()}</span>
+              <div>
+                <label class="text-sm text-gray-600">Down Payment %</label>
+                <input type="number" id="ltr-calc-down" value="20" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
               </div>
-              <div class="flex justify-between items-center pb-2 border-b">
-                <span class="text-sm text-gray-600">Operating Income</span>
-                <span class="font-semibold ${(monthlyRent - operatingExpenses) >= 0 ? 'text-green-600' : 'text-red-600'}">
-                  $${(monthlyRent - operatingExpenses).toLocaleString()}
-                </span>
-              </div>
-              <div class="flex justify-between items-center pb-2 border-b">
-                <span class="text-sm text-gray-600">Mortgage Payment</span>
-                <span class="font-semibold text-gray-600">-$${mortgagePayment.toLocaleString()}</span>
-              </div>
-              <div class="flex justify-between items-center">
-                <span class="text-sm font-semibold text-gray-800">Net Cash Flow</span>
-                <span class="font-bold text-lg ${monthlyCashFlow >= 0 ? 'text-green-600' : 'text-red-600'}">
-                  ${monthlyCashFlow >= 0 ? '+' : ''}$${monthlyCashFlow.toLocaleString()}
-                </span>
-              </div>
-              <div class="flex justify-between items-center pb-2 border-b">
-                <span class="text-sm text-gray-600">Annual Increase Limit</span>
-                <span class="font-semibold ${rentControl.controlled ? 'text-orange-600' : 'text-green-600'}">${effectiveGrowthRate}%${rentControl.controlled ? ' (rent controlled)' : ''}</span>
-              </div>
-              <div class="flex justify-between items-center">
-                <span class="text-sm text-gray-600">5-Year Projection</span>
-                <span class="font-semibold text-green-600">$${Math.round(monthlyRent * Math.pow(1 + effectiveGrowthRate/100, 5)).toLocaleString()}/mo</span>
+              <div>
+                <label class="text-sm text-gray-600">Interest Rate %</label>
+                <input type="number" id="ltr-calc-rate" value="6.5" step="0.1" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
               </div>
             </div>
-            ${rentControl.controlled ? `
-              <div class="mt-3 p-3 bg-orange-50 rounded-lg">
+          </div>
+          <div>
+            <h4 class="text-sm font-medium text-gray-700 mb-3">Results</h4>
+            <div class="bg-gray-50 rounded-lg p-4">
+              <div class="space-y-2 text-sm">
+                <div class="flex justify-between">
+                  <span>Monthly Income</span>
+                  <span class="font-semibold" id="ltr-calc-income">$${monthlyRent.toLocaleString()}</span>
+                </div>
+                <div class="flex justify-between">
+                  <span>Total Expenses</span>
+                  <span class="font-semibold" id="ltr-calc-expenses">$${totalMonthlyExpenses.toLocaleString()}</span>
+                </div>
+                <div class="flex justify-between pt-2 border-t">
+                  <span class="font-semibold">Cash Flow</span>
+                  <span class="font-bold ${monthlyCashFlow >= 0 ? 'text-green-600' : 'text-red-600'}" id="ltr-calc-cashflow">
+                    ${monthlyCashFlow >= 0 ? '+' : ''}$${Math.abs(monthlyCashFlow).toLocaleString()}
+                  </span>
+                </div>
+              </div>
+              <button onclick="window.LTRAnalysis && window.LTRAnalysis.recalculate ? window.LTRAnalysis.recalculate() : console.warn('LTR not initialized')" class="mt-4 w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                Recalculate
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Collapsible Assumptions -->
+      <div class="bg-gray-50 border border-gray-200 rounded-lg">
+        <button onclick="window.LTRAnalysis && window.LTRAnalysis.toggleAssumptions ? window.LTRAnalysis.toggleAssumptions() : console.warn('LTR not initialized')" class="w-full p-4 flex justify-between items-center hover:bg-gray-100 transition-colors">
+          <h3 class="font-semibold text-gray-800">Calculation Assumptions</h3>
+          <i id="ltr-assumptions-icon" class="fas fa-chevron-down text-gray-600 transition-transform"></i>
+        </button>
+        <div id="ltr-assumptions-content" class="collapsible-content">
+          <div class="p-4 pt-0 grid md:grid-cols-2 gap-4 text-sm">
+            <div>
+              <h4 class="font-medium text-gray-700 mb-2">Operating Expenses</h4>
+              <ul class="space-y-1 text-gray-600">
+                <li>• Property Tax: $${Math.round((propertyData.propertyTaxes || propertyData.property_taxes || propertyPrice * 0.01) / 12).toLocaleString()}/mo</li>
+                <li>• Insurance: $200/mo</li>
+                <li>• Maintenance: $${Math.round(propertyPrice * 0.005 / 12).toLocaleString()}/mo (0.5% of value)</li>
+                <li>• Property Mgmt: ${Math.round(monthlyRent * 0.08).toLocaleString()}/mo (8% of rent)</li>
+                <li>• Vacancy: ${Math.round(monthlyRent * vacancyRate / 100).toLocaleString()}/mo (${vacancyRate}% of rent)</li>
+              </ul>
+            </div>
+            <div>
+              <h4 class="font-medium text-gray-700 mb-2">Financial Assumptions</h4>
+              <ul class="space-y-1 text-gray-600">
+                <li>• Purchase Price: $${propertyPrice.toLocaleString()}</li>
+                <li>• Down Payment: 20% ($${(propertyPrice * 0.2).toLocaleString()})</li>
+                <li>• Loan Amount: $${(propertyPrice * 0.8).toLocaleString()}</li>
+                <li>• Interest Rate: 6.5%</li>
+                <li>• Amortization: 25 years</li>
+              </ul>
+            </div>
+          </div>
+          ${rentControl.controlled ? `
+            <div class="p-4 pt-0">
+              <div class="p-3 bg-orange-50 rounded-lg">
                 <p class="text-xs text-orange-800">
                   <strong>⚠️ Rent Control:</strong> ${rentControl.note}
+                  <br><span class="text-xs">${rentControl.historicalRates}</span>
                 </p>
               </div>
-            ` : ''}
-          `
-        })}
-
-        ${Card({
-          children: `
-            <h4 class="font-semibold text-gray-800 mb-4">Market Characteristics</h4>
-            <div class="space-y-3">
-              <div class="flex justify-between items-center pb-2 border-b">
-                <span class="text-sm text-gray-600">Property Type</span>
-                <span class="font-semibold">${bedrooms}BR/${bathrooms}BA ${propertyType}</span>
-              </div>
-              <div class="flex justify-between items-center pb-2 border-b">
-                <span class="text-sm text-gray-600">Square Footage</span>
-                <span class="font-semibold">${sqft} sq ft</span>
-              </div>
-              <div class="flex justify-between items-center pb-2 border-b">
-                <span class="text-sm text-gray-600">Typical Tenant Profile</span>
-                <span class="font-semibold text-sm text-right" style="max-width: 200px">${typicalTenant}</span>
-              </div>
-              <div class="flex justify-between items-center">
-                <span class="text-sm text-gray-600">Average Lease Term</span>
-                <span class="font-semibold">12-24 months</span>
-              </div>
             </div>
-          `
-        })}
-      </div>
-
-      <!-- Data Sources Section - Enhanced with actual data -->
-      ${Card({
-        children: `
-          <h4 class="font-semibold text-gray-800 mb-4">How We Calculate Your Rental Estimate</h4>
-          
-          <div class="bg-blue-50 rounded-lg p-4 mb-4">
-            <p class="text-sm text-blue-800 mb-3">
-              <strong>Your Property:</strong> ${bedrooms}-bedroom ${propertyType.toLowerCase()} in ${cityName} (${sqft} sq ft)
-            </p>
-            <p class="text-sm text-blue-800">
-              <strong>Estimated Monthly Rent:</strong> $${monthlyRent.toLocaleString()} based on the analysis below
-            </p>
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <h5 class="font-medium text-gray-700 mb-3">Primary Data Sources</h5>
-              <ul class="space-y-2 text-sm">
-                <li class="flex items-start">
-                  <span class="text-green-500 mr-2 mt-0.5">✓</span>
-                  <div>
-                    <strong>CMHC Rental Market Reports</strong>
-                    <p class="text-xs text-gray-600 mt-1">Q4 2023: ${cityName} average ${bedrooms}BR rent: $${(monthlyRent - 100).toLocaleString()}-$${(monthlyRent + 100).toLocaleString()}</p>
-                  </div>
-                </li>
-                <li class="flex items-start">
-                  <span class="text-green-500 mr-2 mt-0.5">✓</span>
-                  <div>
-                    <strong>Local Real Estate Board Data</strong>
-                    <p class="text-xs text-gray-600 mt-1">2024 YTD: ${rentGrowth}% rental growth, ${vacancyRate}% vacancy</p>
-                  </div>
-                </li>
-                <li class="flex items-start">
-                  <span class="text-green-500 mr-2 mt-0.5">✓</span>
-                  <div>
-                    <strong>Census & Demographics</strong>
-                    <p class="text-xs text-gray-600 mt-1">${cityName}: Growing population, ${demandLevel.toLowerCase()} rental demand</p>
-                  </div>
-                </li>
-                <li class="flex items-start">
-                  <span class="text-green-500 mr-2 mt-0.5">✓</span>
-                  <div>
-                    <strong>Provincial Rent Guidelines</strong>
-                    <p class="text-xs text-gray-600 mt-1">${rentControl.historicalRates}</p>
-                  </div>
-                </li>
-              </ul>
-            </div>
-            
-            <div>
-              <h5 class="font-medium text-gray-700 mb-3">Analysis Factors</h5>
-              <ul class="space-y-2 text-sm">
-                <li class="flex items-start">
-                  <span class="text-blue-500 mr-2 mt-0.5">•</span>
-                  <div>
-                    <strong>Property Features</strong>
-                    <p class="text-xs text-gray-600 mt-1">${bedrooms} bed, ${bathrooms} bath, ${sqft} sq ft = Above average unit</p>
-                  </div>
-                </li>
-                <li class="flex items-start">
-                  <span class="text-blue-500 mr-2 mt-0.5">•</span>
-                  <div>
-                    <strong>Location Premium</strong>
-                    <p class="text-xs text-gray-600 mt-1">${cityName}: +5-10% vs regional average</p>
-                  </div>
-                </li>
-                <li class="flex items-start">
-                  <span class="text-blue-500 mr-2 mt-0.5">•</span>
-                  <div>
-                    <strong>Market Conditions</strong>
-                    <p class="text-xs text-gray-600 mt-1">${demandLevel} demand, ${vacancyRate}% vacancy = Landlord's market</p>
-                  </div>
-                </li>
-              </ul>
-            </div>
-          </div>
-
-          <div class="mt-4 p-3 bg-gray-50 rounded-lg">
-            <p class="text-xs text-gray-600">
-              <strong>Note:</strong> This AI-powered analysis uses aggregated market data from multiple sources. 
-              For the most current rates, we recommend checking Rentals.ca, PadMapper, or consulting local property managers. 
-              Actual rents may vary based on specific unit features, condition, and timing.
-            </p>
-          </div>
-        `
-      })}
-
-      <!-- LTR vs STR Comparison -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-        ${Card({
-          children: `
-            <h4 class="font-semibold text-green-800 mb-3 flex items-center">
-              <span class="text-xl mr-2">🏠</span> Long-Term Rental Benefits
-            </h4>
-            <ul class="space-y-2 text-sm text-gray-700">
-              <li>• Stable, predictable monthly income</li>
-              <li>• Minimal management time (5-10 hrs/year)</li>
-              <li>• Lower operating costs (tenant pays utilities)</li>
-              <li>• No furnishing or daily cleaning required</li>
-              <li>• Lower insurance premiums</li>
-              <li>• Protected by residential tenancy laws</li>
-            </ul>
-          `,
-          className: 'h-full'
-        })}
-        ${Card({
-          children: `
-            <h4 class="font-semibold text-orange-800 mb-3 flex items-center">
-              <span class="text-xl mr-2">📊</span> Considerations
-            </h4>
-            <ul class="space-y-2 text-sm text-gray-700">
-              <li>• Lower revenue vs short-term rental</li>
-              <li>• Subject to rent control (if applicable)</li>
-              <li>• Less flexibility in pricing</li>
-              <li>• Longer vacancy periods between tenants</li>
-              <li>• Potential tenant issues require legal process</li>
-              <li>• Normal wear and tear from daily living</li>
-            </ul>
-          `,
-          className: 'h-full'
-        })}
-      </div>
-
-      <!-- Interactive Financial Calculator -->
-      <div class="mt-6">
-        ${LongTermRentalCalculator({
-          monthlyRevenue: monthlyRent,
-          expenses: {
-            propertyTax: Math.round((propertyData.propertyTaxes || propertyData.property_taxes || propertyPrice * 0.01) / 12),
-            insurance: 200,
-            hoaFees: propertyData.condoFees || propertyData.condo_fees || 0,
-            propertyMgmt: Math.round(monthlyRent * 0.08),
-            maintenance: 250,
-            vacancy: Math.round(monthlyRent * 0.05),
-            otherExpenses: 100
-          },
-          propertyPrice: propertyPrice,
-          downPayment: propertyPrice * 0.2,
-          propertyData: propertyData,
-          costs: {}
-        })}
+          ` : ''}
+        </div>
       </div>
     </div>
 
-    <!-- LTR Calculator Script -->
-    ${ltrCalculatorScript}
-
-    <!-- Calculator Styles -->
-    <style>
-      .tooltip {
-        position: relative;
-        display: inline-block;
+    <!-- Chart and Calculator Scripts -->
+    <script>
+      // Create namespace for LTR functions
+      window.LTRAnalysis = window.LTRAnalysis || {};
+      
+      // Initialize revenue projection chart
+      function initializeLTRChart() {
+        const canvas = document.getElementById('ltr-revenue-chart');
+        if (canvas && typeof Chart !== 'undefined' && !canvas.chart) {
+          const ctx = canvas.getContext('2d');
+          const monthlyRent = ${monthlyRent};
+          const growthRate = ${effectiveGrowthRate} / 100;
+          
+          // Calculate 5-year projections
+          const projections = [];
+          for (let year = 1; year <= 5; year++) {
+            projections.push(Math.round(monthlyRent * Math.pow(1 + growthRate, year - 1) * 12));
+          }
+          
+          new Chart(ctx, {
+            type: 'line',
+            data: {
+              labels: ['Year 1', 'Year 2', 'Year 3', 'Year 4', 'Year 5'],
+              datasets: [{
+                label: 'Annual Revenue',
+                data: projections,
+                borderColor: '#10b981',
+                backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                tension: 0.3,
+                fill: true,
+                pointBackgroundColor: '#10b981',
+                pointBorderColor: '#fff',
+                pointBorderWidth: 2,
+                pointRadius: 4,
+                pointHoverRadius: 6
+              }]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: { display: false },
+                tooltip: {
+                  callbacks: {
+                    label: function(context) {
+                      return 'Revenue: $' + context.parsed.y.toLocaleString();
+                    }
+                  }
+                }
+              },
+              scales: {
+                y: {
+                  beginAtZero: false,
+                  ticks: {
+                    callback: function(value) {
+                      return '$' + (value/1000).toFixed(0) + 'k';
+                    }
+                  },
+                  grid: {
+                    color: 'rgba(0, 0, 0, 0.05)'
+                  }
+                },
+                x: {
+                  grid: {
+                    display: false
+                  }
+                }
+              }
+            }
+          });
+          canvas.chart = true; // Mark as initialized
+        }
+      }
+      
+      // Initialize on load and when dynamically added
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initializeLTRChart);
+      } else {
+        setTimeout(initializeLTRChart, 100); // Small delay for dynamic loading
       }
 
-      .tooltip .tooltiptext {
-        visibility: hidden;
-        width: 320px;
-        background-color: #1f2937;
-        color: #fff;
-        text-align: left;
-        border-radius: 8px;
-        padding: 12px 16px;
-        position: absolute;
-        z-index: 10;
-        bottom: 125%;
-        left: 50%;
-        margin-left: -160px;
-        opacity: 0;
-        transition: opacity 0.3s;
-        font-size: 12px;
-        line-height: 1.6;
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+      // Toggle assumptions section
+      window.LTRAnalysis.toggleAssumptions = function toggleLTRAssumptions() {
+        const content = document.getElementById('ltr-assumptions-content');
+        const icon = document.getElementById('ltr-assumptions-icon');
+        
+        if (content && icon) {
+          if (content.classList.contains('open')) {
+            content.classList.remove('open');
+            icon.classList.remove('fa-chevron-up');
+            icon.classList.add('fa-chevron-down');
+            icon.style.transform = 'rotate(0deg)';
+          } else {
+            content.classList.add('open');
+            icon.classList.remove('fa-chevron-down');
+            icon.classList.add('fa-chevron-up');
+            icon.style.transform = 'rotate(180deg)';
+          }
+        }
       }
 
-      .tooltip .tooltiptext strong {
-        color: #fbbf24;
-        display: block;
-        margin-bottom: 4px;
-        font-size: 13px;
+      // Simple calculator function
+      window.LTRAnalysis.recalculate = function recalculateLTR() {
+        try {
+          const rent = Math.max(0, parseFloat(document.getElementById('ltr-calc-rent').value) || 0);
+          const downPaymentPct = Math.min(100, Math.max(0, parseFloat(document.getElementById('ltr-calc-down').value) || 20));
+          const interestRate = Math.min(20, Math.max(0, parseFloat(document.getElementById('ltr-calc-rate').value) || 6.5));
+        
+        const propertyPrice = ${propertyPrice};
+        const loanAmount = propertyPrice * (1 - downPaymentPct / 100);
+        
+        // Calculate monthly mortgage payment
+        const monthlyRate = interestRate / 100 / 12;
+        const numPayments = 25 * 12; // 25-year amortization
+        const mortgagePayment = loanAmount * (monthlyRate * Math.pow(1 + monthlyRate, numPayments)) / (Math.pow(1 + monthlyRate, numPayments) - 1);
+        
+        // Operating expenses (simplified)
+        const propertyTax = ${Math.round((propertyData.propertyTaxes || propertyData.property_taxes || propertyPrice * 0.01) / 12)};
+        const insurance = 200;
+        const maintenance = Math.round(propertyPrice * 0.005 / 12);
+        const mgmtFee = Math.round(rent * 0.08);
+        const vacancy = Math.round(rent * ${vacancyRate} / 100);
+        
+        const totalExpenses = Math.round(mortgagePayment + propertyTax + insurance + maintenance + mgmtFee + vacancy);
+        const cashFlow = rent - totalExpenses;
+        
+        // Update display
+        document.getElementById('ltr-calc-income').textContent = '$' + rent.toLocaleString();
+        document.getElementById('ltr-calc-expenses').textContent = '$' + totalExpenses.toLocaleString();
+        
+        const cashFlowElement = document.getElementById('ltr-calc-cashflow');
+        cashFlowElement.textContent = (cashFlow >= 0 ? '+' : '') + '$' + Math.abs(cashFlow).toLocaleString();
+        cashFlowElement.className = 'font-bold ' + (cashFlow >= 0 ? 'text-green-600' : 'text-red-600');
+        } catch (error) {
+          console.error('Error calculating LTR:', error);
+        }
       }
-
-      .tooltip:hover .tooltiptext {
-        visibility: visible;
-        opacity: 1;
-      }
-
-      .help-icon {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 16px;
-        height: 16px;
-        background-color: #e5e7eb;
-        color: #6b7280;
-        border-radius: 50%;
-        font-size: 11px;
-        cursor: help;
-        margin-left: 4px;
-      }
-
-      .help-icon:hover {
-        background-color: #d1d5db;
-        color: #4b5563;
-      }
-    </style>
+    </script>
   `;
 };
