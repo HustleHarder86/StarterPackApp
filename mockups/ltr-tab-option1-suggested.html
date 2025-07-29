@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LTR Tab - Option 1: Suggested Layout</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-50">
+    <!-- Main Container matching STR tab -->
+    <div class="max-w-7xl mx-auto p-6">
+        <!-- Header Section -->
+        <div class="bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl p-6 text-white mb-6">
+            <h1 class="text-3xl font-bold mb-2">Long-Term Rental Analysis</h1>
+            <p class="text-blue-100">123 Main Street, Toronto, ON - Traditional rental income projection</p>
+        </div>
+
+        <!-- Top Revenue Banner (Same as STR) -->
+        <div class="grid grid-cols-3 gap-4 mb-6">
+            <div class="bg-white rounded-lg p-6 text-center shadow-md">
+                <p class="text-gray-600 text-sm">Monthly Revenue</p>
+                <p class="text-3xl font-bold text-green-600">$3,100</p>
+                <p class="text-xs text-gray-500 mt-1">Market average</p>
+            </div>
+            <div class="bg-white rounded-lg p-6 text-center shadow-md">
+                <p class="text-gray-600 text-sm">Total Expenses</p>
+                <p class="text-3xl font-bold text-red-600">$2,456</p>
+                <p class="text-xs text-gray-500 mt-1">All costs included</p>
+            </div>
+            <div class="bg-white rounded-lg p-6 text-center shadow-md">
+                <p class="text-gray-600 text-sm">Net Cash Flow</p>
+                <p class="text-3xl font-bold text-blue-600">+$644</p>
+                <p class="text-xs text-gray-500 mt-1">Monthly profit</p>
+            </div>
+        </div>
+
+        <!-- Key Metrics Row (New Addition) -->
+        <div class="grid grid-cols-4 gap-4 mb-6">
+            <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-4 border border-green-200">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-xs text-green-700 font-medium">Avg Monthly Rent</p>
+                        <p class="text-2xl font-bold text-green-700">$3,100</p>
+                    </div>
+                    <i class="fas fa-home text-green-500 text-2xl"></i>
+                </div>
+            </div>
+            <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-4 border border-blue-200">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-xs text-blue-700 font-medium">Vacancy Rate</p>
+                        <p class="text-2xl font-bold text-blue-700">5%</p>
+                    </div>
+                    <i class="fas fa-calendar-check text-blue-500 text-2xl"></i>
+                </div>
+            </div>
+            <div class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg p-4 border border-purple-200">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-xs text-purple-700 font-medium">Annual ROI</p>
+                        <p class="text-2xl font-bold text-purple-700">4.2%</p>
+                    </div>
+                    <i class="fas fa-chart-line text-purple-500 text-2xl"></i>
+                </div>
+            </div>
+            <div class="bg-gradient-to-br from-amber-50 to-amber-100 rounded-lg p-4 border border-amber-200">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-xs text-amber-700 font-medium">Break-Even</p>
+                        <p class="text-2xl font-bold text-amber-700">79%</p>
+                    </div>
+                    <i class="fas fa-balance-scale text-amber-500 text-2xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Rent & Vacancy Panel + Revenue Comparison Side by Side -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+            <!-- Rent & Vacancy Calculator -->
+            <div class="bg-white rounded-xl p-6 shadow-lg">
+                <h3 class="text-lg font-bold text-gray-900 mb-4">Rent & Vacancy Settings</h3>
+                
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Monthly Rent
+                        </label>
+                        <div class="relative">
+                            <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">$</span>
+                            <input type="number" value="3100" class="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Vacancy Rate: <span class="text-blue-600 font-bold">5%</span>
+                        </label>
+                        <input type="range" min="0" max="20" value="5" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                        <div class="flex justify-between text-xs text-gray-500 mt-1">
+                            <span>0%</span>
+                            <span>10%</span>
+                            <span>20%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-6 pt-4 border-t border-gray-200">
+                    <div class="space-y-2">
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Effective Monthly</span>
+                            <span class="font-bold text-green-600">$2,945</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Annual Revenue</span>
+                            <span class="font-bold text-green-600">$35,340</span>
+                        </div>
+                        <div class="flex justify-between pt-2 border-t">
+                            <span class="text-gray-700 font-medium">vs Short-Term</span>
+                            <span class="font-bold text-red-600">-$2,100/mo</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Revenue Comparison Chart -->
+            <div class="bg-white rounded-xl p-6 shadow-lg">
+                <h3 class="text-lg font-bold text-gray-900 mb-4">Revenue Comparison</h3>
+                <div class="relative h-64 flex items-end justify-around">
+                    <div class="text-center">
+                        <div class="bg-gradient-to-t from-purple-500 to-purple-400 w-24 rounded-t-lg relative" style="height: 200px;">
+                            <span class="absolute -top-8 left-0 right-0 text-sm font-bold">$5,045</span>
+                        </div>
+                        <p class="mt-2 text-sm font-medium">STR</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="bg-gradient-to-t from-blue-500 to-blue-400 w-24 rounded-t-lg relative" style="height: 120px;">
+                            <span class="absolute -top-8 left-0 right-0 text-sm font-bold">$3,100</span>
+                        </div>
+                        <p class="mt-2 text-sm font-medium">LTR</p>
+                    </div>
+                </div>
+                <div class="mt-4 text-center">
+                    <p class="text-sm text-gray-600">Short-term rental potential is <span class="font-bold text-purple-600">63% higher</span></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Streamlined Financial Calculator -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">Financial Calculator</h2>
+            
+            <!-- Top Metrics Strip -->
+            <div class="grid grid-cols-4 gap-4 mb-6">
+                <div class="text-center p-3 bg-gray-50 rounded-lg">
+                    <p class="text-xs text-gray-600">Monthly Cash Flow</p>
+                    <p class="text-xl font-bold text-green-600">+$644</p>
+                </div>
+                <div class="text-center p-3 bg-gray-50 rounded-lg">
+                    <p class="text-xs text-gray-600">Annual ROI</p>
+                    <p class="text-xl font-bold text-blue-600">4.2%</p>
+                </div>
+                <div class="text-center p-3 bg-gray-50 rounded-lg">
+                    <p class="text-xs text-gray-600">Cap Rate</p>
+                    <p class="text-xl font-bold text-purple-600">3.8%</p>
+                </div>
+                <div class="text-center p-3 bg-gray-50 rounded-lg">
+                    <p class="text-xs text-gray-600">Break-Even</p>
+                    <p class="text-xl font-bold text-amber-600">79%</p>
+                </div>
+            </div>
+
+            <!-- Two Column Layout -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Left: Chart -->
+                <div class="bg-gray-50 rounded-lg p-4">
+                    <canvas id="cashFlowChart" width="400" height="300"></canvas>
+                </div>
+                
+                <!-- Right: Inputs -->
+                <div class="space-y-4">
+                    <!-- Fixed Costs -->
+                    <div>
+                        <h4 class="font-semibold text-gray-700 mb-2">Fixed Costs</h4>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="text-xs text-gray-600">Mortgage</label>
+                                <input type="number" value="1456" class="w-full px-3 py-1 border rounded">
+                            </div>
+                            <div>
+                                <label class="text-xs text-gray-600">Property Tax</label>
+                                <input type="number" value="420" class="w-full px-3 py-1 border rounded">
+                            </div>
+                            <div>
+                                <label class="text-xs text-gray-600">Insurance</label>
+                                <input type="number" value="125" class="w-full px-3 py-1 border rounded">
+                            </div>
+                            <div>
+                                <label class="text-xs text-gray-600">HOA Fees</label>
+                                <input type="number" value="0" class="w-full px-3 py-1 border rounded">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Operating Costs -->
+                    <div>
+                        <h4 class="font-semibold text-gray-700 mb-2">Operating Costs</h4>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="text-xs text-gray-600">Maintenance</label>
+                                <input type="number" value="265" class="w-full px-3 py-1 border rounded">
+                            </div>
+                            <div>
+                                <label class="text-xs text-gray-600">Property Mgmt</label>
+                                <input type="number" value="0" class="w-full px-3 py-1 border rounded">
+                            </div>
+                            <div>
+                                <label class="text-xs text-gray-600">Utilities</label>
+                                <input type="number" value="0" class="w-full px-3 py-1 border rounded">
+                            </div>
+                            <div>
+                                <label class="text-xs text-gray-600">Other</label>
+                                <input type="number" value="190" class="w-full px-3 py-1 border rounded">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Collapsed Assumptions Accordion -->
+        <div class="bg-blue-50 rounded-lg border border-blue-200">
+            <button class="w-full p-4 flex items-center justify-between text-left hover:bg-blue-100 transition-colors">
+                <h3 class="text-base font-semibold text-blue-900 flex items-center gap-2">
+                    <i class="fas fa-info-circle"></i>
+                    Show detailed assumptions & calculation logic
+                </h3>
+                <i class="fas fa-chevron-down text-blue-600"></i>
+            </button>
+            <!-- Hidden by default - would expand on click -->
+            <div class="hidden px-4 pb-4">
+                <div class="bg-white rounded-lg p-4 space-y-3">
+                    <p class="text-sm text-gray-700">• Mortgage: 20% down, 5.5% interest, 25-year amortization</p>
+                    <p class="text-sm text-gray-700">• Property Tax: Actual from listing ($5,040/year)</p>
+                    <p class="text-sm text-gray-700">• Insurance: Estimated at 0.3% of property value</p>
+                    <p class="text-sm text-gray-700">• Maintenance: 1% of property value annually</p>
+                    <p class="text-sm text-gray-700">• Vacancy: 5% is typical for Toronto market</p>
+                    
+                    <div class="mt-4 p-3 bg-amber-50 rounded-lg border border-amber-200">
+                        <p class="text-sm text-amber-800">
+                            <strong>Note:</strong> These are estimates based on market data. Actual results will vary based on property condition, tenant quality, and management efficiency.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simple chart visualization
+        const canvas = document.getElementById('cashFlowChart');
+        const ctx = canvas.getContext('2d');
+        
+        // Bar chart data
+        const data = [
+            { label: 'Revenue', value: 3100, color: '#10b981' },
+            { label: 'Expenses', value: 2456, color: '#ef4444' },
+            { label: 'Net Cash', value: 644, color: '#3b82f6' }
+        ];
+        
+        // Draw bars
+        const barWidth = 80;
+        const startX = 60;
+        const maxHeight = 200;
+        const scale = maxHeight / 3500;
+        
+        data.forEach((item, index) => {
+            const x = startX + (index * 120);
+            const height = item.value * scale;
+            const y = 250 - height;
+            
+            ctx.fillStyle = item.color;
+            ctx.fillRect(x, y, barWidth, height);
+            
+            ctx.fillStyle = '#374151';
+            ctx.font = '14px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(item.label, x + barWidth/2, 270);
+            ctx.fillText(`$${item.value}`, x + barWidth/2, y - 10);
+        });
+    </script>
+</body>
+</html>

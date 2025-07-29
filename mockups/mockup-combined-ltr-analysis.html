@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ROI Finder - Combined LTR Analysis with Mockup 5</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <style>
+        .hero-gradient {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #60a5fa 100%);
+        }
+        .card-shadow {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .tab-active {
+            border-bottom: 3px solid #3b82f6;
+            color: #3b82f6;
+        }
+        .metric-card {
+            background: linear-gradient(135deg, #f3f4f6 0%, #ffffff 100%);
+        }
+        .star-rating {
+            color: #facc15;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <h1 class="text-2xl font-bold text-blue-600">ROI Finder</h1>
+                </div>
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#" class="text-gray-700 hover:text-blue-600">Home</a>
+                    <a href="#" class="text-gray-700 hover:text-blue-600">Features</a>
+                    <a href="#" class="text-gray-700 hover:text-blue-600">Pricing</a>
+                    <a href="#" class="text-gray-700 hover:text-blue-600">About</a>
+                    <button class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+                        Sign In
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- ELEMENT 1: Property Card with Image (From Screenshot) -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <div class="grid md:grid-cols-2 gap-6">
+                <div>
+                    <img src="https://via.placeholder.com/600x400" alt="Property" class="rounded-lg w-full h-64 object-cover">
+                </div>
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-800 mb-2">2894 - 99</h2>
+                    <p class="text-gray-600 mb-4">2100 sqft duplex in Mississauga, Ontario</p>
+                    
+                    <div class="grid grid-cols-3 gap-4 mb-6">
+                        <div class="text-center">
+                            <i class="fas fa-bed text-gray-400 text-2xl mb-2"></i>
+                            <p class="text-lg font-semibold">4</p>
+                            <p class="text-sm text-gray-600">Bedrooms</p>
+                        </div>
+                        <div class="text-center">
+                            <i class="fas fa-bath text-gray-400 text-2xl mb-2"></i>
+                            <p class="text-lg font-semibold">3</p>
+                            <p class="text-sm text-gray-600">Bathrooms</p>
+                        </div>
+                        <div class="text-center">
+                            <i class="fas fa-home text-gray-400 text-2xl mb-2"></i>
+                            <p class="text-lg font-semibold">N/A</p>
+                            <p class="text-sm text-gray-600">Garage</p>
+                        </div>
+                    </div>
+
+                    <div class="text-center bg-gray-50 rounded-lg p-4">
+                        <p class="text-3xl font-bold text-blue-600">$1,848/mo</p>
+                        <p class="text-sm text-gray-600">Estimated Rental Income</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ELEMENT 2: Long-Term Rental Market Analysis (From Screenshot) -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <h3 class="text-xl font-bold text-gray-800 mb-6">Long-Term Rental Market Analysis <span class="text-sm font-normal text-red-500 bg-red-50 px-2 py-1 rounded">TESTING</span></h3>
+            
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="bg-gray-50 rounded-lg p-6 text-center">
+                    <h4 class="text-3xl font-bold text-gray-800">$1,848</h4>
+                    <p class="text-gray-600 font-medium">Local Average Rental Income</p>
+                    <div class="mt-4">
+                        <i class="fas fa-chart-line text-green-500 text-3xl"></i>
+                        <p class="text-green-600 font-semibold mt-2">+$1,848</p>
+                        <p class="text-sm text-gray-600">Positive Cash Flow Property</p>
+                    </div>
+                </div>
+
+                <div class="bg-gray-50 rounded-lg p-6 text-center">
+                    <h4 class="text-3xl font-bold text-gray-800">High</h4>
+                    <p class="text-gray-600 font-medium">Rental Demand</p>
+                    <div class="mt-4">
+                        <p class="text-4xl font-bold text-blue-600">2.1%</p>
+                        <p class="text-sm text-gray-600">Vacancy Rate</p>
+                    </div>
+                </div>
+
+                <div class="bg-gray-50 rounded-lg p-6 text-center">
+                    <h4 class="text-3xl font-bold text-gray-800">+2.5%</h4>
+                    <p class="text-gray-600 font-medium">Year-Over-Year Income Growth</p>
+                    <div class="mt-4">
+                        <p class="text-4xl font-bold">High</p>
+                        <p class="text-sm text-gray-600">Market Attractiveness</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-6 mt-6">
+                <div>
+                    <h4 class="font-semibold text-gray-700 mb-3">Income & Cash Flow Analysis</h4>
+                    <div class="space-y-2">
+                        <div class="flex justify-between py-2 border-b">
+                            <span class="text-gray-600">Monthly Rental Income</span>
+                            <span class="font-semibold">$1,848</span>
+                        </div>
+                        <div class="flex justify-between py-2 border-b">
+                            <span class="text-gray-600">Operating Expenses</span>
+                            <span class="font-semibold">$0</span>
+                        </div>
+                        <div class="flex justify-between py-2 border-b">
+                            <span class="text-gray-600">Monthly Income</span>
+                            <span class="font-semibold">$1,827</span>
+                        </div>
+                        <div class="flex justify-between py-2 border-b">
+                            <span class="text-gray-600">Mortgage Payment</span>
+                            <span class="font-semibold">$0</span>
+                        </div>
+                        <div class="flex justify-between py-2 border-b">
+                            <span class="text-gray-600">Tax and Other</span>
+                            <span class="font-semibold">$0</span>
+                        </div>
+                        <div class="flex justify-between py-2 border-b">
+                            <span class="text-gray-600">Monthly Cash Flow</span>
+                            <span class="font-semibold text-green-600">$1,827</span>
+                        </div>
+                        <div class="flex justify-between py-2 bg-blue-50 px-3 rounded">
+                            <span class="font-semibold">Total Annual Cash Flow</span>
+                            <span class="font-bold text-xl text-green-600">$21,924/year</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="font-semibold text-gray-700 mb-3">Market Characteristics</h4>
+                    <div class="space-y-3">
+                        <div>
+                            <p class="text-sm text-gray-600">Property Type</p>
+                            <p class="font-semibold">Duplex</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-600">Rental Demand</p>
+                            <p class="font-semibold">High</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-600">Tenant Rental Rates</p>
+                            <p class="font-semibold">$1,500 - $2,200</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-600">Average Lease Term</p>
+                            <p class="font-semibold">12-18 months</p>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 bg-amber-50 border border-amber-200 rounded-lg p-4">
+                        <h5 class="font-semibold text-amber-900 mb-2">STR/LTR Alignment</h5>
+                        <div class="flex items-center justify-between">
+                            <span class="text-amber-700">Both are high</span>
+                            <span class="text-sm bg-amber-200 text-amber-900 px-2 py-1 rounded">Ideal Property</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- START OF MOCKUP #5 CONTENT -->
+        <!-- Hero Section from Mockup 5 -->
+        <section class="hero-gradient text-white py-20 rounded-lg mb-8">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h2 class="text-4xl md:text-5xl font-bold mb-6">
+                        Find Your Perfect Investment Property
+                    </h2>
+                    <p class="text-xl mb-8 text-blue-100">
+                        Analyze ROI, cash flow, and investment potential with AI-powered insights
+                    </p>
+                    <div class="flex justify-center space-x-4">
+                        <button class="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100">
+                            Get Started Free
+                        </button>
+                        <button class="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-blue-600">
+                            Watch Demo
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Property Overview Card from Mockup 5 -->
+        <div class="bg-white rounded-lg shadow-xl p-6 mb-8">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+                <div>
+                    <h3 class="text-2xl font-bold text-gray-800">123 Investment Ave, Toronto, ON</h3>
+                    <p class="text-gray-600">4 bed • 3 bath • 2,500 sqft • Built 2018</p>
+                </div>
+                <div class="mt-4 md:mt-0">
+                    <span class="text-3xl font-bold text-blue-600">$850,000</span>
+                    <p class="text-sm text-gray-600">Listed Price</p>
+                </div>
+            </div>
+
+            <!-- Quick Metrics -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="metric-card p-4 rounded-lg">
+                    <p class="text-sm text-gray-600">Monthly Cash Flow</p>
+                    <p class="text-2xl font-bold text-green-600">$1,245</p>
+                </div>
+                <div class="metric-card p-4 rounded-lg">
+                    <p class="text-sm text-gray-600">Cap Rate</p>
+                    <p class="text-2xl font-bold text-blue-600">5.8%</p>
+                </div>
+                <div class="metric-card p-4 rounded-lg">
+                    <p class="text-sm text-gray-600">Cash on Cash</p>
+                    <p class="text-2xl font-bold text-purple-600">7.2%</p>
+                </div>
+                <div class="metric-card p-4 rounded-lg">
+                    <p class="text-sm text-gray-600">Total ROI</p>
+                    <p class="text-2xl font-bold text-orange-600">14.5%</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Financial Calculator from Mockup 5 -->
+        <div class="bg-white rounded-lg shadow-xl p-6 mb-8">
+            <h3 class="text-xl font-bold text-gray-800 mb-6">Financial Calculator</h3>
+            
+            <div class="grid md:grid-cols-2 gap-6">
+                <!-- Input Column -->
+                <div class="space-y-4">
+                    <h4 class="font-semibold text-gray-700 mb-3">Property Details</h4>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Purchase Price</label>
+                        <input type="number" value="850000" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Down Payment (%)</label>
+                        <input type="number" value="20" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Interest Rate (%)</label>
+                        <input type="number" value="6.5" step="0.1" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Loan Term (years)</label>
+                        <input type="number" value="30" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                    </div>
+
+                    <h4 class="font-semibold text-gray-700 mb-3 mt-6">Monthly Income</h4>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Rental Income</label>
+                        <input type="number" value="4500" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                    </div>
+                </div>
+
+                <!-- Results Column -->
+                <div class="bg-gray-50 rounded-lg p-6">
+                    <h4 class="font-semibold text-gray-700 mb-4">Calculation Results</h4>
+                    
+                    <div class="space-y-3">
+                        <div class="flex justify-between py-2 border-b">
+                            <span class="text-gray-600">Down Payment</span>
+                            <span class="font-semibold">$170,000</span>
+                        </div>
+                        <div class="flex justify-between py-2 border-b">
+                            <span class="text-gray-600">Loan Amount</span>
+                            <span class="font-semibold">$680,000</span>
+                        </div>
+                        <div class="flex justify-between py-2 border-b">
+                            <span class="text-gray-600">Monthly Payment (P&I)</span>
+                            <span class="font-semibold">$4,289</span>
+                        </div>
+                        <div class="flex justify-between py-2 border-b">
+                            <span class="text-gray-600">Property Tax & Insurance</span>
+                            <span class="font-semibold">$1,125</span>
+                        </div>
+                        <div class="flex justify-between py-2 border-b">
+                            <span class="text-gray-600">Total Monthly Expenses</span>
+                            <span class="font-semibold text-red-600">$5,414</span>
+                        </div>
+                        <div class="flex justify-between py-2 border-b">
+                            <span class="text-gray-600">Monthly Rental Income</span>
+                            <span class="font-semibold text-green-600">$4,500</span>
+                        </div>
+                        <div class="flex justify-between py-3 bg-blue-50 px-3 rounded">
+                            <span class="font-semibold text-gray-700">Monthly Cash Flow</span>
+                            <span class="font-bold text-2xl text-red-600">-$914</span>
+                        </div>
+                    </div>
+
+                    <button class="w-full mt-6 bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700">
+                        Recalculate
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Analysis Tabs from Mockup 5 -->
+        <div class="bg-white rounded-lg shadow-xl p-6 mb-8">
+            <div class="border-b border-gray-200 mb-6">
+                <nav class="flex space-x-8">
+                    <button class="pb-3 px-1 tab-active font-semibold">
+                        Investment Analysis
+                    </button>
+                    <button class="pb-3 px-1 text-gray-600 hover:text-blue-600 font-semibold">
+                        Market Comparison
+                    </button>
+                    <button class="pb-3 px-1 text-gray-600 hover:text-blue-600 font-semibold">
+                        Expense Breakdown
+                    </button>
+                    <button class="pb-3 px-1 text-gray-600 hover:text-blue-600 font-semibold">
+                        STR Potential
+                    </button>
+                </nav>
+            </div>
+
+            <!-- Investment Analysis Content -->
+            <div class="grid md:grid-cols-2 gap-8">
+                <div>
+                    <h4 class="font-semibold text-gray-800 mb-4">Key Investment Metrics</h4>
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center p-4 bg-gray-50 rounded-lg">
+                            <div>
+                                <p class="text-sm text-gray-600">Capitalization Rate</p>
+                                <p class="text-lg font-semibold">5.8%</p>
+                            </div>
+                            <i class="fas fa-chart-line text-blue-600 text-2xl"></i>
+                        </div>
+                        <div class="flex justify-between items-center p-4 bg-gray-50 rounded-lg">
+                            <div>
+                                <p class="text-sm text-gray-600">Cash on Cash Return</p>
+                                <p class="text-lg font-semibold">7.2%</p>
+                            </div>
+                            <i class="fas fa-dollar-sign text-green-600 text-2xl"></i>
+                        </div>
+                        <div class="flex justify-between items-center p-4 bg-gray-50 rounded-lg">
+                            <div>
+                                <p class="text-sm text-gray-600">Total Return on Investment</p>
+                                <p class="text-lg font-semibold">14.5%</p>
+                            </div>
+                            <i class="fas fa-percentage text-purple-600 text-2xl"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="font-semibold text-gray-800 mb-4">Investment Score</h4>
+                    <div class="bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg p-6">
+                        <div class="text-center mb-4">
+                            <span class="text-5xl font-bold text-blue-600">8.5</span>
+                            <span class="text-2xl text-gray-600">/10</span>
+                        </div>
+                        <p class="text-center text-gray-700 mb-4">Excellent Investment Opportunity</p>
+                        <div class="space-y-2">
+                            <div class="flex items-center">
+                                <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                                <span class="text-sm">Strong rental demand area</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                                <span class="text-sm">Above average appreciation potential</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fas fa-exclamation-circle text-yellow-500 mr-2"></i>
+                                <span class="text-sm">Consider higher down payment for positive cash flow</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- END OF MOCKUP #5 CONTENT -->
+
+        <!-- ELEMENT 3: Financial Calculator Section (From Screenshot - Bottom) -->
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            <h3 class="text-xl font-bold text-gray-800 mb-6">Financial Calculator</h3>
+            
+            <div class="grid md:grid-cols-2 gap-6">
+                <div>
+                    <h4 class="font-semibold text-gray-700 mb-4">Property Cash Flow</h4>
+                    <div class="space-y-3">
+                        <div class="flex justify-between py-2 border-b">
+                            <span class="text-gray-600">Monthly Rental Income</span>
+                            <span class="font-semibold text-green-600">$1,848</span>
+                        </div>
+                        <div class="flex justify-between py-2 border-b">
+                            <span class="text-gray-600">Total Expenses</span>
+                            <span class="font-semibold text-red-600">-$2,760</span>
+                        </div>
+                        <div class="flex justify-between py-3 bg-red-50 px-3 rounded">
+                            <span class="font-semibold">Monthly Cash Flow</span>
+                            <span class="font-bold text-xl text-red-600">-$912</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="font-semibold text-gray-700 mb-4">Annual Cash Flow Analysis</h4>
+                    <div class="bg-gradient-to-r from-red-50 to-red-100 rounded-lg p-6 text-center">
+                        <p class="text-sm text-gray-600 mb-2">Annual Cash Flow</p>
+                        <p class="text-3xl font-bold text-red-600">-$10,944</p>
+                        <p class="text-sm text-gray-600 mt-2">Negative</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-6 grid md:grid-cols-3 gap-4">
+                <div class="bg-gray-50 rounded-lg p-4 text-center">
+                    <p class="text-sm text-gray-600">Operating Expenses</p>
+                    <p class="text-lg font-semibold">$0</p>
+                    <p class="text-xs text-gray-500">Property Insurance</p>
+                </div>
+                <div class="bg-gray-50 rounded-lg p-4 text-center">
+                    <p class="text-sm text-gray-600">Property Taxes (Est.)</p>
+                    <p class="text-lg font-semibold">$0</p>
+                    <p class="text-xs text-gray-500">Municipal Levy</p>
+                </div>
+                <div class="bg-gray-50 rounded-lg p-4 text-center">
+                    <p class="text-sm text-gray-600">Maintenance & Repairs</p>
+                    <p class="text-lg font-semibold">$0</p>
+                    <p class="text-xs text-gray-500">1% of property value</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8 mt-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <p>&copy; 2025 ROI Finder. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

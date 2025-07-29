@@ -106,6 +106,11 @@ export const LongTermRentalAnalysis = ({
   const areaAverage = Math.round(monthlyRent * 0.95); // Assume property is 5% above average
   const premiumPercentage = ((monthlyRent - areaAverage) / areaAverage * 100).toFixed(1);
   
+  // STR comparison data
+  const strRevenue = analysis.shortTermRental?.monthlyRevenue || analysis.short_term_rental?.monthly_revenue || 5045;
+  const revenueGap = strRevenue - monthlyRent;
+  const strHigherPercentage = ((strRevenue - monthlyRent) / monthlyRent * 100).toFixed(0);
+  
   return `
     <div class="${className}">
       <style>
@@ -113,6 +118,40 @@ export const LongTermRentalAnalysis = ({
         .revenue-banner { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
         .collapsible-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
         .collapsible-content.open { max-height: 1000px; }
+        
+        /* Custom slider styles */
+        .slider {
+          -webkit-appearance: none;
+          appearance: none;
+          background: #e5e7eb;
+          outline: none;
+          opacity: 0.7;
+          transition: opacity 0.2s;
+        }
+        
+        .slider:hover {
+          opacity: 1;
+        }
+        
+        .slider::-webkit-slider-thumb {
+          -webkit-appearance: none;
+          appearance: none;
+          width: 20px;
+          height: 20px;
+          background: #3b82f6;
+          cursor: pointer;
+          border-radius: 50%;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .slider::-moz-range-thumb {
+          width: 20px;
+          height: 20px;
+          background: #3b82f6;
+          cursor: pointer;
+          border-radius: 50%;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
       </style>
       
       <!-- Revenue Banner -->
@@ -202,7 +241,90 @@ export const LongTermRentalAnalysis = ({
         </div>
       </div>
 
-      <!-- Revenue Comparison Chart -->
+      <!-- NEW: Interactive Rent & Vacancy Settings and Revenue Comparison -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        <!-- Rent & Vacancy Settings -->
+        <div class="bg-white border border-gray-200 rounded-lg p-6">
+          <h3 class="font-semibold text-gray-800 mb-4">Rent & Vacancy Settings</h3>
+          
+          <div class="space-y-4">
+            <div>
+              <label class="text-sm text-gray-600 mb-2 block">Monthly Rent</label>
+              <div class="relative">
+                <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">$</span>
+                <input 
+                  type="number" 
+                  id="ltr-rent-input" 
+                  value="${monthlyRent}" 
+                  min="0"
+                  max="50000"
+                  step="50"
+                  class="w-full pl-8 pr-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                  aria-label="Monthly rent amount"
+                >
+              </div>
+            </div>
+            
+            <div>
+              <label class="text-sm text-gray-600 mb-2 block">
+                Vacancy Rate: <span id="vacancy-rate-display" class="font-semibold text-blue-600">${vacancyRate}%</span>
+              </label>
+              <div class="relative">
+                <input 
+                  type="range" 
+                  id="vacancy-slider" 
+                  min="0" 
+                  max="20" 
+                  value="${vacancyRate}" 
+                  step="0.5"
+                  class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
+                  aria-label="Vacancy rate percentage"
+                  aria-valuemin="0"
+                  aria-valuemax="20"
+                  aria-valuenow="${vacancyRate}"
+                >
+                <div class="flex justify-between text-xs text-gray-600 mt-1">
+                  <span>0%</span>
+                  <span>10%</span>
+                  <span>20%</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="pt-4 space-y-3 border-t">
+              <div class="flex justify-between items-center">
+                <span class="text-gray-600">Effective Monthly</span>
+                <span id="effective-monthly" class="font-semibold text-green-600">$${Math.round(monthlyRent * (1 - vacancyRate/100)).toLocaleString()}</span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-gray-600">Annual Revenue</span>
+                <span id="annual-revenue-calc" class="font-semibold text-green-600">$${Math.round(monthlyRent * (1 - vacancyRate/100) * 12).toLocaleString()}</span>
+              </div>
+              <div class="flex justify-between items-center pt-3 border-t">
+                <span class="text-gray-600">vs Short-Term</span>
+                <span id="str-comparison" class="font-semibold ${revenueGap < 0 ? 'text-red-600' : 'text-green-600'}">
+                  ${revenueGap < 0 ? '-' : '+'}$${Math.abs(revenueGap).toLocaleString()}/mo
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Revenue Comparison Chart -->
+        <div class="bg-white border border-gray-200 rounded-lg p-6">
+          <h3 class="font-semibold text-gray-800 mb-4">Revenue Comparison</h3>
+          
+          <div class="relative h-48 mb-4">
+            <canvas id="revenue-comparison-chart"></canvas>
+          </div>
+          
+          <p id="str-higher-text" class="text-center text-gray-700">
+            Short-term rental potential is <span class="font-semibold text-purple-600">${strHigherPercentage}% higher</span>
+          </p>
+        </div>
+      </div>
+
+      <!-- Revenue Growth Projection Chart (existing) -->
       <div class="bg-white border border-gray-200 rounded-lg p-6 mb-6">
         <h3 class="font-semibold text-gray-800 mb-4">Revenue Growth Projection</h3>
         <div class="relative h-64 mb-4">
@@ -476,9 +598,144 @@ export const LongTermRentalAnalysis = ({
       
       // Initialize on load and when dynamically added
       if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initializeLTRChart);
+        document.addEventListener('DOMContentLoaded', function() {
+          initializeLTRChart();
+          initializeRevenueComparisonChart();
+        });
       } else {
-        setTimeout(initializeLTRChart, 100); // Small delay for dynamic loading
+        setTimeout(function() {
+          initializeLTRChart();
+          initializeRevenueComparisonChart();
+        }, 100); // Small delay for dynamic loading
+      }
+      
+      // Initialize revenue comparison chart
+      function initializeRevenueComparisonChart() {
+        try {
+          const canvas = document.getElementById('revenue-comparison-chart');
+          if (!canvas || typeof Chart === 'undefined') return;
+          
+          // Destroy existing chart if any
+          if (window.revenueComparisonChart) {
+            window.revenueComparisonChart.destroy();
+          }
+          
+          const ctx = canvas.getContext('2d');
+          const strMonthly = ${strRevenue};
+          const ltrMonthly = ${monthlyRent};
+          
+          window.revenueComparisonChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+              labels: ['STR', 'LTR'],
+              datasets: [{
+                data: [strMonthly, ltrMonthly],
+                backgroundColor: ['#9333ea', '#3b82f6'],
+                borderRadius: 8,
+                barThickness: 80
+              }]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: { display: false },
+                tooltip: {
+                  callbacks: {
+                    label: function(context) {
+                      return '$' + context.parsed.y.toLocaleString() + '/mo';
+                    }
+                  }
+                }
+              },
+              scales: {
+                y: {
+                  beginAtZero: true,
+                  ticks: {
+                    callback: function(value) {
+                      return '$' + value.toLocaleString();
+                    }
+                  },
+                  grid: {
+                    color: 'rgba(0, 0, 0, 0.05)'
+                  }
+                },
+                x: {
+                  grid: {
+                    display: false
+                  }
+                }
+              }
+            }
+          });
+          canvas.chart = true;
+        } catch (error) {
+          console.error('Failed to initialize revenue comparison chart:', error);
+        }
+      }
+      
+      // Set up event listeners after DOM is ready
+      function setupEventListeners() {
+        const rentInput = document.getElementById('ltr-rent-input');
+        const vacancySlider = document.getElementById('vacancy-slider');
+        
+        if (rentInput) {
+          rentInput.addEventListener('change', function() {
+            window.LTRAnalysis.updateRentCalculations();
+          });
+        }
+        
+        if (vacancySlider) {
+          vacancySlider.addEventListener('input', function() {
+            window.LTRAnalysis.updateVacancy(this.value);
+          });
+        }
+      }
+      
+      // Call setup after initialization
+      setTimeout(setupEventListeners, 200);
+      
+      // Update vacancy rate
+      window.LTRAnalysis.updateVacancy = function(value) {
+        const vacancyRate = parseFloat(value);
+        document.getElementById('vacancy-rate-display').textContent = vacancyRate + '%';
+        window.LTRAnalysis.updateRentCalculations();
+      }
+      
+      // Update rent calculations
+      window.LTRAnalysis.updateRentCalculations = function() {
+        const rentInput = document.getElementById('ltr-rent-input');
+        const vacancySlider = document.getElementById('vacancy-slider');
+        
+        if (!rentInput || !vacancySlider) return;
+        
+        const rent = Math.max(0, Math.min(50000, parseFloat(rentInput.value) || 0));
+        const vacancyRate = Math.max(0, Math.min(100, parseFloat(vacancySlider.value) || 0));
+        const strMonthly = ${strRevenue};
+        
+        // Calculate effective monthly and annual
+        const effectiveMonthly = Math.round(rent * (1 - vacancyRate/100));
+        const annualRevenue = effectiveMonthly * 12;
+        const revenueGap = effectiveMonthly - strMonthly;
+        const strHigherPct = rent > 0 ? Math.round((strMonthly - rent) / rent * 100) : 0;
+        
+        // Update displays
+        document.getElementById('effective-monthly').textContent = '$' + effectiveMonthly.toLocaleString();
+        document.getElementById('annual-revenue-calc').textContent = '$' + annualRevenue.toLocaleString();
+        
+        const strComparisonEl = document.getElementById('str-comparison');
+        strComparisonEl.textContent = (revenueGap < 0 ? '-' : '+') + '$' + Math.abs(revenueGap).toLocaleString() + '/mo';
+        strComparisonEl.className = 'font-semibold ' + (revenueGap < 0 ? 'text-red-600' : 'text-green-600');
+        
+        document.getElementById('str-higher-text').innerHTML = 
+          'Short-term rental potential is <span class="font-semibold text-purple-600">' + 
+          strHigherPct + '% higher</span>';
+        
+        // Update chart if exists
+        if (window.revenueComparisonChart) {
+          window.revenueComparisonChart.data.datasets[0].data = [strMonthly, rent];
+          window.revenueComparisonChart.update();
+        }
       }
 
       // Toggle assumptions section

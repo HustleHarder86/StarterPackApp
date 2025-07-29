@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LTR Tab - Option 3: Timeline View</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-50">
+    <div class="max-w-7xl mx-auto p-6">
+        <!-- Header -->
+        <div class="bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl p-6 text-white mb-6">
+            <h1 class="text-3xl font-bold mb-2">Long-Term Rental Projection</h1>
+            <p class="text-blue-100">123 Main Street, Toronto, ON - 5-Year Investment Timeline</p>
+        </div>
+
+        <!-- Current Year Summary -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl font-bold text-gray-900">Year 1 Overview</h2>
+                <div class="flex gap-2">
+                    <button class="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium">Monthly View</button>
+                    <button class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200">Annual View</button>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-4 gap-4">
+                <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-4">
+                    <p class="text-sm text-green-700 font-medium">Monthly Rent</p>
+                    <p class="text-2xl font-bold text-green-700">$3,100</p>
+                    <p class="text-xs text-green-600 mt-1">Market rate</p>
+                </div>
+                <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-4">
+                    <p class="text-sm text-blue-700 font-medium">Net Cash Flow</p>
+                    <p class="text-2xl font-bold text-blue-700">$644/mo</p>
+                    <p class="text-xs text-blue-600 mt-1">$7,728 annually</p>
+                </div>
+                <div class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg p-4">
+                    <p class="text-sm text-purple-700 font-medium">Total ROI</p>
+                    <p class="text-2xl font-bold text-purple-700">4.2%</p>
+                    <p class="text-xs text-purple-600 mt-1">Cash + Equity</p>
+                </div>
+                <div class="bg-gradient-to-br from-amber-50 to-amber-100 rounded-lg p-4">
+                    <p class="text-sm text-amber-700 font-medium">Equity Built</p>
+                    <p class="text-2xl font-bold text-amber-700">$8,940</p>
+                    <p class="text-xs text-amber-600 mt-1">Principal paydown</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 5-Year Timeline Visualization -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+            <h3 class="text-xl font-bold text-gray-900 mb-6">5-Year Financial Timeline</h3>
+            
+            <!-- Timeline Chart -->
+            <div class="relative">
+                <!-- Y-axis labels -->
+                <div class="absolute -left-16 top-0 h-full flex flex-col justify-between text-sm text-gray-600">
+                    <span>$200k</span>
+                    <span>$150k</span>
+                    <span>$100k</span>
+                    <span>$50k</span>
+                    <span>$0</span>
+                </div>
+                
+                <!-- Chart Area -->
+                <div class="relative h-64 border-l-2 border-b-2 border-gray-300">
+                    <!-- Grid lines -->
+                    <div class="absolute inset-0">
+                        <div class="h-1/4 border-b border-gray-200"></div>
+                        <div class="h-1/2 border-b border-gray-200"></div>
+                        <div class="h-3/4 border-b border-gray-200"></div>
+                    </div>
+                    
+                    <!-- Data visualization -->
+                    <svg class="absolute inset-0 w-full h-full">
+                        <!-- Cumulative cash flow line -->
+                        <polyline points="0,240 120,220 240,195 360,165 480,130 600,90" 
+                                  fill="none" stroke="#3b82f6" stroke-width="3"/>
+                        
+                        <!-- Equity build line -->
+                        <polyline points="0,240 120,225 240,205 360,180 480,150 600,115" 
+                                  fill="none" stroke="#8b5cf6" stroke-width="3"/>
+                        
+                        <!-- Total return area -->
+                        <polygon points="0,240 120,220 240,195 360,165 480,130 600,90 600,240 0,240" 
+                                 fill="#3b82f6" fill-opacity="0.1"/>
+                    </svg>
+                    
+                    <!-- Year markers -->
+                    <div class="absolute bottom-0 left-0 right-0 flex justify-between transform translate-y-8 text-sm text-gray-600">
+                        <span>Year 1</span>
+                        <span>Year 2</span>
+                        <span>Year 3</span>
+                        <span>Year 4</span>
+                        <span>Year 5</span>
+                    </div>
+                </div>
+                
+                <!-- Legend -->
+                <div class="flex gap-6 mt-12 justify-center">
+                    <div class="flex items-center gap-2">
+                        <div class="w-4 h-4 bg-blue-500 rounded"></div>
+                        <span class="text-sm">Cumulative Cash Flow</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div class="w-4 h-4 bg-purple-500 rounded"></div>
+                        <span class="text-sm">Equity Build-up</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div class="w-4 h-4 bg-blue-500 bg-opacity-20 rounded"></div>
+                        <span class="text-sm">Total Return</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Year-by-Year Breakdown -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+            <h3 class="text-xl font-bold text-gray-900 mb-4">Detailed 5-Year Projection</h3>
+            
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead>
+                        <tr class="border-b-2 border-gray-200">
+                            <th class="text-left py-3 px-4">Metric</th>
+                            <th class="text-center py-3 px-4">Year 1</th>
+                            <th class="text-center py-3 px-4">Year 2</th>
+                            <th class="text-center py-3 px-4">Year 3</th>
+                            <th class="text-center py-3 px-4">Year 4</th>
+                            <th class="text-center py-3 px-4">Year 5</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="border-b hover:bg-gray-50">
+                            <td class="py-3 px-4 font-medium">Monthly Rent</td>
+                            <td class="text-center py-3 px-4">$3,100</td>
+                            <td class="text-center py-3 px-4">$3,193</td>
+                            <td class="text-center py-3 px-4">$3,289</td>
+                            <td class="text-center py-3 px-4">$3,388</td>
+                            <td class="text-center py-3 px-4">$3,489</td>
+                        </tr>
+                        <tr class="border-b hover:bg-gray-50">
+                            <td class="py-3 px-4 font-medium">Annual Cash Flow</td>
+                            <td class="text-center py-3 px-4 text-green-600">$7,728</td>
+                            <td class="text-center py-3 px-4 text-green-600">$8,844</td>
+                            <td class="text-center py-3 px-4 text-green-600">$9,996</td>
+                            <td class="text-center py-3 px-4 text-green-600">$11,184</td>
+                            <td class="text-center py-3 px-4 text-green-600">$12,408</td>
+                        </tr>
+                        <tr class="border-b hover:bg-gray-50">
+                            <td class="py-3 px-4 font-medium">Cumulative Cash</td>
+                            <td class="text-center py-3 px-4 font-bold">$7,728</td>
+                            <td class="text-center py-3 px-4 font-bold">$16,572</td>
+                            <td class="text-center py-3 px-4 font-bold">$26,568</td>
+                            <td class="text-center py-3 px-4 font-bold">$37,752</td>
+                            <td class="text-center py-3 px-4 font-bold text-blue-600">$50,160</td>
+                        </tr>
+                        <tr class="border-b hover:bg-gray-50">
+                            <td class="py-3 px-4 font-medium">Equity Built</td>
+                            <td class="text-center py-3 px-4">$8,940</td>
+                            <td class="text-center py-3 px-4">$9,456</td>
+                            <td class="text-center py-3 px-4">$10,008</td>
+                            <td class="text-center py-3 px-4">$10,596</td>
+                            <td class="text-center py-3 px-4">$11,220</td>
+                        </tr>
+                        <tr class="hover:bg-gray-50">
+                            <td class="py-3 px-4 font-medium">Total Return</td>
+                            <td class="text-center py-3 px-4 font-bold text-purple-600">$16,668</td>
+                            <td class="text-center py-3 px-4 font-bold text-purple-600">$35,484</td>
+                            <td class="text-center py-3 px-4 font-bold text-purple-600">$56,520</td>
+                            <td class="text-center py-3 px-4 font-bold text-purple-600">$79,848</td>
+                            <td class="text-center py-3 px-4 font-bold text-purple-600">$105,540</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="mt-4 flex items-center gap-2 text-sm text-gray-600">
+                <i class="fas fa-info-circle text-blue-500"></i>
+                <span>Assumes 3% annual rent increase and stable expenses</span>
+            </div>
+        </div>
+
+        <!-- Maintenance & Renovation Timeline -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+            <h3 class="text-xl font-bold text-gray-900 mb-4">Maintenance & Capital Expenses Timeline</h3>
+            
+            <div class="relative">
+                <!-- Timeline line -->
+                <div class="absolute left-8 top-0 bottom-0 w-0.5 bg-gray-300"></div>
+                
+                <!-- Timeline events -->
+                <div class="space-y-6">
+                    <div class="flex gap-4">
+                        <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                            <span class="font-bold text-blue-600">Y1</span>
+                        </div>
+                        <div class="bg-gray-50 rounded-lg p-4 flex-1">
+                            <h4 class="font-semibold">Year 1: Basic Maintenance</h4>
+                            <p class="text-sm text-gray-600 mt-1">Regular maintenance only • Budget: $3,180</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex gap-4">
+                        <div class="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center flex-shrink-0">
+                            <span class="font-bold text-amber-600">Y3</span>
+                        </div>
+                        <div class="bg-amber-50 rounded-lg p-4 flex-1">
+                            <h4 class="font-semibold">Year 3: Appliance Updates</h4>
+                            <p class="text-sm text-gray-600 mt-1">Replace dishwasher & microwave • Budget: $2,500</p>
+                            <p class="text-xs text-amber-600 mt-2">Can increase rent by $50/month</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex gap-4">
+                        <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center flex-shrink-0">
+                            <span class="font-bold text-red-600">Y5</span>
+                        </div>
+                        <div class="bg-red-50 rounded-lg p-4 flex-1">
+                            <h4 class="font-semibold">Year 5: Major Renovation</h4>
+                            <p class="text-sm text-gray-600 mt-1">Full bathroom update • Budget: $15,000</p>
+                            <p class="text-xs text-green-600 mt-2">Can increase rent by $200/month • ROI: 16%</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Break-Even Analysis -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <h3 class="text-lg font-bold text-gray-900 mb-4">Investment Recovery Timeline</h3>
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                        <span class="font-medium">Initial Investment</span>
+                        <span class="font-bold">$170,000</span>
+                    </div>
+                    <div class="flex justify-between items-center p-3 bg-blue-50 rounded-lg">
+                        <span class="font-medium">Break-even (Cash Flow)</span>
+                        <span class="font-bold text-blue-600">Year 22</span>
+                    </div>
+                    <div class="flex justify-between items-center p-3 bg-green-50 rounded-lg">
+                        <span class="font-medium">Break-even (w/ Equity)</span>
+                        <span class="font-bold text-green-600">Year 8.5</span>
+                    </div>
+                    <div class="flex justify-between items-center p-3 bg-purple-50 rounded-lg">
+                        <span class="font-medium">10-Year Total Return</span>
+                        <span class="font-bold text-purple-600">$287,400</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <h3 class="text-lg font-bold text-gray-900 mb-4">Risk Factors Over Time</h3>
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm">Vacancy Risk</span>
+                        <div class="flex gap-1">
+                            <div class="w-8 h-2 bg-green-500 rounded"></div>
+                            <div class="w-8 h-2 bg-gray-300 rounded"></div>
+                            <div class="w-8 h-2 bg-gray-300 rounded"></div>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm">Maintenance Risk</span>
+                        <div class="flex gap-1">
+                            <div class="w-8 h-2 bg-amber-500 rounded"></div>
+                            <div class="w-8 h-2 bg-amber-500 rounded"></div>
+                            <div class="w-8 h-2 bg-gray-300 rounded"></div>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm">Market Risk</span>
+                        <div class="flex gap-1">
+                            <div class="w-8 h-2 bg-green-500 rounded"></div>
+                            <div class="w-8 h-2 bg-gray-300 rounded"></div>
+                            <div class="w-8 h-2 bg-gray-300 rounded"></div>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm">Interest Rate Risk</span>
+                        <div class="flex gap-1">
+                            <div class="w-8 h-2 bg-red-500 rounded"></div>
+                            <div class="w-8 h-2 bg-red-500 rounded"></div>
+                            <div class="w-8 h-2 bg-red-500 rounded"></div>
+                        </div>
+                    </div>
+                </div>
+                <p class="text-xs text-gray-500 mt-4">Risk levels: Low / Medium / High</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
