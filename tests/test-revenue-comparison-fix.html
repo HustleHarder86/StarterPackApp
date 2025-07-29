@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Revenue Comparison Chart Fix Test</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="/styles/design-system.css">
+</head>
+<body class="bg-gray-50">
+  <div class="container mx-auto py-8">
+    <h1 class="text-3xl font-bold mb-8">Revenue Comparison Chart Fix Test</h1>
+    
+    <div id="ltr-analysis-test"></div>
+  </div>
+
+  <script type="text/babel">
+    // Mock analysis data
+    const mockAnalysis = {
+      property: {
+        address: '123 Test Street',
+        city: 'Test City',
+        province: 'ON',
+        type: 'Single Family',
+        bedrooms: 3,
+        bathrooms: 2,
+        sqft: 2000,
+        price: 500000,
+        taxes: 5000,
+        condo_fees: 0
+      },
+      longTermRental: {
+        monthlyRent: 3100,
+        annualRevenue: 37200,
+        capRate: 5.8,
+        cashFlow: 312,
+        totalROI: 12.5,
+        occupancyRate: 98,
+        rentAppreciation: 3.2,
+        priceAppreciation: 4.5,
+        expenseRatio: 35,
+        mortgageRate: 6.5
+      },
+      shortTermRental: {
+        monthlyRevenue: 5045,
+        annualRevenue: 60540
+      }
+    };
+
+    // Load the component
+    const script = document.createElement('script');
+    script.src = '/components/analysis/LongTermRentalAnalysis.js';
+    script.type = 'text/babel';
+    script.onload = () => {
+      const { LongTermRentalAnalysis } = window;
+      const container = document.getElementById('ltr-analysis-test');
+      
+      ReactDOM.render(
+        React.createElement(LongTermRentalAnalysis, { analysis: mockAnalysis }),
+        container
+      );
+    };
+    document.body.appendChild(script);
+  </script>
+</body>
+</html>

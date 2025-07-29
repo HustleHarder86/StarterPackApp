@@ -638,6 +638,11 @@ export const LongTermRentalAnalysis = ({
             options: {
               responsive: true,
               maintainAspectRatio: false,
+              layout: {
+                padding: {
+                  top: 30
+                }
+              },
               plugins: {
                 legend: { display: false },
                 tooltip: {
@@ -651,6 +656,7 @@ export const LongTermRentalAnalysis = ({
               scales: {
                 y: {
                   beginAtZero: true,
+                  max: Math.max(strMonthly, ltrMonthly) * 1.2,
                   ticks: {
                     callback: function(value) {
                       return '$' + value.toLocaleString();
@@ -664,6 +670,23 @@ export const LongTermRentalAnalysis = ({
                   grid: {
                     display: false
                   }
+                }
+              },
+              animation: {
+                onComplete: function() {
+                  const ctx = this.chart.ctx;
+                  ctx.font = "bold 16px system-ui";
+                  ctx.fillStyle = '#000';
+                  ctx.textAlign = 'center';
+                  ctx.textBaseline = 'bottom';
+                  
+                  this.data.datasets.forEach(function(dataset, i) {
+                    const meta = window.revenueComparisonChart.getDatasetMeta(i);
+                    meta.data.forEach(function(bar, index) {
+                      const data = dataset.data[index];
+                      ctx.fillText('$' + data.toLocaleString(), bar.x, bar.y - 5);
+                    });
+                  });
                 }
               }
             }
@@ -734,6 +757,7 @@ export const LongTermRentalAnalysis = ({
         // Update chart if exists
         if (window.revenueComparisonChart) {
           window.revenueComparisonChart.data.datasets[0].data = [strMonthly, rent];
+          window.revenueComparisonChart.options.scales.y.max = Math.max(strMonthly, rent) * 1.2;
           window.revenueComparisonChart.update();
         }
       }
