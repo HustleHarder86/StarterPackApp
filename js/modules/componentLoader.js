@@ -410,22 +410,6 @@ class ComponentLoader {
               ${financialHtml}
             </div>
 
-            <!-- Additional Analysis Sections (Collapsible) -->
-            <div id="detailed-analysis" class="hidden">
-              ${this.generateDetailedAnalysisPlaceholder(analysisData)}
-            </div>
-
-            <div class="text-center mb-8">
-              <button 
-                onclick="toggleDetailedAnalysis()"
-                class="btn btn-secondary"
-              >
-                <span id="toggle-text">Show Detailed Analysis</span>
-                <svg class="w-5 h-5 transition-transform" id="toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                </svg>
-              </button>
-            </div>
           </div>
 
         </div>
@@ -1005,23 +989,6 @@ class ComponentLoader {
   }
 
   attachEventHandlers() {
-    // Toggle detailed analysis
-    window.toggleDetailedAnalysis = () => {
-      const detailedSection = document.getElementById('detailed-analysis');
-      const toggleText = document.getElementById('toggle-text');
-      const toggleIcon = document.getElementById('toggle-icon');
-      
-      if (detailedSection.classList.contains('hidden')) {
-        detailedSection.classList.remove('hidden');
-        detailedSection.classList.add('animate-slide-in');
-        toggleText.textContent = 'Hide Detailed Analysis';
-        toggleIcon.style.transform = 'rotate(180deg)';
-      } else {
-        detailedSection.classList.add('hidden');
-        toggleText.textContent = 'Show Detailed Analysis';
-        toggleIcon.style.transform = 'rotate(0deg)';
-      }
-    };
 
     // Global action handlers
     window.saveAnalysis = async () => {
