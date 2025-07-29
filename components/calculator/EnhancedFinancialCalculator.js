@@ -3,6 +3,12 @@
  * Modern 2-column layout with interactive annual revenue chart
  */
 
+// Helper function to safely format currency
+const safeFormatCurrency = (value) => {
+  const num = parseFloat(value) || 0;
+  return Math.round(num).toLocaleString();
+};
+
 export const EnhancedFinancialCalculator = ({ analysisData = {} }) => {
   // Extract property and financial data
   const propertyData = analysisData.propertyData || {};
@@ -352,20 +358,36 @@ export const EnhancedFinancialCalculator = ({ analysisData = {} }) => {
       ></div>
     </div>
     
-    <!-- Assumptions & Calculation Details -->
-    <div class="mt-6 bg-blue-50 rounded-lg p-4 border border-blue-200">
-      <h3 class="text-sm font-semibold text-blue-900 mb-3 flex items-center gap-2">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-        </svg>
-        Financial Assumptions Used in This Calculator
-      </h3>
+    <!-- Assumptions & Calculation Details (Collapsible) -->
+    <div class="mt-6">
+      <!-- Collapsible Header -->
+      <button 
+        data-toggle="assumptions"
+        aria-expanded="false"
+        aria-controls="assumptions-content"
+        class="w-full bg-blue-50 rounded-lg p-4 border border-blue-200 hover:bg-blue-100 transition-colors duration-200 group"
+      >
+        <div class="flex items-center justify-between">
+          <h3 class="text-base font-semibold text-blue-900 flex items-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            View Financial Assumptions & Calculator Details
+          </h3>
+          <svg data-chevron="assumptions" class="w-5 h-5 text-blue-600 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+          </svg>
+        </div>
+      </button>
       
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs text-blue-800">
+      <!-- Collapsible Content -->
+      <div data-content="assumptions" class="hidden transition-all duration-300 ease-in-out">
+        <div class="bg-blue-50 rounded-b-lg px-4 pb-4 -mt-1 border border-t-0 border-blue-200">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-blue-800">
         <!-- Mortgage Assumptions -->
         <div class="space-y-2">
           <h4 class="font-semibold text-blue-900">Mortgage Payment</h4>
-          <ul class="space-y-1 ml-4">
+          <ul class="space-y-1.5 ml-4 text-sm">
             <li>• Down Payment: 20% of property price</li>
             <li>• Interest Rate: 5.5% (current market rate)</li>
             <li>• Amortization: 25 years</li>
@@ -375,37 +397,31 @@ export const EnhancedFinancialCalculator = ({ analysisData = {} }) => {
         
         <!-- Property Tax & Insurance -->
         <div class="space-y-2">
-          <h4 class="font-semibold text-blue-900">Fixed Costs</h4>
-          <ul class="space-y-1 ml-4">
-            <li>• Property Tax: ${propertyData.propertyTaxes ? 'Actual from listing' : 'Estimated at 0.75% annually'}</li>
-            <li>• Insurance: ${analysisType === 'str' ? 'STR rate (25% higher than standard)' : 'Standard homeowner rate'}</li>
-            <li>• HOA/Condo Fees: ${hoaFees > 0 ? 'Actual from listing' : 'Not applicable'}</li>
+          <h4 class="font-semibold text-blue-900">Fixed Costs (Actual vs Calculated)</h4>
+          <ul class="space-y-1.5 ml-4 text-sm">
+            <li>• Property Tax: <span class="font-medium text-green-700">ACTUAL from Realtor.ca</span> ${propertyData.propertyTaxes ? `($${safeFormatCurrency(propertyData.propertyTaxes)}/year)` : ''}</li>
+            <li>• HOA/Condo Fees: ${hoaFees > 0 ? `<span class="font-medium text-green-700">ACTUAL from Realtor.ca</span> ($${hoaFees}/month)` : '<span class="font-medium text-gray-600">Not applicable</span>'}</li>
+            <li>• Insurance: <span class="font-medium text-amber-700">CALCULATED</span> (STR rate, 25% higher than standard)</li>
+            <li>• Utilities: <span class="font-medium text-amber-700">CALCULATED</span> (Higher for STR usage)</li>
           </ul>
         </div>
         
-        <!-- Operating Expenses -->
+        <!-- STR Operating Expenses -->
         <div class="space-y-2">
-          <h4 class="font-semibold text-blue-900">${analysisType === 'str' ? 'STR' : 'LTR'} Operating Expenses</h4>
-          <ul class="space-y-1 ml-4">
-            ${analysisType === 'str' ? `
-              <li>• Property Management: 10% of revenue</li>
-              <li>• Cleaning: Based on turnovers</li>
-              <li>• Platform Fees: 3% (Airbnb/VRBO)</li>
-              <li>• Supplies: 4% of revenue</li>
-            ` : `
-              <li>• Property Management: Not included</li>
-              <li>• Vacancy Rate: 5% assumed</li>
-              <li>• Tenant Turnover: Annual</li>
-            `}
-            <li>• Utilities: ${analysisType === 'str' ? 'Host pays (higher usage)' : 'Tenant typically pays'}</li>
-            <li>• Maintenance: 1.5% of property value/year</li>
+          <h4 class="font-semibold text-blue-900">STR Operating Expenses</h4>
+          <ul class="space-y-1.5 ml-4 text-sm">
+            <li>• Property Management: <span class="font-medium text-amber-700">CALCULATED</span> at 10% of revenue</li>
+            <li>• Cleaning: <span class="font-medium text-amber-700">CALCULATED</span> based on turnovers & property size</li>
+            <li>• Platform Fees: <span class="font-medium text-amber-700">CALCULATED</span> at 3% (Airbnb/VRBO)</li>
+            <li>• Supplies: <span class="font-medium text-amber-700">CALCULATED</span> at 4% of revenue</li>
+            <li>• Maintenance: <span class="font-medium text-amber-700">CALCULATED</span> at 1.5% of property value/year</li>
           </ul>
         </div>
         
         <!-- Customization Note -->
         <div class="space-y-2">
           <h4 class="font-semibold text-blue-900">Customize Your Analysis</h4>
-          <ul class="space-y-1 ml-4">
+          <ul class="space-y-1.5 ml-4 text-sm">
             <li>• All values above are adjustable</li>
             <li>• Changes recalculate automatically</li>
             <li>• For detailed mortgage options, see Investment tab</li>
@@ -414,26 +430,28 @@ export const EnhancedFinancialCalculator = ({ analysisData = {} }) => {
         </div>
       </div>
       
-      <div class="mt-3 pt-3 border-t border-blue-200">
-        <p class="text-xs text-blue-700 italic">
-          💡 Tip: These are standard assumptions. Adjust values based on your specific situation for more accurate projections.
-        </p>
-      </div>
-      
-      <!-- Friendly Disclaimer -->
-      <div class="mt-3 bg-amber-50 rounded-lg p-3 border border-amber-200">
-        <h4 class="text-xs font-semibold text-amber-900 mb-2 flex items-center gap-1">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
-          </svg>
-          Important Things to Know
-        </h4>
-        <div class="text-xs text-amber-800 space-y-1">
-          <p>📋 <strong>Regulations:</strong> STR rules vary by city and change often. Always check your local bylaws and licensing requirements before starting.</p>
-          <p>📊 <strong>Estimates:</strong> These projections are based on current market data but actual results will vary. Many factors affect your success!</p>
-          <p>🎯 <strong>No Guarantees:</strong> Income depends on your property appeal, management quality, pricing strategy, and market conditions.</p>
-          <p>👨‍💼 <strong>Get Advice:</strong> Consider consulting with local STR operators, property managers, and tax professionals for personalized guidance.</p>
-          <p>📈 <strong>Market Risks:</strong> Competition, seasonality, economic changes, and platform policies can all impact your returns.</p>
+          <div class="mt-3 pt-3 border-t border-blue-200">
+            <p class="text-sm text-blue-700 italic">
+              💡 Tip: These are standard assumptions. Adjust values based on your specific situation for more accurate projections.
+            </p>
+          </div>
+          
+          <!-- Friendly Disclaimer -->
+          <div class="mt-3 bg-amber-50 rounded-lg p-3 border border-amber-200">
+            <h4 class="text-sm font-semibold text-amber-900 mb-2 flex items-center gap-1">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+              </svg>
+              Important Things to Know
+            </h4>
+            <div class="text-sm text-amber-800 space-y-1">
+              <p>📋 <strong>Regulations:</strong> STR rules vary by city and change often. Always check your local bylaws and licensing requirements before starting.</p>
+              <p>📊 <strong>Estimates:</strong> These projections are based on current market data but actual results will vary. Many factors affect your success!</p>
+              <p>🎯 <strong>No Guarantees:</strong> Income depends on your property appeal, management quality, pricing strategy, and market conditions.</p>
+              <p>👨‍💼 <strong>Get Advice:</strong> Consider consulting with local STR operators, property managers, and tax professionals for personalized guidance.</p>
+              <p>📈 <strong>Market Risks:</strong> Competition, seasonality, economic changes, and platform policies can all impact your returns.</p>
+            </div>
+          </div>
         </div>
       </div>
     </div>

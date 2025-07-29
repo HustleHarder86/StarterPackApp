@@ -989,6 +989,27 @@ class ComponentLoader {
   }
 
   attachEventHandlers() {
+    // Event delegation for assumptions toggle
+    document.addEventListener('click', (e) => {
+      const toggleBtn = e.target.closest('[data-toggle="assumptions"]');
+      if (toggleBtn) {
+        const content = document.querySelector('[data-content="assumptions"]');
+        const chevron = document.querySelector('[data-chevron="assumptions"]');
+        const isExpanded = toggleBtn.getAttribute('aria-expanded') === 'true';
+        
+        if (content && chevron) {
+          if (isExpanded) {
+            content.classList.add('hidden');
+            chevron.style.transform = 'rotate(0deg)';
+            toggleBtn.setAttribute('aria-expanded', 'false');
+          } else {
+            content.classList.remove('hidden');
+            chevron.style.transform = 'rotate(180deg)';
+            toggleBtn.setAttribute('aria-expanded', 'true');
+          }
+        }
+      }
+    });
 
     // Global action handlers
     window.saveAnalysis = async () => {
