@@ -8,12 +8,6 @@
     },
     "api/analyze-property.js": {
       "maxDuration": 300
-    },
-    "api/analyze-property-async.js": {
-      "maxDuration": 10
-    },
-    "api/analyze-property-status.js": {
-      "maxDuration": 10
     }
   },
   "rewrites": [
