@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mockup 1: Minimalist Luxury - Investment Analysis</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+            background: #fafafa;
+        }
+        
+        /* Smooth animations */
+        * {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        /* Subtle shadows */
+        .soft-shadow {
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 
+                        0 1px 2px rgba(0, 0, 0, 0.06);
+        }
+        
+        .soft-shadow-hover:hover {
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08), 
+                        0 6px 10px rgba(0, 0, 0, 0.05);
+            transform: translateY(-2px);
+        }
+        
+        /* Premium number display */
+        .hero-number {
+            font-weight: 600;
+            font-size: 3.5rem;
+            line-height: 1;
+            letter-spacing: -0.03em;
+            background: linear-gradient(135deg, #000 0%, #333 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        /* Smooth hover states */
+        .premium-card {
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+        }
+        
+        .premium-card:hover {
+            border-color: rgba(0, 0, 0, 0.12);
+        }
+        
+        /* Minimal progress bars */
+        .progress-bar {
+            height: 6px;
+            background: #f5f5f5;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: #000;
+            border-radius: 3px;
+            transition: width 1s ease-out;
+        }
+        
+        /* Elegant buttons */
+        .btn-minimal {
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 500;
+            font-size: 15px;
+            border: 1px solid transparent;
+            cursor: pointer;
+        }
+        
+        .btn-primary {
+            background: #000;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #333;
+        }
+        
+        .btn-secondary {
+            background: white;
+            color: #000;
+            border-color: rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-secondary:hover {
+            background: #f5f5f5;
+            border-color: rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Clean metric cards */
+        .metric-card {
+            text-align: center;
+            padding: 2rem;
+        }
+        
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+        
+        .metric-label {
+            font-size: 0.875rem;
+            color: #666;
+            font-weight: 400;
+        }
+        
+        /* Subtle dividers */
+        .divider {
+            height: 1px;
+            background: rgba(0, 0, 0, 0.06);
+            margin: 2rem 0;
+        }
+        
+        /* Premium tabs */
+        .tab-nav {
+            display: flex;
+            gap: 2px;
+            background: #f5f5f5;
+            padding: 2px;
+            border-radius: 10px;
+        }
+        
+        .tab {
+            flex: 1;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 500;
+            color: #666;
+            text-align: center;
+            cursor: pointer;
+        }
+        
+        .tab.active {
+            background: white;
+            color: #000;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Smooth fade-in animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.6s ease-out forwards;
+        }
+        
+        /* Premium chart styling */
+        .chart-container {
+            position: relative;
+            height: 280px;
+            padding: 20px;
+        }
+        
+        .chart-bar {
+            position: absolute;
+            bottom: 40px;
+            width: 60px;
+            background: linear-gradient(to top, #f5f5f5, #e5e5e5);
+            border-radius: 6px 6px 0 0;
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .chart-bar:hover {
+            background: linear-gradient(to top, #000, #333);
+        }
+        
+        .chart-label {
+            position: absolute;
+            bottom: 10px;
+            width: 60px;
+            text-align: center;
+            font-size: 0.875rem;
+            color: #666;
+        }
+        
+        .chart-value {
+            position: absolute;
+            top: -30px;
+            width: 60px;
+            text-align: center;
+            font-weight: 600;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .chart-bar:hover .chart-value {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="bg-white/80 backdrop-blur-md border-b border-gray-100 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-8">
+                    <h1 class="text-xl font-semibold">Investment Analysis</h1>
+                    <div class="flex items-center gap-1 text-sm text-gray-500">
+                        <span class="w-2 h-2 bg-green-500 rounded-full"></span>
+                        <span>Live Data</span>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4">
+                    <button class="btn-minimal btn-secondary">Export PDF</button>
+                    <button class="btn-minimal btn-primary">Share Analysis</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-6 py-8">
+        <!-- Hero Section -->
+        <div class="premium-card soft-shadow p-8 mb-8 fade-in">
+            <div class="flex items-start justify-between">
+                <div>
+                    <h2 class="text-2xl font-semibold mb-2">123 King Street West, Toronto</h2>
+                    <p class="text-gray-600 mb-6">2 bed • 2 bath • 1,100 sqft • Condo</p>
+                    <div class="flex items-baseline gap-2 mb-1">
+                        <span class="hero-number">$5,480</span>
+                        <span class="text-xl text-gray-600">/month</span>
+                    </div>
+                    <p class="text-sm text-gray-500">Projected short-term rental revenue</p>
+                </div>
+                <div class="text-right">
+                    <div class="inline-flex items-center gap-2 bg-green-50 px-4 py-2 rounded-full mb-4">
+                        <span class="w-2 h-2 bg-green-500 rounded-full"></span>
+                        <span class="text-green-700 font-medium">Recommended Investment</span>
+                    </div>
+                    <div class="text-3xl font-semibold mb-1">8.5/10</div>
+                    <div class="text-sm text-gray-500">Investment Score</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab Navigation -->
+        <div class="tab-nav mb-8">
+            <div class="tab active">Overview</div>
+            <div class="tab">Short-Term Rental</div>
+            <div class="tab">Long-Term Rental</div>
+            <div class="tab">Financials</div>
+        </div>
+
+        <!-- Key Metrics Grid -->
+        <div class="grid grid-cols-4 gap-4 mb-8">
+            <div class="premium-card soft-shadow soft-shadow-hover metric-card">
+                <div class="metric-value">12.8%</div>
+                <div class="metric-label">Annual ROI</div>
+            </div>
+            <div class="premium-card soft-shadow soft-shadow-hover metric-card">
+                <div class="metric-value">82%</div>
+                <div class="metric-label">Occupancy Rate</div>
+            </div>
+            <div class="premium-card soft-shadow soft-shadow-hover metric-card">
+                <div class="metric-value">$245</div>
+                <div class="metric-label">Nightly Rate</div>
+            </div>
+            <div class="premium-card soft-shadow soft-shadow-hover metric-card">
+                <div class="metric-value">4.8★</div>
+                <div class="metric-label">Market Rating</div>
+            </div>
+        </div>
+
+        <!-- Revenue Comparison -->
+        <div class="grid grid-cols-2 gap-6 mb-8">
+            <div class="premium-card soft-shadow p-6">
+                <h3 class="text-lg font-semibold mb-6">Revenue Comparison</h3>
+                <div class="chart-container">
+                    <div class="chart-bar" style="height: 180px; left: 60px;">
+                        <div class="chart-value">$5,480</div>
+                    </div>
+                    <div class="chart-label" style="left: 60px;">STR</div>
+                    
+                    <div class="chart-bar" style="height: 120px; left: 160px;">
+                        <div class="chart-value">$3,650</div>
+                    </div>
+                    <div class="chart-label" style="left: 160px;">LTR</div>
+                </div>
+                <div class="divider"></div>
+                <div class="flex justify-between items-center">
+                    <span class="text-gray-600">Revenue Advantage</span>
+                    <span class="font-semibold text-green-600">+50%</span>
+                </div>
+            </div>
+
+            <div class="premium-card soft-shadow p-6">
+                <h3 class="text-lg font-semibold mb-6">Investment Highlights</h3>
+                <div class="space-y-4">
+                    <div class="flex items-start gap-3">
+                        <div class="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                            <i class="fas fa-chart-line text-sm"></i>
+                        </div>
+                        <div>
+                            <p class="font-medium mb-1">High Tourist Demand</p>
+                            <p class="text-sm text-gray-600">Downtown location attracts 85% occupancy year-round</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-3">
+                        <div class="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                            <i class="fas fa-dollar-sign text-sm"></i>
+                        </div>
+                        <div>
+                            <p class="font-medium mb-1">Premium Pricing Power</p>
+                            <p class="text-sm text-gray-600">Similar units command $245/night average</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-3">
+                        <div class="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                            <i class="fas fa-home text-sm"></i>
+                        </div>
+                        <div>
+                            <p class="font-medium mb-1">Building Amenities</p>
+                            <p class="text-sm text-gray-600">Gym, concierge, and rooftop justify premium rates</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Market Analysis -->
+        <div class="premium-card soft-shadow p-6 mb-8">
+            <h3 class="text-lg font-semibold mb-6">Market Performance</h3>
+            <div class="grid grid-cols-3 gap-8">
+                <div>
+                    <div class="flex justify-between items-center mb-3">
+                        <span class="text-gray-600">Market Saturation</span>
+                        <span class="font-medium">Low</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 25%;"></div>
+                    </div>
+                </div>
+                <div>
+                    <div class="flex justify-between items-center mb-3">
+                        <span class="text-gray-600">Demand Level</span>
+                        <span class="font-medium">High</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 85%;"></div>
+                    </div>
+                </div>
+                <div>
+                    <div class="flex justify-between items-center mb-3">
+                        <span class="text-gray-600">Competition</span>
+                        <span class="font-medium">Moderate</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 50%;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Comparable Properties -->
+        <div class="premium-card soft-shadow p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-lg font-semibold">Comparable Properties</h3>
+                <button class="text-sm font-medium">View All 12 →</button>
+            </div>
+            <div class="grid grid-cols-3 gap-4">
+                <div class="border border-gray-100 rounded-lg p-4 hover:border-gray-200">
+                    <div class="flex justify-between items-start mb-3">
+                        <div>
+                            <p class="font-medium">$238/night</p>
+                            <p class="text-sm text-gray-500">2BR Downtown</p>
+                        </div>
+                        <span class="text-xs bg-gray-100 px-2 py-1 rounded">0.3 mi</span>
+                    </div>
+                    <div class="flex items-center justify-between text-sm">
+                        <span class="text-gray-600">86% occupied</span>
+                        <span class="font-medium">4.9★</span>
+                    </div>
+                </div>
+                <div class="border border-gray-100 rounded-lg p-4 hover:border-gray-200">
+                    <div class="flex justify-between items-start mb-3">
+                        <div>
+                            <p class="font-medium">$252/night</p>
+                            <p class="text-sm text-gray-500">2BR King West</p>
+                        </div>
+                        <span class="text-xs bg-gray-100 px-2 py-1 rounded">0.5 mi</span>
+                    </div>
+                    <div class="flex items-center justify-between text-sm">
+                        <span class="text-gray-600">79% occupied</span>
+                        <span class="font-medium">4.8★</span>
+                    </div>
+                </div>
+                <div class="border border-gray-100 rounded-lg p-4 hover:border-gray-200">
+                    <div class="flex justify-between items-start mb-3">
+                        <div>
+                            <p class="font-medium">$245/night</p>
+                            <p class="text-sm text-gray-500">2BR Waterfront</p>
+                        </div>
+                        <span class="text-xs bg-gray-100 px-2 py-1 rounded">0.7 mi</span>
+                    </div>
+                    <div class="flex items-center justify-between text-sm">
+                        <span class="text-gray-600">83% occupied</span>
+                        <span class="font-medium">4.9★</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Smooth scroll and animations
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animate progress bars on scroll
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.width = entry.target.getAttribute('data-width') || '0%';
+                    }
+                });
+            });
+
+            // Tab switching
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+        });
+    </script>
+</body>
+</html>

@@ -13,6 +13,11 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.8/purify.min.js"></script>
     
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
     <!-- Design System -->
     <link rel="stylesheet" href="styles/design-system.css">
     <link rel="stylesheet" href="styles/mobile-fixes.css">
@@ -32,6 +37,11 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     
     <style>
+        /* Apply font globally */
+        body {
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
         /* Custom loading animations */
         .loading-gradient {
             background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
@@ -279,14 +289,17 @@
         }
     </style>
 </head>
-<body class="bg-gray-50 min-h-screen">
+<body class="bg-gray-50/50 min-h-screen relative">
+
+    <!-- Animated Background -->
+    <div id="animated-bg"></div>
 
     <!-- Navigation Header -->
-    <nav class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-40">
+    <nav class="glass backdrop-blur sticky top-0 z-40 border-b border-white/20">
         <div class="container mx-auto px-4">
             <div class="flex items-center justify-between h-16">
                 <div class="flex items-center gap-2 sm:gap-lg min-w-0">
-                    <span class="text-2xl font-bold text-blue-600 flex-shrink-0">StarterPackApp</span>
+                    <span class="text-2xl font-bold text-gradient flex-shrink-0">StarterPackApp</span>
                     <h1 class="text-lg font-bold text-gray-900 mobile-hidden truncate">ROI Finder</h1>
                 </div>
                 <div class="flex items-center gap-2 sm:gap-md flex-shrink-0">
@@ -339,9 +352,9 @@
                 <!-- Two-card layout for login and signup -->
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-xl max-w-5xl mx-auto">
                     <!-- Login Card -->
-                    <div class="card card-lg" id="login-card">
+                    <div class="glass-card hover-float" id="login-card">
                         <div class="text-center mb-xl">
-                            <h2 class="text-2xl font-bold text-gray-900 mb-md">Welcome Back</h2>
+                            <h2 class="text-2xl font-bold text-gradient mb-md">Welcome Back</h2>
                             <p class="text-gray-600">Sign in to analyze properties</p>
                         </div>
                         
@@ -354,7 +367,7 @@
                                 <label class="block text-sm font-medium text-gray-700 mb-sm">Password</label>
                                 <input type="password" id="login-password" class="w-full p-md border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="Your password" required>
                             </div>
-                            <button type="submit" class="w-full bg-primary text-white font-semibold py-md px-xl rounded-lg hover:bg-primary-dark transition-colors flex items-center justify-center">
+                            <button type="submit" class="w-full btn-gradient gradient-primary font-semibold py-md px-xl rounded-lg flex items-center justify-center">
                                 <span class="loading-spinner w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin hidden mr-2" id="login-spinner"></span>
                                 <span id="login-button-text">Sign In</span>
                             </button>
@@ -366,9 +379,9 @@
                     </div>
 
                     <!-- Signup Card -->
-                    <div class="card card-lg" id="signup-card">
+                    <div class="glass-card hover-float" id="signup-card">
                         <div class="text-center mb-xl">
-                            <h2 class="text-2xl font-bold text-gray-900 mb-md">Create Account</h2>
+                            <h2 class="text-2xl font-bold text-gradient mb-md">Create Account</h2>
                             <p class="text-gray-600">Get started with your free account</p>
                         </div>
                         
@@ -394,7 +407,7 @@
                                     </ul>
                                 </div>
                             </div>
-                            <button type="submit" class="w-full bg-secondary text-white font-semibold py-md px-xl rounded-lg hover:bg-secondary-dark transition-colors flex items-center justify-center">
+                            <button type="submit" class="w-full btn-gradient gradient-success font-semibold py-md px-xl rounded-lg flex items-center justify-center">
                                 <span class="loading-spinner w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin hidden mr-2" id="register-spinner"></span>
                                 <span id="register-button-text">Create Account</span>
                             </button>
@@ -668,6 +681,9 @@
         import ComponentLoader from './js/modules/componentLoader.js';
         import { FirebaseWrapper } from './js/firebase-wrapper.js';
         import { progressTracker } from './js/modules/analysisProgressTracker.js';
+        import { AnimatedBackground, ParallaxBackground } from './components/ui/AnimatedBackground.js';
+        import { GlassCard } from './components/ui/GlassCard.js';
+        import { GradientButton } from './components/ui/GradientButton.js';
         
         // Initialize Firebase with wrapper
         const firebaseWrapper = new FirebaseWrapper();
@@ -750,6 +766,9 @@
             }
             
             async init() {
+                // Initialize animated background
+                document.getElementById('animated-bg').innerHTML = ParallaxBackground();
+                
                 this.attachEventListeners();
                 this.checkAuthState();
                 this.handleUrlParameters();

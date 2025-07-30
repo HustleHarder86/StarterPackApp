@@ -12,14 +12,14 @@ export const Badge = ({
 }) => {
   const baseClasses = 'badge';
   const variantClasses = {
-    default: '',
-    success: 'badge-success',
-    warning: 'badge-warning',
-    danger: 'badge-danger',
-    info: 'badge-info',
-    'live-data': 'badge-live-data',
-    airbnb: 'badge-airbnb',
-    secondary: 'bg-gray-500 text-white'
+    default: 'glass text-gray-700',
+    success: 'gradient-success text-white',
+    warning: 'gradient-warning text-white',
+    danger: 'gradient-warning text-white',
+    info: 'gradient-primary text-white',
+    'live-data': 'gradient-warning text-white animate-pulse-glow',
+    airbnb: 'bg-airbnb text-white',
+    secondary: 'glass-dark text-white'
   };
   const sizeClasses = {
     sm: 'text-xs px-2 py-1',
@@ -97,10 +97,14 @@ export const PerformanceBadge = ({ performance }) => {
 
 export const MetricBadge = ({ label, value, trend = null, variant = 'info' }) => {
   const trendIcon = trend === 'up' ? '↗' : trend === 'down' ? '↘' : '';
+  const trendClass = trend === 'up' ? 'text-green-600' : trend === 'down' ? 'text-red-600' : '';
   
   return `
     <div class="text-center">
-      <div class="text-2xl font-bold text-gray-900 mb-xs">${value}${trendIcon}</div>
+      <div class="text-2xl font-bold text-gradient mb-xs">
+        ${value}
+        ${trendIcon ? `<span class="${trendClass}">${trendIcon}</span>` : ''}
+      </div>
       <div class="text-xs text-gray-600">${label}</div>
     </div>
   `;

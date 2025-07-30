@@ -16,12 +16,12 @@ export const Button = ({
 }) => {
   const baseClasses = 'btn';
   const variantClasses = {
-    primary: 'btn-primary',
-    secondary: 'btn-secondary',
-    success: 'btn-success',
-    danger: 'bg-danger text-white hover:bg-danger-dark',
-    outline: 'border-2 border-primary text-primary hover:bg-primary hover:text-white',
-    ghost: 'bg-transparent text-gray-700 hover:bg-gray-100'
+    primary: 'btn-gradient gradient-primary',
+    secondary: 'glass hover:bg-white/90 text-gray-700',
+    success: 'btn-gradient gradient-success',
+    danger: 'btn-gradient gradient-warning',
+    outline: 'border-2 border-purple-600 text-purple-600 hover:bg-purple-600 hover:text-white',
+    ghost: 'bg-transparent text-gray-700 hover:bg-gray-100/50'
   };
   const sizeClasses = {
     sm: 'btn-sm',
@@ -52,19 +52,21 @@ export const Button = ({
 
 export const ActionButton = ({ action, icon, label, description, variant = 'primary' }) => {
   return `
-    <div class="card card-interactive p-lg text-left hover:scale-105 transition-all duration-200 cursor-pointer group" 
+    <div class="glass-card hover-float glow-on-hover p-lg text-left cursor-pointer group" 
          onclick="${action}"
          role="button"
          tabindex="0"
          onkeypress="if(event.key === 'Enter' || event.key === ' ') ${action}">
       <div class="flex items-start gap-md">
-        <span class="text-2xl flex-shrink-0 group-hover:scale-110 transition-transform">${icon}</span>
+        <div class="gradient-primary w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+          <span class="text-2xl text-white">${icon}</span>
+        </div>
         <div class="flex-1">
-          <div class="text-lg font-bold text-gray-900 mb-xs group-hover:text-blue-600 transition-colors">${label}</div>
+          <div class="text-lg font-bold text-gray-900 mb-xs group-hover:text-purple-600 transition-colors">${label}</div>
           <div class="text-sm text-gray-600 leading-relaxed">${description}</div>
         </div>
       </div>
-      <div class="mt-md flex items-center text-xs text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity">
+      <div class="mt-md flex items-center text-xs text-purple-600 opacity-0 group-hover:opacity-100 transition-opacity">
         <span>Click to proceed</span>
         <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
@@ -79,10 +81,10 @@ export const FloatingActionButton = ({ action, icon, label }) => {
     <div class="fixed bottom-6 right-6 z-50">
       <button 
         onclick="${action}"
-        class="btn btn-primary btn-lg rounded-full shadow-2xl hover:scale-110 transition-transform"
+        class="gradient-primary w-14 h-14 rounded-full shadow-2xl hover:scale-110 transition-transform flex items-center justify-center text-white hover:shadow-xl"
         title="${label}"
       >
-        <span class="w-6 h-6">${icon}</span>
+        <span class="text-xl">${icon}</span>
       </button>
     </div>
   `;

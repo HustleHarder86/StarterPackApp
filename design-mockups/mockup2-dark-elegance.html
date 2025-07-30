@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mockup 2: Dark Mode Elegance - Investment Analysis</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #0a0a0a;
+            color: #ffffff;
+        }
+        
+        /* Glowing effects */
+        .glow {
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.1),
+                        0 0 40px rgba(56, 189, 248, 0.05);
+        }
+        
+        .glow-hover:hover {
+            box-shadow: 0 0 30px rgba(56, 189, 248, 0.2),
+                        0 0 60px rgba(56, 189, 248, 0.1);
+            transform: translateY(-2px);
+            transition: all 0.3s ease;
+        }
+        
+        /* Gradient text */
+        .gradient-text {
+            background: linear-gradient(135deg, #38bdf8 0%, #818cf8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .gradient-text-gold {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        /* Premium cards with glass effect */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        .glass-card:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.12);
+        }
+        
+        /* Neon buttons */
+        .btn-neon {
+            position: relative;
+            padding: 12px 28px;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+        
+        .btn-primary-neon {
+            background: linear-gradient(135deg, #38bdf8 0%, #818cf8 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(56, 189, 248, 0.3);
+        }
+        
+        .btn-primary-neon:hover {
+            box-shadow: 0 6px 25px rgba(56, 189, 248, 0.5);
+            transform: translateY(-1px);
+        }
+        
+        .btn-secondary-neon {
+            background: transparent;
+            color: #38bdf8;
+            border: 1px solid rgba(56, 189, 248, 0.3);
+        }
+        
+        .btn-secondary-neon:hover {
+            background: rgba(56, 189, 248, 0.1);
+            border-color: rgba(56, 189, 248, 0.5);
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.3);
+        }
+        
+        /* Animated number counter */
+        @keyframes countUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .counter {
+            animation: countUp 0.8s ease-out forwards;
+        }
+        
+        /* Premium progress rings */
+        .progress-ring {
+            transform: rotate(-90deg);
+        }
+        
+        .progress-ring-circle {
+            stroke-dasharray: 339.292;
+            stroke-dashoffset: 339.292;
+            animation: fillRing 1.5s ease-out forwards;
+        }
+        
+        @keyframes fillRing {
+            to { stroke-dashoffset: calc(339.292 * (1 - var(--progress))); }
+        }
+        
+        /* Glowing divider */
+        .divider-glow {
+            height: 1px;
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                rgba(56, 189, 248, 0.3) 50%, 
+                transparent 100%);
+            margin: 2rem 0;
+        }
+        
+        /* Futuristic tabs */
+        .tab-dark {
+            position: relative;
+            padding: 12px 24px;
+            color: #64748b;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .tab-dark.active {
+            color: #38bdf8;
+        }
+        
+        .tab-dark.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #38bdf8 0%, #818cf8 100%);
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.5);
+        }
+        
+        /* Animated background grid */
+        .grid-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                linear-gradient(rgba(56, 189, 248, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(56, 189, 248, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: -1;
+            animation: gridMove 20s linear infinite;
+        }
+        
+        @keyframes gridMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+        
+        /* Chart styling */
+        .chart-bar-dark {
+            background: linear-gradient(to top, rgba(56, 189, 248, 0.2), rgba(56, 189, 248, 0.8));
+            border-radius: 4px 4px 0 0;
+            position: relative;
+            transition: all 0.5s ease;
+        }
+        
+        .chart-bar-dark:hover {
+            background: linear-gradient(to top, rgba(56, 189, 248, 0.4), rgba(56, 189, 248, 1));
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.5);
+        }
+        
+        /* Shimmer effect */
+        @keyframes shimmer {
+            0% { background-position: -1000px 0; }
+            100% { background-position: 1000px 0; }
+        }
+        
+        .shimmer {
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                rgba(255, 255, 255, 0.1) 50%, 
+                transparent 100%);
+            background-size: 1000px 100%;
+            animation: shimmer 3s infinite;
+        }
+        
+        /* Status indicators */
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(56, 189, 248, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(56, 189, 248, 0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="grid-background"></div>
+
+    <!-- Navigation -->
+    <nav class="glass-card fixed top-0 left-0 right-0 z-50 border-b-0 rounded-none">
+        <div class="max-w-7xl mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-8">
+                    <h1 class="text-xl font-bold gradient-text">InvestPro Analytics</h1>
+                    <div class="flex items-center gap-2 text-sm">
+                        <div class="status-dot bg-green-400"></div>
+                        <span class="text-gray-400">Real-time Data</span>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4">
+                    <button class="btn-neon btn-secondary-neon">
+                        <i class="fas fa-download mr-2"></i>Export
+                    </button>
+                    <button class="btn-neon btn-primary-neon">
+                        <i class="fas fa-rocket mr-2"></i>Optimize
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-6 pt-24 pb-12">
+        <!-- Hero Analysis Card -->
+        <div class="glass-card glow p-8 mb-8 relative overflow-hidden">
+            <div class="shimmer absolute inset-0 opacity-20"></div>
+            <div class="relative z-10">
+                <div class="flex items-start justify-between">
+                    <div>
+                        <h2 class="text-3xl font-bold mb-2">123 King Street West</h2>
+                        <p class="text-gray-400 mb-6">Toronto, ON • 2BR/2BA • 1,100 sqft</p>
+                        <div class="flex items-baseline gap-3 mb-2">
+                            <span class="text-5xl font-bold gradient-text counter">$5,480</span>
+                            <span class="text-xl text-gray-400">/month</span>
+                        </div>
+                        <p class="text-gray-500">Short-term rental projection</p>
+                    </div>
+                    <div class="text-right">
+                        <div class="inline-flex items-center gap-2 glass-card px-4 py-2 mb-4">
+                            <i class="fas fa-shield-check text-green-400"></i>
+                            <span class="gradient-text font-semibold">Premium Investment</span>
+                        </div>
+                        <div class="relative w-32 h-32 mx-auto">
+                            <svg class="progress-ring w-32 h-32">
+                                <circle cx="64" cy="64" r="54" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="8"></circle>
+                                <circle class="progress-ring-circle" cx="64" cy="64" r="54" fill="none" stroke="url(#gradient)" stroke-width="8" style="--progress: 0.85"></circle>
+                                <defs>
+                                    <linearGradient id="gradient">
+                                        <stop offset="0%" stop-color="#38bdf8"></stop>
+                                        <stop offset="100%" stop-color="#818cf8"></stop>
+                                    </linearGradient>
+                                </defs>
+                            </svg>
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <span class="text-3xl font-bold">8.5</span>
+                            </div>
+                        </div>
+                        <p class="text-sm text-gray-400 mt-2">Investment Score</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="flex gap-8 border-b border-gray-800 mb-8">
+            <div class="tab-dark active">Overview</div>
+            <div class="tab-dark">Short-Term Analysis</div>
+            <div class="tab-dark">Long-Term Analysis</div>
+            <div class="tab-dark">Risk Assessment</div>
+        </div>
+
+        <!-- Key Metrics Grid -->
+        <div class="grid grid-cols-4 gap-4 mb-8">
+            <div class="glass-card glow-hover p-6 text-center group">
+                <div class="text-3xl font-bold gradient-text-gold mb-2 counter">14.2%</div>
+                <p class="text-gray-400 text-sm">Annual ROI</p>
+                <div class="mt-3 text-xs text-green-400 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <i class="fas fa-arrow-up mr-1"></i>+2.3% vs market
+                </div>
+            </div>
+            <div class="glass-card glow-hover p-6 text-center group">
+                <div class="text-3xl font-bold gradient-text mb-2 counter">85%</div>
+                <p class="text-gray-400 text-sm">Occupancy Rate</p>
+                <div class="mt-3 text-xs text-green-400 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <i class="fas fa-fire mr-1"></i>High demand
+                </div>
+            </div>
+            <div class="glass-card glow-hover p-6 text-center group">
+                <div class="text-3xl font-bold gradient-text mb-2 counter">$265</div>
+                <p class="text-gray-400 text-sm">Avg Nightly Rate</p>
+                <div class="mt-3 text-xs text-blue-400 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <i class="fas fa-chart-line mr-1"></i>Premium tier
+                </div>
+            </div>
+            <div class="glass-card glow-hover p-6 text-center group">
+                <div class="text-3xl font-bold gradient-text mb-2 counter">4.9★</div>
+                <p class="text-gray-400 text-sm">Guest Rating</p>
+                <div class="mt-3 text-xs text-purple-400 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <i class="fas fa-award mr-1"></i>Superhost potential
+                </div>
+            </div>
+        </div>
+
+        <!-- Revenue Analysis Section -->
+        <div class="grid grid-cols-2 gap-6 mb-8">
+            <div class="glass-card p-6">
+                <h3 class="text-xl font-semibold mb-6 gradient-text">Revenue Streams</h3>
+                <div class="relative h-64">
+                    <div class="absolute bottom-0 left-12 w-24 chart-bar-dark" style="height: 200px;">
+                        <div class="absolute -top-8 left-0 right-0 text-center font-semibold">$5,480</div>
+                    </div>
+                    <div class="absolute bottom-0 left-44 w-24 chart-bar-dark" style="height: 140px; background: linear-gradient(to top, rgba(251, 191, 36, 0.2), rgba(251, 191, 36, 0.8));">
+                        <div class="absolute -top-8 left-0 right-0 text-center font-semibold">$3,850</div>
+                    </div>
+                    <div class="absolute bottom-0 left-12 right-0 flex justify-between text-sm text-gray-400" style="bottom: -30px;">
+                        <span style="margin-left: 24px;">STR</span>
+                        <span style="margin-right: 120px;">LTR</span>
+                    </div>
+                </div>
+                <div class="divider-glow"></div>
+                <div class="flex justify-between items-center">
+                    <span class="text-gray-400">Revenue Advantage</span>
+                    <span class="text-2xl font-bold gradient-text">+42%</span>
+                </div>
+            </div>
+
+            <div class="glass-card p-6">
+                <h3 class="text-xl font-semibold mb-6 gradient-text">Market Intelligence</h3>
+                <div class="space-y-4">
+                    <div class="flex items-start gap-4">
+                        <div class="w-10 h-10 glass-card flex items-center justify-center flex-shrink-0">
+                            <i class="fas fa-chart-line text-blue-400"></i>
+                        </div>
+                        <div>
+                            <p class="font-semibold mb-1">Tourism Growth Trend</p>
+                            <p class="text-sm text-gray-400">15% YoY increase in downtown visitors</p>
+                            <div class="mt-2 h-1 bg-gray-800 rounded">
+                                <div class="h-1 bg-gradient-to-r from-blue-400 to-purple-400 rounded" style="width: 85%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-4">
+                        <div class="w-10 h-10 glass-card flex items-center justify-center flex-shrink-0">
+                            <i class="fas fa-building text-purple-400"></i>
+                        </div>
+                        <div>
+                            <p class="font-semibold mb-1">Supply Constraint</p>
+                            <p class="text-sm text-gray-400">Limited new STR licenses in area</p>
+                            <div class="mt-2 h-1 bg-gray-800 rounded">
+                                <div class="h-1 bg-gradient-to-r from-purple-400 to-pink-400 rounded" style="width: 70%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-4">
+                        <div class="w-10 h-10 glass-card flex items-center justify-center flex-shrink-0">
+                            <i class="fas fa-star text-yellow-400"></i>
+                        </div>
+                        <div>
+                            <p class="font-semibold mb-1">Premium Positioning</p>
+                            <p class="text-sm text-gray-400">Top 15% pricing bracket justified</p>
+                            <div class="mt-2 h-1 bg-gray-800 rounded">
+                                <div class="h-1 bg-gradient-to-r from-yellow-400 to-orange-400 rounded" style="width: 92%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Comparable Properties -->
+        <div class="glass-card p-6 mb-8">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-semibold gradient-text">Live Market Comparables</h3>
+                <button class="text-sm text-blue-400 hover:text-blue-300">View All 18 <i class="fas fa-arrow-right ml-1"></i></button>
+            </div>
+            <div class="grid grid-cols-4 gap-4">
+                <div class="glass-card p-4 hover:border-blue-400/30 transition-all group">
+                    <div class="flex justify-between items-start mb-3">
+                        <div>
+                            <p class="font-semibold text-lg">$258</p>
+                            <p class="text-xs text-gray-500">/night</p>
+                        </div>
+                        <span class="text-xs glass-card px-2 py-1">0.3km</span>
+                    </div>
+                    <p class="text-sm text-gray-400 mb-2">Luxury 2BR King West</p>
+                    <div class="flex justify-between text-xs">
+                        <span class="text-green-400">87% booked</span>
+                        <span class="text-yellow-400">4.9★</span>
+                    </div>
+                    <div class="mt-3 pt-3 border-t border-gray-800 text-center text-xs text-gray-500 opacity-0 group-hover:opacity-100 transition-opacity">
+                        ~$5,420/mo revenue
+                    </div>
+                </div>
+                <div class="glass-card p-4 hover:border-blue-400/30 transition-all group">
+                    <div class="flex justify-between items-start mb-3">
+                        <div>
+                            <p class="font-semibold text-lg">$275</p>
+                            <p class="text-xs text-gray-500">/night</p>
+                        </div>
+                        <span class="text-xs glass-card px-2 py-1">0.5km</span>
+                    </div>
+                    <p class="text-sm text-gray-400 mb-2">Modern 2BR Downtown</p>
+                    <div class="flex justify-between text-xs">
+                        <span class="text-green-400">82% booked</span>
+                        <span class="text-yellow-400">4.8★</span>
+                    </div>
+                    <div class="mt-3 pt-3 border-t border-gray-800 text-center text-xs text-gray-500 opacity-0 group-hover:opacity-100 transition-opacity">
+                        ~$5,610/mo revenue
+                    </div>
+                </div>
+                <div class="glass-card p-4 hover:border-blue-400/30 transition-all group">
+                    <div class="flex justify-between items-start mb-3">
+                        <div>
+                            <p class="font-semibold text-lg">$242</p>
+                            <p class="text-xs text-gray-500">/night</p>
+                        </div>
+                        <span class="text-xs glass-card px-2 py-1">0.7km</span>
+                    </div>
+                    <p class="text-sm text-gray-400 mb-2">Waterfront 2BR View</p>
+                    <div class="flex justify-between text-xs">
+                        <span class="text-green-400">90% booked</span>
+                        <span class="text-yellow-400">5.0★</span>
+                    </div>
+                    <div class="mt-3 pt-3 border-t border-gray-800 text-center text-xs text-gray-500 opacity-0 group-hover:opacity-100 transition-opacity">
+                        ~$5,340/mo revenue
+                    </div>
+                </div>
+                <div class="glass-card p-4 hover:border-blue-400/30 transition-all group">
+                    <div class="flex justify-between items-start mb-3">
+                        <div>
+                            <p class="font-semibold text-lg">$265</p>
+                            <p class="text-xs text-gray-500">/night</p>
+                        </div>
+                        <span class="text-xs glass-card px-2 py-1">0.8km</span>
+                    </div>
+                    <p class="text-sm text-gray-400 mb-2">Executive 2BR Suite</p>
+                    <div class="flex justify-between text-xs">
+                        <span class="text-green-400">85% booked</span>
+                        <span class="text-yellow-400">4.9★</span>
+                    </div>
+                    <div class="mt-3 pt-3 border-t border-gray-800 text-center text-xs text-gray-500 opacity-0 group-hover:opacity-100 transition-opacity">
+                        ~$5,580/mo revenue
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Investment Score Breakdown -->
+        <div class="glass-card p-6">
+            <h3 class="text-xl font-semibold mb-6 gradient-text">Investment Score Breakdown</h3>
+            <div class="grid grid-cols-2 gap-8">
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-400">Location Score</span>
+                        <span class="font-semibold">9.2/10</span>
+                    </div>
+                    <div class="h-2 bg-gray-800 rounded">
+                        <div class="h-2 bg-gradient-to-r from-green-400 to-blue-400 rounded" style="width: 92%;"></div>
+                    </div>
+                </div>
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-400">Market Demand</span>
+                        <span class="font-semibold">8.8/10</span>
+                    </div>
+                    <div class="h-2 bg-gray-800 rounded">
+                        <div class="h-2 bg-gradient-to-r from-blue-400 to-purple-400 rounded" style="width: 88%;"></div>
+                    </div>
+                </div>
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-400">Revenue Potential</span>
+                        <span class="font-semibold">8.5/10</span>
+                    </div>
+                    <div class="h-2 bg-gray-800 rounded">
+                        <div class="h-2 bg-gradient-to-r from-purple-400 to-pink-400 rounded" style="width: 85%;"></div>
+                    </div>
+                </div>
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-400">Risk Profile</span>
+                        <span class="font-semibold">7.8/10</span>
+                    </div>
+                    <div class="h-2 bg-gray-800 rounded">
+                        <div class="h-2 bg-gradient-to-r from-yellow-400 to-orange-400 rounded" style="width: 78%;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab switching with smooth transition
+        document.querySelectorAll('.tab-dark').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.tab-dark').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // Counter animation
+        const counters = document.querySelectorAll('.counter');
+        const speed = 200;
+
+        counters.forEach(counter => {
+            const animate = () => {
+                const value = counter.innerText;
+                const data = +counter.getAttribute('data-target') || parseFloat(value.replace(/[^0-9.-]+/g,""));
+                const time = data / speed;
+                
+                if (time < data) {
+                    counter.innerText = Math.ceil(time);
+                    setTimeout(animate, 1);
+                }
+            }
+            
+            // Trigger animation on intersection
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        animate();
+                        observer.unobserve(entry.target);
+                    }
+                });
+            });
+            
+            observer.observe(counter);
+        });
+    </script>
+</body>
+</html>

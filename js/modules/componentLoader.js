@@ -247,7 +247,7 @@ class ComponentLoader {
       
       // Create reusable property header
       const propertyHeaderHtml = `
-        <div class="bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-xl mb-6 shadow-lg overflow-hidden">
+        <div class="glass-card gradient-primary text-white mb-6 glow-on-hover overflow-hidden">
           <div class="p-6">
             <div class="flex flex-col lg:flex-row items-center gap-6">
               <!-- Property Image - Only show if image exists -->
@@ -292,7 +292,7 @@ class ComponentLoader {
               
               <!-- Live Data Badge -->
               <div class="flex flex-col items-center gap-2">
-                <span class="inline-flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur text-white text-sm font-bold rounded-full shadow-lg animate-pulse-subtle">
+                <span class="inline-flex items-center gap-2 px-4 py-2 glass-dark text-white text-sm font-bold rounded-full shadow-lg animate-pulse-glow">
                   <span class="inline-block w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
                   LIVE DATA
                 </span>
@@ -311,17 +311,17 @@ class ComponentLoader {
             <!-- Enhanced Rental Analysis Tabs as Main Header -->
             <div class="mb-8">
               <!-- Tab Navigation -->
-              <div class="bg-white rounded-lg shadow-lg">
-                <div class="p-4 rounded-t-lg border-b border-gray-200">
+              <div class="glass-card glow-on-hover">
+                <div class="p-4 rounded-t-lg border-b border-gray-200/30">
                   
                   <!-- Enhanced Tab Buttons -->
-                  <div class="flex flex-wrap gap-2">
+                  <div class="flex flex-wrap gap-3">
                     <!-- STR Tab -->
                     <button
                       id="str-tab"
                       onclick="window.switchTab('str')"
-                      class="tab-button ${showSTR ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg border-transparent transform scale-105' : 'bg-gray-50 text-gray-600 hover:bg-white hover:text-gray-800 hover:shadow-sm border-gray-200'} 
-                      flex items-center gap-2 px-4 py-3 rounded-lg border-2 font-medium transition-all duration-200 group"
+                      class="tab-button ${showSTR ? 'gradient-primary text-white shadow-lg transform scale-105 hover:shadow-xl' : 'glass text-gray-700 hover:bg-white/90 hover:shadow-md'} 
+                      flex items-center gap-2 px-4 py-3 rounded-lg font-semibold transition-all duration-300 group hover-float"
                     >
                       <span class="text-xl group-hover:scale-110 transition-transform">
                         ${showSTR ? '🏠' : '🏡'}
@@ -339,8 +339,8 @@ class ComponentLoader {
                     <button
                       id="ltr-tab"
                       onclick="window.switchTab('ltr')"
-                      class="tab-button ${showLTR && !showSTR ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg border-transparent transform scale-105' : 'bg-gray-50 text-gray-600 hover:bg-white hover:text-gray-800 hover:shadow-sm border-gray-200'} 
-                      flex items-center gap-2 px-4 py-3 rounded-lg border-2 font-medium transition-all duration-200 group"
+                      class="tab-button ${showLTR && !showSTR ? 'gradient-primary text-white shadow-lg transform scale-105 hover:shadow-xl' : 'glass text-gray-700 hover:bg-white/90 hover:shadow-md'} 
+                      flex items-center gap-2 px-4 py-3 rounded-lg font-semibold transition-all duration-300 group hover-float"
                     >
                       <span class="text-xl group-hover:scale-110 transition-transform">
                         ${showLTR && !showSTR ? '🏘️' : '🏢'}
@@ -358,8 +358,8 @@ class ComponentLoader {
                     <button
                       id="investment-tab"
                       onclick="window.switchTab('investment')"
-                      class="tab-button bg-gray-50 text-gray-600 hover:bg-white hover:text-gray-800 hover:shadow-sm border-gray-200 
-                      flex items-center gap-2 px-4 py-3 rounded-lg border-2 font-medium transition-all duration-200 group"
+                      class="tab-button glass text-gray-700 hover:bg-white/90 hover:shadow-md
+                      flex items-center gap-2 px-4 py-3 rounded-lg font-semibold transition-all duration-300 group hover-float"
                     >
                       <span class="text-xl group-hover:scale-110 transition-transform">
                         📊

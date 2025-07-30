@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mockup 4: Enterprise Dashboard - Investment Analysis</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #f8fafb;
+        }
+        
+        /* Professional styling */
+        .enterprise-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            transition: all 0.2s ease;
+        }
+        
+        .enterprise-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+        
+        /* Data table styling */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .data-table th {
+            background: #f9fafb;
+            font-weight: 600;
+            text-align: left;
+            padding: 12px 16px;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #6b7280;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .data-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid #f3f4f6;
+        }
+        
+        .data-table tr:hover {
+            background: #f9fafb;
+        }
+        
+        /* Status indicators */
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+        }
+        
+        .status-green { background: #10b981; }
+        .status-yellow { background: #f59e0b; }
+        .status-red { background: #ef4444; }
+        
+        /* Professional buttons */
+        .btn-enterprise {
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+        }
+        
+        .btn-primary-enterprise {
+            background: #1e40af;
+            color: white;
+        }
+        
+        .btn-primary-enterprise:hover {
+            background: #1e3a8a;
+        }
+        
+        .btn-secondary-enterprise {
+            background: white;
+            color: #374151;
+            border-color: #d1d5db;
+        }
+        
+        .btn-secondary-enterprise:hover {
+            background: #f9fafb;
+            border-color: #9ca3af;
+        }
+        
+        /* Metric cards */
+        .metric-card-enterprise {
+            position: relative;
+            padding: 20px;
+            border-left: 4px solid transparent;
+        }
+        
+        .metric-card-enterprise.positive {
+            border-left-color: #10b981;
+        }
+        
+        .metric-card-enterprise.negative {
+            border-left-color: #ef4444;
+        }
+        
+        .metric-card-enterprise.neutral {
+            border-left-color: #6b7280;
+        }
+        
+        /* Navigation tabs */
+        .nav-tab {
+            padding: 12px 20px;
+            color: #6b7280;
+            font-weight: 500;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s ease;
+        }
+        
+        .nav-tab:hover {
+            color: #374151;
+            background: #f9fafb;
+        }
+        
+        .nav-tab.active {
+            color: #1e40af;
+            border-bottom-color: #1e40af;
+        }
+        
+        /* Small charts container */
+        .mini-chart {
+            position: relative;
+            height: 60px;
+            margin-top: 12px;
+        }
+        
+        /* Scrollable sections */
+        .scroll-container {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .scroll-container::-webkit-scrollbar {
+            height: 6px;
+        }
+        
+        .scroll-container::-webkit-scrollbar-track {
+            background: #f3f4f6;
+        }
+        
+        .scroll-container::-webkit-scrollbar-thumb {
+            background: #d1d5db;
+            border-radius: 3px;
+        }
+        
+        /* Risk indicators */
+        .risk-meter {
+            width: 100%;
+            height: 8px;
+            background: #f3f4f6;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .risk-fill {
+            height: 100%;
+            transition: width 0.5s ease;
+        }
+        
+        .risk-low { background: #10b981; }
+        .risk-medium { background: #f59e0b; }
+        .risk-high { background: #ef4444; }
+        
+        /* Data grid layout */
+        .data-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1px;
+            background: #e5e7eb;
+            border: 1px solid #e5e7eb;
+        }
+        
+        .data-cell {
+            background: white;
+            padding: 16px;
+        }
+        
+        /* Heatmap styling */
+        .heatmap-cell {
+            position: relative;
+            padding: 12px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .heatmap-cell:hover {
+            transform: scale(1.05);
+            z-index: 10;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        /* Loading skeleton */
+        @keyframes shimmer {
+            0% { background-position: -200px 0; }
+            100% { background-position: calc(200px + 100%) 0; }
+        }
+        
+        .skeleton {
+            background: #f3f4f6;
+            background-image: linear-gradient(90deg, #f3f4f6 0px, #e5e7eb 40px, #f3f4f6 80px);
+            background-size: 200px 100%;
+            animation: shimmer 1.5s infinite;
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Navigation -->
+    <nav class="bg-white border-b border-gray-200">
+        <div class="px-6 py-3">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-8">
+                    <h1 class="text-xl font-semibold text-gray-900">Property Analytics Pro</h1>
+                    <div class="flex items-center gap-6">
+                        <span class="text-sm text-gray-600">Last Updated: <span class="font-medium">2 min ago</span></span>
+                        <span class="flex items-center text-sm">
+                            <span class="status-indicator status-green"></span>
+                            <span class="text-gray-600">Live Data</span>
+                        </span>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button class="btn-enterprise btn-secondary-enterprise">
+                        <i class="fas fa-cog mr-2"></i>Settings
+                    </button>
+                    <button class="btn-enterprise btn-secondary-enterprise">
+                        <i class="fas fa-download mr-2"></i>Export
+                    </button>
+                    <button class="btn-enterprise btn-primary-enterprise">
+                        <i class="fas fa-play mr-2"></i>Run Analysis
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="px-6 flex gap-8 border-t border-gray-100">
+            <div class="nav-tab active">Executive Summary</div>
+            <div class="nav-tab">Financial Analysis</div>
+            <div class="nav-tab">Market Intelligence</div>
+            <div class="nav-tab">Risk Assessment</div>
+            <div class="nav-tab">Projections</div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="p-6">
+        <!-- Property Header -->
+        <div class="enterprise-card rounded-lg p-6 mb-6">
+            <div class="flex items-start justify-between">
+                <div>
+                    <h2 class="text-2xl font-semibold text-gray-900 mb-1">123 King Street West, Unit 1205</h2>
+                    <p class="text-gray-600 mb-4">Toronto, ON M5H 1A1 • Downtown Core • High-Rise Condominium</p>
+                    <div class="flex items-center gap-6 text-sm">
+                        <span><i class="fas fa-building mr-2 text-gray-400"></i>2 Bed / 2 Bath</span>
+                        <span><i class="fas fa-ruler-combined mr-2 text-gray-400"></i>1,100 sq ft</span>
+                        <span><i class="fas fa-calendar-alt mr-2 text-gray-400"></i>Built 2018</span>
+                        <span><i class="fas fa-layer-group mr-2 text-gray-400"></i>Floor 12 of 45</span>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <p class="text-sm text-gray-600 mb-1">Purchase Price</p>
+                    <p class="text-3xl font-semibold text-gray-900">$850,000</p>
+                    <p class="text-sm text-green-600 mt-1">
+                        <i class="fas fa-arrow-up mr-1"></i>+12.3% YoY
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Key Metrics Grid -->
+        <div class="grid grid-cols-6 gap-4 mb-6">
+            <div class="enterprise-card rounded-lg metric-card-enterprise positive">
+                <p class="text-xs text-gray-600 uppercase tracking-wider mb-1">STR Revenue</p>
+                <p class="text-2xl font-semibold text-gray-900">$5,680</p>
+                <p class="text-xs text-gray-500 mt-1">per month</p>
+                <div class="mini-chart">
+                    <canvas id="strRevenueSparkline"></canvas>
+                </div>
+            </div>
+            <div class="enterprise-card rounded-lg metric-card-enterprise positive">
+                <p class="text-xs text-gray-600 uppercase tracking-wider mb-1">Occupancy Rate</p>
+                <p class="text-2xl font-semibold text-gray-900">84.5%</p>
+                <p class="text-xs text-green-600 mt-1">+3.2% vs market</p>
+                <div class="mini-chart">
+                    <canvas id="occupancySparkline"></canvas>
+                </div>
+            </div>
+            <div class="enterprise-card rounded-lg metric-card-enterprise neutral">
+                <p class="text-xs text-gray-600 uppercase tracking-wider mb-1">ADR</p>
+                <p class="text-2xl font-semibold text-gray-900">$268</p>
+                <p class="text-xs text-gray-500 mt-1">avg daily rate</p>
+                <div class="mini-chart">
+                    <canvas id="adrSparkline"></canvas>
+                </div>
+            </div>
+            <div class="enterprise-card rounded-lg metric-card-enterprise positive">
+                <p class="text-xs text-gray-600 uppercase tracking-wider mb-1">Cap Rate</p>
+                <p class="text-2xl font-semibold text-gray-900">6.8%</p>
+                <p class="text-xs text-gray-500 mt-1">net return</p>
+            </div>
+            <div class="enterprise-card rounded-lg metric-card-enterprise neutral">
+                <p class="text-xs text-gray-600 uppercase tracking-wider mb-1">Cash Flow</p>
+                <p class="text-2xl font-semibold text-gray-900">$1,245</p>
+                <p class="text-xs text-gray-500 mt-1">monthly</p>
+            </div>
+            <div class="enterprise-card rounded-lg metric-card-enterprise positive">
+                <p class="text-xs text-gray-600 uppercase tracking-wider mb-1">Score</p>
+                <p class="text-2xl font-semibold text-gray-900">8.4/10</p>
+                <p class="text-xs text-green-600 mt-1">Strong Buy</p>
+            </div>
+        </div>
+
+        <!-- Main Dashboard Grid -->
+        <div class="grid grid-cols-3 gap-6">
+            <!-- Revenue Analysis -->
+            <div class="enterprise-card rounded-lg p-6">
+                <h3 class="font-semibold text-gray-900 mb-4">Revenue Analysis</h3>
+                <div class="mb-6">
+                    <canvas id="revenueComparisonChart" height="200"></canvas>
+                </div>
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center py-2 border-b border-gray-100">
+                        <span class="text-sm text-gray-600">Short-Term Rental</span>
+                        <span class="font-medium">$5,680/mo</span>
+                    </div>
+                    <div class="flex justify-between items-center py-2 border-b border-gray-100">
+                        <span class="text-sm text-gray-600">Long-Term Rental</span>
+                        <span class="font-medium">$3,850/mo</span>
+                    </div>
+                    <div class="flex justify-between items-center py-2">
+                        <span class="text-sm font-medium text-gray-900">Revenue Advantage</span>
+                        <span class="font-semibold text-green-600">+47.5%</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Market Comparables -->
+            <div class="enterprise-card rounded-lg p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-semibold text-gray-900">Market Comparables</h3>
+                    <span class="text-xs text-gray-600">18 properties</span>
+                </div>
+                <div class="scroll-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Property</th>
+                                <th>Rate</th>
+                                <th>Occ%</th>
+                                <th>Rev</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="text-sm">
+                                    <div class="font-medium">King West 2BR</div>
+                                    <div class="text-xs text-gray-500">0.3 km</div>
+                                </td>
+                                <td class="text-sm">$275</td>
+                                <td class="text-sm">87%</td>
+                                <td class="text-sm font-medium">$5.9k</td>
+                            </tr>
+                            <tr>
+                                <td class="text-sm">
+                                    <div class="font-medium">Waterfront Luxury</div>
+                                    <div class="text-xs text-gray-500">0.5 km</div>
+                                </td>
+                                <td class="text-sm">$290</td>
+                                <td class="text-sm">82%</td>
+                                <td class="text-sm font-medium">$5.8k</td>
+                            </tr>
+                            <tr>
+                                <td class="text-sm">
+                                    <div class="font-medium">Entertainment Dist</div>
+                                    <div class="text-xs text-gray-500">0.4 km</div>
+                                </td>
+                                <td class="text-sm">$265</td>
+                                <td class="text-sm">85%</td>
+                                <td class="text-sm font-medium">$5.6k</td>
+                            </tr>
+                            <tr>
+                                <td class="text-sm">
+                                    <div class="font-medium">Financial Core</div>
+                                    <div class="text-xs text-gray-500">0.6 km</div>
+                                </td>
+                                <td class="text-sm">$258</td>
+                                <td class="text-sm">88%</td>
+                                <td class="text-sm font-medium">$5.7k</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Risk Assessment -->
+            <div class="enterprise-card rounded-lg p-6">
+                <h3 class="font-semibold text-gray-900 mb-4">Risk Assessment</h3>
+                <div class="space-y-4">
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-sm text-gray-600">Market Risk</span>
+                            <span class="text-xs font-medium text-green-600">Low</span>
+                        </div>
+                        <div class="risk-meter">
+                            <div class="risk-fill risk-low" style="width: 25%;"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-sm text-gray-600">Regulatory Risk</span>
+                            <span class="text-xs font-medium text-yellow-600">Medium</span>
+                        </div>
+                        <div class="risk-meter">
+                            <div class="risk-fill risk-medium" style="width: 60%;"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-sm text-gray-600">Competition Risk</span>
+                            <span class="text-xs font-medium text-green-600">Low</span>
+                        </div>
+                        <div class="risk-meter">
+                            <div class="risk-fill risk-low" style="width: 30%;"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-sm text-gray-600">Vacancy Risk</span>
+                            <span class="text-xs font-medium text-green-600">Very Low</span>
+                        </div>
+                        <div class="risk-meter">
+                            <div class="risk-fill risk-low" style="width: 15%;"></div>
+                        </div>
+                    </div>
+                    <div class="pt-3 border-t">
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm font-medium text-gray-900">Overall Risk Score</span>
+                            <span class="text-lg font-semibold text-green-600">2.8/10</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Financial Breakdown -->
+        <div class="enterprise-card rounded-lg p-6 mt-6">
+            <h3 class="font-semibold text-gray-900 mb-4">Detailed Financial Breakdown</h3>
+            <div class="grid grid-cols-2 gap-8">
+                <div>
+                    <h4 class="text-sm font-medium text-gray-700 mb-3">Revenue Streams</h4>
+                    <div class="data-grid rounded-lg overflow-hidden">
+                        <div class="data-cell">
+                            <p class="text-xs text-gray-600">Base Nightly Rate</p>
+                            <p class="font-semibold">$268</p>
+                        </div>
+                        <div class="data-cell">
+                            <p class="text-xs text-gray-600">Cleaning Fee</p>
+                            <p class="font-semibold">$95</p>
+                        </div>
+                        <div class="data-cell">
+                            <p class="text-xs text-gray-600">Avg Stay Length</p>
+                            <p class="font-semibold">3.2 nights</p>
+                        </div>
+                        <div class="data-cell">
+                            <p class="text-xs text-gray-600">Monthly Bookings</p>
+                            <p class="font-semibold">8.5</p>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="text-sm font-medium text-gray-700 mb-3">Operating Expenses</h4>
+                    <div class="data-grid rounded-lg overflow-hidden">
+                        <div class="data-cell">
+                            <p class="text-xs text-gray-600">Mortgage (P&I)</p>
+                            <p class="font-semibold text-red-600">$2,845</p>
+                        </div>
+                        <div class="data-cell">
+                            <p class="text-xs text-gray-600">Property Tax</p>
+                            <p class="font-semibold text-red-600">$708</p>
+                        </div>
+                        <div class="data-cell">
+                            <p class="text-xs text-gray-600">HOA/Condo Fees</p>
+                            <p class="font-semibold text-red-600">$650</p>
+                        </div>
+                        <div class="data-cell">
+                            <p class="text-xs text-gray-600">Management</p>
+                            <p class="font-semibold text-red-600">$568</p>
+                        </div>
+                        <div class="data-cell">
+                            <p class="text-xs text-gray-600">Insurance</p>
+                            <p class="font-semibold text-red-600">$185</p>
+                        </div>
+                        <div class="data-cell">
+                            <p class="text-xs text-gray-600">Utilities</p>
+                            <p class="font-semibold text-red-600">$120</p>
+                        </div>
+                        <div class="data-cell">
+                            <p class="text-xs text-gray-600">Cleaning</p>
+                            <p class="font-semibold text-red-600">$255</p>
+                        </div>
+                        <div class="data-cell">
+                            <p class="text-xs text-gray-600">Maintenance</p>
+                            <p class="font-semibold text-red-600">$104</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Market Intelligence Heatmap -->
+        <div class="enterprise-card rounded-lg p-6 mt-6">
+            <h3 class="font-semibold text-gray-900 mb-4">Seasonal Revenue Heatmap</h3>
+            <div class="grid grid-cols-12 gap-1">
+                <div class="text-xs text-gray-600 text-center py-2">Jan</div>
+                <div class="text-xs text-gray-600 text-center py-2">Feb</div>
+                <div class="text-xs text-gray-600 text-center py-2">Mar</div>
+                <div class="text-xs text-gray-600 text-center py-2">Apr</div>
+                <div class="text-xs text-gray-600 text-center py-2">May</div>
+                <div class="text-xs text-gray-600 text-center py-2">Jun</div>
+                <div class="text-xs text-gray-600 text-center py-2">Jul</div>
+                <div class="text-xs text-gray-600 text-center py-2">Aug</div>
+                <div class="text-xs text-gray-600 text-center py-2">Sep</div>
+                <div class="text-xs text-gray-600 text-center py-2">Oct</div>
+                <div class="text-xs text-gray-600 text-center py-2">Nov</div>
+                <div class="text-xs text-gray-600 text-center py-2">Dec</div>
+                
+                <div class="heatmap-cell rounded" style="background: rgba(16, 185, 129, 0.3);">$4.2k</div>
+                <div class="heatmap-cell rounded" style="background: rgba(16, 185, 129, 0.3);">$4.1k</div>
+                <div class="heatmap-cell rounded" style="background: rgba(16, 185, 129, 0.5);">$4.8k</div>
+                <div class="heatmap-cell rounded" style="background: rgba(16, 185, 129, 0.7);">$5.2k</div>
+                <div class="heatmap-cell rounded" style="background: rgba(16, 185, 129, 0.8);">$5.8k</div>
+                <div class="heatmap-cell rounded" style="background: rgba(16, 185, 129, 0.9);">$6.2k</div>
+                <div class="heatmap-cell rounded" style="background: rgba(16, 185, 129, 1);">$6.8k</div>
+                <div class="heatmap-cell rounded" style="background: rgba(16, 185, 129, 1);">$6.9k</div>
+                <div class="heatmap-cell rounded" style="background: rgba(16, 185, 129, 0.9);">$6.1k</div>
+                <div class="heatmap-cell rounded" style="background: rgba(16, 185, 129, 0.7);">$5.4k</div>
+                <div class="heatmap-cell rounded" style="background: rgba(16, 185, 129, 0.5);">$4.6k</div>
+                <div class="heatmap-cell rounded" style="background: rgba(16, 185, 129, 0.4);">$4.3k</div>
+            </div>
+            <div class="flex justify-between items-center mt-4 text-xs text-gray-600">
+                <span>Low Season</span>
+                <div class="flex items-center gap-4">
+                    <div class="flex items-center gap-2">
+                        <div class="w-4 h-4 rounded" style="background: rgba(16, 185, 129, 0.3);"></div>
+                        <span>$4-5k</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div class="w-4 h-4 rounded" style="background: rgba(16, 185, 129, 0.6);"></div>
+                        <span>$5-6k</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div class="w-4 h-4 rounded" style="background: rgba(16, 185, 129, 1);"></div>
+                        <span>$6k+</span>
+                    </div>
+                </div>
+                <span>Peak Season</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize mini sparkline charts
+        const sparklineConfig = {
+            type: 'line',
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { enabled: false }
+                },
+                scales: {
+                    x: { display: false },
+                    y: { display: false }
+                },
+                elements: {
+                    line: {
+                        borderWidth: 2,
+                        tension: 0.4
+                    },
+                    point: {
+                        radius: 0
+                    }
+                }
+            }
+        };
+
+        // STR Revenue Sparkline
+        const strCtx = document.getElementById('strRevenueSparkline').getContext('2d');
+        new Chart(strCtx, {
+            ...sparklineConfig,
+            data: {
+                labels: ['', '', '', '', '', '', '', ''],
+                datasets: [{
+                    data: [5200, 5350, 5480, 5320, 5580, 5620, 5550, 5680],
+                    borderColor: '#10b981',
+                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                    fill: true
+                }]
+            }
+        });
+
+        // Occupancy Sparkline
+        const occCtx = document.getElementById('occupancySparkline').getContext('2d');
+        new Chart(occCtx, {
+            ...sparklineConfig,
+            data: {
+                labels: ['', '', '', '', '', '', '', ''],
+                datasets: [{
+                    data: [78, 82, 85, 83, 86, 84, 85, 84.5],
+                    borderColor: '#3b82f6',
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    fill: true
+                }]
+            }
+        });
+
+        // ADR Sparkline
+        const adrCtx = document.getElementById('adrSparkline').getContext('2d');
+        new Chart(adrCtx, {
+            ...sparklineConfig,
+            data: {
+                labels: ['', '', '', '', '', '', '', ''],
+                datasets: [{
+                    data: [245, 252, 258, 262, 265, 270, 265, 268],
+                    borderColor: '#8b5cf6',
+                    backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                    fill: true
+                }]
+            }
+        });
+
+        // Revenue Comparison Chart
+        const revCtx = document.getElementById('revenueComparisonChart').getContext('2d');
+        new Chart(revCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                datasets: [
+                    {
+                        label: 'STR Revenue',
+                        data: [4200, 4100, 4800, 5200, 5800, 6200, 6800, 6900, 6100, 5400, 4600, 4300],
+                        backgroundColor: '#3b82f6',
+                        borderRadius: 4
+                    },
+                    {
+                        label: 'LTR Revenue',
+                        data: [3850, 3850, 3850, 3850, 3850, 3850, 3850, 3850, 3850, 3850, 3850, 3850],
+                        backgroundColor: '#e5e7eb',
+                        borderRadius: 4
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            usePointStyle: true,
+                            padding: 15,
+                            font: { size: 11 }
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.dataset.label + ': $' + context.parsed.y.toLocaleString();
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { display: false },
+                        ticks: { font: { size: 11 } }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            font: { size: 11 },
+                            callback: function(value) {
+                                return '$' + (value/1000).toFixed(0) + 'k';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Tab navigation
+        document.querySelectorAll('.nav-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>

@@ -62,6 +62,15 @@ git checkout -b claude/description-YYYYMMDD_HHMMSS
 - This prevents UI breakage and ensures quality
 - NEVER skip the validation step with code-reviewer and ui-ux-tester agents
 
+## 🌈 DESIGN SYSTEM - REQUIRED READING
+
+**For ALL UI development, refer to [STYLE-GUIDE.md](./STYLE-GUIDE.md)**
+- Contains gradient-based modern design patterns
+- Defines color system, typography, components, and animations
+- Use the provided component patterns and utilities
+- Follow the accessibility guidelines
+- NEVER hardcode colors or spacing - use design tokens
+
 ## 🎯 CORE PRINCIPLE: Real Listing Data
 
 **ALWAYS use actual property data from listings:**
