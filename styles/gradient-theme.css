@@ -6,9 +6,16 @@
 /* Font Import */
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
 
-/* Override body font */
+/* Override body font and background */
 body {
   font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: transparent !important;
+}
+
+/* Ensure main content is above background */
+#main-content {
+  position: relative;
+  z-index: 1;
 }
 
 /* Gradient Definitions */
@@ -31,12 +38,13 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-.glass-card {
-  backdrop-filter: blur(16px) saturate(180%);
-  -webkit-backdrop-filter: blur(16px) saturate(180%);
-  background: rgba(255, 255, 255, 0.75);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+.glass-card,
+.card.glass-card {
+  backdrop-filter: blur(16px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(180%) !important;
+  background: rgba(255, 255, 255, 0.75) !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1) !important;
 }
 
 .glass-dark {
@@ -49,10 +57,12 @@ body {
 
 /* Navigation Glass Effect */
 nav.glass {
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
   background: rgba(255, 255, 255, 0.8) !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
+  position: relative;
+  z-index: 40;
 }
 
 /* Gradient Buttons */
@@ -124,9 +134,10 @@ nav.glass {
   left: 0;
   right: 0;
   bottom: 0;
-  z-index: -1;
+  z-index: 0;
   overflow: hidden;
   background: linear-gradient(to bottom, #f8fafc, #f1f5f9);
+  pointer-events: none;
 }
 
 .gradient-mesh {
