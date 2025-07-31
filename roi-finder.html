@@ -278,6 +278,110 @@
             max-height: 90vh;
             overflow-y: auto;
         }
+        
+        /* GRADIENT THEME INLINE STYLES - FORCING APPLICATION */
+        /* Import Plus Jakarta Sans font */
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+        
+        /* Force body font and background */
+        body {
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+            background: transparent !important;
+        }
+        
+        /* Force animated background */
+        #animated-bg {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            bottom: 0 !important;
+            z-index: 0 !important;
+            background: linear-gradient(to bottom, #f8fafc, #f1f5f9) !important;
+            pointer-events: none !important;
+            display: block !important;
+        }
+        
+        #animated-bg .gradient-mesh {
+            position: absolute !important;
+            inset: 0 !important;
+            background: radial-gradient(at 40% 20%, hsla(280, 100%, 74%, 0.1) 0px, transparent 50%),
+                       radial-gradient(at 80% 0%, hsla(189, 100%, 56%, 0.1) 0px, transparent 50%),
+                       radial-gradient(at 0% 50%, hsla(355, 100%, 93%, 0.1) 0px, transparent 50%) !important;
+        }
+        
+        #animated-bg .orb {
+            position: absolute !important;
+            border-radius: 50% !important;
+            filter: blur(40px) !important;
+            opacity: 0.5 !important;
+            mix-blend-mode: multiply !important;
+        }
+        
+        .orb.gradient-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+        }
+        
+        .orb.gradient-warning {
+            background: linear-gradient(135deg, #f59e0b 0%, #dc2626 100%) !important;
+        }
+        
+        .orb.gradient-success {
+            background: linear-gradient(135deg, #00d4ff 0%, #090979 100%) !important;
+        }
+        
+        /* Force navigation glass */
+        nav.glass {
+            backdrop-filter: blur(10px) !important;
+            -webkit-backdrop-filter: blur(10px) !important;
+            background: rgba(255, 255, 255, 0.8) !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
+        }
+        
+        /* Force glass cards */
+        #login-card.glass-card,
+        #signup-card.glass-card,
+        .card.glass-card {
+            backdrop-filter: blur(16px) saturate(180%) !important;
+            -webkit-backdrop-filter: blur(16px) saturate(180%) !important;
+            background: rgba(255, 255, 255, 0.75) !important;
+            border: 1px solid rgba(255, 255, 255, 0.3) !important;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1) !important;
+        }
+        
+        /* Force gradient buttons */
+        .btn-gradient.gradient-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+            color: white !important;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2) !important;
+        }
+        
+        .btn-gradient.gradient-success {
+            background: linear-gradient(135deg, #00d4ff 0%, #090979 100%) !important;
+            color: white !important;
+        }
+        
+        /* Floating animation */
+        @keyframes floating {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(30px, -30px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+        }
+        
+        .floating {
+            animation: floating 20s ease-in-out infinite !important;
+        }
+        
+        .floating-delayed {
+            animation: floating 20s ease-in-out infinite !important;
+            animation-delay: 7s !important;
+        }
+        
+        /* Ensure content is above background */
+        #login-section, #property-input-section, #analysis-results {
+            position: relative !important;
+            z-index: 1 !important;
+        }
     </style>
 </head>
 <body class="min-h-screen">
