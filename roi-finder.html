@@ -17,6 +17,7 @@
     <link rel="stylesheet" href="styles/design-system.css">
     <link rel="stylesheet" href="styles/gradient-theme.css">
     <link rel="stylesheet" href="styles/mobile-fixes.css">
+    <link rel="stylesheet" href="styles/glass-override.css">
     
     <!-- PWA and SEO -->
     <link rel="canonical" href="https://starterpackapp.com/roi-finder">
@@ -296,10 +297,12 @@
             left: 0 !important;
             right: 0 !important;
             bottom: 0 !important;
-            z-index: 0 !important;
+            z-index: -1 !important;
             background: linear-gradient(135deg, #f5f3ff 0%, #ffeef8 50%, #f0f9ff 100%) !important;
             pointer-events: none !important;
             display: block !important;
+            opacity: 1 !important;
+            visibility: visible !important;
         }
         
         #animated-bg .gradient-mesh {

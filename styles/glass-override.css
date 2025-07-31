@@ -1,0 +1,185 @@
+/* Glass Morphism Override for All Components */
+
+/* Override all white backgrounds with glass effect */
+.bg-white,
+[class*="bg-white"] {
+  background-color: rgba(255, 255, 255, 0.7) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+}
+
+/* Override gray backgrounds */
+.bg-gray-50,
+[class*="bg-gray-50"] {
+  background-color: rgba(249, 250, 251, 0.5) !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+}
+
+.bg-gray-100,
+[class*="bg-gray-100"] {
+  background-color: rgba(243, 244, 246, 0.5) !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+}
+
+.bg-gray-200 {
+  background-color: rgba(229, 231, 235, 0.5) !important;
+  backdrop-filter: blur(6px) !important;
+  -webkit-backdrop-filter: blur(6px) !important;
+}
+
+/* Enhanced glass card effect */
+.glass-card,
+.card,
+[class*="rounded"] {
+  background: rgba(255, 255, 255, 0.7) !important;
+  backdrop-filter: blur(16px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(180%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Strong glass effect for main containers */
+.min-h-screen,
+#main-content,
+#analysis-results,
+#login-section,
+#property-input-section {
+  background: transparent !important;
+}
+
+/* Modal glass effect */
+.modal-content,
+[role="dialog"] {
+  background: rgba(255, 255, 255, 0.85) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.4) !important;
+}
+
+/* Table glass effect */
+table tbody tr:nth-child(even) {
+  background: rgba(249, 250, 251, 0.3) !important;
+  backdrop-filter: blur(4px) !important;
+}
+
+table tbody tr:nth-child(odd) {
+  background: rgba(255, 255, 255, 0.3) !important;
+  backdrop-filter: blur(4px) !important;
+}
+
+/* Button glass effects */
+.btn:not(.btn-gradient),
+button:not(.tab-button) {
+  background: rgba(255, 255, 255, 0.6) !important;
+  backdrop-filter: blur(8px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.4) !important;
+}
+
+/* Input glass effects */
+input:not(.glass-input),
+select:not(.glass-input),
+textarea {
+  background: rgba(255, 255, 255, 0.5) !important;
+  backdrop-filter: blur(6px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+}
+
+/* Loading state glass */
+.loading-gradient,
+.skeleton {
+  background: linear-gradient(90deg, 
+    rgba(240, 240, 240, 0.5) 25%, 
+    rgba(224, 224, 224, 0.5) 50%, 
+    rgba(240, 240, 240, 0.5) 75%) !important;
+  backdrop-filter: blur(4px) !important;
+}
+
+/* Ensure gradient background is always visible */
+body {
+  background: transparent !important;
+}
+
+/* Remove any remaining opaque containers */
+.container,
+.max-w-7xl,
+.mx-auto {
+  background: transparent !important;
+}
+
+/* Hero gradient section */
+.hero-gradient,
+.gradient-hero,
+.property-hero-gradient {
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%) !important;
+  color: white !important;
+  padding: 1.5rem !important;
+  border-radius: 1rem !important;
+  margin-bottom: 2rem !important;
+  box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3) !important;
+}
+
+.property-hero-gradient .stats-pill {
+  background: rgba(255, 255, 255, 0.95) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+}
+
+/* Tab gradient when active */
+.tab-button.active,
+.tab-gradient.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  color: white !important;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3) !important;
+}
+
+/* Floating elements */
+.floating-action {
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%) !important;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Stats pills with glass effect */
+.stats-pill {
+  background: rgba(255, 255, 255, 0.9) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.4) !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Revenue banner gradient */
+.revenue-banner {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+  color: white !important;
+  box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3) !important;
+}
+
+/* Ensure orbs are visible */
+.orb {
+  opacity: 0.6 !important;
+  mix-blend-mode: multiply !important;
+}
+
+/* Navigation glass effect */
+nav,
+.navbar {
+  background: rgba(255, 255, 255, 0.8) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Chart containers with gradient border */
+.chart-container-gradient {
+  padding: 2px !important;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  border-radius: 1rem !important;
+}
+
+.chart-container-gradient > * {
+  background: rgba(255, 255, 255, 0.9) !important;
+  border-radius: calc(1rem - 2px) !important;
+}
