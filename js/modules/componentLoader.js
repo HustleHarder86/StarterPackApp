@@ -320,7 +320,7 @@ class ComponentLoader {
                     <button
                       id="str-tab"
                       onclick="window.switchTab('str')"
-                      class="tab-button ${showSTR ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg border-transparent transform scale-105' : 'bg-gray-50 text-gray-600 hover:bg-white hover:text-gray-800 hover:shadow-sm border-gray-200'} 
+                      class="tab-button ${showSTR ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg border-transparent transform scale-105' : 'glass backdrop-blur-sm bg-white/50 text-gray-600 hover:bg-white/70 hover:shadow-sm border-white/30'} 
                       flex items-center gap-2 px-4 py-3 rounded-lg border-2 font-medium transition-all duration-200 group"
                     >
                       <span class="text-xl group-hover:scale-110 transition-transform">
@@ -339,7 +339,7 @@ class ComponentLoader {
                     <button
                       id="ltr-tab"
                       onclick="window.switchTab('ltr')"
-                      class="tab-button ${showLTR && !showSTR ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg border-transparent transform scale-105' : 'bg-gray-50 text-gray-600 hover:bg-white hover:text-gray-800 hover:shadow-sm border-gray-200'} 
+                      class="tab-button ${showLTR && !showSTR ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg border-transparent transform scale-105' : 'glass backdrop-blur-sm bg-white/50 text-gray-600 hover:bg-white/70 hover:shadow-sm border-white/30'} 
                       flex items-center gap-2 px-4 py-3 rounded-lg border-2 font-medium transition-all duration-200 group"
                     >
                       <span class="text-xl group-hover:scale-110 transition-transform">
@@ -358,7 +358,7 @@ class ComponentLoader {
                     <button
                       id="investment-tab"
                       onclick="window.switchTab('investment')"
-                      class="tab-button bg-gray-50 text-gray-600 hover:bg-white hover:text-gray-800 hover:shadow-sm border-gray-200 
+                      class="tab-button glass backdrop-blur-sm bg-white/50 text-gray-600 hover:bg-white/70 hover:shadow-sm border-white/30 
                       flex items-center gap-2 px-4 py-3 rounded-lg border-2 font-medium transition-all duration-200 group"
                     >
                       <span class="text-xl group-hover:scale-110 transition-transform">
@@ -473,7 +473,7 @@ class ComponentLoader {
         document.querySelectorAll('.tab-button').forEach(btn => {
           // Remove active classes - including gradient backgrounds
           btn.classList.remove('bg-gradient-to-r', 'from-blue-600', 'to-purple-600', 'bg-white', 'text-white', 'text-blue-700', 'shadow-lg', 'shadow-md', 'border-transparent', 'border-blue-300', 'transform', 'scale-105');
-          btn.classList.add('bg-gray-50', 'text-gray-600', 'border-gray-200');
+          btn.classList.add('glass', 'backdrop-blur-sm', 'bg-white/50', 'text-gray-600', 'border-white/30');
           
           // Remove checkmark if exists
           const checkmark = btn.querySelector('.text-white, .text-green-500');
@@ -497,7 +497,7 @@ class ComponentLoader {
         const activeTab = document.getElementById(tabName + '-tab');
         if (activeTab) {
           // Add active classes with gradient background
-          activeTab.classList.remove('bg-gray-50', 'text-gray-600', 'border-gray-200');
+          activeTab.classList.remove('glass', 'backdrop-blur-sm', 'bg-white/50', 'text-gray-600', 'border-white/30');
           activeTab.classList.add('bg-gradient-to-r', 'from-blue-600', 'to-purple-600', 'text-white', 'shadow-lg', 'border-transparent', 'transform', 'scale-105');
           
           // Add checkmark if not already present
@@ -800,19 +800,19 @@ class ComponentLoader {
               </p>
               
               <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div class="bg-gray-50 rounded-lg p-3">
+                <div class="glass-card backdrop-blur-sm bg-white/30 rounded-lg p-3">
                   <div class="text-xs text-gray-500">Your Revenue</div>
                   <div class="text-lg font-bold text-gray-900">$${strRevenue.toLocaleString()}/mo</div>
                 </div>
-                <div class="bg-gray-50 rounded-lg p-3">
+                <div class="glass-card backdrop-blur-sm bg-white/30 rounded-lg p-3">
                   <div class="text-xs text-gray-500">Market Avg</div>
                   <div class="text-lg font-bold text-gray-900">$${avgCompRevenue.toLocaleString()}/mo</div>
                 </div>
-                <div class="bg-gray-50 rounded-lg p-3">
+                <div class="glass-card backdrop-blur-sm bg-white/30 rounded-lg p-3">
                   <div class="text-xs text-gray-500">Your Occupancy</div>
                   <div class="text-lg font-bold text-gray-900">${(strOccupancy * 100).toFixed(0)}%</div>
                 </div>
-                <div class="bg-gray-50 rounded-lg p-3">
+                <div class="glass-card backdrop-blur-sm bg-white/30 rounded-lg p-3">
                   <div class="text-xs text-gray-500">Market Avg</div>
                   <div class="text-lg font-bold text-gray-900">${avgCompOccupancy}%</div>
                 </div>
@@ -1013,7 +1013,7 @@ class ComponentLoader {
               </div>
               
               <!-- Conservative Scenario -->
-              <div class="border-2 border-gray-200 rounded-lg p-4 bg-gray-50">
+              <div class="border-2 border-white/30 rounded-lg p-4 glass-card backdrop-blur-sm bg-white/50">
                 <div class="flex items-center gap-2 mb-3">
                   <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6"/>
@@ -1045,7 +1045,7 @@ class ComponentLoader {
             </div>
             
             <!-- Key Assumptions -->
-            <div class="bg-gray-100 rounded-lg p-4">
+            <div class="glass-card backdrop-blur-sm bg-white/40 rounded-lg p-4">
               <h5 class="font-semibold text-gray-900 mb-2">Key Assumptions</h5>
               <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-gray-600">
                 <div>
@@ -1417,7 +1417,7 @@ Generated by StarterPackApp - ${new Date().toLocaleDateString()}
       // Create modal content
       const modalContent = `
         <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onclick="if(event.target === this) this.remove()">
-          <div class="bg-white rounded-lg max-w-4xl max-h-[90vh] overflow-hidden shadow-2xl">
+          <div class="glass-card backdrop-blur-lg bg-white/95 rounded-lg max-w-4xl max-h-[90vh] overflow-hidden shadow-2xl">
             <div class="p-6 border-b border-gray-200">
               <div class="flex items-center justify-between">
                 <h2 class="text-2xl font-bold text-gray-900">All Comparable Listings (${comparables.length} total)</h2>
@@ -1475,7 +1475,7 @@ Generated by StarterPackApp - ${new Date().toLocaleDateString()}
                   
                   return `
                   <a href="${comp.url || comp.airbnb_url || comp.airbnbUrl || '#'}" target="_blank" 
-                     class="block bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow">
+                     class="block glass-card backdrop-blur-sm bg-white/80 border border-white/30 rounded-lg overflow-hidden hover:shadow-lg transition-shadow">
                     ${imageHtml}
                     <div class="p-4">
                       <h3 class="font-bold text-gray-900 mb-2">${comp.title || 'Comparable Property'}</h3>

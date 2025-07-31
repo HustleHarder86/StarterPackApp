@@ -49,10 +49,10 @@ export class AnalysisLoadingState {
     const estimatedRemaining = this.getEstimatedRemaining();
     
     return `
-      <div class="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 flex items-center justify-center p-4">
+      <div class="min-h-screen flex items-center justify-center p-4">
         <div class="max-w-3xl w-full">
           <!-- Main Loading Card -->
-          <div class="bg-white rounded-3xl shadow-2xl overflow-hidden">
+          <div class="glass-card backdrop-blur-lg bg-white/90 rounded-3xl shadow-2xl overflow-hidden">
             <!-- Header with Progress -->
             <div class="bg-gradient-to-r from-indigo-600 to-purple-600 p-8 text-white">
               <div class="flex items-center justify-between mb-4">
@@ -78,7 +78,7 @@ export class AnalysisLoadingState {
               </div>
               
               <!-- Info Box -->
-              <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6 mb-6">
+              <div class="glass-card backdrop-blur-sm bg-white/50 rounded-xl p-6 mb-6">
                 <div class="flex items-start gap-3">
                   <div class="flex-shrink-0">
                     <svg class="w-5 h-5 text-blue-600 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
@@ -98,7 +98,7 @@ export class AnalysisLoadingState {
               <!-- Action Buttons -->
               <div class="flex gap-3 justify-center">
                 <button id="cancel-analysis-btn" 
-                        class="px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium rounded-lg transition-colors duration-200">
+                        class="px-6 py-3 glass backdrop-blur-sm bg-white/50 hover:bg-white/70 text-gray-700 font-medium rounded-lg transition-colors duration-200">
                   Cancel Analysis
                 </button>
                 <button id="retry-analysis-btn" 
@@ -143,7 +143,7 @@ export class AnalysisLoadingState {
       progressWidth = `${stepProgress}%`;
     } else {
       statusClass = 'text-gray-400';
-      iconBgClass = 'bg-gray-100';
+      iconBgClass = 'bg-white/30 backdrop-blur-sm';
     }
     
     return `
@@ -156,7 +156,7 @@ export class AnalysisLoadingState {
             <span class="font-medium ${statusClass} transition-colors duration-300">${step.name}</span>
             ${isActive ? `<span class="text-xs text-gray-500">${Math.round(this.getStepProgress(index))}%</span>` : ''}
           </div>
-          <div class="h-2 bg-gray-200 rounded-full overflow-hidden">
+          <div class="h-2 bg-white/30 backdrop-blur-sm rounded-full overflow-hidden">
             <div class="h-full bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full transition-all duration-500"
                  style="width: ${progressWidth}"></div>
           </div>

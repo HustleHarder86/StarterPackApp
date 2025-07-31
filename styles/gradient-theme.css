@@ -24,6 +24,23 @@ body {
   background: transparent !important;
 }
 
+/* Ensure gradient persists when analysis loads */
+body:has(#analysis-results:not(.hidden)) #animated-bg {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* Remove backgrounds from analysis containers */
+#analysis-results > div {
+  background: transparent !important;
+}
+
+/* Force transparent backgrounds on all full-height containers */
+.min-h-screen > div:first-child {
+  background: transparent !important;
+}
+
 /* Gradient Definitions */
 :root {
   --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
