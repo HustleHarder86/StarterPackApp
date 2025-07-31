@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Gradient Check</title>
+    
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f5f5f5;
+        }
+        
+        iframe {
+            width: 100%;
+            height: 600px;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        .results {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .metric {
+            display: inline-block;
+            margin: 10px 20px 10px 0;
+            padding: 10px 20px;
+            background: #f0f0f0;
+            border-radius: 4px;
+        }
+        
+        .metric.success {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .metric.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .details {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.9em;
+            white-space: pre-wrap;
+        }
+        
+        button {
+            padding: 10px 20px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 0;
+        }
+        
+        button:hover {
+            background: #5a67d8;
+        }
+    </style>
+</head>
+<body>
+    <h1>Gradient Design Checker</h1>
+    <p>This tool checks if the gradient design system is properly loaded on each screen.</p>
+    
+    <button onclick="checkCurrentPage()">Check Current Page</button>
+    <button onclick="checkAllScreens()">Check All Screens</button>
+    
+    <div id="results" class="results"></div>
+    
+    <iframe id="testFrame" src="../roi-finder.html?e2e_test_mode=true"></iframe>
+    
+    <script>
+        let testFrame = document.getElementById('testFrame');
+        let results = document.getElementById('results');
+        
+        async function waitForFrame() {
+            return new Promise(resolve => {
+                if (testFrame.contentWindow && testFrame.contentDocument) {
+                    resolve();
+                } else {
+                    setTimeout(() => waitForFrame().then(resolve), 100);
+                }
+            });
+        }
+        
+        async function checkGradientElements() {
+            await waitForFrame();
+            const doc = testFrame.contentDocument;
+            const win = testFrame.contentWindow;
+            
+            if (!doc || !win) {
+                return { error: 'Cannot access iframe content' };
+            }
+            
+            const checks = {
+                plusJakartaFont: false,
+                glassMorphism: [],
+                gradientBackgrounds: [],
+                gradientText: [],
+                animatedBackground: false,
+                floatingOrbs: 0,
+                navigation: {},
+                issues: []
+            };
+            
+            // Check font
+            const bodyStyles = win.getComputedStyle(doc.body);
+            checks.plusJakartaFont = bodyStyles.fontFamily.includes('Plus Jakarta Sans');
+            
+            // Check glass morphism elements
+            const glassElements = doc.querySelectorAll('.glass, .glass-card, .glass-dark');
+            glassElements.forEach(el => {
+                const styles = win.getComputedStyle(el);
+                const visible = el.offsetHeight > 0 && el.offsetWidth > 0;
+                checks.glassMorphism.push({
+                    class: el.className,
+                    visible,
+                    hasBackdropFilter: styles.backdropFilter !== 'none' && styles.backdropFilter !== '',
+                    backgroundColor: styles.backgroundColor
+                });
+            });
+            
+            // Check gradient backgrounds
+            const gradientElements = doc.querySelectorAll('[class*="gradient-"], .btn-gradient');
+            gradientElements.forEach(el => {
+                const styles = win.getComputedStyle(el);
+                const visible = el.offsetHeight > 0 && el.offsetWidth > 0;
+                const hasGradient = styles.backgroundImage && styles.backgroundImage.includes('gradient');
+                checks.gradientBackgrounds.push({
+                    class: el.className,
+                    visible,
+                    hasGradient,
+                    backgroundImage: styles.backgroundImage
+                });
+            });
+            
+            // Check gradient text
+            const textGradients = doc.querySelectorAll('.text-gradient');
+            textGradients.forEach(el => {
+                const styles = win.getComputedStyle(el);
+                const visible = el.offsetHeight > 0 && el.offsetWidth > 0;
+                checks.gradientText.push({
+                    text: el.textContent.trim(),
+                    visible,
+                    hasClip: styles.webkitBackgroundClip === 'text' || styles.backgroundClip === 'text'
+                });
+            });
+            
+            // Check animated background
+            const animatedBg = doc.getElementById('animated-bg');
+            if (animatedBg) {
+                checks.animatedBackground = animatedBg.children.length > 0;
+            }
+            
+            // Check floating orbs
+            const orbs = doc.querySelectorAll('.orb, .floating');
+            checks.floatingOrbs = orbs.length;
+            
+            // Check navigation
+            const nav = doc.querySelector('nav');
+            if (nav) {
+                const navStyles = win.getComputedStyle(nav);
+                checks.navigation = {
+                    hasGlassClass: nav.classList.contains('glass'),
+                    hasBackdropFilter: navStyles.backdropFilter !== 'none',
+                    visible: nav.offsetHeight > 0
+                };
+            }
+            
+            // Identify issues
+            if (!checks.plusJakartaFont) {
+                checks.issues.push('Plus Jakarta Sans font not loaded');
+            }
+            
+            if (checks.glassMorphism.length === 0) {
+                checks.issues.push('No glass morphism elements found');
+            } else {
+                const invisibleGlass = checks.glassMorphism.filter(g => !g.visible);
+                if (invisibleGlass.length > 0) {
+                    checks.issues.push(`${invisibleGlass.length} glass elements are not visible`);
+                }
+            }
+            
+            if (checks.gradientBackgrounds.length === 0) {
+                checks.issues.push('No gradient background elements found');
+            }
+            
+            if (!checks.animatedBackground) {
+                checks.issues.push('Animated background not initialized');
+            }
+            
+            return checks;
+        }
+        
+        async function checkCurrentPage() {
+            results.innerHTML = '<p>Checking current page...</p>';
+            
+            const checks = await checkGradientElements();
+            displayResults(checks);
+        }
+        
+        async function navigateToScreen(screen) {
+            const doc = testFrame.contentDocument;
+            const win = testFrame.contentWindow;
+            
+            switch(screen) {
+                case 'login':
+                    // Should already be on login
+                    break;
+                    
+                case 'property-form':
+                    win.eval(`
+                        window.appState.currentUser = { email: 'test@example.com' };
+                        document.getElementById('login-section').classList.add('hidden');
+                        document.getElementById('property-input-section').classList.remove('hidden');
+                    `);
+                    break;
+                    
+                case 'loading':
+                    win.eval(`
+                        document.getElementById('property-input-section').classList.add('hidden');
+                        document.getElementById('loading-state').classList.remove('hidden');
+                    `);
+                    break;
+                    
+                case 'analysis':
+                    win.eval(`
+                        document.getElementById('loading-state').classList.add('hidden');
+                        document.getElementById('analysis-results').classList.remove('hidden');
+                        document.getElementById('analysis-results').innerHTML = '<div class="p-8"><h2>Analysis Results Placeholder</h2></div>';
+                    `);
+                    break;
+            }
+            
+            await new Promise(resolve => setTimeout(resolve, 500));
+        }
+        
+        async function checkAllScreens() {
+            results.innerHTML = '<p>Checking all screens...</p>';
+            
+            const screens = ['login', 'property-form', 'loading', 'analysis'];
+            const allResults = {};
+            
+            for (const screen of screens) {
+                await navigateToScreen(screen);
+                allResults[screen] = await checkGradientElements();
+            }
+            
+            displayAllResults(allResults);
+        }
+        
+        function displayResults(checks) {
+            let html = '<h2>Current Page Check</h2>';
+            
+            // Summary metrics
+            html += '<div class="metrics">';
+            html += `<div class="metric ${checks.plusJakartaFont ? 'success' : 'error'}">Font: ${checks.plusJakartaFont ? '✅' : '❌'} Plus Jakarta Sans</div>`;
+            html += `<div class="metric ${checks.glassMorphism.length > 0 ? 'success' : 'error'}">Glass Elements: ${checks.glassMorphism.length}</div>`;
+            html += `<div class="metric ${checks.gradientBackgrounds.length > 0 ? 'success' : 'error'}">Gradient Elements: ${checks.gradientBackgrounds.length}</div>`;
+            html += `<div class="metric ${checks.animatedBackground ? 'success' : 'error'}">Animated BG: ${checks.animatedBackground ? '✅' : '❌'}</div>`;
+            html += `<div class="metric ${checks.floatingOrbs > 0 ? 'success' : 'error'}">Floating Orbs: ${checks.floatingOrbs}</div>`;
+            html += '</div>';
+            
+            // Issues
+            if (checks.issues.length > 0) {
+                html += '<h3>Issues Found:</h3>';
+                html += '<ul>';
+                checks.issues.forEach(issue => {
+                    html += `<li style="color: #dc3545;">${issue}</li>`;
+                });
+                html += '</ul>';
+            }
+            
+            // Details
+            html += '<div class="details">';
+            html += JSON.stringify(checks, null, 2);
+            html += '</div>';
+            
+            results.innerHTML = html;
+        }
+        
+        function displayAllResults(allResults) {
+            let html = '<h2>All Screens Check</h2>';
+            
+            Object.keys(allResults).forEach(screen => {
+                const checks = allResults[screen];
+                html += `<h3>${screen.charAt(0).toUpperCase() + screen.slice(1)} Screen</h3>`;
+                
+                html += '<div class="metrics">';
+                html += `<div class="metric ${checks.plusJakartaFont ? 'success' : 'error'}">Font: ${checks.plusJakartaFont ? '✅' : '❌'}</div>`;
+                html += `<div class="metric ${checks.glassMorphism.length > 0 ? 'success' : 'error'}">Glass: ${checks.glassMorphism.length}</div>`;
+                html += `<div class="metric ${checks.gradientBackgrounds.length > 0 ? 'success' : 'error'}">Gradients: ${checks.gradientBackgrounds.length}</div>`;
+                html += '</div>';
+                
+                if (checks.issues.length > 0) {
+                    html += '<p style="color: #dc3545;">Issues: ' + checks.issues.join(', ') + '</p>';
+                }
+            });
+            
+            results.innerHTML = html;
+        }
+        
+        // Auto-check on load
+        window.addEventListener('load', () => {
+            setTimeout(checkCurrentPage, 1000);
+        });
+    </script>
+</body>
+</html>
