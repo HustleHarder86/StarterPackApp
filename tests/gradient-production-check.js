@@ -21,7 +21,7 @@ async function checkGradientProduction() {
     });
     
     // Wait for CSS to load
-    await page.waitForTimeout(2000);
+    await new Promise(resolve => setTimeout(resolve, 2000));
     
     // Take screenshot
     const screenshotsDir = path.join(__dirname, 'gradient-production-screenshots');

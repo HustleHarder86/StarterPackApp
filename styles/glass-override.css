@@ -3,7 +3,7 @@
 /* Override all white backgrounds with glass effect */
 .bg-white,
 [class*="bg-white"] {
-  background-color: rgba(255, 255, 255, 0.7) !important;
+  background-color: rgba(255, 255, 255, 0.85) !important;
   backdrop-filter: blur(12px) !important;
   -webkit-backdrop-filter: blur(12px) !important;
   border: 1px solid rgba(255, 255, 255, 0.3) !important;
@@ -32,13 +32,18 @@
 
 /* Enhanced glass card effect */
 .glass-card,
-.card,
-[class*="rounded"] {
-  background: rgba(255, 255, 255, 0.7) !important;
+.card {
+  background: rgba(255, 255, 255, 0.95) !important;
   backdrop-filter: blur(16px) saturate(180%) !important;
   -webkit-backdrop-filter: blur(16px) saturate(180%) !important;
   border: 1px solid rgba(255, 255, 255, 0.3) !important;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1) !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1) !important;
+  border-radius: 1rem !important;
+}
+
+/* Don't apply glass to all rounded elements */
+[class*="rounded"] {
+  background: rgba(255, 255, 255, 0.9) !important;
 }
 
 /* Strong glass effect for main containers */
@@ -53,7 +58,7 @@
 /* Modal glass effect */
 .modal-content,
 [role="dialog"] {
-  background: rgba(255, 255, 255, 0.85) !important;
+  background: rgba(255, 255, 255, 0.95) !important;
   backdrop-filter: blur(20px) !important;
   -webkit-backdrop-filter: blur(20px) !important;
   border: 1px solid rgba(255, 255, 255, 0.4) !important;
@@ -100,7 +105,26 @@ textarea {
 /* Ensure gradient background is always visible */
 body {
   background: transparent !important;
+  color: #1f2937 !important; /* Ensure text is always readable */
 }
+
+/* Fix text contrast globally */
+p, span, div, h1, h2, h3, h4, h5, h6, label, td, th, li {
+  color: #1f2937 !important;
+}
+
+/* Preserve white text where needed */
+.text-white,
+[class*="text-white"] {
+  color: #ffffff !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Fix specific text colors */
+.text-gray-600 { color: #4b5563 !important; }
+.text-gray-700 { color: #374151 !important; }
+.text-gray-800 { color: #1f2937 !important; }
+.text-gray-900 { color: #111827 !important; }
 
 /* Remove any remaining opaque containers */
 .container,
@@ -133,6 +157,13 @@ body {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
   color: white !important;
   box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3) !important;
+}
+
+/* Tab buttons default state */
+.tab-button:not(.active) {
+  background: rgba(255, 255, 255, 0.9) !important;
+  color: #1f2937 !important;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
 }
 
 /* Floating elements */

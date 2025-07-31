@@ -307,7 +307,48 @@ class ComponentLoader {
       const analysisLayout = `
         <div class="min-h-screen relative bg-transparent" style="overflow-x: hidden;">
           
-          <div class="max-w-7xl mx-auto px-4 lg:px-6 pt-6" style="overflow-x: hidden;">
+          <!-- Property Hero Section -->
+          <div class="max-w-7xl mx-auto px-4 lg:px-6 pt-6 mb-6">
+            <div class="property-hero-gradient text-white">
+              <div class="px-6 py-6">
+                <div class="flex items-center justify-between mb-4">
+                  <h1 class="text-2xl font-bold">${property.address || '123 Main Street'}</h1>
+                  <span class="bg-white/20 backdrop-blur text-white px-3 py-1 rounded-full text-sm font-medium">
+                    Investment Analysis
+                  </span>
+                </div>
+                
+                <div class="mb-6">
+                  <p class="text-purple-100 text-lg mb-1">${property.city || 'Toronto'}, ${property.state || 'ON'}</p>
+                  <p class="text-3xl font-bold">${formatCurrency(property.purchasePrice || 850000)}</p>
+                </div>
+                
+                <!-- Key Stats Pills -->
+                <div class="grid grid-cols-3 gap-3">
+                  <div class="stats-pill rounded-xl p-4 text-center">
+                    <div class="text-2xl font-bold text-gray-900">
+                      ${showSTR && strAnalysis ? `+${Math.round((strAnalysis.monthlyRevenue - property.expectedRent) / property.expectedRent * 100)}%` : '--'}
+                    </div>
+                    <div class="text-xs text-gray-600">vs LTR</div>
+                  </div>
+                  <div class="stats-pill rounded-xl p-4 text-center">
+                    <div class="text-2xl font-bold text-gray-900">
+                      ${formatCurrency(showSTR && strAnalysis ? strAnalysis.monthlyRevenue : property.expectedRent)}
+                    </div>
+                    <div class="text-xs text-gray-600">Monthly</div>
+                  </div>
+                  <div class="stats-pill rounded-xl p-4 text-center">
+                    <div class="text-2xl font-bold text-gray-900">
+                      ${investmentVerdict ? investmentVerdict.score : '8.7'}/10
+                    </div>
+                    <div class="text-xs text-gray-600">Score</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="max-w-7xl mx-auto px-4 lg:px-6" style="overflow-x: hidden;">
             <!-- Enhanced Rental Analysis Tabs as Main Header -->
             <div class="mb-8">
               <!-- Tab Navigation -->

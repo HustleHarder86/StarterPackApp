@@ -1,0 +1,67 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Gradient Visibility Debug Report</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+    .header { background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 30px; border-radius: 12px; margin-bottom: 30px; }
+    .issue { background: #fee; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
+    .fix { background: #d4edda; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
+    .comparison { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .screenshot { background: white; padding: 20px; border-radius: 8px; }
+    .screenshot img { max-width: 100%; border: 1px solid #ddd; }
+    pre { background: #f8f9fa; padding: 15px; border-radius: 4px; overflow-x: auto; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>Gradient Visibility Debug Report</h1>
+    <p>Generated: 7/31/2025, 11:05:05 AM</p>
+  </div>
+  
+  <div class="issue">
+    <h2>🚨 Critical Issues Found</h2>
+    <ol>
+      <li><strong>Low Contrast Text:</strong> 98 elements have poor text visibility</li>
+      <li><strong>Glass Effects Too Transparent:</strong> Background opacity at 0.7 is too low for readability</li>
+      <li><strong>Gradient Too Subtle:</strong> Current gradient doesn't provide enough visual interest</li>
+      <li><strong>Missing Hero Section:</strong> No gradient hero section like in mockup</li>
+    </ol>
+  </div>
+  
+  <div class="fix">
+    <h2>✅ Recommended Fixes</h2>
+    <pre><code>/* 1. Fix text contrast */
+.glass-card, .card {
+  background: rgba(255, 255, 255, 0.85) !important; /* Increase from 0.7 */
+}
+
+/* 2. Ensure text is always readable */
+body { color: #1f2937 !important; }
+
+/* 3. Stronger gradient background */
+#animated-bg {
+  background: linear-gradient(135deg, #e0e7ff 0%, #fce7f3 50%, #dbeafe 100%) !important;
+}
+
+/* 4. Fix specific components */
+.tab-button:not(.active) {
+  background: rgba(255, 255, 255, 0.9) !important;
+  color: #1f2937 !important;
+}</code></pre>
+  </div>
+  
+  <div class="comparison">
+    <div class="screenshot">
+      <h3>Current State (Visibility Issues)</h3>
+      <img src="01-current-state.png" alt="Current State">
+    </div>
+    <div class="screenshot">
+      <h3>With CSS Fixes Applied</h3>
+      <img src="02-with-fixes.png" alt="With Fixes">
+    </div>
+  </div>
+</body>
+</html>
+    
