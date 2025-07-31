@@ -1,0 +1,27 @@
+{
+  "summary": {
+    "duration": "13.456s",
+    "passed": 4,
+    "failed": 4,
+    "passRate": "50.0%",
+    "timestamp": "2025-07-31T02:22:35.889Z"
+  },
+  "passed": [
+    "Found 13 gradient elements",
+    "Found 5 glass/glassmorphism elements",
+    "Mobile responsive design detected",
+    "Page loaded in 179ms (Excellent)"
+  ],
+  "failed": [
+    "Only 0/6 form fields found",
+    "Only 0 tabs found",
+    "Could not click LTR tab",
+    "Found 18 console/network errors"
+  ],
+  "screenshotsDir": "/home/amy/StarterPackApp/tests/e2e/screenshots/test-run-1753928541618",
+  "recommendations": [
+    "Review failed tests and check implementation",
+    "Examine screenshots for visual issues",
+    "Test with actual Vercel dev server for full functionality"
+  ]
+}

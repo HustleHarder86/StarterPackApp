@@ -1,0 +1,16 @@
+{
+  "summary": {
+    "duration": "2.837s",
+    "passed": 1,
+    "failed": 1,
+    "passRate": "50.0%",
+    "timestamp": "2025-07-31T02:19:15.446Z"
+  },
+  "passed": [
+    "Gradient buttons found on homepage"
+  ],
+  "failed": [
+    "Test execution error: SyntaxError: Failed to execute 'querySelector' on 'Document': 'a[href=\"/login\"], button:has-text(\"Sign In\"), button:has-text(\"Login\")' is not a valid selector."
+  ],
+  "screenshotsDir": "/home/amy/StarterPackApp/tests/e2e/screenshots/test-run-1753928351692"
+}

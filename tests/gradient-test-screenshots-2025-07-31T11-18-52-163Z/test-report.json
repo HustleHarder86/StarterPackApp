@@ -1,0 +1,128 @@
+{
+  "timestamp": "2025-07-31T11:18:58.909Z",
+  "url": "http://localhost:8080/roi-finder.html",
+  "results": {
+    "gradientBackground": {
+      "hasInlineGradient": null,
+      "computedBackgroundImage": "none",
+      "computedBackgroundColor": "rgba(0, 0, 0, 0)",
+      "hasGradient": null
+    },
+    "font": {
+      "computedFont": "\"Plus Jakarta Sans\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, sans-serif",
+      "hasJakartaSans": true,
+      "fontLinkExists": false,
+      "fontLinkHref": null
+    },
+    "glassMorphism": {
+      "count": 6,
+      "samples": [
+        {
+          "selector": ".glass-card",
+          "className": "card card-lg glass-card hover-float",
+          "hasBackdropFilter": true,
+          "backdropFilter": "blur(16px) saturate(1.8)",
+          "backgroundColor": "rgba(255, 255, 255, 0.75)",
+          "border": "1px solid rgba(255, 255, 255, 0.3)",
+          "boxShadow": "rgba(0, 0, 0, 0.1) 0px 8px 32px 0px",
+          "inlineStyle": ""
+        },
+        {
+          "selector": ".glass-card",
+          "className": "card card-lg glass-card hover-float",
+          "hasBackdropFilter": true,
+          "backdropFilter": "blur(16px) saturate(1.8)",
+          "backgroundColor": "rgba(255, 255, 255, 0.75)",
+          "border": "1px solid rgba(255, 255, 255, 0.3)",
+          "boxShadow": "rgba(0, 0, 0, 0.1) 0px 8px 32px 0px",
+          "inlineStyle": ""
+        },
+        {
+          "selector": "[class*=\"glass\"]",
+          "className": "glass backdrop-blur sticky top-0 z-40 border-b border-white/20",
+          "hasBackdropFilter": true,
+          "backdropFilter": "blur(10px)",
+          "backgroundColor": "rgba(255, 255, 255, 0.8)",
+          "border": "1px solid rgba(255, 255, 255, 0.2)",
+          "boxShadow": "none",
+          "inlineStyle": ""
+        }
+      ]
+    },
+    "gradientButtons": {
+      "count": 3,
+      "buttons": [
+        {
+          "text": "Sign In",
+          "className": "w-full btn-gradient gradient-primary font-semibold py-md px-xl rounded-lg flex items-center justify-center",
+          "backgroundImage": "linear-gradient(135deg, rgb(102, 126, 234) 0%, rgb(118, 75, 162) 100%)",
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "hasGradient": true,
+          "inlineStyle": ""
+        },
+        {
+          "text": "Create Account",
+          "className": "w-full btn-gradient gradient-success font-semibold py-md px-xl rounded-lg flex items-center justify-center",
+          "backgroundImage": "linear-gradient(135deg, rgb(0, 212, 255) 0%, rgb(9, 9, 121) 100%)",
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "hasGradient": true,
+          "inlineStyle": ""
+        },
+        {
+          "text": "Analyze Property",
+          "className": "btn btn-primary btn-lg",
+          "backgroundImage": "linear-gradient(135deg, rgb(102, 126, 234), rgb(118, 75, 162))",
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "hasGradient": true,
+          "inlineStyle": ""
+        }
+      ]
+    },
+    "animations": {
+      "count": 250,
+      "samples": [
+        {
+          "tagName": "HTML",
+          "className": "",
+          "id": "",
+          "animation": "none 0s ease 0s 1 normal none running",
+          "animationName": "none",
+          "hasAnimation": true
+        },
+        {
+          "tagName": "HEAD",
+          "className": "",
+          "id": "",
+          "animation": "none 0s ease 0s 1 normal none running",
+          "animationName": "none",
+          "hasAnimation": true
+        },
+        {
+          "tagName": "META",
+          "className": "",
+          "id": "",
+          "animation": "none 0s ease 0s 1 normal none running",
+          "animationName": "none",
+          "hasAnimation": true
+        },
+        {
+          "tagName": "META",
+          "className": "",
+          "id": "",
+          "animation": "none 0s ease 0s 1 normal none running",
+          "animationName": "none",
+          "hasAnimation": true
+        },
+        {
+          "tagName": "TITLE",
+          "className": "",
+          "id": "",
+          "animation": "none 0s ease 0s 1 normal none running",
+          "animationName": "none",
+          "hasAnimation": true
+        }
+      ]
+    }
+  },
+  "screenshotDir": "/home/amy/StarterPackApp/tests/gradient-test-screenshots-2025-07-31T11-18-52-163Z"
+}

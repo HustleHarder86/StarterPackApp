@@ -305,7 +305,7 @@ class ComponentLoader {
 
       // Render the complete analysis layout
       const analysisLayout = `
-        <div class="min-h-screen bg-gray-50" style="overflow-x: hidden;">
+        <div class="min-h-screen" style="overflow-x: hidden;">
           
           <div class="max-w-7xl mx-auto px-4 lg:px-6 pt-6" style="overflow-x: hidden;">
             <!-- Enhanced Rental Analysis Tabs as Main Header -->

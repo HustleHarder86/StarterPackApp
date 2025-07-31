@@ -1,0 +1,26 @@
+{
+  "screens": [
+    {
+      "name": "Login",
+      "loginCardTitle": "Welcome Back",
+      "signupCardTitle": "Create Account",
+      "gradientButtons": 2,
+      "glassCards": 2
+    },
+    {
+      "name": "Analysis",
+      "glassCards": 7,
+      "gradientButtons": 12,
+      "textGradients": 6
+    }
+  ],
+  "gradientElementsFound": {},
+  "timestamp": "2025-07-30T13:01:25.688Z",
+  "overallImplementation": {
+    "plusJakartaFont": true,
+    "gradientPrimary": "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+    "gradientSuccess": "linear-gradient(135deg, #00d4ff 0%, #090979 100%)",
+    "animatedBgExists": true,
+    "floatingOrbs": 3
+  }
+}

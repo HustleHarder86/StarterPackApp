@@ -1,0 +1,17 @@
+{
+  "summary": {
+    "duration": "3.264s",
+    "passed": 2,
+    "failed": 1,
+    "passRate": "66.7%",
+    "timestamp": "2025-07-31T02:20:10.083Z"
+  },
+  "passed": [
+    "Gradient buttons found on homepage",
+    "Glass card effect found on login page"
+  ],
+  "failed": [
+    "Test execution error: No element found for selector: input[type=\"password\"], input[name=\"password\"]"
+  ],
+  "screenshotsDir": "/home/amy/StarterPackApp/tests/e2e/screenshots/test-run-1753928405927"
+}

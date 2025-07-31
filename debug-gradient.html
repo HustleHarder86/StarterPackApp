@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gradient Theme Debug</title>
+    
+    <!-- Load CSS in same order as production -->
+    <link rel="stylesheet" href="styles/design-system.css">
+    <link rel="stylesheet" href="styles/gradient-theme.css">
+    
+    <style>
+        /* Debug styles */
+        .debug-info {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: monospace;
+            z-index: 9999;
+            max-width: 400px;
+        }
+        
+        .test-section {
+            padding: 40px;
+            margin: 40px;
+        }
+        
+        .computed-styles {
+            margin-top: 10px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Background -->
+    <div id="animated-bg">
+        <div class="gradient-mesh"></div>
+        <div class="orb w-96 h-96 gradient-primary floating" style="top: -10%; left: -10%; width: 400px; height: 400px;"></div>
+        <div class="orb w-64 h-64 gradient-warning floating-delayed" style="top: 60%; right: -5%; width: 300px; height: 300px;"></div>
+        <div class="orb w-80 h-80 gradient-success floating" style="bottom: -15%; left: 50%; width: 350px; height: 350px;"></div>
+    </div>
+
+    <div class="debug-info">
+        <h3>CSS Debug Info</h3>
+        <div id="css-status"></div>
+        <div id="computed-styles" class="computed-styles"></div>
+    </div>
+
+    <div class="test-section">
+        <h1>Gradient Theme Test</h1>
+        
+        <div class="card card-lg glass-card hover-float" style="margin-bottom: 20px;">
+            <h2>Glass Card Test</h2>
+            <p>This should have glass morphism effect</p>
+        </div>
+        
+        <button class="btn-gradient gradient-primary">Gradient Button</button>
+    </div>
+
+    <script>
+        // Check CSS loading
+        function checkCSS() {
+            const statusEl = document.getElementById('css-status');
+            const computedEl = document.getElementById('computed-styles');
+            
+            // Check if stylesheets are loaded
+            const sheets = Array.from(document.styleSheets);
+            let designSystemLoaded = false;
+            let gradientThemeLoaded = false;
+            
+            sheets.forEach(sheet => {
+                try {
+                    if (sheet.href) {
+                        if (sheet.href.includes('design-system.css')) {
+                            designSystemLoaded = true;
+                        }
+                        if (sheet.href.includes('gradient-theme.css')) {
+                            gradientThemeLoaded = true;
+                        }
+                    }
+                } catch (e) {
+                    console.error('Error accessing stylesheet:', e);
+                }
+            });
+            
+            statusEl.innerHTML = `
+                <p>Design System CSS: ${designSystemLoaded ? '✅ Loaded' : '❌ Not loaded'}</p>
+                <p>Gradient Theme CSS: ${gradientThemeLoaded ? '✅ Loaded' : '❌ Not loaded'}</p>
+                <p>Total Stylesheets: ${sheets.length}</p>
+            `;
+            
+            // Check computed styles on glass card
+            const glassCard = document.querySelector('.glass-card');
+            if (glassCard) {
+                const styles = window.getComputedStyle(glassCard);
+                computedEl.innerHTML = `
+                    <h4>Glass Card Computed Styles:</h4>
+                    <p>Background: ${styles.background}</p>
+                    <p>Backdrop Filter: ${styles.backdropFilter || styles.webkitBackdropFilter}</p>
+                    <p>Border: ${styles.border}</p>
+                    <p>Box Shadow: ${styles.boxShadow}</p>
+                `;
+            }
+            
+            // Check if animated background is visible
+            const animatedBg = document.getElementById('animated-bg');
+            const bgStyles = window.getComputedStyle(animatedBg);
+            computedEl.innerHTML += `
+                <h4>Animated BG Styles:</h4>
+                <p>Position: ${bgStyles.position}</p>
+                <p>Z-Index: ${bgStyles.zIndex}</p>
+                <p>Background: ${bgStyles.background}</p>
+            `;
+        }
+        
+        // Run checks when page loads
+        window.addEventListener('load', checkCSS);
+        
+        // Also check after a delay
+        setTimeout(checkCSS, 1000);
+    </script>
+</body>
+</html>

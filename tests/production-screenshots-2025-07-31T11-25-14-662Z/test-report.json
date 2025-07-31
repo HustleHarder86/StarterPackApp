@@ -1,0 +1,21 @@
+{
+  "timestamp": "2025-07-31T11:25:21.062Z",
+  "url": "https://starter-pack-app.vercel.app/roi-finder.html",
+  "results": {
+    "gradientBackground": false,
+    "plusJakartaSansFont": true,
+    "glassEffects": true,
+    "gradientButtons": true,
+    "floatingOrbs": true,
+    "designSystemCSS": true
+  },
+  "details": {
+    "glassCards": 3,
+    "gradientButtons": "3/12",
+    "orbs": 3,
+    "animations": 4,
+    "stylesheets": 5,
+    "gradientElements": 10
+  },
+  "screenshotDir": "/home/amy/StarterPackApp/tests/production-screenshots-2025-07-31T11-25-14-662Z"
+}

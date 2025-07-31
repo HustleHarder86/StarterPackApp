@@ -1,0 +1,22 @@
+{
+  "summary": {
+    "duration": "4.324s",
+    "passed": 2,
+    "failed": 1,
+    "passRate": "66.7%",
+    "timestamp": "2025-07-31T02:21:49.199Z"
+  },
+  "passed": [
+    "Found 13 gradient elements",
+    "Found 5 glass/glassmorphism elements"
+  ],
+  "failed": [
+    "Test execution error: page.waitForTimeout is not a function"
+  ],
+  "screenshotsDir": "/home/amy/StarterPackApp/tests/e2e/screenshots/test-run-1753928504061",
+  "recommendations": [
+    "Review failed tests and check implementation",
+    "Examine screenshots for visual issues",
+    "Test with actual Vercel dev server for full functionality"
+  ]
+}

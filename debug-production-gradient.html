@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Production Gradient Debug</title>
+    <style>
+        body {
+            font-family: monospace;
+            margin: 20px;
+            background: #f5f5f5;
+        }
+        .test-result {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+        pre {
+            background: white;
+            padding: 10px;
+            border: 1px solid #ddd;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Production Gradient Theme Debug</h1>
+    <p>Testing: <a href="https://starter-pack-app.vercel.app/roi-finder.html" target="_blank">https://starter-pack-app.vercel.app/roi-finder.html</a></p>
+    
+    <iframe id="testFrame" src="https://starter-pack-app.vercel.app/roi-finder.html" style="display:none;"></iframe>
+    
+    <div id="results"></div>
+    
+    <script>
+        const results = document.getElementById('results');
+        
+        function addResult(message, type = 'info') {
+            const div = document.createElement('div');
+            div.className = `test-result ${type}`;
+            div.innerHTML = message;
+            results.appendChild(div);
+        }
+        
+        async function runTests() {
+            addResult('Starting production gradient theme debugging...', 'info');
+            
+            // Test 1: Check if CSS file is accessible
+            try {
+                const cssResponse = await fetch('https://starter-pack-app.vercel.app/styles/gradient-theme.css');
+                if (cssResponse.ok) {
+                    const cssText = await cssResponse.text();
+                    addResult(`✅ gradient-theme.css is accessible (${cssText.length} bytes)`, 'success');
+                    
+                    // Check for key CSS rules
+                    const hasGlassCard = cssText.includes('.glass-card');
+                    const hasGradientPrimary = cssText.includes('--gradient-primary');
+                    const hasAnimatedBg = cssText.includes('#animated-bg');
+                    const hasPlusJakarta = cssText.includes('Plus Jakarta Sans');
+                    
+                    addResult(`CSS Content Checks:
+                        <br>• .glass-card: ${hasGlassCard ? '✅' : '❌'}
+                        <br>• --gradient-primary: ${hasGradientPrimary ? '✅' : '❌'}
+                        <br>• #animated-bg: ${hasAnimatedBg ? '✅' : '❌'}
+                        <br>• Plus Jakarta Sans: ${hasPlusJakarta ? '✅' : '❌'}`, 
+                        hasGlassCard && hasGradientPrimary ? 'success' : 'error');
+                } else {
+                    addResult(`❌ gradient-theme.css not accessible (${cssResponse.status})`, 'error');
+                }
+            } catch (e) {
+                addResult(`❌ Failed to fetch CSS: ${e.message}`, 'error');
+            }
+            
+            // Test 2: Check HTML source
+            try {
+                const htmlResponse = await fetch('https://starter-pack-app.vercel.app/roi-finder.html');
+                const htmlText = await htmlResponse.text();
+                
+                // Check for gradient-theme.css link
+                const cssLinkMatch = htmlText.match(/<link[^>]*gradient-theme\.css[^>]*>/);
+                if (cssLinkMatch) {
+                    addResult(`✅ CSS link found: <code>${cssLinkMatch[0].replace(/</g, '&lt;').replace(/>/g, '&gt;')}</code>`, 'success');
+                } else {
+                    addResult('❌ No gradient-theme.css link found in HTML', 'error');
+                }
+                
+                // Check for animated-bg
+                const hasAnimatedBg = htmlText.includes('id="animated-bg"');
+                addResult(`animated-bg div: ${hasAnimatedBg ? '✅ Found' : '❌ Not found'}`, hasAnimatedBg ? 'success' : 'error');
+                
+                // Check for glass-card classes
+                const glassCardMatches = htmlText.match(/glass-card/g);
+                if (glassCardMatches) {
+                    addResult(`✅ glass-card classes found: ${glassCardMatches.length} instances`, 'success');
+                } else {
+                    addResult('❌ No glass-card classes found', 'error');
+                }
+                
+            } catch (e) {
+                addResult(`❌ Failed to fetch HTML: ${e.message}`, 'error');
+            }
+            
+            // Test 3: Check computed styles (using iframe)
+            setTimeout(() => {
+                try {
+                    const iframe = document.getElementById('testFrame');
+                    const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                    
+                    // Check if styles are actually applied
+                    const loginCard = iframeDoc.getElementById('login-card');
+                    if (loginCard) {
+                        const styles = iframe.contentWindow.getComputedStyle(loginCard);
+                        addResult(`Login Card Computed Styles:
+                            <br>• backdrop-filter: ${styles.backdropFilter || 'none'}
+                            <br>• background: ${styles.background.substring(0, 50)}...
+                            <br>• font-family: ${styles.fontFamily.substring(0, 50)}...`,
+                            'info');
+                    }
+                    
+                    // Check body font
+                    const body = iframeDoc.body;
+                    if (body) {
+                        const bodyStyles = iframe.contentWindow.getComputedStyle(body);
+                        const hasJakarta = bodyStyles.fontFamily.includes('Jakarta');
+                        addResult(`Body font-family: ${hasJakarta ? '✅' : '❌'} ${bodyStyles.fontFamily.substring(0, 80)}...`, 
+                            hasJakarta ? 'success' : 'error');
+                    }
+                    
+                } catch (e) {
+                    addResult(`⚠️ Cannot access iframe content (CORS): ${e.message}`, 'info');
+                }
+            }, 3000);
+            
+            // Test 4: Direct style injection test
+            addResult('<br><strong>Testing direct style injection...</strong>', 'info');
+            
+            const testStyles = `
+                <style id="test-gradient-styles">
+                    body { background: linear-gradient(45deg, #667eea, #764ba2) !important; }
+                    .test-gradient { 
+                        width: 200px; 
+                        height: 100px; 
+                        background: var(--gradient-primary, linear-gradient(135deg, #667eea 0%, #764ba2 100%));
+                        margin: 20px auto;
+                        border-radius: 8px;
+                    }
+                </style>
+                <div class="test-gradient"></div>
+            `;
+            
+            results.innerHTML += testStyles;
+            addResult('If you see a purple gradient box above, CSS gradients work in your browser', 'info');
+        }
+        
+        // Run tests when page loads
+        window.addEventListener('load', runTests);
+    </script>
+</body>
+</html>
