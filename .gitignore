@@ -46,12 +46,22 @@ tests/e2e/.auth/
 test-results/
 playwright-report/
 .env.test.local
+tests/e2e/screenshots/
+mockups/e2e-screenshots/
+mockups/e2e-test-screenshots-*/
+mockups/ui-test-screenshots-*/
+mockups/production-test-screenshots/
+*-test-screenshot*.png
+E2E_TEST_REPORT_*.md
 
 # Temporary files
 tmp/
 temp/
 *.tmp
 *.temp
+test-page.html
+local-test-screenshot.png
+user-data/
 
 # OS files
 Thumbs.db
@@ -71,6 +81,11 @@ Desktop.ini
 # Local development
 .local/
 scratch/
+mcp
+.mcp.json
+mcp-config.json
+mcp-setup.md
+playwright-mcp-test.md
 
 # Amy's local files
 Amys-To-Dos.md
