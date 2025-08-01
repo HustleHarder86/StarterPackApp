@@ -36,6 +36,8 @@
     "test:e2e:comprehensive:debug": "start-server-and-test dev http://localhost:3000 'playwright test tests/e2e/comprehensive-e2e.spec.js --debug'",
     "test:e2e:verify-fixes": "start-server-and-test dev http://localhost:3000 'playwright test tests/e2e/verify-fixes-test.spec.js'",
     "test:e2e:run-all": "start-server-and-test dev http://localhost:3000 'node tests/e2e/run-comprehensive-tests.js'",
+    "test:integration": "node tests/e2e/run-integration-test.js",
+    "test:integration:headed": "start-server-and-test dev http://localhost:3000 'playwright test tests/e2e/roi-finder-integration.spec.js --headed'",
     "test:syntax": "node tests/validate-javascript-syntax.js",
     "test:lint": "echo 'Lint check - add linter if needed'",
     "test:critical": "start-server-and-test dev http://localhost:3000 'playwright test tests/e2e/critical-workflows.spec.js'",
