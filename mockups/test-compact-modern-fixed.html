@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compact Modern Design - Fixed</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { 
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        
+        /* Mobile Menu Toggle Button */
+        .cm-mobile-menu-toggle {
+            display: none;
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            z-index: 50;
+            background: #4f46e5;
+            color: white;
+            border: none;
+            border-radius: 0.375rem;
+            padding: 0.5rem;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+        
+        @media (max-width: 768px) {
+            .cm-mobile-menu-toggle {
+                display: block;
+            }
+            
+            .cm-sidebar {
+                position: fixed;
+                left: 0;
+                top: 0;
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+                z-index: 40;
+                box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            }
+            
+            .cm-sidebar.open {
+                transform: translateX(0);
+            }
+            
+            .cm-sidebar-overlay {
+                display: none;
+                position: fixed;
+                inset: 0;
+                background: rgba(0,0,0,0.5);
+                z-index: 30;
+            }
+            
+            .cm-sidebar-overlay.active {
+                display: block;
+            }
+            
+            .cm-main-content {
+                margin-left: 0 !important;
+            }
+            
+            .cm-mobile-menu-toggle.sidebar-open {
+                left: 240px;
+            }
+        }
+        
+        /* Compact Modern Sidebar Styles */
+        .cm-sidebar-link {
+            transition: all 0.15s ease;
+        }
+        .cm-sidebar-link:hover {
+            transform: translateX(4px);
+        }
+        .cm-sidebar-link.active {
+            background: #4f46e5;
+            color: white;
+        }
+        
+        /* Compact Modern Glass Morphism */
+        .cm-metric-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.7) 100%);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.3);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+        }
+        
+        /* Compact Modern Gradient Border */
+        .cm-gradient-border {
+            position: relative;
+            background: white;
+        }
+        .cm-gradient-border::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #4f46e5 0%, #7c3aed 100%);
+            border-radius: 12px 12px 0 0;
+        }
+        
+        /* Compact Modern Investment Score Card */
+        .cm-investment-score-card {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <!-- Mobile Menu Toggle -->
+    <button class="cm-mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle Menu">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+        </svg>
+    </button>
+    
+    <!-- Sidebar Overlay for Mobile -->
+    <div class="cm-sidebar-overlay" id="sidebarOverlay"></div>
+    
+    <div class="compact-modern-layout flex h-screen">
+        <!-- Compact Modern Sidebar - exactly 224px (w-56) -->
+        <div class="cm-sidebar w-56 bg-gray-900 text-gray-300 fixed h-full" id="sidebar">
+            <div class="p-4">
+                <div class="flex items-center space-x-2 mb-8">
+                    <div class="w-8 h-8 bg-gradient-to-br from-indigo-400 to-purple-600 rounded"></div>
+                    <span class="text-white font-bold text-lg">InvestPro</span>
+                </div>
+                
+                <nav class="space-y-1">
+                    <a href="#" class="cm-sidebar-link active flex items-center px-3 py-2 text-sm rounded">
+                        <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                        </svg>
+                        Dashboard
+                    </a>
+                    <a href="#" class="cm-sidebar-link flex items-center px-3 py-2 text-sm rounded hover:bg-gray-800">
+                        <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                        </svg>
+                        Analytics
+                    </a>
+                    <a href="#" class="cm-sidebar-link flex items-center px-3 py-2 text-sm rounded hover:bg-gray-800">
+                        <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/>
+                        </svg>
+                        Portfolio
+                    </a>
+                    <a href="#" class="cm-sidebar-link flex items-center px-3 py-2 text-sm rounded hover:bg-gray-800">
+                        <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                        Reports
+                    </a>
+                </nav>
+                
+                <div class="mt-8 p-3 bg-gray-800 rounded">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs text-gray-400">Active Analysis</span>
+                        <span class="text-xs text-green-400">Live</span>
+                    </div>
+                    <div class="text-sm font-medium text-white">Toronto Property</div>
+                    <div class="text-xs text-gray-400">123 Main Street</div>
+                </div>
+            </div>
+            
+            <div class="absolute bottom-0 w-56 p-4">
+                <button class="w-full py-2 bg-gradient-to-r from-indigo-500 to-purple-600 text-white text-sm rounded font-medium hover:from-indigo-600 hover:to-purple-700 transition">
+                    New Analysis
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="cm-main-content flex-1 ml-56 overflow-y-auto">
+            <!-- Streamlined Header -->
+            <div class="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white">
+                <div class="px-8 py-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <div class="flex items-center space-x-3 mb-2">
+                                <h1 class="text-2xl font-bold">Toronto Investment Property</h1>
+                                <span class="px-3 py-1 bg-white/20 backdrop-blur text-sm rounded-full">
+                                    Prime Location
+                                </span>
+                            </div>
+                            <p class="text-indigo-100">123 Main Street, Toronto, ON M5V 3A8</p>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-3xl font-bold">$850,000</div>
+                            <div class="text-sm text-indigo-200">4 bed • 3 bath • 2,500 sqft</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Quick Metrics Bar -->
+                    <div class="grid grid-cols-6 gap-4">
+                        <div class="text-center">
+                            <div class="text-xl font-bold">6.8%</div>
+                            <div class="text-xs text-indigo-200">Cap Rate</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-xl font-bold">$1,250</div>
+                            <div class="text-xs text-indigo-200">Cash Flow</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-xl font-bold">8.5%</div>
+                            <div class="text-xs text-indigo-200">ROI</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-xl font-bold">7.2y</div>
+                            <div class="text-xs text-indigo-200">Payback</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-xl font-bold">92%</div>
+                            <div class="text-xs text-indigo-200">Occupancy</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-xl font-bold">8.5</div>
+                            <div class="text-xs text-indigo-200">Score</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content Grid -->
+            <div class="p-8">
+                <div class="grid grid-cols-12 gap-6">
+                    <!-- Main Analysis Area -->
+                    <div class="col-span-8 space-y-6">
+                        <!-- Financial Overview -->
+                        <div class="bg-white rounded-xl shadow-sm cm-gradient-border p-6">
+                            <h3 class="text-lg font-semibold mb-4">Financial Overview</h3>
+                            
+                            <div class="grid grid-cols-2 gap-6">
+                                <div>
+                                    <div class="mb-4">
+                                        <div class="flex justify-between text-sm mb-2">
+                                            <span class="text-gray-600">Monthly Revenue</span>
+                                            <span class="font-semibold">$3,500</span>
+                                        </div>
+                                        <div class="w-full bg-gray-200 rounded-full h-2">
+                                            <div class="bg-gradient-to-r from-green-400 to-green-600 h-2 rounded-full" style="width: 100%"></div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mb-4">
+                                        <div class="flex justify-between text-sm mb-2">
+                                            <span class="text-gray-600">Operating Expenses</span>
+                                            <span class="font-semibold">$2,250</span>
+                                        </div>
+                                        <div class="w-full bg-gray-200 rounded-full h-2">
+                                            <div class="bg-gradient-to-r from-red-400 to-red-600 h-2 rounded-full" style="width: 64%"></div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div>
+                                        <div class="flex justify-between text-sm mb-2">
+                                            <span class="font-semibold text-gray-900">Net Cash Flow</span>
+                                            <span class="font-bold text-green-600">$1,250</span>
+                                        </div>
+                                        <div class="w-full bg-gray-200 rounded-full h-2">
+                                            <div class="bg-gradient-to-r from-indigo-400 to-purple-600 h-2 rounded-full" style="width: 36%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-lg p-6">
+                                    <h4 class="font-semibold mb-3">Key Metrics</h4>
+                                    <div class="space-y-3">
+                                        <div class="flex justify-between items-center">
+                                            <span class="text-sm text-gray-600">Cash-on-Cash Return</span>
+                                            <span class="text-sm font-bold text-indigo-600">8.8%</span>
+                                        </div>
+                                        <div class="flex justify-between items-center">
+                                            <span class="text-sm text-gray-600">Debt Service Coverage</span>
+                                            <span class="text-sm font-bold text-green-600">1.45x</span>
+                                        </div>
+                                        <div class="flex justify-between items-center">
+                                            <span class="text-sm text-gray-600">Gross Rent Multiplier</span>
+                                            <span class="text-sm font-bold text-gray-900">12.4</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Market Comparison -->
+                        <div class="bg-white rounded-xl shadow-sm cm-gradient-border p-6">
+                            <h3 class="text-lg font-semibold mb-4">Market Comparison</h3>
+                            <div class="grid grid-cols-3 gap-4">
+                                <div class="text-center p-4 bg-gray-50 rounded-lg">
+                                    <div class="w-16 h-16 mx-auto mb-2 bg-gray-300 rounded"></div>
+                                    <div class="text-sm font-medium">456 Oak Street</div>
+                                    <div class="text-xs text-gray-500">$825K • 6.5% Cap</div>
+                                </div>
+                                <div class="text-center p-4 bg-gray-50 rounded-lg">
+                                    <div class="w-16 h-16 mx-auto mb-2 bg-gray-300 rounded"></div>
+                                    <div class="text-sm font-medium">789 Elm Avenue</div>
+                                    <div class="text-xs text-gray-500">$875K • 6.9% Cap</div>
+                                </div>
+                                <div class="text-center p-4 bg-gray-50 rounded-lg">
+                                    <div class="w-16 h-16 mx-auto mb-2 bg-gray-300 rounded"></div>
+                                    <div class="text-sm font-medium">321 Maple Dr</div>
+                                    <div class="text-xs text-gray-500">$795K • 6.2% Cap</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Right Sidebar -->
+                    <div class="col-span-4 space-y-6">
+                        <!-- Investment Score -->
+                        <div class="cm-investment-score-card text-white rounded-xl p-6">
+                            <h3 class="text-lg font-semibold mb-4">Investment Score</h3>
+                            <div class="text-center py-6">
+                                <div class="text-5xl font-bold">8.5</div>
+                                <div class="text-indigo-200 mt-2">Excellent Opportunity</div>
+                            </div>
+                            <div class="space-y-2 mt-6">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-sm text-indigo-200">Location</span>
+                                    <span class="text-sm font-semibold">9.2/10</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-sm text-indigo-200">Financials</span>
+                                    <span class="text-sm font-semibold">8.5/10</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-sm text-indigo-200">Growth</span>
+                                    <span class="text-sm font-semibold">7.8/10</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Actions -->
+                        <div class="bg-white rounded-xl shadow-sm cm-gradient-border p-6">
+                            <h3 class="text-lg font-semibold mb-4">Actions</h3>
+                            <div class="space-y-3">
+                                <button class="w-full py-2 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded font-medium hover:from-indigo-600 hover:to-purple-700 transition">
+                                    Generate Report
+                                </button>
+                                <button class="w-full py-2 border-2 border-gray-300 text-gray-700 rounded font-medium hover:bg-gray-50 transition">
+                                    Schedule Viewing
+                                </button>
+                                <button class="w-full py-2 border-2 border-gray-300 text-gray-700 rounded font-medium hover:bg-gray-50 transition">
+                                    Save to Portfolio
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Risk Assessment -->
+                        <div class="bg-white rounded-xl shadow-sm cm-gradient-border p-6">
+                            <h3 class="text-lg font-semibold mb-4">Risk Assessment</h3>
+                            <div class="space-y-3">
+                                <div>
+                                    <div class="flex justify-between mb-1">
+                                        <span class="text-sm text-gray-600">Market Risk</span>
+                                        <span class="text-sm font-medium text-green-600">Low</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                        <div class="bg-green-500 h-2 rounded-full" style="width: 25%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between mb-1">
+                                        <span class="text-sm text-gray-600">Vacancy Risk</span>
+                                        <span class="text-sm font-medium text-yellow-600">Medium</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                        <div class="bg-yellow-500 h-2 rounded-full" style="width: 50%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between mb-1">
+                                        <span class="text-sm text-gray-600">Liquidity Risk</span>
+                                        <span class="text-sm font-medium text-green-600">Low</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                        <div class="bg-green-500 h-2 rounded-full" style="width: 20%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Mobile Menu Toggle Functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuToggle = document.getElementById('mobileMenuToggle');
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            
+            function toggleSidebar() {
+                sidebar.classList.toggle('open');
+                overlay.classList.toggle('active');
+                menuToggle.classList.toggle('sidebar-open');
+            }
+            
+            // Toggle sidebar when menu button is clicked
+            menuToggle.addEventListener('click', toggleSidebar);
+            
+            // Close sidebar when overlay is clicked
+            overlay.addEventListener('click', toggleSidebar);
+            
+            // Close sidebar on window resize if open
+            window.addEventListener('resize', function() {
+                if (window.innerWidth > 768 && sidebar.classList.contains('open')) {
+                    sidebar.classList.remove('open');
+                    overlay.classList.remove('active');
+                    menuToggle.classList.remove('sidebar-open');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

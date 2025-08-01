@@ -1,0 +1,419 @@
+/* ===========================
+   Compact Modern Design System
+   Based on Hybrid Design 3
+   =========================== */
+
+/* Font Import - Using existing Plus Jakarta Sans to maintain consistency */
+/* @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap'); */
+
+:root {
+  /* Compact Modern Layout Dimensions */
+  --cm-sidebar-width: 224px; /* 14rem - Compact sidebar */
+  --cm-header-height: 160px; /* Gradient hero height */
+  
+  /* Compact Modern Dark Sidebar Colors */
+  --cm-sidebar-bg: #111827; /* gray-900 */
+  --cm-sidebar-hover-bg: #1f2937; /* gray-800 */
+  --cm-sidebar-text: #d1d5db; /* gray-300 */
+  --cm-sidebar-text-hover: #e5e7eb; /* gray-200 */
+  --cm-sidebar-active-bg: #4f46e5; /* indigo-600 */
+  --cm-sidebar-active-text: #ffffff;
+  --cm-sidebar-border: #374151; /* gray-700 */
+  
+  /* Compact Modern Gradient Colors */
+  --cm-gradient-primary: linear-gradient(to right, #6366f1, #a855f7, #ec4899); /* indigo-500 to purple-500 to pink-500 */
+  --cm-gradient-hero: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%);
+  --cm-gradient-dark: linear-gradient(to bottom right, #111827, #1f2937, #4c1d95); /* gray-900 to gray-800 to indigo-900 */
+  --cm-gradient-accent: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); /* indigo to purple */
+  
+  /* Compact Modern Content Colors */
+  --cm-bg-primary: #f9fafb; /* gray-50 */
+  --cm-bg-secondary: #ffffff;
+  --cm-bg-glass: rgba(255, 255, 255, 0.9);
+  --cm-border-glass: rgba(255, 255, 255, 0.3);
+  
+  /* Compact Modern Metric Card Colors */
+  --cm-metric-bg: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.7) 100%);
+  --cm-metric-border: 1px solid rgba(255,255,255,0.3);
+  --cm-metric-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+  
+  /* Typography - Using existing font */
+  --cm-font-primary: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-extrabold: 800;
+  
+  /* Spacing for Compact Layout */
+  --space-compact-xs: 0.25rem; /* 4px */
+  --space-compact-sm: 0.5rem; /* 8px */
+  --space-compact-md: 0.75rem; /* 12px */
+  --space-compact-lg: 1rem; /* 16px */
+  --space-compact-xl: 1.5rem; /* 24px */
+  --space-compact-2xl: 2rem; /* 32px */
+  
+  /* Grid System */
+  --grid-columns: 12;
+  --grid-gap: 1.5rem; /* 24px */
+  
+  /* Transitions */
+  --transition-fast: all 0.15s ease;
+  --transition-normal: all 0.2s ease;
+  --transition-slow: all 0.3s ease;
+  
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  --shadow-glow: 0 0 40px rgba(79, 70, 229, 0.1);
+}
+
+/* Base Styles for Compact Modern Layout */
+.compact-modern-layout {
+  font-family: var(--cm-font-primary);
+  background-color: var(--cm-bg-primary);
+  color: #1f2937;
+}
+
+/* Compact Modern Sidebar Styles */
+.cm-sidebar {
+  width: var(--cm-sidebar-width);
+  background-color: var(--cm-sidebar-bg);
+  color: var(--cm-sidebar-text);
+  height: 100vh;
+  position: fixed;
+  left: 0;
+  top: 0;
+  overflow-y: auto;
+  z-index: 40;
+}
+
+.cm-sidebar-link {
+  transition: var(--transition-fast);
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  border-radius: 0.375rem;
+  display: flex;
+  align-items: center;
+  color: var(--cm-sidebar-text);
+  text-decoration: none;
+}
+
+.cm-sidebar-link:hover {
+  background-color: var(--cm-sidebar-hover-bg);
+  transform: translateX(4px);
+  color: var(--cm-sidebar-text-hover);
+}
+
+.cm-sidebar-link.active {
+  background-color: var(--cm-sidebar-active-bg);
+  color: var(--cm-sidebar-active-text);
+  font-weight: var(--font-weight-semibold);
+}
+
+.cm-sidebar-link svg {
+  width: 1rem;
+  height: 1rem;
+  margin-right: 0.75rem;
+  flex-shrink: 0;
+}
+
+/* Compact Modern Main Content Area */
+.cm-main-content {
+  margin-left: var(--cm-sidebar-width);
+  min-height: 100vh;
+  background-color: var(--cm-bg-primary);
+}
+
+/* Compact Modern Gradient Hero Section */
+.cm-gradient-hero {
+  background: var(--cm-gradient-primary);
+  color: white;
+  padding: 1.5rem 2rem;
+  box-shadow: var(--shadow-lg);
+}
+
+.gradient-hero h1 {
+  font-size: 1.5rem;
+  font-weight: var(--font-weight-bold);
+  margin-bottom: 0.5rem;
+}
+
+.gradient-hero .subtitle {
+  color: rgba(199, 210, 254, 1); /* indigo-100 */
+  font-size: 0.875rem;
+}
+
+.gradient-hero .price {
+  font-size: 1.875rem;
+  font-weight: var(--font-weight-bold);
+}
+
+/* Quick Metrics Bar */
+.metrics-bar {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.metric-item {
+  text-align: center;
+}
+
+.metric-value {
+  font-size: 1.25rem;
+  font-weight: var(--font-weight-bold);
+}
+
+.metric-label {
+  font-size: 0.75rem;
+  color: rgba(199, 210, 254, 1); /* indigo-200 */
+}
+
+/* Compact Modern Glass Morphism Cards */
+.cm-metric-card {
+  background: var(--cm-metric-bg);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: var(--cm-metric-border);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  box-shadow: var(--cm-metric-shadow);
+  transition: var(--transition-normal);
+}
+
+.cm-metric-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+}
+
+/* Compact Modern Gradient Border Cards */
+.cm-gradient-border {
+  position: relative;
+  background: white;
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.cm-gradient-border::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--cm-gradient-accent);
+  border-radius: 0.75rem 0.75rem 0 0;
+}
+
+/* 12-Column Grid System */
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: var(--grid-gap);
+  padding: 2rem;
+}
+
+.col-span-1 { grid-column: span 1; }
+.col-span-2 { grid-column: span 2; }
+.col-span-3 { grid-column: span 3; }
+.col-span-4 { grid-column: span 4; }
+.col-span-5 { grid-column: span 5; }
+.col-span-6 { grid-column: span 6; }
+.col-span-7 { grid-column: span 7; }
+.col-span-8 { grid-column: span 8; }
+.col-span-9 { grid-column: span 9; }
+.col-span-10 { grid-column: span 10; }
+.col-span-11 { grid-column: span 11; }
+.col-span-12 { grid-column: span 12; }
+
+/* Compact Modern Investment Score Card */
+.cm-investment-score-card {
+  background: var(--cm-gradient-accent);
+  color: white;
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.score-large {
+  font-size: 3rem;
+  font-weight: var(--font-weight-bold);
+  line-height: 1;
+}
+
+.score-subtitle {
+  color: rgba(199, 210, 254, 1); /* indigo-200 */
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+/* Progress Bars */
+.progress-bar {
+  width: 100%;
+  height: 0.5rem;
+  background-color: #e5e7eb; /* gray-200 */
+  border-radius: 0.25rem;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 0.25rem;
+  transition: width 0.5s ease;
+}
+
+.progress-green {
+  background: linear-gradient(to right, #34d399, #10b981); /* green-400 to green-500 */
+}
+
+.progress-red {
+  background: linear-gradient(to right, #f87171, #ef4444); /* red-400 to red-500 */
+}
+
+.progress-indigo {
+  background: var(--gradient-accent);
+}
+
+/* Compact Modern Buttons */
+.cm-btn-gradient {
+  background: var(--cm-gradient-accent);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-weight: var(--font-weight-medium);
+  transition: var(--transition-normal);
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cm-btn-gradient:hover {
+  background: linear-gradient(135deg, #4338ca 0%, #6d28d9 100%); /* darker gradient */
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.btn-outline {
+  background: transparent;
+  color: #4b5563; /* gray-700 */
+  padding: 0.5rem 1rem;
+  border: 2px solid #d1d5db; /* gray-300 */
+  border-radius: 0.5rem;
+  font-weight: var(--font-weight-medium);
+  transition: var(--transition-normal);
+  cursor: pointer;
+}
+
+.btn-outline:hover {
+  border-color: #9ca3af; /* gray-400 */
+  background-color: #f9fafb; /* gray-50 */
+}
+
+/* Mobile Menu Toggle Button */
+.cm-mobile-menu-toggle {
+  display: none;
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  z-index: 50;
+  background: var(--cm-sidebar-active-bg);
+  color: white;
+  border: none;
+  border-radius: 0.375rem;
+  padding: 0.5rem;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  transition: var(--transition-fast);
+}
+
+.cm-mobile-menu-toggle:hover {
+  background: #4338ca;
+  transform: scale(1.05);
+}
+
+.cm-sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 30;
+}
+
+/* Compact Modern Mobile Responsive */
+@media (max-width: 768px) {
+  .cm-mobile-menu-toggle {
+    display: block;
+  }
+  
+  .cm-sidebar {
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+  }
+  
+  .cm-sidebar.open {
+    transform: translateX(0);
+  }
+  
+  .cm-sidebar-overlay.active {
+    display: block;
+  }
+  
+  .cm-main-content {
+    margin-left: 0;
+  }
+  
+  .cm-mobile-menu-toggle.sidebar-open {
+    left: 240px;
+  }
+  
+  .metrics-bar {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+  }
+  
+  .grid-container {
+    grid-template-columns: 1fr;
+    padding: 1rem;
+  }
+  
+  .col-span-8,
+  .col-span-4 {
+    grid-column: span 1;
+  }
+}
+
+/* Compact Modern Utility Classes */
+.cm-text-gradient {
+  background: var(--cm-gradient-accent);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.shadow-glow {
+  box-shadow: var(--shadow-glow);
+}
+
+/* Animation Classes */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-slide-in {
+  animation: slideIn 0.3s ease forwards;
+}
