@@ -2,6 +2,28 @@
 
 > **Note**: For detailed examples and extended documentation, see [CLAUDE-DETAILED-EXAMPLES.md](./CLAUDE-DETAILED-EXAMPLES.md)
 
+## 🎨 DESIGN SYSTEM - COMPACT MODERN (Hybrid Design 3)
+
+**Visual Identity:**
+- **Layout**: Dark compact sidebar (224px) + main content area
+- **Typography**: Manrope font family (400-800 weights)
+- **Colors**: Indigo-purple-pink gradient theme
+- **Sidebar**: #111827 (gray-900) background
+- **Components**: Glass morphism cards, gradient borders
+
+**Key Design Files:**
+```
+/styles/compact-modern-design-system.css  # Main design system
+/components/layout/CompactModernLayout.js  # Sidebar layout
+/components/analysis/*CompactModern.js     # Updated components
+```
+
+**Component Pattern:**
+- All new components should follow CompactModern design
+- Use 12-column grid (8 cols main, 4 cols sidebar)
+- Gradient accents: `var(--gradient-accent)`
+- Glass cards: `metric-card` class
+
 ## 🚨 CRITICAL ARCHITECTURE RULE 🚨
 
 **DUAL-DEPLOYMENT ARCHITECTURE:**
@@ -24,7 +46,8 @@
 
 **Key Files:**
 - Components: `/components/ui/`, `/components/analysis/`
-- Design System: `/styles/design-system.css`
+- Design System: `/styles/compact-modern-design-system.css`
+- Component Loader: `/js/modules/componentLoaderCompactModern.js`
 - Main App: `roi-finder.html`
 
 ## ⚠️ BRANCH WORKFLOW
@@ -62,6 +85,14 @@ git checkout -b claude/description-YYYYMMDD_HHMMSS
 - This prevents UI breakage and ensures quality
 - NEVER skip the validation step with code-reviewer and ui-ux-tester agents
 
+## 📖 DEVELOPMENT GUIDELINES
+
+**CRITICAL**: See [DEVELOPMENT-GUIDELINES.md](./DEVELOPMENT-GUIDELINES.md) for:
+- Module system rules (prevent "property is not defined" errors)
+- CSS namespacing requirements
+- Pre-launch checklist
+- Common issues & solutions
+
 ## 🎯 CORE PRINCIPLE: Real Listing Data
 
 **ALWAYS use actual property data from listings:**
@@ -78,6 +109,17 @@ Example: Use $5,490 property tax from listing, NOT calculated estimate
 **Database**: Firebase Firestore
 **APIs**: Perplexity AI (required), Airbnb Scraper API
 **Extension**: Chrome/Edge WebExtensions for Realtor.ca
+
+## 📚 API INTEGRATIONS
+
+**Third-party API documentation**: See `/docs/api-integrations/` for detailed integration guides:
+- [Firebase](./docs/api-integrations/firebase.md) - Authentication, Firestore, Storage
+- [Perplexity AI](./docs/api-integrations/perplexity.md) - Real-time research and analysis
+- [Apify Airbnb Scraper](./docs/api-integrations/apify-airbnb.md) - STR market data collection
+- [Stripe](./docs/api-integrations/stripe.md) - Payment processing (optional)
+- [OpenAI](./docs/api-integrations/openai.md) - Alternative AI provider
+
+These guides contain API keys, usage patterns, error handling, and integration examples specific to the StarterPackApp architecture.
 
 ## KEY PATTERNS
 
