@@ -56,6 +56,7 @@
     "railway:start": "cd railway-api && npm start"
   },
   "dependencies": {
+    "@playwright/mcp": "^0.0.32",
     "apify-client": "^2.12.6",
     "axios": "^1.10.0",
     "firebase-admin": "^11.11.0",

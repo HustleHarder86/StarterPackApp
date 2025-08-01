@@ -1,13 +1,14 @@
 /* ===========================
    Design System Variables
+   Updated for Compact Modern Design
    =========================== */
 
 :root {
-  /* Brand Colors */
-  --color-primary: #667eea;
-  --color-primary-light: #818cf8;
-  --color-primary-dark: #4f46e5;
-  --color-secondary: #764ba2;
+  /* Brand Colors - Updated to match Compact Modern theme */
+  --color-primary: #4f46e5; /* indigo-600 */
+  --color-primary-light: #6366f1; /* indigo-500 */
+  --color-primary-dark: #4338ca; /* indigo-700 */
+  --color-secondary: #a855f7; /* purple-500 */
   
   /* Semantic Colors */
   --color-success: #10b981;
