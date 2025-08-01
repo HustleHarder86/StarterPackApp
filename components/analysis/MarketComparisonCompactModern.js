@@ -8,7 +8,7 @@
   comparables = [],
   averageCapRate = 7.9,
   marketAverage = 1400000
-}) => {
+}) {
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('en-CA', {
       style: 'currency',

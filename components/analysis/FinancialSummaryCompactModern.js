@@ -16,7 +16,7 @@
   cashOnCashReturn = 12.1,
   debtServiceCoverage = 1.75,
   grossRentMultiplier = 10.2
-}) => {
+}) {
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('en-CA', {
       style: 'currency',

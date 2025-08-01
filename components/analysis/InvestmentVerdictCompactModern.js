@@ -16,7 +16,7 @@
   locationScore = 9.5,
   financialsScore = 8.8,
   growthScore = 9.2
-}) => {
+}) {
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('en-CA', {
       style: 'currency',

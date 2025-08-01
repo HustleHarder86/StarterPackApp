@@ -1657,4 +1657,7 @@ window.ComponentLoader = ComponentLoader;
 // Create global instance
 window.componentLoader = new ComponentLoader();
 
-export default ComponentLoader;
+// Use IIFE to avoid export syntax error
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = ComponentLoader;
+}
