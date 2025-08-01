@@ -12,9 +12,12 @@
     <script src="https://www.gstatic.com/firebasejs/9.17.2/firebase-firestore-compat.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.8/purify.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     
     <!-- Design System -->
     <link rel="stylesheet" href="styles/design-system.css">
+    <link rel="stylesheet" href="styles/compact-modern-design-system.css">
     <link rel="stylesheet" href="styles/gradient-theme.css">
     <link rel="stylesheet" href="styles/mobile-fixes.css">
     <link rel="stylesheet" href="styles/glass-override.css">
@@ -387,38 +390,14 @@
         }
     </style>
 </head>
-<body class="min-h-screen">
-    <!-- Animated Background -->
-    <div id="animated-bg">
-        <div class="gradient-mesh"></div>
-        <div class="orb w-96 h-96 gradient-primary floating" style="top: -10%; left: -10%; width: 400px; height: 400px;"></div>
-        <div class="orb w-64 h-64 gradient-warning floating-delayed" style="top: 60%; right: -5%; width: 300px; height: 300px;"></div>
-        <div class="orb w-80 h-80 gradient-success floating" style="bottom: -15%; left: 50%; width: 350px; height: 350px;"></div>
+<body class="min-h-screen bg-gray-100">
+    <!-- Compact Modern Layout Container -->
+    <div id="app-container">
+        <!-- Will be populated with CompactModernLayout -->
     </div>
 
-    <!-- Navigation Header -->
-    <nav class="glass backdrop-blur sticky top-0 z-40 border-b border-white/20">
-        <div class="container mx-auto px-4">
-            <div class="flex items-center justify-between h-16">
-                <div class="flex items-center gap-2 sm:gap-lg min-w-0">
-                    <span class="text-2xl font-bold text-blue-600 flex-shrink-0">StarterPackApp</span>
-                    <h1 class="text-lg font-bold text-gray-900 mobile-hidden truncate">ROI Finder</h1>
-                </div>
-                <div class="flex items-center gap-2 sm:gap-md flex-shrink-0">
-                    <button id="mobile-menu-toggle" class="mobile-only p-2 text-gray-600">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
-                        </svg>
-                    </button>
-                    <span id="user-email" class="text-sm text-gray-600 mobile-hidden truncate max-w-xs"></span>
-                    <button id="logout-btn" class="btn btn-secondary btn-sm whitespace-nowrap">Logout</button>
-                </div>
-            </div>
-        </div>
-    </nav>
-
     <!-- Main Content Area -->
-    <main id="main-content" class="min-h-screen">
+    <main id="main-content" class="min-h-screen" style="display: none;">
         
         <!-- Loading State -->
         <div id="loading-state" class="container mx-auto p-xl">
@@ -778,9 +757,17 @@
         </div>
     </div>
 
+    <!-- Layout Component -->
+    <script src="components/layout/CompactModernLayout.js"></script>
+    <script src="components/analysis/PropertyHeroSection.js"></script>
+    <script src="components/analysis/InvestmentVerdictCompactModern.js"></script>
+    <script src="components/analysis/FinancialSummaryCompactModern.js"></script>
+    <script src="components/analysis/MarketComparisonCompactModern.js"></script>
+    <script src="js/modules/componentLoader.js"></script>
+    <script src="js/modules/componentLoaderCompactModern.js"></script>
+    
     <!-- Scripts -->
     <script type="module">
-        import ComponentLoader from './js/modules/componentLoader.js';
         import { FirebaseWrapper } from './js/firebase-wrapper.js';
         import { progressTracker } from './js/modules/analysisProgressTracker.js';
         
@@ -854,8 +841,8 @@
             lastAnalysisType: null
         };
         
-        // Initialize component loader
-        const componentLoader = new ComponentLoader();
+        // Initialize component loader with Compact Modern design
+        const componentLoader = new ComponentLoaderCompactModern();
         window.componentLoader = componentLoader;
         
         // Application initialization

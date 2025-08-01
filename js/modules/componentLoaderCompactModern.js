@@ -3,7 +3,8 @@
  * Loads and renders components with new sidebar layout
  */
 
-const ComponentLoader = require('./componentLoader.js');
+// Use global ComponentLoader that's already loaded
+const ComponentLoader = window.ComponentLoader;
 
 class ComponentLoaderCompactModern extends ComponentLoader {
   /**
@@ -302,4 +303,5 @@ class ComponentLoaderCompactModern extends ComponentLoader {
   }
 }
 
-module.exports = ComponentLoaderCompactModern;
+// Export to global scope for browser usage
+window.ComponentLoaderCompactModern = ComponentLoaderCompactModern;

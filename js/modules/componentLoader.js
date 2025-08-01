@@ -206,10 +206,39 @@ class ComponentLoader {
       
       // Extract property data for header
       const propertyData = analysisData.propertyData || analysisData.property_data || {};
+      const strAnalysis = analysisData.strAnalysis || analysisData.str_analysis || {};
+      const ltrAnalysis = analysisData.longTermRental || analysisData.long_term_rental || {};
       const bedrooms = propertyData.bedrooms || 2;
       const bathrooms = propertyData.bathrooms || 2;
       const sqft = propertyData.squareFeet || propertyData.square_feet || propertyData.sqft || 'N/A';
-      const propertyAddress = propertyData.address || 'Property Address';
+      
+      // Helper function for currency formatting
+      const formatCurrency = (amount) => {
+        if (!amount || isNaN(amount)) return '$0';
+        return new Intl.NumberFormat('en-CA', { 
+          style: 'currency', 
+          currency: 'CAD',
+          minimumFractionDigits: 0,
+          maximumFractionDigits: 0
+        }).format(amount);
+      };
+      // Handle both string address and object address formats
+      let propertyAddress = 'Property Address';
+      if (typeof propertyData.address === 'string') {
+        propertyAddress = propertyData.address;
+      } else if (propertyData.address && typeof propertyData.address === 'object') {
+        // Build address from components
+        const addressParts = [];
+        if (propertyData.address.street) addressParts.push(propertyData.address.street);
+        if (propertyData.address.city) addressParts.push(propertyData.address.city);
+        if (propertyData.address.province || propertyData.address.state) {
+          addressParts.push(propertyData.address.province || propertyData.address.state);
+        }
+        if (propertyData.address.postalCode || propertyData.address.postal) {
+          addressParts.push(propertyData.address.postalCode || propertyData.address.postal);
+        }
+        propertyAddress = addressParts.join(', ') || 'Property Address';
+      }
       
       // Enhanced image extraction with more fallbacks (NO DEFAULT)
       const propertyImage = propertyData.main_image ||  // THIS IS THE ONE!
@@ -312,34 +341,34 @@ class ComponentLoader {
             <div class="property-hero-gradient text-white">
               <div class="px-6 py-6">
                 <div class="flex items-center justify-between mb-4">
-                  <h1 class="text-2xl font-bold">${property.address || '123 Main Street'}</h1>
+                  <h1 class="text-2xl font-bold">${propertyAddress}</h1>
                   <span class="bg-white/20 backdrop-blur text-white px-3 py-1 rounded-full text-sm font-medium">
                     Investment Analysis
                   </span>
                 </div>
                 
                 <div class="mb-6">
-                  <p class="text-purple-100 text-lg mb-1">${property.city || 'Toronto'}, ${property.state || 'ON'}</p>
-                  <p class="text-3xl font-bold">${formatCurrency(property.purchasePrice || 850000)}</p>
+                  <p class="text-purple-100 text-lg mb-1">${propertyData.city || 'Toronto'}, ${propertyData.state || 'ON'}</p>
+                  <p class="text-3xl font-bold">${formatCurrency(propertyData.price || propertyData.purchasePrice || 850000)}</p>
                 </div>
                 
                 <!-- Key Stats Pills -->
                 <div class="grid grid-cols-3 gap-3">
                   <div class="stats-pill rounded-xl p-4 text-center">
                     <div class="text-2xl font-bold text-gray-900">
-                      ${showSTR && strAnalysis ? `+${Math.round((strAnalysis.monthlyRevenue - property.expectedRent) / property.expectedRent * 100)}%` : '--'}
+                      ${showSTR && strAnalysis && ltrAnalysis.monthlyRent ? `+${Math.round((strAnalysis.monthlyRevenue - ltrAnalysis.monthlyRent) / ltrAnalysis.monthlyRent * 100)}%` : '--'}
                     </div>
                     <div class="text-xs text-gray-600">vs LTR</div>
                   </div>
                   <div class="stats-pill rounded-xl p-4 text-center">
                     <div class="text-2xl font-bold text-gray-900">
-                      ${formatCurrency(showSTR && strAnalysis ? strAnalysis.monthlyRevenue : property.expectedRent)}
+                      ${formatCurrency(showSTR && strAnalysis ? strAnalysis.monthlyRevenue : ltrAnalysis.monthlyRent)}
                     </div>
                     <div class="text-xs text-gray-600">Monthly</div>
                   </div>
                   <div class="stats-pill rounded-xl p-4 text-center">
                     <div class="text-2xl font-bold text-gray-900">
-                      ${investmentVerdict ? investmentVerdict.score : '8.7'}/10
+                      ${analysisData.investmentScore || analysisData.overallScore || '8.7'}/10
                     </div>
                     <div class="text-xs text-gray-600">Score</div>
                   </div>
@@ -1621,6 +1650,9 @@ Generated by StarterPackApp - ${new Date().toLocaleDateString()}
     }
   }
 }
+
+// Export the class to global scope
+window.ComponentLoader = ComponentLoader;
 
 // Create global instance
 window.componentLoader = new ComponentLoader();
