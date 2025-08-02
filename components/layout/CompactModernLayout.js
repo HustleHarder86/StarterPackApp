@@ -20,48 +20,82 @@
     ` : '';
     
     return `
-      <div class="flex h-screen bg-gray-100">
+      <div class="flex h-screen bg-gray-50">
         <!-- Mobile Menu Toggle -->
-        <button class="cm-mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle Menu">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <button class="cm-mobile-menu-toggle fixed top-4 left-4 z-50 lg:hidden bg-white rounded-lg p-2 shadow-lg" id="mobileMenuToggle" aria-label="Toggle Menu">
+          <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
           </svg>
         </button>
         
         <!-- Sidebar Overlay for Mobile -->
-        <div class="cm-sidebar-overlay" id="sidebarOverlay"></div>
+        <div class="cm-sidebar-overlay fixed inset-0 bg-black bg-opacity-50 z-40 hidden" id="sidebarOverlay"></div>
         
-        <!-- Compact Sidebar - 224px -->
-        <div class="cm-sidebar" id="sidebar">
+        <!-- Enhanced Compact Sidebar - 224px -->
+        <div class="cm-sidebar w-56 bg-gray-900 text-gray-300 h-screen fixed left-0 top-0 overflow-y-auto z-40 shadow-2xl" id="sidebar" style="background-color: #111827;">
           <div class="p-4 h-full flex flex-col">
-            <div class="flex items-center space-x-2 mb-8">
-              <div class="w-8 h-8 bg-gradient-to-br from-indigo-400 to-purple-600 rounded"></div>
-              <span class="text-white font-bold text-lg">InvestPro</span>
+            <!-- Logo Section with Gradient -->
+            <div class="flex items-center space-x-3 mb-8 pb-6 border-b border-gray-800">
+              <div class="relative">
+                <div class="absolute inset-0 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg blur opacity-75"></div>
+                <div class="relative w-10 h-10 bg-gradient-to-br from-indigo-400 to-purple-600 rounded-lg flex items-center justify-center">
+                  <span class="text-white font-bold text-xl">i</span>
+                </div>
+              </div>
+              <div>
+                <span class="text-white font-bold text-xl">InvestPro</span>
+                <span class="text-xs text-gray-400 block">Real Estate Analytics</span>
+              </div>
             </div>
             
-            <nav class="space-y-1 flex-1">
+            <!-- Navigation with enhanced styling -->
+            <nav class="space-y-2 flex-1">
               ${navigationItems.map(item => `
-                <a href="#" class="cm-sidebar-link ${item.id === currentPage ? 'active' : ''}">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <a href="#" class="cm-sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 ${
+                  item.id === currentPage 
+                    ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg shadow-indigo-500/25' 
+                    : 'hover:bg-gray-800 text-gray-300 hover:text-white'
+                }">
+                  <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="${item.icon}"/>
                   </svg>
-                  ${item.label}
+                  <span class="font-medium">${item.label}</span>
+                  ${item.id === currentPage ? '<div class="ml-auto w-1.5 h-1.5 bg-white rounded-full"></div>' : ''}
                 </a>
               `).join('')}
             </nav>
             
-            ${propertyInfo}
+            ${propertyInfo ? `
+              <div class="mt-6 p-4 bg-gray-800/50 rounded-xl border border-gray-700">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-xs font-medium text-gray-400">Active Analysis</span>
+                  <span class="flex items-center gap-1 text-xs text-green-400">
+                    <span class="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse"></span>
+                    Live
+                  </span>
+                </div>
+                <div class="text-sm font-semibold text-white">${propertyData.address || 'Property Analysis'}</div>
+                <div class="text-xs text-gray-400 mt-1">${propertyData.city || 'Location'}</div>
+              </div>
+            ` : ''}
             
-            <div class="mt-4">
-              <button class="w-full cm-btn-gradient">
-                New Analysis
+            <!-- New Analysis Button with Gradient -->
+            <div class="mt-6 pt-6 border-t border-gray-800">
+              <button class="w-full relative group overflow-hidden rounded-lg">
+                <div class="absolute inset-0 bg-gradient-to-r from-indigo-600 to-purple-600 transition-all duration-300 group-hover:scale-105"></div>
+                <div class="relative px-4 py-3 flex items-center justify-center gap-2">
+                  <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                  </svg>
+                  <span class="text-white font-semibold">New Analysis</span>
+                </div>
               </button>
             </div>
           </div>
         </div>
         
-        <!-- Main Content Area -->
-        <div class="cm-main-content">
+        <!-- Main Content Area with proper margin -->
+        <div class="cm-main-content flex-1 ml-0 lg:ml-56 transition-all duration-300">
           ${children || ''}
         </div>
       </div>

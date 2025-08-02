@@ -26,6 +26,7 @@
     <link rel="stylesheet" href="styles/gradient-theme.css">
     <link rel="stylesheet" href="styles/mobile-fixes.css">
     <link rel="stylesheet" href="styles/glass-override.css">
+    <link rel="stylesheet" href="styles/loading-enhancements.css">
     
     <!-- PWA and SEO -->
     <link rel="canonical" href="https://starterpackapp.com/roi-finder">
@@ -47,16 +48,55 @@
             font-family: 'Manrope', sans-serif; 
         }
         
-        /* Custom loading animations */
-        .loading-gradient {
-            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-            background-size: 200% 100%;
-            animation: loading 1.5s infinite;
+        /* Enhanced loading animations */
+        @keyframes progress {
+            0% { width: 0%; }
+            50% { width: 70%; }
+            100% { width: 100%; }
         }
         
-        @keyframes loading {
-            0% { background-position: 200% 0; }
-            100% { background-position: -200% 0; }
+        .animate-progress {
+            animation: progress 3s ease-in-out infinite;
+        }
+        
+        /* Gradient text animation */
+        @keyframes gradient-shift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .animate-gradient {
+            background-size: 200% 200%;
+            animation: gradient-shift 3s ease infinite;
+        }
+        
+        /* Fix sidebar styling */
+        .cm-sidebar {
+            background-color: #111827 !important;
+            color: #d1d5db !important;
+        }
+        
+        .cm-sidebar-link {
+            color: #d1d5db !important;
+            transition: all 0.2s ease;
+        }
+        
+        .cm-sidebar-link:hover {
+            background-color: #1f2937 !important;
+            color: #e5e7eb !important;
+        }
+        
+        .cm-sidebar-link.active {
+            background-color: #4f46e5 !important;
+            color: #ffffff !important;
+        }
+        
+        /* Loading spinner enhancement */
+        .loading-spinner {
+            background: conic-gradient(from 0deg, transparent 0deg, var(--gradient-accent) 360deg);
+            mask: radial-gradient(farthest-side, transparent calc(100% - 4px), white calc(100% - 4px));
+            -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 4px), white calc(100% - 4px));
         }
         
         /* Mobile optimizations */
@@ -409,19 +449,54 @@
     <!-- Template for main content -->
     <template id="main-content-template">
         
-        <!-- Loading State -->
+        <!-- Enhanced Loading State -->
         <div id="loading-state" class="container mx-auto p-xl hidden">
-            <div class="text-center py-2xl">
-                <div class="loading-spinner w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-xl"></div>
-                <h2 class="text-2xl font-bold text-gray-900 mb-md">Loading Analysis</h2>
-                <p class="text-gray-600">Preparing your investment analysis...</p>
-            </div>
-            
-            <!-- Loading Skeleton -->
-            <div class="space-y-xl mt-2xl">
-                <div class="loading-gradient h-32 rounded-xl"></div>
-                <div class="loading-gradient h-64 rounded-xl"></div>
-                <div class="loading-gradient h-48 rounded-xl"></div>
+            <div class="max-w-2xl mx-auto">
+                <!-- Animated Gradient Background -->
+                <div class="relative">
+                    <div class="absolute inset-0 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-3xl opacity-20 blur-3xl animate-pulse"></div>
+                    
+                    <!-- Glass Card Container -->
+                    <div class="relative bg-white/90 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-12">
+                        <!-- Logo and Spinner -->
+                        <div class="flex flex-col items-center">
+                            <div class="relative mb-8">
+                                <!-- Gradient Ring Spinner -->
+                                <div class="w-24 h-24 rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 p-1 animate-spin">
+                                    <div class="w-full h-full bg-white rounded-full flex items-center justify-center">
+                                        <div class="w-16 h-16 bg-gradient-to-br from-indigo-400 to-purple-600 rounded-lg"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <h2 class="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-3">Loading Analysis</h2>
+                            <p class="text-gray-600 text-lg mb-8">Preparing your investment insights...</p>
+                            
+                            <!-- Progress Bar -->
+                            <div class="w-full max-w-xs">
+                                <div class="h-2 bg-gray-200 rounded-full overflow-hidden">
+                                    <div class="h-full bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full animate-progress"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Loading Steps -->
+                        <div class="mt-12 space-y-4">
+                            <div class="flex items-center gap-3 opacity-60">
+                                <div class="w-2 h-2 bg-indigo-500 rounded-full animate-pulse"></div>
+                                <span class="text-sm text-gray-600">Analyzing property data...</span>
+                            </div>
+                            <div class="flex items-center gap-3 opacity-40">
+                                <div class="w-2 h-2 bg-purple-500 rounded-full"></div>
+                                <span class="text-sm text-gray-500">Calculating investment metrics...</span>
+                            </div>
+                            <div class="flex items-center gap-3 opacity-20">
+                                <div class="w-2 h-2 bg-pink-500 rounded-full"></div>
+                                <span class="text-sm text-gray-400">Generating recommendations...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
