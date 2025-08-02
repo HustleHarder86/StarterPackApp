@@ -568,8 +568,11 @@
 
     // Initialize the app when DOM is ready
     document.addEventListener('DOMContentLoaded', function() {
-        // Initialize the app
-        window.app = new ROIFinderApp();
+        // Check if already initialized by layout
+        if (!window.app) {
+            // Initialize the app
+            window.app = new ROIFinderApp();
+        }
     });
 
 })();
