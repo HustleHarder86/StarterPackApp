@@ -3,8 +3,8 @@
    Based on Hybrid Design 3
    =========================== */
 
-/* Font Import - Using existing Plus Jakarta Sans to maintain consistency */
-/* @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap'); */
+/* Font Import - Manrope for Compact Modern Design */
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap');
 
 :root {
   /* Compact Modern Layout Dimensions */
@@ -37,8 +37,8 @@
   --cm-metric-border: 1px solid rgba(255,255,255,0.3);
   --cm-metric-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
   
-  /* Typography - Using existing font */
-  --cm-font-primary: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  /* Typography - Manrope for Compact Modern */
+  --cm-font-primary: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-weight-regular: 400;
   --font-weight-medium: 500;
   --font-weight-semibold: 600;
@@ -68,6 +68,11 @@
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
   --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
   --shadow-glow: 0 0 40px rgba(79, 70, 229, 0.1);
+}
+
+/* Global Body Font Override for Compact Modern */
+body {
+  font-family: var(--cm-font-primary) !important;
 }
 
 /* Base Styles for Compact Modern Layout */

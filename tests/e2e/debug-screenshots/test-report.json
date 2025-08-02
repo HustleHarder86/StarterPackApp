@@ -1,0 +1,21 @@
+{
+  "testDate": "2025-08-02T12:48:00.275Z",
+  "duration": "38837ms",
+  "steps": [
+    {
+      "name": "Landing Page",
+      "status": "success",
+      "design": {
+        "font": "Manrope, -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, sans-serif",
+        "hasHero": true,
+        "hasNav": true,
+        "buttonCount": 6
+      }
+    }
+  ],
+  "issues": [
+    "Test error: page.fill: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#property-address')\u001b[22m\n\u001b[2m    - locator resolved to <textarea rows=\"2\" id=\"property-address\" placeholder=\"123 Main Street, Toronto, ON M5V 3A8\" class=\"w-full p-md border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent resize-none\"></textarea>\u001b[22m\n\u001b[2m    - fill(\"123 King Street West, Toronto, ON M5V 3G7\")\u001b[22m\n\u001b[2m  - attempting fill action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and editable\u001b[22m\n\u001b[2m      - element is not visible\u001b[22m\n\u001b[2m    - retrying fill action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and editable\u001b[22m\n\u001b[2m      - element is not visible\u001b[22m\n\u001b[2m    - retrying fill action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    59 × waiting for element to be visible, enabled and editable\u001b[22m\n\u001b[2m       - element is not visible\u001b[22m\n\u001b[2m     - retrying fill action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n"
+  ],
+  "suggestions": [],
+  "designChecks": {}
+}

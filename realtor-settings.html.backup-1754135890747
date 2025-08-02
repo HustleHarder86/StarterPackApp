@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Realtor Branding Settings - InvestorProps</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Custom styles -->
+  <style>
+    .color-picker {
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 40px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    
+    .color-picker::-webkit-color-swatch-wrapper {
+      padding: 0;
+    }
+    
+    .color-picker::-webkit-color-swatch {
+      border: none;
+      border-radius: 8px;
+    }
+    
+    .logo-preview {
+      width: 200px;
+      height: 100px;
+      object-fit: contain;
+      background: #f9fafb;
+      border: 2px dashed #e5e7eb;
+      border-radius: 8px;
+      padding: 1rem;
+    }
+    
+    .preview-device {
+      box-shadow: 0 0 0 8px #374151, 0 0 0 10px #1f2937;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+  </style>
+</head>
+<body class="bg-gray-50">
+  <!-- Header -->
+  <header class="bg-white shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center py-4">
+        <div class="flex items-center gap-8">
+          <h1 class="text-2xl font-bold text-gray-900">Branding Settings</h1>
+          <nav class="hidden md:flex gap-6">
+            <a href="/roi-finder.html" class="text-gray-600 hover:text-gray-900">Dashboard</a>
+            <a href="/portfolio.html" class="text-gray-600 hover:text-gray-900">Portfolio</a>
+            <a href="/reports.html" class="text-gray-600 hover:text-gray-900">Reports</a>
+            <a href="/blog.html" class="text-gray-600 hover:text-gray-900">Blog</a>
+            <a href="/realtor-settings.html" class="text-blue-600 font-medium">Branding</a>
+          </nav>
+        </div>
+        <div class="flex items-center gap-4">
+          <span class="text-sm text-gray-600" id="user-email">-</span>
+          <button id="logout-btn" class="text-sm text-gray-600 hover:text-gray-900">
+            Logout
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <!-- Settings Form -->
+      <div class="lg:col-span-2 space-y-6">
+        <!-- Basic Information -->
+        <div class="bg-white rounded-lg shadow p-6">
+          <h2 class="text-lg font-semibold text-gray-900 mb-4">Basic Information</h2>
+          
+          <form id="branding-form" class="space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                <input 
+                  type="text" 
+                  id="realtor-name" 
+                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="Jane Doe"
+                  required
+                >
+              </div>
+              
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Professional Title</label>
+                <input 
+                  type="text" 
+                  id="realtor-title" 
+                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="Senior Investment Specialist"
+                >
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                <input 
+                  type="tel" 
+                  id="realtor-phone" 
+                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="(555) 123-4567"
+                  required
+                >
+              </div>
+              
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                <input 
+                  type="email" 
+                  id="realtor-email" 
+                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="jane@realty.com"
+                  required
+                >
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Brokerage Name</label>
+              <input 
+                type="text" 
+                id="brokerage-name" 
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="ABC Realty Group"
+              >
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">License Number</label>
+              <input 
+                type="text" 
+                id="license-number" 
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="DRE #12345678"
+              >
+            </div>
+          </form>
+        </div>
+
+        <!-- Logo Upload -->
+        <div class="bg-white rounded-lg shadow p-6">
+          <h2 class="text-lg font-semibold text-gray-900 mb-4">Logo & Branding</h2>
+          
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Your Logo</label>
+              <div class="flex items-center gap-4">
+                <img 
+                  id="logo-preview" 
+                  src="/assets/placeholder-logo.png" 
+                  alt="Logo preview" 
+                  class="logo-preview"
+                >
+                <div class="flex-1">
+                  <input 
+                    type="file" 
+                    id="logo-upload" 
+                    accept="image/*" 
+                    class="hidden"
+                    onchange="handleLogoUpload(event)"
+                  >
+                  <label 
+                    for="logo-upload" 
+                    class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 cursor-pointer"
+                  >
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                    </svg>
+                    Upload Logo
+                  </label>
+                  <p class="text-xs text-gray-500 mt-1">PNG, JPG up to 2MB. Recommended: 400x200px</p>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Headshot (Optional)</label>
+              <div class="flex items-center gap-4">
+                <img 
+                  id="headshot-preview" 
+                  src="/assets/placeholder-headshot.png" 
+                  alt="Headshot preview" 
+                  class="w-24 h-24 rounded-full object-cover bg-gray-100"
+                >
+                <div class="flex-1">
+                  <input 
+                    type="file" 
+                    id="headshot-upload" 
+                    accept="image/*" 
+                    class="hidden"
+                    onchange="handleHeadshotUpload(event)"
+                  >
+                  <label 
+                    for="headshot-upload" 
+                    class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 cursor-pointer"
+                  >
+                    Upload Photo
+                  </label>
+                  <p class="text-xs text-gray-500 mt-1">Square image recommended</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Color Theme -->
+        <div class="bg-white rounded-lg shadow p-6">
+          <h2 class="text-lg font-semibold text-gray-900 mb-4">Color Theme</h2>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Primary Color</label>
+              <div class="flex items-center gap-2">
+                <input 
+                  type="color" 
+                  id="primary-color" 
+                  value="#3b82f6" 
+                  class="color-picker"
+                  onchange="updatePreview()"
+                >
+                <input 
+                  type="text" 
+                  id="primary-color-hex" 
+                  value="#3b82f6" 
+                  class="w-24 px-2 py-1 text-sm border border-gray-300 rounded"
+                  onchange="updateColorFromHex('primary')"
+                >
+              </div>
+            </div>
+            
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Secondary Color</label>
+              <div class="flex items-center gap-2">
+                <input 
+                  type="color" 
+                  id="secondary-color" 
+                  value="#10b981" 
+                  class="color-picker"
+                  onchange="updatePreview()"
+                >
+                <input 
+                  type="text" 
+                  id="secondary-color-hex" 
+                  value="#10b981" 
+                  class="w-24 px-2 py-1 text-sm border border-gray-300 rounded"
+                  onchange="updateColorFromHex('secondary')"
+                >
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-4">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Preset Themes</label>
+            <div class="grid grid-cols-3 gap-2">
+              <button 
+                onclick="applyTheme('professional')"
+                class="p-3 border border-gray-300 rounded-lg hover:border-blue-500 transition"
+              >
+                <div class="flex gap-2 justify-center mb-1">
+                  <div class="w-6 h-6 rounded" style="background: #1e40af"></div>
+                  <div class="w-6 h-6 rounded" style="background: #0891b2"></div>
+                </div>
+                <span class="text-xs">Professional</span>
+              </button>
+              
+              <button 
+                onclick="applyTheme('luxury')"
+                class="p-3 border border-gray-300 rounded-lg hover:border-blue-500 transition"
+              >
+                <div class="flex gap-2 justify-center mb-1">
+                  <div class="w-6 h-6 rounded" style="background: #7c3aed"></div>
+                  <div class="w-6 h-6 rounded" style="background: #c026d3"></div>
+                </div>
+                <span class="text-xs">Luxury</span>
+              </button>
+              
+              <button 
+                onclick="applyTheme('modern')"
+                class="p-3 border border-gray-300 rounded-lg hover:border-blue-500 transition"
+              >
+                <div class="flex gap-2 justify-center mb-1">
+                  <div class="w-6 h-6 rounded" style="background: #059669"></div>
+                  <div class="w-6 h-6 rounded" style="background: #f59e0b"></div>
+                </div>
+                <span class="text-xs">Modern</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Additional Options -->
+        <div class="bg-white rounded-lg shadow p-6">
+          <h2 class="text-lg font-semibold text-gray-900 mb-4">Presentation Options</h2>
+          
+          <div class="space-y-4">
+            <label class="flex items-center gap-3">
+              <input 
+                type="checkbox" 
+                id="show-headshot" 
+                class="w-5 h-5 text-blue-600 rounded"
+                checked
+              >
+              <span class="text-gray-700">Show headshot in presentations</span>
+            </label>
+            
+            <label class="flex items-center gap-3">
+              <input 
+                type="checkbox" 
+                id="show-brokerage" 
+                class="w-5 h-5 text-blue-600 rounded"
+                checked
+              >
+              <span class="text-gray-700">Display brokerage name</span>
+            </label>
+            
+            <label class="flex items-center gap-3">
+              <input 
+                type="checkbox" 
+                id="show-license" 
+                class="w-5 h-5 text-blue-600 rounded"
+              >
+              <span class="text-gray-700">Include license number</span>
+            </label>
+            
+            <label class="flex items-center gap-3">
+              <input 
+                type="checkbox" 
+                id="custom-footer" 
+                class="w-5 h-5 text-blue-600 rounded"
+              >
+              <span class="text-gray-700">Add custom footer text</span>
+            </label>
+          </div>
+          
+          <div id="footer-text-container" class="mt-4" style="display: none;">
+            <label class="block text-sm font-medium text-gray-700 mb-1">Footer Text</label>
+            <textarea 
+              id="footer-text" 
+              rows="2" 
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              placeholder="Equal Housing Opportunity. Independently owned and operated."
+            ></textarea>
+          </div>
+        </div>
+
+        <!-- Save Button -->
+        <div class="flex justify-end gap-4">
+          <button 
+            onclick="resetBranding()"
+            class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition"
+          >
+            Reset to Default
+          </button>
+          <button 
+            onclick="saveBranding()"
+            class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+          >
+            Save Branding Settings
+          </button>
+        </div>
+      </div>
+
+      <!-- Live Preview -->
+      <div class="lg:col-span-1">
+        <div class="sticky top-8">
+          <h2 class="text-lg font-semibold text-gray-900 mb-4">Live Preview</h2>
+          
+          <!-- Desktop Preview -->
+          <div class="bg-white rounded-lg shadow p-4 mb-4">
+            <p class="text-sm text-gray-600 mb-2">Desktop View</p>
+            <div class="preview-device bg-white" style="transform: scale(0.7); transform-origin: top left; width: 142.86%;">
+              <div id="desktop-preview" class="p-4">
+                <!-- Preview content will be injected here -->
+              </div>
+            </div>
+          </div>
+          
+          <!-- Mobile Preview -->
+          <div class="bg-white rounded-lg shadow p-4">
+            <p class="text-sm text-gray-600 mb-2">Mobile View</p>
+            <div class="mx-auto" style="width: 200px;">
+              <div class="preview-device bg-white">
+                <div id="mobile-preview" class="p-3">
+                  <!-- Preview content will be injected here -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-storage-compat.js"></script>
+
+  <script>
+    let currentUser = null;
+    let brandingData = {
+      name: '',
+      title: '',
+      phone: '',
+      email: '',
+      brokerage: '',
+      license: '',
+      logo: null,
+      headshot: null,
+      colors: {
+        primary: '#3b82f6',
+        secondary: '#10b981'
+      },
+      options: {
+        showHeadshot: true,
+        showBrokerage: true,
+        showLicense: false,
+        customFooter: false,
+        footerText: ''
+      }
+    };
+
+    // Initialize
+    async function init() {
+      try {
+        // Load Firebase config
+        const response = await fetch('/api/config');
+        const config = await response.json();
+        
+        if (!firebase.apps.length) {
+          firebase.initializeApp(config);
+        }
+        
+        // Check auth state
+        firebase.auth().onAuthStateChanged(async (user) => {
+          if (user) {
+            currentUser = user;
+            await loadBrandingSettings();
+            updatePreview();
+          } else {
+            window.location.href = '/roi-finder.html';
+          }
+        });
+      } catch (error) {
+        console.error('Init error:', error);
+      }
+    }
+
+    // Load existing branding settings
+    async function loadBrandingSettings() {
+      try {
+        const response = await fetch('/api/realtor/branding', {
+          headers: {
+            'Authorization': `Bearer ${await currentUser.getIdToken()}`
+          }
+        });
+        
+        if (response.ok) {
+          const result = await response.json();
+          if (result.data) {
+            brandingData = result.data;
+            populateForm();
+          }
+        }
+      } catch (error) {
+        console.error('Load error:', error);
+      }
+    }
+
+    // Populate form with existing data
+    function populateForm() {
+      document.getElementById('realtor-name').value = brandingData.name || '';
+      document.getElementById('realtor-title').value = brandingData.title || '';
+      document.getElementById('realtor-phone').value = brandingData.phone || '';
+      document.getElementById('realtor-email').value = brandingData.email || '';
+      document.getElementById('brokerage-name').value = brandingData.brokerage || '';
+      document.getElementById('license-number').value = brandingData.license || '';
+      
+      if (brandingData.logo) {
+        document.getElementById('logo-preview').src = brandingData.logo;
+      }
+      
+      if (brandingData.headshot) {
+        document.getElementById('headshot-preview').src = brandingData.headshot;
+      }
+      
+      document.getElementById('primary-color').value = brandingData.colors.primary;
+      document.getElementById('primary-color-hex').value = brandingData.colors.primary;
+      document.getElementById('secondary-color').value = brandingData.colors.secondary;
+      document.getElementById('secondary-color-hex').value = brandingData.colors.secondary;
+      
+      document.getElementById('show-headshot').checked = brandingData.options.showHeadshot;
+      document.getElementById('show-brokerage').checked = brandingData.options.showBrokerage;
+      document.getElementById('show-license').checked = brandingData.options.showLicense;
+      document.getElementById('custom-footer').checked = brandingData.options.customFooter;
+      document.getElementById('footer-text').value = brandingData.options.footerText || '';
+      
+      toggleFooterText();
+    }
+
+    // Handle logo upload
+    async function handleLogoUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      
+      // Validate file
+      if (file.size > 2 * 1024 * 1024) {
+        alert('Logo must be less than 2MB');
+        return;
+      }
+      
+      // Preview
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        document.getElementById('logo-preview').src = e.target.result;
+        brandingData.logo = e.target.result;
+        updatePreview();
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // Handle headshot upload
+    async function handleHeadshotUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      
+      // Preview
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        document.getElementById('headshot-preview').src = e.target.result;
+        brandingData.headshot = e.target.result;
+        updatePreview();
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // Apply preset theme
+    function applyTheme(theme) {
+      const themes = {
+        professional: {
+          primary: '#1e40af',
+          secondary: '#0891b2'
+        },
+        luxury: {
+          primary: '#7c3aed',
+          secondary: '#c026d3'
+        },
+        modern: {
+          primary: '#059669',
+          secondary: '#f59e0b'
+        }
+      };
+      
+      const selectedTheme = themes[theme];
+      document.getElementById('primary-color').value = selectedTheme.primary;
+      document.getElementById('primary-color-hex').value = selectedTheme.primary;
+      document.getElementById('secondary-color').value = selectedTheme.secondary;
+      document.getElementById('secondary-color-hex').value = selectedTheme.secondary;
+      
+      brandingData.colors = selectedTheme;
+      updatePreview();
+    }
+
+    // Update color from hex input
+    function updateColorFromHex(type) {
+      const hexInput = document.getElementById(`${type}-color-hex`);
+      const colorInput = document.getElementById(`${type}-color`);
+      colorInput.value = hexInput.value;
+      updatePreview();
+    }
+
+    // Toggle footer text
+    document.getElementById('custom-footer').addEventListener('change', toggleFooterText);
+    
+    function toggleFooterText() {
+      const container = document.getElementById('footer-text-container');
+      container.style.display = document.getElementById('custom-footer').checked ? 'block' : 'none';
+    }
+
+    // Update preview
+    function updatePreview() {
+      const formData = {
+        name: document.getElementById('realtor-name').value || 'Your Name',
+        title: document.getElementById('realtor-title').value || 'Real Estate Professional',
+        phone: document.getElementById('realtor-phone').value || '(555) 123-4567',
+        email: document.getElementById('realtor-email').value || 'email@example.com',
+        brokerage: document.getElementById('brokerage-name').value,
+        logo: document.getElementById('logo-preview').src,
+        headshot: document.getElementById('headshot-preview').src,
+        primaryColor: document.getElementById('primary-color').value,
+        secondaryColor: document.getElementById('secondary-color').value,
+        showHeadshot: document.getElementById('show-headshot').checked,
+        showBrokerage: document.getElementById('show-brokerage').checked
+      };
+      
+      // Update hex inputs
+      document.getElementById('primary-color-hex').value = formData.primaryColor;
+      document.getElementById('secondary-color-hex').value = formData.secondaryColor;
+      
+      // Desktop preview
+      document.getElementById('desktop-preview').innerHTML = `
+        <div style="background: linear-gradient(135deg, ${formData.primaryColor}, ${formData.secondaryColor}); color: white; padding: 1rem; border-radius: 8px 8px 0 0;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div style="display: flex; align-items: center; gap: 1rem;">
+              ${formData.logo && !formData.logo.includes('placeholder') ? `<img src="${formData.logo}" style="height: 40px; background: white; padding: 4px; border-radius: 4px;">` : ''}
+              <div>
+                <div style="font-size: 1.25rem; font-weight: bold;">Investment Property Analysis</div>
+                <div style="font-size: 0.875rem; opacity: 0.9;">Prepared for Your Client</div>
+              </div>
+            </div>
+            <div style="text-align: right;">
+              <div style="font-weight: bold;">${formData.name}</div>
+              ${formData.title ? `<div style="font-size: 0.875rem; opacity: 0.9;">${formData.title}</div>` : ''}
+              ${formData.showBrokerage && formData.brokerage ? `<div style="font-size: 0.75rem; opacity: 0.8;">${formData.brokerage}</div>` : ''}
+            </div>
+          </div>
+        </div>
+        <div style="padding: 1rem; background: white;">
+          <div style="text-align: center; padding: 2rem;">
+            <div style="display: inline-block; width: 80px; height: 80px; background: ${formData.primaryColor}; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: bold;">A+</div>
+            <div style="margin-top: 1rem; font-size: 1.5rem; font-weight: bold;">Excellent Investment</div>
+          </div>
+        </div>
+      `;
+      
+      // Mobile preview
+      document.getElementById('mobile-preview').innerHTML = `
+        <div style="background: ${formData.primaryColor}; color: white; padding: 0.75rem; border-radius: 8px 8px 0 0;">
+          <div style="text-align: center;">
+            ${formData.logo && !formData.logo.includes('placeholder') ? `<img src="${formData.logo}" style="height: 30px; margin: 0 auto 0.5rem; background: white; padding: 2px; border-radius: 4px;">` : ''}
+            <div style="font-weight: bold; font-size: 0.875rem;">${formData.name}</div>
+            <div style="font-size: 0.75rem; opacity: 0.9;">${formData.phone}</div>
+          </div>
+        </div>
+        <div style="padding: 0.75rem; background: white; text-align: center;">
+          <div style="display: inline-block; width: 50px; height: 50px; background: ${formData.primaryColor}; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;">A+</div>
+        </div>
+      `;
+    }
+
+    // Save branding
+    async function saveBranding() {
+      try {
+        const formData = {
+          name: document.getElementById('realtor-name').value,
+          title: document.getElementById('realtor-title').value,
+          phone: document.getElementById('realtor-phone').value,
+          email: document.getElementById('realtor-email').value,
+          brokerage: document.getElementById('brokerage-name').value,
+          license: document.getElementById('license-number').value,
+          logo: document.getElementById('logo-preview').src,
+          headshot: document.getElementById('headshot-preview').src,
+          colors: {
+            primary: document.getElementById('primary-color').value,
+            secondary: document.getElementById('secondary-color').value
+          },
+          options: {
+            showHeadshot: document.getElementById('show-headshot').checked,
+            showBrokerage: document.getElementById('show-brokerage').checked,
+            showLicense: document.getElementById('show-license').checked,
+            customFooter: document.getElementById('custom-footer').checked,
+            footerText: document.getElementById('footer-text').value
+          }
+        };
+        
+        const response = await fetch('/api/realtor/branding', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${await currentUser.getIdToken()}`
+          },
+          body: JSON.stringify(formData)
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+          alert('Branding settings saved successfully!');
+          window.location.href = '/roi-finder.html';
+        } else {
+          alert('Failed to save settings: ' + result.error);
+        }
+      } catch (error) {
+        console.error('Save error:', error);
+        alert('Failed to save settings');
+      }
+    }
+
+    // Reset branding
+    function resetBranding() {
+      if (confirm('Reset all branding to defaults?')) {
+        brandingData = {
+          name: currentUser?.displayName || '',
+          email: currentUser?.email || '',
+          colors: {
+            primary: '#3b82f6',
+            secondary: '#10b981'
+          },
+          options: {
+            showHeadshot: true,
+            showBrokerage: true,
+            showLicense: false,
+            customFooter: false,
+            footerText: ''
+          }
+        };
+        populateForm();
+        updatePreview();
+      }
+    }
+
+    // Initialize on load
+    init();
+    
+    // Update preview on form changes
+    document.getElementById('branding-form').addEventListener('input', updatePreview);
+  </script>
+</body>
+</html>

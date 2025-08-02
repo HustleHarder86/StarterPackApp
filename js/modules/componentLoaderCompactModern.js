@@ -3,8 +3,7 @@
  * Loads and renders components with new sidebar layout
  */
 
-// Use global ComponentLoader that's already loaded
-const ComponentLoader = window.ComponentLoader;
+// ComponentLoader is already available globally
 
 class ComponentLoaderCompactModern extends ComponentLoader {
   /**
@@ -66,15 +65,14 @@ class ComponentLoaderCompactModern extends ComponentLoader {
           </div>
         `;
         
-        // Render the layout
-        ReactDOM.render(
-          React.createElement(Layout, {
-            currentPage: 'dashboard',
-            propertyData: propertyData,
-            children: mainContent
-          }),
-          layoutContainer
-        );
+        // Render the layout with static HTML fallback
+        // React doesn't support HTML strings as children, so we use innerHTML
+        const layoutHTML = Layout({
+          currentPage: 'dashboard',
+          propertyData: propertyData,
+          children: mainContent
+        });
+        layoutContainer.innerHTML = layoutHTML;
         
         // Load and render individual components
         await this.renderCompactModernComponents(analysisData);

@@ -7,6 +7,11 @@
     
     <!-- External Dependencies -->
     <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/9.17.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.2/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.2/firebase-firestore-compat.js"></script>
@@ -37,6 +42,11 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     
     <style>
+        /* Apply Manrope font */
+        body { 
+            font-family: 'Manrope', sans-serif; 
+        }
+        
         /* Custom loading animations */
         .loading-gradient {
             background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
@@ -284,12 +294,12 @@
         }
         
         /* GRADIENT THEME INLINE STYLES - FORCING APPLICATION */
-        /* Import Plus Jakarta Sans font */
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+        /* Import Manrope font for Compact Modern design */
+        @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap');
         
         /* Force body font and background */
         body {
-            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+            font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
             background: transparent !important;
         }
         
@@ -814,11 +824,22 @@
                 auth = firebaseWrapper.getAuth();
                 db = firebaseWrapper.getDb();
                 
-                // Show error message
-                const warning = document.createElement('div');
-                warning.className = 'fixed top-0 left-0 right-0 bg-red-100 border-b border-red-400 text-red-700 px-4 py-3 text-center';
-                warning.innerHTML = `Firebase configuration error: ${error.message}. Please contact support.`;
-                document.body.prepend(warning);
+                // Show error message only in production
+                if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+                    const warning = document.createElement('div');
+                    warning.className = 'fixed top-0 left-0 right-0 bg-red-100 border-b border-red-400 text-red-700 px-4 py-3 text-center';
+                    warning.innerHTML = `Firebase configuration error: ${error.message}. Please contact support.`;
+                    document.body.prepend(warning);
+                } else {
+                    // Development mode - show a less intrusive warning
+                    const devWarning = document.createElement('div');
+                    devWarning.className = 'fixed bottom-4 right-4 bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-2 rounded-lg shadow-lg text-sm max-w-sm';
+                    devWarning.innerHTML = `⚠️ Development Mode: Firebase API unavailable, using mock data`;
+                    document.body.appendChild(devWarning);
+                    
+                    // Auto-hide after 5 seconds
+                    setTimeout(() => devWarning.remove(), 5000);
+                }
                 
                 return true;
             }
@@ -842,8 +863,28 @@
         };
         
         // Initialize component loader with Compact Modern design
-        const componentLoader = new ComponentLoaderCompactModern();
-        window.componentLoader = componentLoader;
+        let componentLoader;
+        
+        // Function to initialize component loader when ready
+        function initializeComponentLoader() {
+            if (typeof ComponentLoaderCompactModern !== 'undefined') {
+                componentLoader = new ComponentLoaderCompactModern();
+                window.componentLoader = componentLoader;
+                console.log('[INIT] Component loader initialized');
+                return true;
+            }
+            return false;
+        }
+        
+        // Try to initialize immediately, or wait for it
+        if (!initializeComponentLoader()) {
+            // Wait for ComponentLoaderCompactModern to be available
+            const checkInterval = setInterval(() => {
+                if (initializeComponentLoader()) {
+                    clearInterval(checkInterval);
+                }
+            }, 100);
+        }
         
         // Application initialization
         class ROIFinderApp {
@@ -852,7 +893,12 @@
             }
             
             async init() {
-                this.attachEventListeners();
+                try {
+                    this.attachEventListeners();
+                } catch (error) {
+                    console.error('Error attaching event listeners:', error);
+                    // Continue initialization even if some event listeners fail
+                }
                 this.checkAuthState();
                 this.handleUrlParameters();
                 this.optimizeForMobile();
@@ -915,7 +961,20 @@
                             // Store the current URL to redirect back after login
                             sessionStorage.setItem('redirectAfterLogin', window.location.href);
                         }
-                        this.showLoginForm();
+                        // In development mode, show property form even without auth
+                        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                            console.log('Development mode: Showing property form without authentication');
+                            // Create mock user for development
+                            window.appState.currentUser = {
+                                uid: 'dev-user-local',
+                                email: 'dev@localhost',
+                                displayName: 'Local Developer',
+                                getIdToken: async () => 'dev-token-123'
+                            };
+                            this.showPropertyInput();
+                        } else {
+                            this.showLoginForm();
+                        }
                     }
                 });
             }
@@ -1689,7 +1748,9 @@
             
             attachEventListeners() {
                 // Property analysis form
-                document.getElementById('property-analysis-form').addEventListener('submit', (e) => {
+                const propertyForm = document.getElementById('property-analysis-form');
+                if (propertyForm) {
+                    propertyForm.addEventListener('submit', (e) => {
                     e.preventDefault();
                     const formData = new FormData(e.target);
                     const propertyData = {
@@ -1741,6 +1802,7 @@
                         feedbackContainer.classList.add('hidden');
                     }, 5000);
                 };
+                }
 
                 // Password validation helper
                 const validatePassword = (password) => {
@@ -1769,7 +1831,9 @@
                 }
 
                 // Login form
-                document.getElementById('login-form').addEventListener('submit', async (e) => {
+                const loginForm = document.getElementById('login-form');
+                if (loginForm) {
+                    loginForm.addEventListener('submit', async (e) => {
                     e.preventDefault();
                     const email = document.getElementById('login-email').value;
                     const password = document.getElementById('login-password').value;
@@ -1829,9 +1893,12 @@
                         }
                     });
                 }
+                }
                 
                 // Register form
-                document.getElementById('register-form').addEventListener('submit', async (e) => {
+                const registerForm = document.getElementById('register-form');
+                if (registerForm) {
+                    registerForm.addEventListener('submit', async (e) => {
                     e.preventDefault();
                     const name = document.getElementById('register-name').value;
                     const email = document.getElementById('register-email').value;
@@ -1887,9 +1954,12 @@
                 });
                 
                 // Logout button
-                document.getElementById('logout-btn').addEventListener('click', () => {
+                const logoutBtn = document.getElementById('logout-btn');
+                if (logoutBtn) {
+                    logoutBtn.addEventListener('click', () => {
                     auth.signOut();
                 });
+                }
                 
                 // Global retry function
                 window.retryAnalysis = () => {

@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>InvestorProps - Real Estate SaaS</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <nav class="nav-bar">
+    <div class="nav-logo">InvestorProps</div>
+    <ul class="nav-links">
+      <li><a href="index.html" class="nav-link">Home</a></li>
+      <li><a href="blog.html" class="nav-link">Blog</a></li>
+      <li><a href="#features" class="nav-link">Features</a></li>
+      <li><a href="#pricing" class="nav-link">Pricing</a></li>
+      <li><a href="contact.html" class="nav-link">Contact</a></li>
+      <li><a href="roi-finder.html" class="nav-link btn-primary">Launch ROI Finder</a></li>
+    </ul>
+  </nav>
+
+  <section class="hero-section">
+    <div class="hero-content">
+      <div class="hero-badge">🚀 New: AI-Powered Property Analysis</div>
+      <h1>Real estate investing <span class="highlight">made simple</span></h1>
+      <p class="hero-subtitle">Discover cash-flow positive properties in seconds. Empower your clients with investment-ready listings, instantly.</p>
+      <div class="hero-stats">
+        <div class="stat">
+          <div class="stat-number">10K+</div>
+          <div class="stat-label">Properties Analyzed</div>
+        </div>
+        <div class="stat">
+          <div class="stat-number">500+</div>
+          <div class="stat-label">Happy Realtors</div>
+        </div>
+        <div class="stat">
+          <div class="stat-number">95%</div>
+          <div class="stat-label">Accuracy Rate</div>
+        </div>
+      </div>
+      <a href="#" class="btn-primary pulse" id="show-lead-form">Get Started Free</a>
+      <form class="hero-lead-form slide-down" id="lead-form" style="display: none;">
+        <input type="text" name="name" placeholder="Your Name" required />
+        <input type="email" name="email" placeholder="Your Email" required />
+        <button type="submit">Send My Free ROI Report</button>
+        <p class="form-note">No spam. Just one powerful sample report.</p>
+      </form>
+    </div>
+    <div class="hero-visual">
+      <div class="floating-cards">
+        <div class="property-card card-1">
+          <div class="property-price">$750,000</div>
+          <div class="property-roi">ROI: 5.8%</div>
+        </div>
+        <div class="property-card card-2">
+          <div class="property-price">$650,000</div>
+          <div class="property-roi">ROI: 6.2%</div>
+        </div>
+        <div class="property-card card-3">
+          <div class="property-price">$850,000</div>
+          <div class="property-roi">ROI: 7.1%</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="trusted-section">
+    <h2>Trusted by top real estate professionals</h2>
+    <div class="trusted-logos">
+      <img src="assets/remax.png" alt="REMAX" class="fade-in" />
+      <img src="assets/royal_lepage.png" alt="Royal LePage" class="fade-in" />
+      <img src="assets/century21.png" alt="Century 21" class="fade-in" />
+      <img src="assets/exp_realty.png" alt="EXP Realty" class="fade-in" />
+    </div>
+  </section>
+
+  <section class="features-section" id="features">
+    <h2>Why Realtors Love Us</h2>
+    <div class="features-grid">
+      <div class="feature-card hover-lift">
+        <div class="feature-icon">⚡</div>
+        <h3>Saves Time</h3>
+        <p>Instantly identify investment-ready listings without sifting through hundreds of properties.</p>
+      </div>
+      <div class="feature-card hover-lift">
+        <div class="feature-icon">📊</div>
+        <h3>Client-Ready Reports</h3>
+        <p>Generate beautiful, branded reports that investors love and trust.</p>
+      </div>
+      <div class="feature-card hover-lift">
+        <div class="feature-icon">🎯</div>
+        <h3>Boosts Credibility</h3>
+        <p>Stand out with data-backed insights and attract more investor clients.</p>
+      </div>
+      <div class="feature-card hover-lift">
+        <div class="feature-icon">🚀</div>
+        <h3>Easy to Use</h3>
+        <p>No training needed. Just input your criteria and get results in seconds.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="pricing-section" id="pricing">
+    <h2>Simple Pricing</h2>
+    <p class="pricing-subtitle">Choose the plan that fits your business</p>
+    <div class="pricing-grid">
+      <div class="pricing-card hover-lift">
+        <h3>Starter</h3>
+        <div class="price">$49<span>/month</span></div>
+        <ul>
+          <li>100 reports/month</li>
+          <li>Basic property filters</li>
+          <li>Email support</li>
+        </ul>
+        <a href="#" class="btn-secondary">Get Started</a>
+      </div>
+      <div class="pricing-card highlight-card hover-lift">
+        <div class="popular-badge">Most Popular</div>
+        <h3>Pro</h3>
+        <div class="price">$99<span>/month</span></div>
+        <ul>
+          <li>250 reports/month</li>
+          <li>Advanced filters & analytics</li>
+          <li>Priority support</li>
+          <li>Custom branding</li>
+        </ul>
+        <a href="#" class="btn-primary">Get Started</a>
+      </div>
+      <div class="pricing-card hover-lift">
+        <h3>Enterprise</h3>
+        <div class="price">Custom</div>
+        <ul>
+          <li>Unlimited reports</li>
+          <li>White-labeling</li>
+          <li>Dedicated success manager</li>
+          <li>API access</li>
+        </ul>
+        <a href="contact.html" class="btn-secondary">Contact Sales</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="testimonials-section">
+    <h2>What Realtors Are Saying</h2>
+    <div class="testimonials-container">
+      <div class="testimonial-card active">
+        <div class="testimonial-content">
+          <div class="stars">★★★★★</div>
+          <p>"Finally, a tool that speaks the investor's language. It's become my listing presentation secret weapon."</p>
+          <div class="testimonial-author">
+            <div class="author-avatar">S</div>
+            <div class="author-info">
+              <strong>Sarah K.</strong>
+              <span>Toronto Realtor</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-content">
+          <div class="stars">★★★★★</div>
+          <p>"My clients love how clear and data-driven the reports are. It's made the buying process much smoother."</p>
+          <div class="testimonial-author">
+            <div class="author-avatar">J</div>
+            <div class="author-info">
+              <strong>Jason L.</strong>
+              <span>Mississauga Agent</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-content">
+          <div class="stars">★★★★★</div>
+          <p>"InvestorProps has doubled my investor client base. The ROI calculations are spot-on every time."</p>
+          <div class="testimonial-author">
+            <div class="author-avatar">M</div>
+            <div class="author-info">
+              <strong>Maria C.</strong>
+              <span>Vancouver Realtor</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="testimonial-dots">
+      <span class="dot active" data-slide="0"></span>
+      <span class="dot" data-slide="1"></span>
+      <span class="dot" data-slide="2"></span>
+    </div>
+  </section>
+
+  <footer class="footer">
+    &copy; 2025 InvestorProps. All rights reserved.
+  </footer>
+
+  <script>
+    // Hero lead form functionality
+    document.getElementById('show-lead-form').addEventListener('click', function (e) {
+      e.preventDefault();
+      document.getElementById('lead-form').style.display = 'flex';
+      this.style.display = 'none';
+    });
+
+    document.getElementById('lead-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const name = this.name.value;
+      const email = this.email.value;
+      const response = await fetch('/api/submit-lead', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email })
+      });
+      if (response.ok) {
+        alert("Thanks! Your sample report is on its way.");
+        this.reset();
+        
+        // Store lead info in sessionStorage to pre-fill the form
+        sessionStorage.setItem('leadName', name);
+        sessionStorage.setItem('leadEmail', email);
+        
+        // Redirect to ROI Finder
+        window.location.href = 'roi-finder.html?source=hero';
+      } else {
+        alert("Oops! Something went wrong.");
+      }
+    });
+
+    // Testimonials carousel
+    let currentSlide = 0;
+    const testimonials = document.querySelectorAll('.testimonial-card');
+    const dots = document.querySelectorAll('.dot');
+
+    function showSlide(n) {
+      testimonials.forEach(card => card.classList.remove('active'));
+      dots.forEach(dot => dot.classList.remove('active'));
+      
+      testimonials[n].classList.add('active');
+      dots[n].classList.add('active');
+    }
+
+    dots.forEach((dot, index) => {
+      dot.addEventListener('click', () => {
+        currentSlide = index;
+        showSlide(currentSlide);
+      });
+    });
+
+    // Auto-rotate testimonials
+    setInterval(() => {
+      currentSlide = (currentSlide + 1) % testimonials.length;
+      showSlide(currentSlide);
+    }, 5000);
+
+    // Intersection Observer for animations
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('animate');
+        }
+      });
+    }, observerOptions);
+
+    // Observe elements for animation
+    document.querySelectorAll('.feature-card, .pricing-card, .fade-in').forEach(el => {
+      observer.observe(el);
+    });
+  </script>
+</body>
+</html>

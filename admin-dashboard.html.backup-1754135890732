@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Dashboard - InvestorProps</title>
+  
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
+  
+  <!-- React 18 -->
+  <script crossorigin src="https://unpkg.com/react@18.2.0/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
+  
+  <!-- Babel -->
+  <script src="https://unpkg.com/@babel/standalone@7.23.5/babel.min.js"></script>
+  
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <style>
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    
+    ::-webkit-scrollbar-track {
+      background: #f1f1f1;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+      background: #888;
+      border-radius: 4px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+      background: #555;
+    }
+    
+    /* Animations */
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .animate-slide-in {
+      animation: slideIn 0.5s ease-out;
+    }
+    
+    /* Card hover effects */
+    .card-hover {
+      transition: all 0.3s ease;
+    }
+    
+    .card-hover:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    }
+  </style>
+</head>
+<body class="bg-gray-50">
+  <div id="root">
+    <div class="flex items-center justify-center min-h-screen">
+      <div class="text-center">
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+        <p class="mt-4 text-gray-600">Loading Admin Dashboard...</p>
+      </div>
+    </div>
+  </div>
+
+  <script type="text/babel">
+    const { useState, useEffect, useRef } = React;
+    
+    // Admin Dashboard App
+    const AdminDashboard = () => {
+      const [loading, setLoading] = useState(true);
+      const [authenticated, setAuthenticated] = useState(false);
+      const [adminEmail, setAdminEmail] = useState('');
+      const [adminPassword, setAdminPassword] = useState('');
+      const [data, setData] = useState({
+        users: [],
+        analyses: [],
+        leads: [],
+        subscriptions: []
+      });
+      const [stats, setStats] = useState({
+        totalUsers: 0,
+        totalAnalyses: 0,
+        totalLeads: 0,
+        activeSubscriptions: 0,
+        revenue: 0
+      });
+      const [activeTab, setActiveTab] = useState('overview');
+      const [searchTerm, setSearchTerm] = useState('');
+      const [dateFilter, setDateFilter] = useState('all');
+      
+      const chartRefs = {
+        userGrowth: useRef(null),
+        analysisChart: useRef(null),
+        revenueChart: useRef(null)
+      };
+      
+      const charts = useRef({});
+
+      // Initialize Firebase
+      useEffect(() => {
+        const initFirebase = async () => {
+          try {
+            const response = await fetch('/api/config');
+            const config = await response.json();
+            firebase.initializeApp(config.firebase);
+            
+            // Check if admin is already logged in
+            firebase.auth().onAuthStateChanged(async (user) => {
+              if (user) {
+                // Verify admin access (you should add a custom claim or check specific email)
+                if (user.email === 'admin@investorprops.com' || user.email === 'amy_ali@hotmail.com') {
+                  setAuthenticated(true);
+                  await loadAllData();
+                } else {
+                  firebase.auth().signOut();
+                  setAuthenticated(false);
+                }
+              }
+              setLoading(false);
+            });
+          } catch (error) {
+            console.error('Firebase init error:', error);
+            setLoading(false);
+          }
+        };
+
+        initFirebase();
+      }, []);
+
+      // Admin login
+      const handleAdminLogin = async (e) => {
+        e.preventDefault();
+        try {
+          const result = await firebase.auth().signInWithEmailAndPassword(adminEmail, adminPassword);
+          if (result.user.email === 'admin@investorprops.com' || result.user.email === 'amy_ali@hotmail.com') {
+            setAuthenticated(true);
+            await loadAllData();
+          } else {
+            alert('Access denied. Admin accounts only.');
+            firebase.auth().signOut();
+          }
+        } catch (error) {
+          alert('Login failed: ' + error.message);
+        }
+      };
+
+      // Load all data from Firebase
+      const loadAllData = async () => {
+        const db = firebase.firestore();
+        
+        try {
+          // Load users
+          const usersSnapshot = await db.collection('users').get();
+          const users = [];
+          usersSnapshot.forEach(doc => {
+            users.push({ id: doc.id, ...doc.data() });
+          });
+          
+          // Load analyses
+          const analysesSnapshot = await db.collection('analyses').get();
+          const analyses = [];
+          analysesSnapshot.forEach(doc => {
+            analyses.push({ id: doc.id, ...doc.data() });
+          });
+          
+          // Load leads
+          const leadsSnapshot = await db.collection('leads').get();
+          const leads = [];
+          leadsSnapshot.forEach(doc => {
+            leads.push({ id: doc.id, ...doc.data() });
+          });
+          
+          // Load subscriptions
+          const subscriptionsSnapshot = await db.collection('subscriptions').get();
+          const subscriptions = [];
+          subscriptionsSnapshot.forEach(doc => {
+            subscriptions.push({ id: doc.id, ...doc.data() });
+          });
+          
+          setData({ users, analyses, leads, subscriptions });
+          
+          // Calculate stats
+          const activeSubCount = subscriptions.filter(s => s.status === 'active').length;
+          const monthlyRevenue = activeSubCount * 99; // Assuming average $99/month
+          
+          setStats({
+            totalUsers: users.length,
+            totalAnalyses: analyses.length,
+            totalLeads: leads.length,
+            activeSubscriptions: activeSubCount,
+            revenue: monthlyRevenue
+          });
+          
+          // Update charts
+          setTimeout(() => updateCharts({ users, analyses, subscriptions }), 100);
+        } catch (error) {
+          console.error('Error loading data:', error);
+        }
+      };
+
+      // Update charts
+      const updateCharts = (data) => {
+        // User growth chart
+        if (chartRefs.userGrowth.current) {
+          const ctx = chartRefs.userGrowth.current.getContext('2d');
+          
+          if (charts.current.userGrowth) {
+            charts.current.userGrowth.destroy();
+          }
+          
+          // Group users by month
+          const usersByMonth = {};
+          data.users.forEach(user => {
+            const date = user.createdAt?.toDate?.() || new Date();
+            const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+            usersByMonth[monthKey] = (usersByMonth[monthKey] || 0) + 1;
+          });
+          
+          const sortedMonths = Object.keys(usersByMonth).sort();
+          const cumulativeUsers = [];
+          let total = 0;
+          sortedMonths.forEach(month => {
+            total += usersByMonth[month];
+            cumulativeUsers.push(total);
+          });
+          
+          charts.current.userGrowth = new Chart(ctx, {
+            type: 'line',
+            data: {
+              labels: sortedMonths,
+              datasets: [{
+                label: 'Total Users',
+                data: cumulativeUsers,
+                borderColor: 'rgb(59, 130, 246)',
+                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                tension: 0.4
+              }]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: { display: false }
+              }
+            }
+          });
+        }
+
+        // Analysis by type chart
+        if (chartRefs.analysisChart.current) {
+          const ctx = chartRefs.analysisChart.current.getContext('2d');
+          
+          if (charts.current.analysisChart) {
+            charts.current.analysisChart.destroy();
+          }
+          
+          const analysisByType = {
+            demo: data.analyses.filter(a => a.requestType === 'demo').length,
+            authenticated: data.analyses.filter(a => a.requestType === 'authenticated').length
+          };
+          
+          charts.current.analysisChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+              labels: ['Demo', 'Authenticated'],
+              datasets: [{
+                data: [analysisByType.demo, analysisByType.authenticated],
+                backgroundColor: ['rgb(251, 191, 36)', 'rgb(34, 197, 94)']
+              }]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false
+            }
+          });
+        }
+
+        // Revenue chart
+        if (chartRefs.revenueChart.current) {
+          const ctx = chartRefs.revenueChart.current.getContext('2d');
+          
+          if (charts.current.revenueChart) {
+            charts.current.revenueChart.destroy();
+          }
+          
+          // Simulated revenue data (you'd calculate this from actual subscription data)
+          const revenueByMonth = {};
+          data.subscriptions.forEach(sub => {
+            const date = sub.currentPeriodStart?.toDate?.() || new Date();
+            const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+            const amount = sub.tier === 'pro' ? 99 : sub.tier === 'starter' ? 49 : 0;
+            revenueByMonth[monthKey] = (revenueByMonth[monthKey] || 0) + amount;
+          });
+          
+          const sortedMonths = Object.keys(revenueByMonth).sort().slice(-6); // Last 6 months
+          
+          charts.current.revenueChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+              labels: sortedMonths,
+              datasets: [{
+                label: 'Monthly Revenue',
+                data: sortedMonths.map(m => revenueByMonth[m] || 0),
+                backgroundColor: 'rgb(34, 197, 94)'
+              }]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: { display: false }
+              },
+              scales: {
+                y: {
+                  beginAtZero: true,
+                  ticks: {
+                    callback: function(value) {
+                      return '$' + value;
+                    }
+                  }
+                }
+              }
+            }
+          });
+        }
+      };
+
+      // Filter data based on search and date
+      const filterData = (dataArray) => {
+        return dataArray.filter(item => {
+          // Search filter
+          if (searchTerm) {
+            const searchLower = searchTerm.toLowerCase();
+            const searchableText = JSON.stringify(item).toLowerCase();
+            if (!searchableText.includes(searchLower)) {
+              return false;
+            }
+          }
+          
+          // Date filter
+          if (dateFilter !== 'all') {
+            const itemDate = item.createdAt?.toDate?.() || new Date(item.analysis_timestamp || item.submittedAt);
+            const now = new Date();
+            const daysDiff = (now - itemDate) / (1000 * 60 * 60 * 24);
+            
+            switch (dateFilter) {
+              case '7days':
+                if (daysDiff > 7) return false;
+                break;
+              case '30days':
+                if (daysDiff > 30) return false;
+                break;
+              case '90days':
+                if (daysDiff > 90) return false;
+                break;
+            }
+          }
+          
+          return true;
+        });
+      };
+
+      // Format date
+      const formatDate = (date) => {
+        if (!date) return 'N/A';
+        const d = date.toDate?.() || new Date(date);
+        return d.toLocaleDateString() + ' ' + d.toLocaleTimeString();
+      };
+
+      // Admin Login Screen
+      if (!authenticated) {
+        return (
+          <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-6">
+            <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8">
+              <div className="text-center mb-8">
+                <h1 className="text-3xl font-bold text-gray-900 mb-2">Admin Dashboard</h1>
+                <p className="text-gray-600">Sign in with your admin credentials</p>
+              </div>
+              
+              <form onSubmit={handleAdminLogin}>
+                <div className="space-y-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Admin Email
+                    </label>
+                    <input
+                      type="email"
+                      required
+                      value={adminEmail}
+                      onChange={(e) => setAdminEmail(e.target.value)}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="admin@investorprops.com"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Password
+                    </label>
+                    <input
+                      type="password"
+                      required
+                      value={adminPassword}
+                      onChange={(e) => setAdminPassword(e.target.value)}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
+                  
+                  <button
+                    type="submit"
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition-colors"
+                  >
+                    Sign In
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        );
+      }
+
+      // Main Dashboard
+      return (
+        <div className="min-h-screen bg-gray-50">
+          {/* Header */}
+          <header className="bg-white shadow-sm border-b border-gray-200">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="flex justify-between items-center py-4">
+                <h1 className="text-2xl font-bold text-gray-900">InvestorProps Admin</h1>
+                <button
+                  onClick={() => firebase.auth().signOut()}
+                  className="text-gray-600 hover:text-gray-900"
+                >
+                  Sign Out
+                </button>
+              </div>
+            </div>
+          </header>
+
+          {/* Main Content */}
+          <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            {/* Stats Overview */}
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
+              <div className="bg-white rounded-lg shadow p-6 card-hover">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-600">Total Users</p>
+                    <p className="text-3xl font-bold text-gray-900">{stats.totalUsers}</p>
+                  </div>
+                  <div className="p-3 bg-blue-100 rounded-lg">
+                    <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-white rounded-lg shadow p-6 card-hover">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-600">Total Analyses</p>
+                    <p className="text-3xl font-bold text-gray-900">{stats.totalAnalyses}</p>
+                  </div>
+                  <div className="p-3 bg-green-100 rounded-lg">
+                    <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-white rounded-lg shadow p-6 card-hover">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-600">Total Leads</p>
+                    <p className="text-3xl font-bold text-gray-900">{stats.totalLeads}</p>
+                  </div>
+                  <div className="p-3 bg-yellow-100 rounded-lg">
+                    <svg className="w-8 h-8 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-white rounded-lg shadow p-6 card-hover">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-600">Active Subs</p>
+                    <p className="text-3xl font-bold text-gray-900">{stats.activeSubscriptions}</p>
+                  </div>
+                  <div className="p-3 bg-purple-100 rounded-lg">
+                    <svg className="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-white rounded-lg shadow p-6 card-hover">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-600">Monthly Revenue</p>
+                    <p className="text-3xl font-bold text-gray-900">${stats.revenue}</p>
+                  </div>
+                  <div className="p-3 bg-green-100 rounded-lg">
+                    <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Charts */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+              <div className="lg:col-span-2 bg-white rounded-lg shadow p-6">
+                <h2 className="text-lg font-semibold text-gray-900 mb-4">User Growth</h2>
+                <div style={{ height: '300px' }}>
+                  <canvas ref={chartRefs.userGrowth}></canvas>
+                </div>
+              </div>
+
+              <div className="bg-white rounded-lg shadow p-6">
+                <h2 className="text-lg font-semibold text-gray-900 mb-4">Analysis Types</h2>
+                <div style={{ height: '300px' }}>
+                  <canvas ref={chartRefs.analysisChart}></canvas>
+                </div>
+              </div>
+            </div>
+
+            {/* Tabs and Filters */}
+            <div className="bg-white rounded-lg shadow mb-6">
+              <div className="border-b border-gray-200">
+                <nav className="flex -mb-px">
+                  {['overview', 'users', 'analyses', 'leads', 'subscriptions'].map(tab => (
+                    <button
+                      key={tab}
+                      onClick={() => setActiveTab(tab)}
+                      className={`py-4 px-6 text-sm font-medium border-b-2 ${
+                        activeTab === tab
+                          ? 'border-blue-500 text-blue-600'
+                          : 'border-transparent text-gray-500 hover:text-gray-700'
+                      }`}
+                    >
+                      {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                    </button>
+                  ))}
+                </nav>
+              </div>
+
+              <div className="p-6">
+                <div className="flex flex-col sm:flex-row gap-4 mb-6">
+                  <input
+                    type="text"
+                    placeholder="Search..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                  <select
+                    value={dateFilter}
+                    onChange={(e) => setDateFilter(e.target.value)}
+                    className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
+                    <option value="all">All Time</option>
+                    <option value="7days">Last 7 Days</option>
+                    <option value="30days">Last 30 Days</option>
+                    <option value="90days">Last 90 Days</option>
+                  </select>
+                </div>
+
+                {/* Data Tables */}
+                {activeTab === 'overview' && (
+                  <div className="space-y-6">
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h3>
+                      <div className="space-y-4">
+                        <div className="bg-gray-50 rounded-lg p-4">
+                          <h4 className="font-medium text-gray-900 mb-2">Latest Users</h4>
+                          {data.users.slice(0, 5).map(user => (
+                            <div key={user.id} className="flex justify-between items-center py-2 border-b border-gray-200 last:border-0">
+                              <span className="text-sm text-gray-600">{user.email}</span>
+                              <span className="text-xs text-gray-500">{formatDate(user.createdAt)}</span>
+                            </div>
+                          ))}
+                        </div>
+
+                        <div className="bg-gray-50 rounded-lg p-4">
+                          <h4 className="font-medium text-gray-900 mb-2">Latest Analyses</h4>
+                          {data.analyses.slice(0, 5).map(analysis => (
+                            <div key={analysis.id} className="flex justify-between items-center py-2 border-b border-gray-200 last:border-0">
+                              <span className="text-sm text-gray-600">{analysis.property_address || 'N/A'}</span>
+                              <span className="text-xs text-gray-500">{formatDate(analysis.createdAt)}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="bg-white rounded-lg shadow p-6">
+                      <h3 className="text-lg font-semibold text-gray-900 mb-4">Revenue Trend</h3>
+                      <div style={{ height: '300px' }}>
+                        <canvas ref={chartRefs.revenueChart}></canvas>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {activeTab === 'users' && (
+                  <div className="overflow-x-auto">
+                    <table className="min-w-full divide-y divide-gray-200">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tier</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Analyses</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
+                        </tr>
+                      </thead>
+                      <tbody className="bg-white divide-y divide-gray-200">
+                        {filterData(data.users).map(user => (
+                          <tr key={user.id} className="hover:bg-gray-50">
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{user.email}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{user.displayName || 'N/A'}</td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                                user.subscriptionStatus === 'active' ? 'bg-green-100 text-green-800' :
+                                user.subscriptionStatus === 'trial' ? 'bg-yellow-100 text-yellow-800' :
+                                'bg-gray-100 text-gray-800'
+                              }`}>
+                                {user.subscriptionStatus || 'unknown'}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{user.subscriptionTier || 'N/A'}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                              {user.monthlyAnalysisCount || 0}/{user.monthlyAnalysisLimit || 3}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{formatDate(user.createdAt)}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+
+                {activeTab === 'analyses' && (
+                  <div className="overflow-x-auto">
+                    <table className="min-w-full divide-y divide-gray-200">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Property</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ROI %</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Value</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                        </tr>
+                      </thead>
+                      <tbody className="bg-white divide-y divide-gray-200">
+                        {filterData(data.analyses).map(analysis => (
+                          <tr key={analysis.id} className="hover:bg-gray-50">
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                              {analysis.property_address || analysis.propertyAddress || 'N/A'}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                              {analysis.userEmail || analysis.lead_email || 'N/A'}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                                analysis.requestType === 'authenticated' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+                              }`}>
+                                {analysis.requestType || 'demo'}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                              {analysis.roi_percentage || 'N/A'}%
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                              ${(analysis.property_details?.estimated_value || 0).toLocaleString()}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                              {formatDate(analysis.createdAt || analysis.analysis_timestamp)}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+
+                {activeTab === 'leads' && (
+                  <div className="overflow-x-auto">
+                    <table className="min-w-full divide-y divide-gray-200">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Source</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Property</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                        </tr>
+                      </thead>
+                      <tbody className="bg-white divide-y divide-gray-200">
+                        {filterData(data.leads).map(lead => (
+                          <tr key={lead.id} className="hover:bg-gray-50">
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{lead.name || 'N/A'}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{lead.email}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{lead.source || 'N/A'}</td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                                lead.status === 'converted' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
+                              }`}>
+                                {lead.status || 'new'}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                              {lead.propertyAddress || 'N/A'}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                              {formatDate(lead.createdAt || lead.submittedAt)}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+
+                {activeTab === 'subscriptions' && (
+                  <div className="overflow-x-auto">
+                    <table className="min-w-full divide-y divide-gray-200">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User ID</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tier</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Monthly Limit</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stripe ID</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Started</th>
+                        </tr>
+                      </thead>
+                      <tbody className="bg-white divide-y divide-gray-200">
+                        {filterData(data.subscriptions).map(sub => (
+                          <tr key={sub.id} className="hover:bg-gray-50">
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{sub.id}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{sub.tier}</td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                                sub.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                              }`}>
+                                {sub.status}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{sub.monthlyLimit || 'N/A'}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-mono text-xs">
+                              {sub.stripeSubscriptionId || 'N/A'}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                              {formatDate(sub.currentPeriodStart)}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
+            </div>
+          </main>
+        </div>
+      );
+    };
+
+    // Render the app
+    const container = document.getElementById('root');
+    const root = ReactDOM.createRoot(container);
+    root.render(<AdminDashboard />);
+  </script>
+</body>
+</html>

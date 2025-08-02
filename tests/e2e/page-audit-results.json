@@ -1,0 +1,314 @@
+[
+  {
+    "page": "Home",
+    "path": "index.html",
+    "font": {
+      "family": "Manrope, -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, sans-serif",
+      "isManrope": true,
+      "isPlusJakarta": false,
+      "imports": [
+        "https://fonts.googleapis.com/",
+        "https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap"
+      ],
+      "hasInlinePlusJakarta": false,
+      "hasInlineManrope": true
+    },
+    "sidebar": {
+      "exists": false
+    },
+    "theme": {
+      "hasCompactModernCSS": true,
+      "hasGradientTheme": true,
+      "hasGradientElements": false,
+      "hasGlassElements": false
+    },
+    "issues": [],
+    "screenshot": "tests/e2e/debug-screenshots/page-audit-index.png"
+  },
+  {
+    "page": "Admin Dashboard",
+    "path": "admin-dashboard.html",
+    "font": {
+      "family": "Manrope, -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, sans-serif",
+      "isManrope": true,
+      "isPlusJakarta": false,
+      "imports": [
+        "https://fonts.googleapis.com/",
+        "https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap"
+      ],
+      "hasInlinePlusJakarta": false,
+      "hasInlineManrope": true
+    },
+    "sidebar": {
+      "exists": false
+    },
+    "theme": {
+      "hasCompactModernCSS": true,
+      "hasGradientTheme": true,
+      "hasGradientElements": true,
+      "hasGlassElements": false
+    },
+    "issues": [],
+    "screenshot": "tests/e2e/debug-screenshots/page-audit-admin-dashboard.png"
+  },
+  {
+    "page": "Blog Admin",
+    "path": "blog-admin.html",
+    "font": {
+      "family": "Manrope, -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, sans-serif",
+      "isManrope": true,
+      "isPlusJakarta": false,
+      "imports": [
+        "https://fonts.googleapis.com/",
+        "https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap"
+      ],
+      "hasInlinePlusJakarta": false,
+      "hasInlineManrope": true
+    },
+    "sidebar": {
+      "exists": false
+    },
+    "theme": {
+      "hasCompactModernCSS": true,
+      "hasGradientTheme": true,
+      "hasGradientElements": false,
+      "hasGlassElements": false
+    },
+    "issues": [],
+    "screenshot": "tests/e2e/debug-screenshots/page-audit-blog-admin.png"
+  },
+  {
+    "page": "Blog",
+    "path": "blog.html",
+    "font": {
+      "family": "Manrope, -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, sans-serif",
+      "isManrope": true,
+      "isPlusJakarta": false,
+      "imports": [
+        "https://fonts.googleapis.com/",
+        "https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap"
+      ],
+      "hasInlinePlusJakarta": false,
+      "hasInlineManrope": true
+    },
+    "sidebar": {
+      "exists": false
+    },
+    "theme": {
+      "hasCompactModernCSS": true,
+      "hasGradientTheme": true,
+      "hasGradientElements": true,
+      "hasGlassElements": false
+    },
+    "issues": [],
+    "screenshot": "tests/e2e/debug-screenshots/page-audit-blog.png"
+  },
+  {
+    "page": "Client View",
+    "path": "client-view.html",
+    "font": {
+      "family": "Manrope, -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, sans-serif",
+      "isManrope": true,
+      "isPlusJakarta": false,
+      "imports": [
+        "https://fonts.googleapis.com/",
+        "https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap"
+      ],
+      "hasInlinePlusJakarta": false,
+      "hasInlineManrope": true
+    },
+    "sidebar": {
+      "exists": false
+    },
+    "theme": {
+      "hasCompactModernCSS": true,
+      "hasGradientTheme": true,
+      "hasGradientElements": false,
+      "hasGlassElements": false
+    },
+    "issues": [],
+    "screenshot": "tests/e2e/debug-screenshots/page-audit-client-view.png"
+  },
+  {
+    "page": "Contact",
+    "path": "contact.html",
+    "font": {
+      "family": "Manrope, -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, sans-serif",
+      "isManrope": true,
+      "isPlusJakarta": false,
+      "imports": [
+        "https://fonts.googleapis.com/",
+        "https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap"
+      ],
+      "hasInlinePlusJakarta": false,
+      "hasInlineManrope": true
+    },
+    "sidebar": {
+      "exists": false
+    },
+    "theme": {
+      "hasCompactModernCSS": true,
+      "hasGradientTheme": true,
+      "hasGradientElements": false,
+      "hasGlassElements": false
+    },
+    "issues": [],
+    "screenshot": "tests/e2e/debug-screenshots/page-audit-contact.png"
+  },
+  {
+    "page": "Extension Welcome",
+    "path": "extension-welcome.html",
+    "font": {
+      "family": "Manrope, -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, sans-serif",
+      "isManrope": true,
+      "isPlusJakarta": false,
+      "imports": [
+        "https://fonts.googleapis.com/",
+        "https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap"
+      ],
+      "hasInlinePlusJakarta": false,
+      "hasInlineManrope": true
+    },
+    "sidebar": {
+      "exists": false
+    },
+    "theme": {
+      "hasCompactModernCSS": true,
+      "hasGradientTheme": true,
+      "hasGradientElements": true,
+      "hasGlassElements": false
+    },
+    "issues": [],
+    "screenshot": "tests/e2e/debug-screenshots/page-audit-extension-welcome.png"
+  },
+  {
+    "page": "Monitor Dashboard",
+    "path": "monitor-dashboard.html",
+    "font": {
+      "family": "Manrope, -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, sans-serif",
+      "isManrope": true,
+      "isPlusJakarta": false,
+      "imports": [
+        "https://fonts.googleapis.com/",
+        "https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap"
+      ],
+      "hasInlinePlusJakarta": false,
+      "hasInlineManrope": true
+    },
+    "sidebar": {
+      "exists": false
+    },
+    "theme": {
+      "hasCompactModernCSS": true,
+      "hasGradientTheme": true,
+      "hasGradientElements": false,
+      "hasGlassElements": false
+    },
+    "issues": [],
+    "screenshot": "tests/e2e/debug-screenshots/page-audit-monitor-dashboard.png"
+  },
+  {
+    "page": "Payment Success",
+    "path": "payment-success.html",
+    "font": {
+      "family": "Manrope, -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, sans-serif",
+      "isManrope": true,
+      "isPlusJakarta": false,
+      "imports": [
+        "https://fonts.googleapis.com/",
+        "https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap"
+      ],
+      "hasInlinePlusJakarta": false,
+      "hasInlineManrope": true
+    },
+    "sidebar": {
+      "exists": false
+    },
+    "theme": {
+      "hasCompactModernCSS": true,
+      "hasGradientTheme": true,
+      "hasGradientElements": false,
+      "hasGlassElements": false
+    },
+    "issues": [],
+    "screenshot": "tests/e2e/debug-screenshots/page-audit-payment-success.png"
+  },
+  {
+    "page": "Portfolio",
+    "path": "portfolio.html",
+    "font": {
+      "family": "Manrope, -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, sans-serif",
+      "isManrope": true,
+      "isPlusJakarta": false,
+      "imports": [
+        "https://fonts.googleapis.com/",
+        "https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap"
+      ],
+      "hasInlinePlusJakarta": false,
+      "hasInlineManrope": true
+    },
+    "sidebar": {
+      "exists": false
+    },
+    "theme": {
+      "hasCompactModernCSS": true,
+      "hasGradientTheme": true,
+      "hasGradientElements": true,
+      "hasGlassElements": true
+    },
+    "issues": [],
+    "screenshot": "tests/e2e/debug-screenshots/page-audit-portfolio.png"
+  },
+  {
+    "page": "Realtor Settings",
+    "path": "realtor-settings.html",
+    "font": {
+      "family": "Manrope, -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, sans-serif",
+      "isManrope": true,
+      "isPlusJakarta": false,
+      "imports": [
+        "https://fonts.googleapis.com/",
+        "https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap"
+      ],
+      "hasInlinePlusJakarta": false,
+      "hasInlineManrope": true
+    },
+    "sidebar": {
+      "exists": false
+    },
+    "theme": {
+      "hasCompactModernCSS": true,
+      "hasGradientTheme": true,
+      "hasGradientElements": false,
+      "hasGlassElements": false
+    },
+    "issues": [],
+    "screenshot": "tests/e2e/debug-screenshots/page-audit-realtor-settings.png"
+  },
+  {
+    "page": "Reports",
+    "path": "reports.html",
+    "font": {
+      "family": "Manrope, -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, sans-serif",
+      "isManrope": true,
+      "isPlusJakarta": false,
+      "imports": [
+        "https://fonts.googleapis.com/",
+        "https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap"
+      ],
+      "hasInlinePlusJakarta": false,
+      "hasInlineManrope": true
+    },
+    "sidebar": {
+      "exists": false
+    },
+    "theme": {
+      "hasCompactModernCSS": true,
+      "hasGradientTheme": true,
+      "hasGradientElements": true,
+      "hasGlassElements": true
+    },
+    "issues": [],
+    "screenshot": "tests/e2e/debug-screenshots/page-audit-reports.png"
+  }
+]
