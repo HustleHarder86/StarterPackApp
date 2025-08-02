@@ -16,7 +16,7 @@ function validateJavaScript() {
     
     const jsFiles = [
         'roi-finder.html',
-        'js/firebase-wrapper.js',
+        'js/firebase-wrapper-global.js',
         'js/config.js',
         'js/error-handler.js',
         'js/form-validation.js',
