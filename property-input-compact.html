@@ -1,0 +1,149 @@
+<!-- Property Input Form - Compact Layout -->
+<div id="property-input-section" class="main-container">
+    <div class="form-container">
+        <!-- Form Header -->
+        <div class="form-header">
+            <h1 class="text-xl font-bold text-gray-900">Property Investment Analysis</h1>
+            <!-- Compact Extension Banner -->
+            <div class="bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-200 rounded-lg p-3 mt-3">
+                <div class="flex items-center gap-3">
+                    <svg class="w-5 h-5 text-indigo-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                    </svg>
+                    <p class="text-sm text-gray-700 flex-1">
+                        <span class="font-medium">Quick tip:</span> Install our browser extension to auto-fill from REALTOR.ca
+                    </p>
+                    <a href="/extension/" target="_blank" class="text-sm font-medium text-indigo-600 hover:text-indigo-700 whitespace-nowrap">
+                        Install →
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Form Body -->
+        <div class="form-body">
+            <form id="property-analysis-form">
+                <!-- Two Column Layout -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Left Column -->
+                    <div>
+                        <!-- Property Address -->
+                        <div class="input-group">
+                            <label class="input-label">Property Address</label>
+                            <input type="text" id="property-address" class="input-field" placeholder="123 Main Street, Toronto, ON" required>
+                        </div>
+                        
+                        <!-- Price and Type -->
+                        <div class="grid grid-cols-2 gap-3 mb-4">
+                            <div>
+                                <label class="input-label">Purchase Price</label>
+                                <div class="relative">
+                                    <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">$</span>
+                                    <input type="number" id="property-price" class="input-field pl-8" placeholder="850,000" required min="0" step="1000">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="input-label">Property Type</label>
+                                <select id="property-type" class="input-field">
+                                    <option value="">Select Type</option>
+                                    <option value="condo">Condo</option>
+                                    <option value="house">House</option>
+                                    <option value="townhouse">Townhouse</option>
+                                    <option value="duplex">Duplex</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <!-- Bedrooms and Bathrooms -->
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="input-label">Bedrooms</label>
+                                <select id="property-bedrooms" class="input-field" required>
+                                    <option value="">Select</option>
+                                    <option value="1">1 Bedroom</option>
+                                    <option value="2">2 Bedrooms</option>
+                                    <option value="3">3 Bedrooms</option>
+                                    <option value="4">4 Bedrooms</option>
+                                    <option value="5">5+ Bedrooms</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="input-label">Bathrooms</label>
+                                <select id="property-bathrooms" class="input-field" required>
+                                    <option value="">Select</option>
+                                    <option value="1">1 Bathroom</option>
+                                    <option value="1.5">1.5 Bathrooms</option>
+                                    <option value="2">2 Bathrooms</option>
+                                    <option value="2.5">2.5 Bathrooms</option>
+                                    <option value="3">3+ Bathrooms</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Right Column -->
+                    <div>
+                        <!-- Square Footage and Year Built -->
+                        <div class="grid grid-cols-2 gap-3 mb-4">
+                            <div>
+                                <label class="input-label">Square Footage</label>
+                                <input type="number" id="property-sqft" class="input-field" placeholder="1,200" min="0">
+                            </div>
+                            <div>
+                                <label class="input-label">Year Built</label>
+                                <input type="number" id="property-year-built" class="input-field" placeholder="2010" min="1800" max="2025">
+                            </div>
+                        </div>
+                        
+                        <!-- Property Taxes and Condo Fees -->
+                        <div class="grid grid-cols-2 gap-3 mb-4">
+                            <div>
+                                <label class="input-label">Property Taxes/Year</label>
+                                <div class="relative">
+                                    <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">$</span>
+                                    <input type="number" id="property-taxes" class="input-field pl-8" placeholder="6,800" min="0" step="100">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="input-label">Condo Fees/Month</label>
+                                <div class="relative">
+                                    <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">$</span>
+                                    <input type="number" id="property-condofees" class="input-field pl-8" placeholder="650" min="0" step="50">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Analysis Options -->
+                        <div class="bg-gray-50 rounded-lg p-4 mt-4">
+                            <h3 class="text-sm font-medium text-gray-700 mb-3">Analysis Options</h3>
+                            <label class="flex items-center gap-2 mb-2">
+                                <input type="checkbox" class="rounded text-indigo-600" id="include-str-analysis">
+                                <span class="text-sm text-gray-700">Include Short-Term Rental Analysis</span>
+                            </label>
+                            <label class="flex items-center gap-2">
+                                <input type="checkbox" class="rounded text-indigo-600" id="generate-report">
+                                <span class="text-sm text-gray-700">Generate Detailed Report</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Form Footer -->
+        <div class="form-footer">
+            <div class="flex gap-3">
+                <button type="submit" form="property-analysis-form" class="flex-1 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold py-3 px-6 rounded-lg flex items-center justify-center group hover:shadow-lg transition-all duration-200">
+                    <span class="loading-spinner w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin hidden mr-2" id="analyze-spinner"></span>
+                    <span id="analyze-text">Analyze Property</span>
+                    <svg class="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                    </svg>
+                </button>
+                <button type="button" onclick="fillSampleData()" class="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium">
+                    Sample Data
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -602,57 +602,27 @@
             </div>
         </div>
 
-        <!-- Property Input Form -->
-        <div id="property-input-section">
-            <div class="container mx-auto p-4 lg:p-xl">
-                <!-- Browser Extension CTA Banner -->
-                <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-lg mb-xl max-w-2xl mx-auto">
-                    <div class="flex items-start gap-md">
-                        <div class="flex-shrink-0">
-                            <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"/>
-                            </svg>
-                        </div>
-                        <div class="flex-1">
-                            <h3 class="font-semibold text-gray-900 mb-sm">Save Time with Our Browser Extension!</h3>
-                            <p class="text-sm text-gray-700 mb-md">Automatically extract property data from REALTOR.ca with one click. No manual entry needed!</p>
-                            <div class="flex flex-wrap gap-sm">
-                                <a href="/extension/" target="_blank" class="inline-flex items-center gap-sm bg-blue-600 text-white px-md py-sm rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
-                                    </svg>
-                                    Install Extension
-                                </a>
-                                <button onclick="document.getElementById('extension-instructions').classList.toggle('hidden')" class="text-sm text-blue-600 hover:text-blue-700 font-medium">
-                                    How to Install
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Installation Instructions (Hidden by default) -->
-                    <div id="extension-instructions" class="hidden mt-lg pt-lg border-t border-blue-200">
-                        <h4 class="font-medium text-gray-900 mb-sm">Quick Installation Guide:</h4>
-                        <ol class="text-sm text-gray-700 space-y-2 list-decimal list-inside">
-                            <li>Download the extension files from the link above</li>
-                            <li>Open Chrome/Edge and go to <code class="bg-gray-100 px-2 py-1 rounded">chrome://extensions</code></li>
-                            <li>Enable "Developer mode" in the top right</li>
-                            <li>Click "Load unpacked" and select the extension folder</li>
-                            <li>Visit any REALTOR.ca listing and click "Analyze with StarterPackApp"</li>
-                        </ol>
-                    </div>
-                </div>
-                
-                <div class="card card-lg max-w-2xl mx-auto" style="overflow-x: hidden;">
-                    <div class="text-center mb-xl">
-                        <h2 class="text-3xl font-bold text-gray-900 mb-md">Analyze a Property</h2>
-                        <p class="text-gray-600">Enter property details manually or use our browser extension</p>
-                        <button onclick="window.fillSampleData()" class="mt-md text-sm text-blue-600 hover:text-blue-700 font-medium inline-flex items-center gap-sm">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <!-- Property Input Form - Compact Layout -->
+        <div id="property-input-section" class="main-container">
+            <div class="form-container">
+                <!-- Form Header -->
+                <div class="form-header">
+                    <h1 class="text-xl font-bold text-gray-900">Property Investment Analysis</h1>
+                    <!-- Compact Extension Banner -->
+                    <div class="bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-200 rounded-lg p-3 mt-3">
+                        <div class="flex items-center gap-3">
+                            <svg class="w-5 h-5 text-indigo-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
                             </svg>
-                            Try with Sample Data
-                        </button>
+                            <p class="text-sm text-gray-700 flex-1">
+                                <span class="font-medium">Quick tip:</span> Install our browser extension to auto-fill from REALTOR.ca
+                            </p>
+                            <a href="/extension/" target="_blank" class="text-sm font-medium text-indigo-600 hover:text-indigo-700 whitespace-nowrap">
+                                Install →
+                            </a>
+                        </div>
                     </div>
+                </div>
                     
                     <form id="property-analysis-form" class="space-y-lg">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-lg">
