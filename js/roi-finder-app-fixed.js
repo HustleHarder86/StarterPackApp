@@ -140,19 +140,29 @@
             if (loginForm) {
                 loginForm.addEventListener('submit', async (e) => {
                     e.preventDefault();
-                    const email = document.getElementById('login-email').value;
-                    const password = document.getElementById('login-password').value;
+                    const emailEl = document.getElementById('login-email');
+                    const passwordEl = document.getElementById('login-password');
+                    const spinnerEl = document.getElementById('login-spinner');
+                    const buttonTextEl = document.getElementById('login-button-text');
                     
-                    document.getElementById('login-spinner').classList.remove('hidden');
-                    document.getElementById('login-button-text').textContent = 'Signing in...';
+                    if (!emailEl || !passwordEl) {
+                        console.error('Login form elements not found');
+                        return;
+                    }
+                    
+                    const email = emailEl.value;
+                    const password = passwordEl.value;
+                    
+                    if (spinnerEl) spinnerEl.classList.remove('hidden');
+                    if (buttonTextEl) buttonTextEl.textContent = 'Signing in...';
                     
                     try {
                         await auth.signInWithEmailAndPassword(email, password);
                         this.showSuccess('Login successful!');
                     } catch (error) {
                         this.showError('Login failed: ' + error.message);
-                        document.getElementById('login-spinner').classList.add('hidden');
-                        document.getElementById('login-button-text').textContent = 'Sign In';
+                        if (spinnerEl) spinnerEl.classList.add('hidden');
+                        if (buttonTextEl) buttonTextEl.textContent = 'Sign In';
                     }
                 });
             }
@@ -162,12 +172,23 @@
             if (registerForm) {
                 registerForm.addEventListener('submit', async (e) => {
                     e.preventDefault();
-                    const name = document.getElementById('register-name').value;
-                    const email = document.getElementById('register-email').value;
-                    const password = document.getElementById('register-password').value;
+                    const nameEl = document.getElementById('register-name');
+                    const emailEl = document.getElementById('register-email');
+                    const passwordEl = document.getElementById('register-password');
+                    const spinnerEl = document.getElementById('register-spinner');
+                    const buttonTextEl = document.getElementById('register-button-text');
                     
-                    document.getElementById('register-spinner').classList.remove('hidden');
-                    document.getElementById('register-button-text').textContent = 'Creating account...';
+                    if (!nameEl || !emailEl || !passwordEl) {
+                        console.error('Register form elements not found');
+                        return;
+                    }
+                    
+                    const name = nameEl.value;
+                    const email = emailEl.value;
+                    const password = passwordEl.value;
+                    
+                    if (spinnerEl) spinnerEl.classList.remove('hidden');
+                    if (buttonTextEl) buttonTextEl.textContent = 'Creating account...';
                     
                     try {
                         const userCredential = await auth.createUserWithEmailAndPassword(email, password);
@@ -186,8 +207,8 @@
                         this.showSuccess('Account created successfully!');
                     } catch (error) {
                         this.showError('Registration failed: ' + error.message);
-                        document.getElementById('register-spinner').classList.add('hidden');
-                        document.getElementById('register-button-text').textContent = 'Create Account';
+                        if (spinnerEl) spinnerEl.classList.add('hidden');
+                        if (buttonTextEl) buttonTextEl.textContent = 'Create Account';
                     }
                 });
             }
@@ -211,12 +232,14 @@
                     if (isLoginVisible) {
                         loginCard.classList.add('hidden');
                         signupCard.classList.remove('hidden');
-                        document.getElementById('mobile-auth-text').textContent = 'Already have an account?';
+                        const mobileAuthText = document.getElementById('mobile-auth-text');
+                        if (mobileAuthText) mobileAuthText.textContent = 'Already have an account?';
                         mobileAuthToggle.textContent = 'Sign In';
                     } else {
                         loginCard.classList.remove('hidden');
                         signupCard.classList.add('hidden');
-                        document.getElementById('mobile-auth-text').textContent = 'Need an account?';
+                        const mobileAuthText = document.getElementById('mobile-auth-text');
+                        if (mobileAuthText) mobileAuthText.textContent = 'Need an account?';
                         mobileAuthToggle.textContent = 'Sign Up';
                     }
                 });
@@ -269,7 +292,10 @@
         
         showLoginSection() {
             this.hideAllSections();
-            document.getElementById('login-section').classList.remove('hidden');
+            const loginSection = document.getElementById('login-section');
+            if (loginSection) {
+                loginSection.classList.remove('hidden');
+            }
             const mainContent = document.getElementById('main-content');
             if (mainContent) {
                 mainContent.style.display = 'block';
@@ -278,7 +304,10 @@
         
         showPropertyInput() {
             this.hideAllSections();
-            document.getElementById('property-input-section').classList.remove('hidden');
+            const propertySection = document.getElementById('property-input-section');
+            if (propertySection) {
+                propertySection.classList.remove('hidden');
+            }
             const mainContent = document.getElementById('main-content');
             if (mainContent) {
                 mainContent.style.display = 'block';
@@ -287,7 +316,10 @@
         
         showAnalysisResults() {
             this.hideAllSections();
-            document.getElementById('analysis-results').classList.remove('hidden');
+            const resultsSection = document.getElementById('analysis-results');
+            if (resultsSection) {
+                resultsSection.classList.remove('hidden');
+            }
         }
         
         hideAllSections() {
@@ -421,8 +453,11 @@
             window.appState.lastPropertyData = propertyData;
             
             // Show loading
-            document.getElementById('analyze-spinner').classList.remove('hidden');
-            document.getElementById('analyze-text').textContent = 'Analyzing...';
+            const spinnerEl = document.getElementById('analyze-spinner');
+            const textEl = document.getElementById('analyze-text');
+            
+            if (spinnerEl) spinnerEl.classList.remove('hidden');
+            if (textEl) textEl.textContent = 'Analyzing...';
             
             try {
                 await this.analyzeProperty(propertyData, 'both');
@@ -431,8 +466,10 @@
                 this.showError('Analysis failed: ' + error.message);
                 
                 // Reset button
-                document.getElementById('analyze-spinner').classList.add('hidden');
-                document.getElementById('analyze-text').textContent = 'Analyze Property';
+                const spinnerEl = document.getElementById('analyze-spinner');
+                const textEl = document.getElementById('analyze-text');
+                if (spinnerEl) spinnerEl.classList.add('hidden');
+                if (textEl) textEl.textContent = 'Analyze Property';
             }
         }
         
@@ -465,8 +502,10 @@
                 window.appState.currentAnalysis = analysisData;
                 
                 // Reset form button
-                document.getElementById('analyze-spinner').classList.add('hidden');
-                document.getElementById('analyze-text').textContent = 'Analyze Property';
+                const spinnerEl = document.getElementById('analyze-spinner');
+                const textEl = document.getElementById('analyze-text');
+                if (spinnerEl) spinnerEl.classList.add('hidden');
+                if (textEl) textEl.textContent = 'Analyze Property';
                 
                 // Render results
                 this.renderAnalysisResults(analysisData);
@@ -478,8 +517,10 @@
                 this.showErrorState(error.message);
                 
                 // Reset button
-                document.getElementById('analyze-spinner').classList.add('hidden');
-                document.getElementById('analyze-text').textContent = 'Analyze Property';
+                const spinnerEl = document.getElementById('analyze-spinner');
+                const textEl = document.getElementById('analyze-text');
+                if (spinnerEl) spinnerEl.classList.add('hidden');
+                if (textEl) textEl.textContent = 'Analyze Property';
             }
         }
         
@@ -506,10 +547,16 @@
                 }
             } else {
                 // Fallback to simple loading
-                document.getElementById('loading-state').classList.remove('hidden');
+                const loadingState = document.getElementById('loading-state');
+                if (loadingState) {
+                    loadingState.classList.remove('hidden');
+                }
             }
             
-            document.getElementById('main-content').style.display = 'block';
+            const mainContent = document.getElementById('main-content');
+            if (mainContent) {
+                mainContent.style.display = 'block';
+            }
         }
         
         showErrorState(message) {
@@ -545,7 +592,10 @@
             `;
             
             errorContainer.classList.remove('hidden');
-            document.getElementById('main-content').style.display = 'block';
+            const mainContent = document.getElementById('main-content');
+            if (mainContent) {
+                mainContent.style.display = 'block';
+            }
         }
         
         renderAnalysisResults(analysisData) {

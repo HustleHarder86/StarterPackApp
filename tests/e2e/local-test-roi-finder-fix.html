@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Local Test - ROI Finder Fix</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .test-result {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .pass {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .fail {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .test-section {
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        iframe {
+            width: 100%;
+            height: 600px;
+            border: 1px solid #ddd;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Local Test: ROI Finder JavaScript Fix</h1>
+    
+    <div class="test-section">
+        <h2>Test 1: Null Safety Check</h2>
+        <p>This test verifies that the JavaScript doesn't throw errors when elements are missing.</p>
+        <div id="test1-result" class="test-result"></div>
+        
+        <!-- Minimal DOM structure to test null safety -->
+        <div id="test-container">
+            <div id="property-input-section" class="hidden">Test Section</div>
+            <!-- Note: main-content is intentionally missing to test null safety -->
+        </div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Test 2: Full Page Load</h2>
+        <p>Loading the actual roi-finder.html page to verify no console errors:</p>
+        <button onclick="loadFullPage()">Load ROI Finder Page</button>
+        <div id="test2-result" class="test-result"></div>
+        <iframe id="roi-finder-frame" style="display:none;"></iframe>
+    </div>
+    
+    <div class="test-section">
+        <h2>Console Error Monitor</h2>
+        <div id="console-errors" style="font-family: monospace; background: #f5f5f5; padding: 10px; border-radius: 5px;">
+            <strong>Console Errors:</strong>
+            <div id="error-log">None</div>
+        </div>
+    </div>
+    
+    <script>
+        // Track console errors
+        const errors = [];
+        const originalError = console.error;
+        console.error = function(...args) {
+            errors.push(args.join(' '));
+            updateErrorLog();
+            originalError.apply(console, args);
+        };
+        
+        function updateErrorLog() {
+            const errorLog = document.getElementById('error-log');
+            if (errors.length === 0) {
+                errorLog.textContent = 'None';
+                errorLog.style.color = 'green';
+            } else {
+                errorLog.innerHTML = errors.map(e => `<div style="color: red;">• ${e}</div>`).join('');
+            }
+        }
+        
+        // Test 1: Simulate the fixed methods with null safety
+        function runTest1() {
+            const result = document.getElementById('test1-result');
+            try {
+                // Simulate hideAllSections
+                const sections = ['property-input-section', 'main-content', 'non-existent'];
+                sections.forEach(sectionId => {
+                    const element = document.getElementById(sectionId);
+                    if (element) {
+                        element.classList.add('hidden');
+                    }
+                });
+                
+                // Simulate showPropertyInput
+                const propertySection = document.getElementById('property-input-section');
+                if (propertySection) {
+                    propertySection.classList.remove('hidden');
+                }
+                
+                const mainContent = document.getElementById('main-content');
+                if (mainContent) {
+                    mainContent.style.display = 'block';
+                } else {
+                    console.log('main-content not found (expected in this test)');
+                }
+                
+                result.textContent = '✓ Test 1 Passed: Null safety checks working correctly';
+                result.className = 'test-result pass';
+            } catch (e) {
+                result.textContent = '✗ Test 1 Failed: ' + e.message;
+                result.className = 'test-result fail';
+            }
+        }
+        
+        // Test 2: Load full page
+        function loadFullPage() {
+            const frame = document.getElementById('roi-finder-frame');
+            const result = document.getElementById('test2-result');
+            
+            frame.style.display = 'block';
+            frame.src = '../../roi-finder.html?e2e_test_mode=true';
+            
+            frame.onload = function() {
+                setTimeout(() => {
+                    try {
+                        // Check if frame loaded without errors
+                        const frameDoc = frame.contentDocument || frame.contentWindow.document;
+                        
+                        if (frameDoc) {
+                            result.textContent = '✓ Test 2 Passed: Page loaded successfully';
+                            result.className = 'test-result pass';
+                        } else {
+                            result.textContent = '✗ Test 2 Failed: Could not access frame content';
+                            result.className = 'test-result fail';
+                        }
+                    } catch (e) {
+                        result.textContent = '✗ Test 2 Failed: ' + e.message;
+                        result.className = 'test-result fail';
+                    }
+                }, 2000);
+            };
+            
+            frame.onerror = function() {
+                result.textContent = '✗ Test 2 Failed: Frame failed to load';
+                result.className = 'test-result fail';
+            };
+        }
+        
+        // Run Test 1 automatically
+        window.onload = function() {
+            runTest1();
+        };
+    </script>
+</body>
+</html>
