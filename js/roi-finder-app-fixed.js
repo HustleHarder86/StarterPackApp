@@ -420,35 +420,53 @@
             if (window.PropertyConfirmation) {
                 const confirmationHTML = window.PropertyConfirmation(
                     propertyData,
-                    (analysisType) => {
+                    async (analysisType) => {
                         // onConfirm callback
                         console.log('Confirmed analysis type:', analysisType);
                         
-                        // Hide confirmation
-                        confirmationContainer.style.display = 'none';
-                        confirmationContainer.innerHTML = '';
-                        
-                        // Show loading with progress
-                        this.showLoadingWithProgress();
-                        
-                        // Convert analysis type for API
-                        // Keep the analysis type as-is for the API
-                        const apiAnalysisType = analysisType; // 'both', 'ltr', or 'str'
-                        
-                        // Prepare property data for analysis
-                        const analysisData = {
-                            address: propertyData.address,
-                            price: propertyData.price || 0,
-                            bedrooms: propertyData.bedrooms || 0,
-                            bathrooms: propertyData.bathrooms || 0,
-                            sqft: propertyData.sqft || 0,
-                            propertyTaxes: propertyData.propertyTaxes || 0,
-                            yearBuilt: propertyData.yearBuilt || new Date().getFullYear(),
-                            propertyType: propertyData.propertyType || 'house'
-                        };
-                        
-                        // Start analysis
-                        this.analyzeProperty(analysisData, apiAnalysisType);
+                        try {
+                            // Hide confirmation
+                            confirmationContainer.style.display = 'none';
+                            confirmationContainer.innerHTML = '';
+                            
+                            // Show loading with progress
+                            this.showLoadingWithProgress();
+                            
+                            // Convert analysis type for API
+                            // Keep the analysis type as-is for the API
+                            const apiAnalysisType = analysisType; // 'both', 'ltr', or 'str'
+                            
+                            // Validate required data
+                            if (!propertyData.address) {
+                                throw new Error('Property address is required');
+                            }
+                            
+                            if (!propertyData.price || propertyData.price <= 0) {
+                                throw new Error('Valid property price is required');
+                            }
+                            
+                            // Prepare property data for analysis
+                            const analysisData = {
+                                address: propertyData.address,
+                                price: propertyData.price || 0,
+                                bedrooms: propertyData.bedrooms || 0,
+                                bathrooms: propertyData.bathrooms || 0,
+                                sqft: propertyData.sqft || 0,
+                                propertyTaxes: propertyData.propertyTaxes || 0,
+                                yearBuilt: propertyData.yearBuilt || new Date().getFullYear(),
+                                propertyType: propertyData.propertyType || 'house',
+                                condoFees: propertyData.condoFees || 0,
+                                mlsNumber: propertyData.mlsNumber || '',
+                                imageUrl: propertyData.imageUrl || propertyData.mainImage || ''
+                            };
+                            
+                            // Start analysis
+                            await this.analyzeProperty(analysisData, apiAnalysisType);
+                        } catch (error) {
+                            console.error('Error starting analysis:', error);
+                            this.hideLoadingState();
+                            this.showErrorMessage(error.message || 'Failed to start analysis. Please try again.');
+                        }
                     },
                     () => {
                         // onCancel callback
@@ -1128,6 +1146,45 @@
                 propertySection.classList.remove('hidden');
                 propertySection.style.display = 'block';
             }
+        },
+        hideLoadingState: () => {
+            const loadingContainer = document.getElementById('analysis-loading-container');
+            if (loadingContainer) {
+                loadingContainer.style.display = 'none';
+            }
+        },
+        showErrorMessage: (message) => {
+            // Hide any loading states
+            if (window.roiFinderApp && window.roiFinderApp.hideLoadingState) {
+                window.roiFinderApp.hideLoadingState();
+            }
+            
+            // For extension flow, show a more user-friendly error overlay
+            const errorOverlay = document.createElement('div');
+            errorOverlay.className = 'fixed inset-0 z-[10000] bg-gray-900 bg-opacity-75 flex items-center justify-center p-4';
+            errorOverlay.style.cssText = 'position: fixed; inset: 0; z-index: 10000; background-color: rgba(17, 24, 39, 0.75); display: flex; align-items: center; justify-content: center; padding: 1rem;';
+            errorOverlay.innerHTML = `
+                <div style="background-color: white; border-radius: 0.5rem; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); max-width: 28rem; width: 100%; padding: 1.5rem;">
+                    <div style="display: flex; align-items: center; margin-bottom: 1rem;">
+                        <div style="width: 3rem; height: 3rem; background-color: #fee2e2; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 1rem;">
+                            <svg style="width: 1.5rem; height: 1.5rem; color: #dc2626;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </div>
+                        <h3 style="font-size: 1.125rem; font-weight: 600; color: #111827;">Error</h3>
+                    </div>
+                    <p style="color: #4b5563; margin-bottom: 1.5rem;">${message}</p>
+                    <div style="display: flex; gap: 0.75rem;">
+                        <button onclick="window.location.reload()" style="flex: 1; padding: 0.5rem 1rem; background-color: #2563eb; color: white; border-radius: 0.5rem; border: none; cursor: pointer;">
+                            Try Again
+                        </button>
+                        <button onclick="this.closest('div[style*=\\'position: fixed\\']').remove()" style="flex: 1; padding: 0.5rem 1rem; background-color: #e5e7eb; color: #374151; border-radius: 0.5rem; border: none; cursor: pointer;">
+                            Close
+                        </button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(errorOverlay);
         }
     };
 
