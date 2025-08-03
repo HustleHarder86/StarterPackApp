@@ -6,7 +6,7 @@
 .property-confirmation-overlay {
   position: fixed;
   inset: 0;
-  background-color: rgba(107, 114, 128, 0.5); /* Lighter gray with 50% opacity */
+  background-color: rgba(255, 255, 255, 0.95); /* White background with slight transparency */
   display: flex;
   align-items: center;
   justify-content: center;
