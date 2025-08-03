@@ -27,9 +27,9 @@
     };
     
     const html = `
-        <div class="min-h-screen bg-gray-50 py-8">
-            <div class="max-w-4xl mx-auto px-4">
-                <div class="bg-white rounded-xl shadow-xl overflow-hidden">
+        <div class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <div class="max-w-2xl w-full">
+                <div class="bg-white rounded-xl shadow-2xl overflow-hidden">
                     <!-- Header with gradient -->
                     <div class="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-8">
                         <div class="flex items-center justify-center mb-4">
