@@ -894,7 +894,7 @@
             if (!loadingContainer) {
                 loadingContainer = document.createElement('div');
                 loadingContainer.id = 'analysis-loading-container';
-                loadingContainer.className = 'fixed inset-0 z-[9999] bg-gray-50';
+                loadingContainer.className = 'analysis-progress-container';
                 document.body.appendChild(loadingContainer);
             }
             
@@ -913,60 +913,41 @@
             
             // Render loading UI
             loadingContainer.innerHTML = `
-                <div class="min-h-screen flex items-center justify-center p-4">
-                    <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full overflow-hidden">
-                        <!-- Header with gradient -->
-                        <div class="bg-gradient-to-r from-blue-600 to-purple-600 p-8 text-white">
-                            <h2 class="text-2xl font-bold mb-2">Analyzing Your Property</h2>
-                            <div class="flex items-center justify-between">
-                                <div class="flex-1">
-                                    <div class="bg-white/20 rounded-full h-4 overflow-hidden">
-                                        <div id="progress-bar" class="bg-white h-full rounded-full transition-all duration-500" style="width: 0%"></div>
-                                    </div>
+                <div class="analysis-progress-card">
+                    <!-- Header with gradient -->
+                    <div class="analysis-progress-header">
+                        <h2 class="analysis-progress-title">Analyzing Your Property</h2>
+                        <div class="analysis-progress-bar-container">
+                            <div class="analysis-progress-bar-wrapper">
+                                <div class="analysis-progress-bar-bg">
+                                    <div id="progress-bar" class="analysis-progress-bar" style="width: 0%"></div>
                                 </div>
-                                <span id="progress-percentage" class="ml-4 text-xl font-bold">0%</span>
-                                <span class="ml-1 text-sm">Complete</span>
                             </div>
+                            <span id="progress-percentage" class="analysis-progress-percentage">0%</span>
+                            <span class="analysis-progress-label">Complete</span>
                         </div>
-                        
-                        <!-- Steps List -->
-                        <div class="p-8">
-                            <div class="space-y-3">
-                                ${analysisSteps.map(step => `
-                                    <div id="step-${step.id}" class="flex items-center">
-                                        <div class="step-indicator w-6 h-6 rounded-full border-2 border-gray-300 bg-white mr-3 flex items-center justify-center">
-                                            <svg class="w-4 h-4 text-green-500 hidden" fill="currentColor" viewBox="0 0 20 20">
-                                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                                            </svg>
-                                            <div class="spinner w-3 h-3 border-2 border-purple-600 border-t-transparent rounded-full animate-spin hidden"></div>
-                                        </div>
-                                        <span class="step-text text-gray-600">${step.text}</span>
-                                        <div class="step-progress ml-auto hidden">
-                                            <div class="bg-gray-200 rounded-full h-2 w-24">
-                                                <div class="bg-gradient-to-r from-blue-600 to-purple-600 h-full rounded-full transition-all duration-300" style="width: 0%"></div>
-                                            </div>
-                                        </div>
+                    </div>
+                    
+                    <!-- Steps List -->
+                    <div class="analysis-progress-steps">
+                        <div class="analysis-progress-steps-list">
+                            ${analysisSteps.map(step => `
+                                <div id="step-${step.id}" class="analysis-step-item">
+                                    <div class="analysis-step-indicator">
+                                        <svg class="analysis-step-checkmark" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                        </svg>
                                     </div>
-                                `).join('')}
-                            </div>
-                            
-                            <!-- Analysis Timeout Warning -->
-                            <div id="timeout-warning" class="mt-6 p-4 bg-red-50 border border-red-200 rounded-lg hidden">
-                                <p class="text-sm text-red-600 flex items-center">
-                                    <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
-                                    </svg>
-                                    Analysis Timeout: The analysis is taking longer than expected. This might be due to high server load. Please try again or contact support if the issue persists.
-                                </p>
-                            </div>
-                            
-                            <!-- Retry Button -->
-                            <div class="mt-8 text-center">
-                                <button id="retry-analysis-btn" class="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all hidden">
-                                    Retry Analysis
-                                </button>
-                            </div>
+                                    <span class="analysis-step-text">${step.text}</span>
+                                </div>
+                            `).join('')}
                         </div>
+                    </div>
+                    
+                    <!-- Footer Message -->
+                    <div class="analysis-progress-footer">
+                        <p class="analysis-progress-message">This comprehensive analysis typically takes 30-60 seconds</p>
+                    </div>
                     </div>
                 </div>
             `;
@@ -993,35 +974,31 @@
                 // Update current step to in-progress
                 const stepEl = document.getElementById(`step-${steps[currentStep].id}`);
                 if (stepEl) {
-                    const indicator = stepEl.querySelector('.step-indicator');
-                    const spinner = indicator.querySelector('.spinner');
-                    const checkmark = indicator.querySelector('svg');
-                    const progressBar = stepEl.querySelector('.step-progress');
+                    const indicator = stepEl.querySelector('.analysis-step-indicator');
                     
-                    // Show spinner
-                    spinner.classList.remove('hidden');
-                    indicator.classList.add('border-purple-600');
+                    // Mark as active
+                    stepEl.classList.add('active');
+                    indicator.classList.add('active');
                     
-                    // Show progress bar for current step
-                    if (progressBar) {
-                        progressBar.classList.remove('hidden');
-                        setTimeout(() => {
-                            progressBar.querySelector('div div').style.width = '100%';
-                        }, 100);
-                    }
+                    // Update progress bar
+                    const progressPercentage = Math.round(((currentStep + 0.5) / totalSteps) * 100);
+                    const progressBar = document.getElementById('progress-bar');
+                    const progressText = document.getElementById('progress-percentage');
+                    if (progressBar) progressBar.style.width = `${progressPercentage}%`;
+                    if (progressText) progressText.textContent = `${progressPercentage}%`;
                     
                     // Complete step after delay
                     setTimeout(() => {
-                        spinner.classList.add('hidden');
-                        checkmark.classList.remove('hidden');
-                        indicator.classList.remove('border-purple-600');
-                        indicator.classList.add('border-green-500', 'bg-green-50');
-                        stepEl.querySelector('.step-text').classList.add('text-green-600', 'font-medium');
+                        // Mark as completed
+                        stepEl.classList.remove('active');
+                        stepEl.classList.add('completed');
+                        indicator.classList.remove('active');
+                        indicator.classList.add('completed');
                         
                         // Update overall progress
-                        const progress = Math.round(((currentStep + 1) / totalSteps) * 100);
-                        document.getElementById('progress-bar').style.width = `${progress}%`;
-                        document.getElementById('progress-percentage').textContent = `${progress}%`;
+                        const completePercentage = Math.round(((currentStep + 1) / totalSteps) * 100);
+                        if (progressBar) progressBar.style.width = `${completePercentage}%`;
+                        if (progressText) progressText.textContent = `${completePercentage}%`;
                         
                         currentStep++;
                         

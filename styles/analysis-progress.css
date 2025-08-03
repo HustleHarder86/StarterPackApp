@@ -1,0 +1,193 @@
+/* Analysis Progress Screen Styles */
+/* This file provides all the CSS needed for the analysis progress screen */
+
+/* Progress Container */
+.analysis-progress-container {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background-color: #f9fafb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+/* Progress Card */
+.analysis-progress-card {
+  background-color: white;
+  border-radius: 1rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  max-width: 42rem;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* Progress Header */
+.analysis-progress-header {
+  background: linear-gradient(to right, #2563eb, #9333ea);
+  padding: 2rem;
+  color: white;
+}
+
+.analysis-progress-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  font-family: var(--cm-font-primary, 'Manrope', sans-serif);
+}
+
+/* Progress Bar Container */
+.analysis-progress-bar-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.analysis-progress-bar-wrapper {
+  flex: 1;
+}
+
+.analysis-progress-bar-bg {
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 9999px;
+  height: 1rem;
+  overflow: hidden;
+}
+
+.analysis-progress-bar {
+  background-color: white;
+  height: 100%;
+  border-radius: 9999px;
+  transition: width 0.5s ease;
+}
+
+.analysis-progress-percentage {
+  margin-left: 1rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+  font-family: var(--cm-font-primary, 'Manrope', sans-serif);
+}
+
+.analysis-progress-label {
+  margin-left: 0.25rem;
+  font-size: 0.875rem;
+  font-family: var(--cm-font-primary, 'Manrope', sans-serif);
+}
+
+/* Steps Section */
+.analysis-progress-steps {
+  padding: 2rem;
+}
+
+.analysis-progress-steps-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* Step Item */
+.analysis-step-item {
+  display: flex;
+  align-items: center;
+}
+
+.analysis-step-indicator {
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  border: 2px solid #d1d5db;
+  background-color: white;
+  margin-right: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.analysis-step-indicator.completed {
+  border-color: #10b981;
+  background-color: #10b981;
+}
+
+.analysis-step-indicator.active {
+  border-color: #3b82f6;
+  background-color: #3b82f6;
+}
+
+.analysis-step-indicator.active::after {
+  content: '';
+  position: absolute;
+  width: 0.5rem;
+  height: 0.5rem;
+  background-color: white;
+  border-radius: 50%;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(0.8);
+  }
+}
+
+.analysis-step-checkmark {
+  width: 1rem;
+  height: 1rem;
+  color: white;
+  display: none;
+}
+
+.analysis-step-indicator.completed .analysis-step-checkmark {
+  display: block;
+}
+
+.analysis-step-text {
+  font-size: 0.875rem;
+  color: #4b5563;
+  font-family: var(--cm-font-primary, 'Manrope', sans-serif);
+  transition: color 0.3s ease;
+}
+
+.analysis-step-item.completed .analysis-step-text {
+  color: #10b981;
+  font-weight: 500;
+}
+
+.analysis-step-item.active .analysis-step-text {
+  color: #3b82f6;
+  font-weight: 600;
+}
+
+/* Footer Message */
+.analysis-progress-footer {
+  padding: 1.5rem 2rem;
+  background-color: #f3f4f6;
+  text-align: center;
+}
+
+.analysis-progress-message {
+  font-size: 0.875rem;
+  color: #6b7280;
+  font-family: var(--cm-font-primary, 'Manrope', sans-serif);
+}
+
+/* Loading Animation */
+.analysis-loading-spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
