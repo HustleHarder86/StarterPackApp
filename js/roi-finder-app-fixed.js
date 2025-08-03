@@ -270,13 +270,19 @@
         showLoginSection() {
             this.hideAllSections();
             document.getElementById('login-section').classList.remove('hidden');
-            document.getElementById('main-content').style.display = 'block';
+            const mainContent = document.getElementById('main-content');
+            if (mainContent) {
+                mainContent.style.display = 'block';
+            }
         }
         
         showPropertyInput() {
             this.hideAllSections();
             document.getElementById('property-input-section').classList.remove('hidden');
-            document.getElementById('main-content').style.display = 'block';
+            const mainContent = document.getElementById('main-content');
+            if (mainContent) {
+                mainContent.style.display = 'block';
+            }
         }
         
         showAnalysisResults() {
