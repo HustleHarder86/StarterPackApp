@@ -26,18 +26,34 @@ module.exports = async function handler(req, res) {
     
     console.log('[Vercel Proxy] Railway endpoint:', endpoint);
     
+    // Check if this is an extension request without auth
+    const isExtensionRequest = req.body.fromExtension || req.headers['x-extension-request'];
+    const hasAuth = req.headers.authorization && req.headers.authorization !== '';
+    
+    // Build headers
+    const headers = {
+      'Content-Type': 'application/json',
+      // Add internal API key for service authentication
+      'X-Internal-API-Key': process.env.INTERNAL_API_KEY || '',
+      'X-Service': 'vercel',
+      'X-Request-ID': req.headers['x-request-id'] || crypto.randomUUID()
+    };
+    
+    // Only forward auth headers if they exist
+    if (hasAuth) {
+      headers['Authorization'] = req.headers.authorization;
+    }
+    
+    // Add extension flag if present
+    if (isExtensionRequest) {
+      headers['X-Extension-Request'] = 'true';
+      console.log('[Vercel Proxy] Extension request detected, auth optional');
+    }
+    
     // Forward the request to Railway with internal auth
     const response = await fetch(endpoint, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        // Forward auth headers
-        'Authorization': req.headers.authorization || '',
-        // Add internal API key for service authentication
-        'X-Internal-API-Key': process.env.INTERNAL_API_KEY || '',
-        'X-Service': 'vercel',
-        'X-Request-ID': req.headers['x-request-id'] || crypto.randomUUID()
-      },
+      headers,
       body: JSON.stringify(req.body)
     });
 

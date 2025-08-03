@@ -13,6 +13,14 @@ class AnalysisService {
         'Content-Type': 'application/json'
       };
       
+      // Check if this is an extension request
+      const urlParams = new URLSearchParams(window.location.search);
+      const fromExtension = urlParams.get('fromExtension') === 'true';
+      
+      if (fromExtension) {
+        headers['X-Extension-Request'] = 'true';
+      }
+      
       if (window.firebaseWrapper && window.firebaseWrapper.auth?.currentUser) {
         const token = await window.firebaseWrapper.auth.currentUser.getIdToken();
         headers['Authorization'] = `Bearer ${token}`;
@@ -23,7 +31,8 @@ class AnalysisService {
         headers,
         body: JSON.stringify({
           property: propertyData,
-          analysisType: analysisType
+          analysisType: analysisType,
+          fromExtension: fromExtension
         })
       });
 

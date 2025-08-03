@@ -432,8 +432,8 @@
                         this.showLoadingWithProgress();
                         
                         // Convert analysis type for API
-                        const apiAnalysisType = analysisType === 'both' ? 'both' : 
-                                              analysisType === 'ltr' ? 'long-term' : 'short-term';
+                        // Keep the analysis type as-is for the API
+                        const apiAnalysisType = analysisType; // 'both', 'ltr', or 'str'
                         
                         // Prepare property data for analysis
                         const analysisData = {
