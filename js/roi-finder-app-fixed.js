@@ -832,7 +832,18 @@
                 });
                 
                 if (!response.ok) {
-                    throw new Error(`API error: ${response.status}`);
+                    let errorMessage = `API error: ${response.status}`;
+                    try {
+                        const errorData = await response.json();
+                        if (errorData.error) {
+                            errorMessage = errorData.error;
+                        } else if (errorData.message) {
+                            errorMessage = errorData.message;
+                        }
+                    } catch (e) {
+                        // If JSON parsing fails, use the status message
+                    }
+                    throw new Error(errorMessage);
                 }
                 
                 const analysisData = await response.json();
@@ -886,8 +897,19 @@
                     this.showPropertyInput();
                     this.showError(errorMessage);
                 } else {
-                    // Show error state
-                    this.showErrorState(errorMessage);
+                    // For extension flow, use the error overlay instead
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const fromExtension = urlParams.get('fromExtension') === 'true';
+                    
+                    if (fromExtension) {
+                        // Hide loading state first
+                        this.hideLoadingState();
+                        // Use the overlay error message for extension users
+                        this.showErrorMessage(errorMessage);
+                    } else {
+                        // Show error state for regular users
+                        this.showErrorState(errorMessage);
+                    }
                 }
                 
                 // Reset button
@@ -1035,7 +1057,26 @@
         showErrorState(message) {
             this.hideAllSections();
             
+            // Hide the loading container if it exists
+            const loadingContainer = document.getElementById('analysis-loading-container');
+            if (loadingContainer) {
+                loadingContainer.style.display = 'none';
+            }
+            
+            // Hide app-root if it was hidden
+            const appRoot = document.getElementById('app-root');
+            if (appRoot) {
+                appRoot.style.display = 'none';
+            }
+            
             const errorContainer = document.getElementById('error-state');
+            if (!errorContainer) {
+                console.error('Error container not found');
+                // Fallback to showErrorMessage
+                this.showErrorMessage(message);
+                return;
+            }
+            
             errorContainer.innerHTML = `
                 <div class="container mx-auto p-xl">
                     <div class="card card-lg max-w-2xl mx-auto text-center">
