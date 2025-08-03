@@ -43,9 +43,250 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     
     <style>
-        /* Apply Manrope font */
-        body { 
-            font-family: 'Manrope', sans-serif; 
+        /* Override variables for exact mock matching */
+        :root {
+            --cm-sidebar-width: 224px;
+            --cm-sidebar-bg: #111827;
+            --cm-sidebar-text: #d1d5db;
+            --cm-gradient-accent: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+        }
+        
+        body {
+            font-family: 'Manrope', sans-serif;
+            height: 100vh;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+        }
+        
+        /* App container */
+        .app-container {
+            display: flex;
+            height: 100vh;
+            position: relative;
+        }
+        
+        /* Sidebar styling to match mock */
+        .sidebar {
+            width: var(--cm-sidebar-width);
+            background-color: var(--cm-sidebar-bg);
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            display: flex;
+            flex-direction: column;
+            z-index: 40;
+            transition: transform 0.3s ease;
+        }
+        
+        /* Logo section */
+        .sidebar-logo {
+            padding: 1rem;
+            border-bottom: 1px solid #374151;
+        }
+        
+        .logo-icon {
+            position: relative;
+            width: 2.5rem;
+            height: 2.5rem;
+            margin-right: 0.75rem;
+        }
+        
+        .logo-icon-blur {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to bottom right, #6366f1, #7c3aed);
+            border-radius: 0.5rem;
+            filter: blur(4px);
+            opacity: 0.75;
+        }
+        
+        .logo-icon-main {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom right, #6366f1, #7c3aed);
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.25rem;
+        }
+        
+        /* Navigation links */
+        .sidebar-nav {
+            flex: 1;
+            padding: 1rem 0;
+        }
+        
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            padding: 0.625rem 1rem;
+            color: #d1d5db;
+            text-decoration: none;
+            transition: all 0.15s;
+            font-size: 0.875rem;
+        }
+        
+        .sidebar-link:hover {
+            background-color: #1f2937;
+            color: white;
+        }
+        
+        .sidebar-link.active {
+            background: linear-gradient(to right, #6366f1, #7c3aed);
+            color: white;
+            font-weight: 500;
+        }
+        
+        .sidebar-link svg {
+            width: 1.25rem;
+            height: 1.25rem;
+            margin-right: 0.75rem;
+        }
+        
+        /* Bottom action */
+        .sidebar-bottom {
+            padding: 1rem;
+            border-top: 1px solid #374151;
+        }
+        
+        /* Main content */
+        .main-content {
+            margin-left: var(--cm-sidebar-width);
+            flex: 1;
+            height: 100vh;
+            background: #f9fafb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+        
+        /* Form container */
+        .form-container {
+            width: 100%;
+            max-width: 1000px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+        }
+        
+        /* Form header */
+        .form-header {
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .form-header h1 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #111827;
+            margin: 0;
+        }
+        
+        /* Tip banner */
+        .tip-banner {
+            margin-top: 0.75rem;
+            background: linear-gradient(to right, #eef2ff, #f5f3ff);
+            border: 1px solid #c7d2fe;
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+        }
+        
+        /* Form body */
+        .form-body {
+            padding: 2rem;
+        }
+        
+        /* Input styles */
+        .input-group {
+            margin-bottom: 1rem;
+        }
+        
+        .input-label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 0.25rem;
+            display: block;
+        }
+        
+        .input-field {
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            font-size: 0.875rem;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            transition: all 0.15s;
+        }
+        
+        .input-field:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+        
+        /* Button styles */
+        .btn-primary {
+            background: linear-gradient(135deg, #6366f1 0%, #7c3aed 100%);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+            box-shadow: 0 4px 14px rgba(99, 102, 241, 0.25);
+            border: none;
+            cursor: pointer;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.35);
+        }
+        
+        .btn-secondary {
+            padding: 0.75rem 1.5rem;
+            border: 1px solid #d1d5db;
+            color: #374151;
+            border-radius: 8px;
+            font-weight: 500;
+            font-size: 0.875rem;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-secondary:hover {
+            background: #f9fafb;
+        }
+        
+        /* Keep legacy class names working */
+        .cm-sidebar {
+            background-color: #111827 !important;
+            color: #d1d5db !important;
+        }
+        
+        .cm-sidebar-link {
+            color: #d1d5db !important;
+            transition: all 0.2s ease;
+        }
+        
+        .cm-sidebar-link:hover {
+            background-color: #1f2937 !important;
+            color: #e5e7eb !important;
+        }
+        
+        .cm-sidebar-link.active {
+            background: linear-gradient(to right, #4f46e5, #7c3aed) !important;
+            color: #ffffff !important;
         }
         
         /* Enhanced loading animations */
@@ -71,27 +312,6 @@
             animation: gradient-shift 3s ease infinite;
         }
         
-        /* Fix sidebar styling */
-        .cm-sidebar {
-            background-color: #111827 !important;
-            color: #d1d5db !important;
-        }
-        
-        .cm-sidebar-link {
-            color: #d1d5db !important;
-            transition: all 0.2s ease;
-        }
-        
-        .cm-sidebar-link:hover {
-            background-color: #1f2937 !important;
-            color: #e5e7eb !important;
-        }
-        
-        .cm-sidebar-link.active {
-            background-color: #4f46e5 !important;
-            color: #ffffff !important;
-        }
-        
         /* Loading spinner enhancement */
         .loading-spinner {
             background: conic-gradient(from 0deg, transparent 0deg, var(--gradient-accent) 360deg);
@@ -99,13 +319,37 @@
             -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 4px), white calc(100% - 4px));
         }
         
-        /* Mobile optimizations */
-        @media (max-width: 640px) {
+        /* Mobile styles */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .sidebar-overlay {
+                display: none;
+                position: fixed;
+                inset: 0;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 30;
+            }
+            
+            .sidebar-overlay.active {
+                display: block;
+            }
+            
             .mobile-hidden { display: none; }
             .mobile-only { display: block; }
         }
         
-        @media (min-width: 641px) {
+        @media (min-width: 769px) {
             .mobile-only { display: none; }
         }
         
