@@ -382,6 +382,78 @@
             }
         }
         
+        showPropertyConfirmation(propertyData) {
+            this.hideAllSections();
+            
+            // Create confirmation container if it doesn't exist
+            let confirmationContainer = document.getElementById('property-confirmation-container');
+            if (!confirmationContainer) {
+                confirmationContainer = document.createElement('div');
+                confirmationContainer.id = 'property-confirmation-container';
+                confirmationContainer.className = 'fixed inset-0 z-50';
+                document.body.appendChild(confirmationContainer);
+            }
+            
+            // Show confirmation screen using PropertyConfirmation component
+            if (window.PropertyConfirmation) {
+                const confirmation = window.PropertyConfirmation(
+                    propertyData,
+                    (analysisType) => {
+                        // onConfirm callback
+                        console.log('Confirmed analysis type:', analysisType);
+                        
+                        // Hide confirmation
+                        confirmationContainer.style.display = 'none';
+                        confirmationContainer.innerHTML = '';
+                        
+                        // Show loading with progress
+                        this.showLoadingWithProgress();
+                        
+                        // Convert analysis type for API
+                        const apiAnalysisType = analysisType === 'ltr' ? 'long-term' : 
+                                              analysisType === 'str' ? 'short-term' : 'both';
+                        
+                        // Start analysis
+                        this.analyzeProperty(propertyData, apiAnalysisType);
+                    },
+                    () => {
+                        // onCancel callback
+                        console.log('Analysis cancelled');
+                        
+                        // Hide confirmation
+                        confirmationContainer.style.display = 'none';
+                        confirmationContainer.innerHTML = '';
+                        
+                        // Show property input form
+                        this.showPropertyInput();
+                        
+                        // Pre-fill the form with the extension data
+                        if (window.appState.extensionPropertyData) {
+                            setTimeout(() => {
+                                this.prefillPropertyForm(window.appState.extensionPropertyData);
+                            }, 300);
+                        }
+                    }
+                );
+                
+                // Render confirmation
+                confirmationContainer.innerHTML = confirmation.html;
+                confirmationContainer.style.display = 'block';
+                
+                // Setup confirmation (e.g., trial count display)
+                if (confirmation.setup) {
+                    confirmation.setup(window.appState.currentUser);
+                }
+            } else {
+                console.error('PropertyConfirmation component not loaded');
+                // Fallback to form pre-fill
+                this.showPropertyInput();
+                setTimeout(() => {
+                    this.prefillPropertyForm(window.appState.extensionPropertyData);
+                }, 300);
+            }
+        }
+        
         showAnalysisResults() {
             this.hideAllSections();
             const resultsSection = document.getElementById('analysis-results');
@@ -546,23 +618,22 @@
                 console.log('Property data collected:', propertyData);
                 
                 if (Object.keys(propertyData).length > 0) {
-                    // Show the property input form first
-                    this.showPropertyInput();
+                    // Store the property data for later use
+                    window.appState.extensionPropertyData = propertyData;
                     
-                    // Then prefill it
-                    this.prefillPropertyForm(propertyData);
+                    // Build complete property data object with address
+                    const completePropertyData = {
+                        address: `${propertyData.street || ''}, ${propertyData.city || ''}, ${propertyData.state || ''}`.trim().replace(/^,\s*|,\s*$/g, ''),
+                        price: propertyData.price ? parseFloat(propertyData.price) : null,
+                        bedrooms: propertyData.bedrooms ? parseInt(propertyData.bedrooms) : null,
+                        bathrooms: propertyData.bathrooms ? parseFloat(propertyData.bathrooms) : null,
+                        sqft: propertyData.sqft ? parseInt(propertyData.sqft) : null,
+                        propertyTaxes: propertyData.propertyTaxes ? parseFloat(propertyData.propertyTaxes) : null,
+                        propertyType: propertyData.propertyType || 'house'
+                    };
                     
-                    // Auto-analyze if requested
-                    if (urlParams.get('autoAnalyze') === 'true') {
-                        console.log('Auto-analyze requested');
-                        setTimeout(() => {
-                            const form = document.getElementById('property-analysis-form');
-                            if (form) {
-                                console.log('Submitting form automatically');
-                                form.dispatchEvent(new Event('submit'));
-                            }
-                        }, 500);
-                    }
+                    // Show property confirmation screen
+                    this.showPropertyConfirmation(completePropertyData);
                     
                     return true;
                 }
@@ -571,11 +642,16 @@
         }
         
         prefillPropertyForm(data) {
+            console.log('Prefilling form with data:', data);
+            
             // Fill address
             if (data.street || data.city || data.state) {
-                const address = `${data.street || ''} ${data.city || ''} ${data.state || ''}`.trim();
+                const address = `${data.street || ''}, ${data.city || ''}, ${data.state || ''}`.trim().replace(/^,\s*|,\s*$/g, '');
                 const addressField = document.getElementById('property-address');
-                if (addressField) addressField.value = address;
+                if (addressField) {
+                    addressField.value = address;
+                    console.log('Set address to:', address);
+                }
             }
             
             // Fill other fields
@@ -591,7 +667,22 @@
             Object.entries(fieldMap).forEach(([dataKey, fieldId]) => {
                 if (data[dataKey]) {
                     const field = document.getElementById(fieldId);
-                    if (field) field.value = data[dataKey];
+                    if (field) {
+                        field.value = data[dataKey];
+                        console.log(`Set ${fieldId} to:`, data[dataKey]);
+                        
+                        // For select elements, ensure the option exists
+                        if (field.tagName === 'SELECT') {
+                            // Find matching option
+                            const options = field.options;
+                            for (let i = 0; i < options.length; i++) {
+                                if (options[i].value == data[dataKey]) {
+                                    field.selectedIndex = i;
+                                    break;
+                                }
+                            }
+                        }
+                    }
                 }
             });
             
@@ -600,6 +691,7 @@
                 const optionalFields = document.getElementById('optional-fields');
                 if (optionalFields) {
                     optionalFields.style.display = 'block';
+                    console.log('Showing optional fields');
                 }
             }
         }
@@ -743,36 +835,152 @@
         showLoadingWithProgress() {
             this.hideAllSections();
             
-            // Create loading state component
-            const loadingState = window.EnhancedLoadingState ? new window.EnhancedLoadingState() : null;
-            
-            if (loadingState) {
-                const loadingContainer = document.getElementById('loading-state');
-                loadingContainer.innerHTML = '';
-                loadingContainer.appendChild(loadingState.render());
-                loadingContainer.classList.remove('hidden');
-                
-                // Store reference for cancellation
-                window.appState.loadingState = loadingState;
-                
-                // Subscribe to progress updates if available
-                if (window.progressTracker) {
-                    window.progressTracker.subscribe((state) => {
-                        loadingState.updateProgress(state.progress, state.message);
-                    });
-                }
-            } else {
-                // Fallback to simple loading
-                const loadingState = document.getElementById('loading-state');
-                if (loadingState) {
-                    loadingState.classList.remove('hidden');
-                }
+            // Create loading container if it doesn't exist
+            let loadingContainer = document.getElementById('analysis-loading-container');
+            if (!loadingContainer) {
+                loadingContainer = document.createElement('div');
+                loadingContainer.id = 'analysis-loading-container';
+                loadingContainer.className = 'fixed inset-0 z-50 bg-gray-50';
+                document.body.appendChild(loadingContainer);
             }
             
-            const mainContent = document.getElementById('main-content');
-            if (mainContent) {
-                mainContent.style.display = 'block';
-            }
+            // Analysis steps that match the screenshot
+            const analysisSteps = [
+                { id: 'initializing', text: 'Initializing analysis', completed: false },
+                { id: 'property-details', text: 'Fetching property details', completed: false },
+                { id: 'market-data', text: 'Analyzing local market data', completed: false },
+                { id: 'comparables', text: 'Finding comparable properties', completed: false },
+                { id: 'airbnb-data', text: 'Retrieving Airbnb data', completed: false },
+                { id: 'occupancy-rates', text: 'Calculating occupancy rates', completed: false },
+                { id: 'projections', text: 'Running financial projections', completed: false },
+                { id: 'insights', text: 'Generating investment insights', completed: false },
+                { id: 'report', text: 'Finalizing report', completed: false }
+            ];
+            
+            // Render loading UI
+            loadingContainer.innerHTML = `
+                <div class="min-h-screen flex items-center justify-center p-4">
+                    <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full overflow-hidden">
+                        <!-- Header with gradient -->
+                        <div class="bg-gradient-to-r from-blue-600 to-purple-600 p-8 text-white">
+                            <h2 class="text-2xl font-bold mb-2">Analyzing Your Property</h2>
+                            <div class="flex items-center justify-between">
+                                <div class="flex-1">
+                                    <div class="bg-white/20 rounded-full h-4 overflow-hidden">
+                                        <div id="progress-bar" class="bg-white h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+                                    </div>
+                                </div>
+                                <span id="progress-percentage" class="ml-4 text-xl font-bold">0%</span>
+                                <span class="ml-1 text-sm">Complete</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Steps List -->
+                        <div class="p-8">
+                            <div class="space-y-3">
+                                ${analysisSteps.map(step => `
+                                    <div id="step-${step.id}" class="flex items-center">
+                                        <div class="step-indicator w-6 h-6 rounded-full border-2 border-gray-300 bg-white mr-3 flex items-center justify-center">
+                                            <svg class="w-4 h-4 text-green-500 hidden" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                            </svg>
+                                            <div class="spinner w-3 h-3 border-2 border-purple-600 border-t-transparent rounded-full animate-spin hidden"></div>
+                                        </div>
+                                        <span class="step-text text-gray-600">${step.text}</span>
+                                        <div class="step-progress ml-auto hidden">
+                                            <div class="bg-gray-200 rounded-full h-2 w-24">
+                                                <div class="bg-gradient-to-r from-blue-600 to-purple-600 h-full rounded-full transition-all duration-300" style="width: 0%"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                            
+                            <!-- Analysis Timeout Warning -->
+                            <div id="timeout-warning" class="mt-6 p-4 bg-red-50 border border-red-200 rounded-lg hidden">
+                                <p class="text-sm text-red-600 flex items-center">
+                                    <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    Analysis Timeout: The analysis is taking longer than expected. This might be due to high server load. Please try again or contact support if the issue persists.
+                                </p>
+                            </div>
+                            
+                            <!-- Retry Button -->
+                            <div class="mt-8 text-center">
+                                <button id="retry-analysis-btn" class="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all hidden">
+                                    Retry Analysis
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            loadingContainer.style.display = 'block';
+            
+            // Start progress simulation
+            this.simulateProgress(analysisSteps);
+            
+            // Store reference for cleanup
+            window.appState.loadingState = {
+                container: loadingContainer,
+                steps: analysisSteps
+            };
+        }
+        
+        simulateProgress(steps) {
+            let currentStep = 0;
+            const totalSteps = steps.length;
+            
+            const updateStep = () => {
+                if (currentStep >= totalSteps) return;
+                
+                // Update current step to in-progress
+                const stepEl = document.getElementById(`step-${steps[currentStep].id}`);
+                if (stepEl) {
+                    const indicator = stepEl.querySelector('.step-indicator');
+                    const spinner = indicator.querySelector('.spinner');
+                    const checkmark = indicator.querySelector('svg');
+                    const progressBar = stepEl.querySelector('.step-progress');
+                    
+                    // Show spinner
+                    spinner.classList.remove('hidden');
+                    indicator.classList.add('border-purple-600');
+                    
+                    // Show progress bar for current step
+                    if (progressBar) {
+                        progressBar.classList.remove('hidden');
+                        setTimeout(() => {
+                            progressBar.querySelector('div div').style.width = '100%';
+                        }, 100);
+                    }
+                    
+                    // Complete step after delay
+                    setTimeout(() => {
+                        spinner.classList.add('hidden');
+                        checkmark.classList.remove('hidden');
+                        indicator.classList.remove('border-purple-600');
+                        indicator.classList.add('border-green-500', 'bg-green-50');
+                        stepEl.querySelector('.step-text').classList.add('text-green-600', 'font-medium');
+                        
+                        // Update overall progress
+                        const progress = Math.round(((currentStep + 1) / totalSteps) * 100);
+                        document.getElementById('progress-bar').style.width = `${progress}%`;
+                        document.getElementById('progress-percentage').textContent = `${progress}%`;
+                        
+                        currentStep++;
+                        
+                        // Continue to next step
+                        if (currentStep < totalSteps) {
+                            setTimeout(updateStep, 800);
+                        }
+                    }, 1500 + Math.random() * 1000); // Variable delay for realism
+                }
+            };
+            
+            // Start the first step after a short delay
+            setTimeout(updateStep, 500);
         }
         
         showErrorState(message) {
@@ -815,6 +1023,18 @@
         }
         
         renderAnalysisResults(analysisData) {
+            // Hide loading container if it exists
+            const loadingContainer = document.getElementById('analysis-loading-container');
+            if (loadingContainer) {
+                loadingContainer.style.display = 'none';
+            }
+            
+            // Hide property confirmation container if it exists
+            const confirmationContainer = document.getElementById('property-confirmation-container');
+            if (confirmationContainer) {
+                confirmationContainer.style.display = 'none';
+            }
+            
             this.showAnalysisResults();
             
             const resultsContainer = document.getElementById('analysis-results');
