@@ -26,7 +26,6 @@
     <link rel="stylesheet" href="styles/gradient-theme.css">
     <link rel="stylesheet" href="styles/mobile-fixes.css">
     <link rel="stylesheet" href="styles/glass-override.css">
-    <link rel="stylesheet" href="styles/loading-enhancements.css">
     
     <!-- PWA and SEO -->
     <link rel="canonical" href="https://starterpackapp.com/roi-finder">
@@ -48,55 +47,16 @@
             font-family: 'Manrope', sans-serif; 
         }
         
-        /* Enhanced loading animations */
-        @keyframes progress {
-            0% { width: 0%; }
-            50% { width: 70%; }
-            100% { width: 100%; }
+        /* Custom loading animations */
+        .loading-gradient {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
         }
         
-        .animate-progress {
-            animation: progress 3s ease-in-out infinite;
-        }
-        
-        /* Gradient text animation */
-        @keyframes gradient-shift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-        
-        .animate-gradient {
-            background-size: 200% 200%;
-            animation: gradient-shift 3s ease infinite;
-        }
-        
-        /* Fix sidebar styling */
-        .cm-sidebar {
-            background-color: #111827 !important;
-            color: #d1d5db !important;
-        }
-        
-        .cm-sidebar-link {
-            color: #d1d5db !important;
-            transition: all 0.2s ease;
-        }
-        
-        .cm-sidebar-link:hover {
-            background-color: #1f2937 !important;
-            color: #e5e7eb !important;
-        }
-        
-        .cm-sidebar-link.active {
-            background-color: #4f46e5 !important;
-            color: #ffffff !important;
-        }
-        
-        /* Loading spinner enhancement */
-        .loading-spinner {
-            background: conic-gradient(from 0deg, transparent 0deg, var(--gradient-accent) 360deg);
-            mask: radial-gradient(farthest-side, transparent calc(100% - 4px), white calc(100% - 4px));
-            -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 4px), white calc(100% - 4px));
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
         }
         
         /* Mobile optimizations */
@@ -441,62 +401,27 @@
     </style>
 </head>
 <body class="min-h-screen bg-gray-100">
-    <!-- The entire page will be wrapped in CompactModernLayout -->
-    <div id="app-root">
-        <!-- Content will be dynamically inserted here -->
+    <!-- Compact Modern Layout Container -->
+    <div id="app-container">
+        <!-- Will be populated with CompactModernLayout -->
     </div>
 
-    <!-- Template for main content -->
-    <template id="main-content-template">
+    <!-- Main Content Area -->
+    <main id="main-content" class="min-h-screen" style="display: none;">
         
-        <!-- Enhanced Loading State -->
-        <div id="loading-state" class="container mx-auto p-xl hidden">
-            <div class="max-w-2xl mx-auto">
-                <!-- Animated Gradient Background -->
-                <div class="relative">
-                    <div class="absolute inset-0 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-3xl opacity-20 blur-3xl animate-pulse"></div>
-                    
-                    <!-- Glass Card Container -->
-                    <div class="relative bg-white/90 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-12">
-                        <!-- Logo and Spinner -->
-                        <div class="flex flex-col items-center">
-                            <div class="relative mb-8">
-                                <!-- Gradient Ring Spinner -->
-                                <div class="w-24 h-24 rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 p-1 animate-spin">
-                                    <div class="w-full h-full bg-white rounded-full flex items-center justify-center">
-                                        <div class="w-16 h-16 bg-gradient-to-br from-indigo-400 to-purple-600 rounded-lg"></div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <h2 class="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-3">Loading Analysis</h2>
-                            <p class="text-gray-600 text-lg mb-8">Preparing your investment insights...</p>
-                            
-                            <!-- Progress Bar -->
-                            <div class="w-full max-w-xs">
-                                <div class="h-2 bg-gray-200 rounded-full overflow-hidden">
-                                    <div class="h-full bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full animate-progress"></div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Loading Steps -->
-                        <div class="mt-12 space-y-4">
-                            <div class="flex items-center gap-3 opacity-60">
-                                <div class="w-2 h-2 bg-indigo-500 rounded-full animate-pulse"></div>
-                                <span class="text-sm text-gray-600">Analyzing property data...</span>
-                            </div>
-                            <div class="flex items-center gap-3 opacity-40">
-                                <div class="w-2 h-2 bg-purple-500 rounded-full"></div>
-                                <span class="text-sm text-gray-500">Calculating investment metrics...</span>
-                            </div>
-                            <div class="flex items-center gap-3 opacity-20">
-                                <div class="w-2 h-2 bg-pink-500 rounded-full"></div>
-                                <span class="text-sm text-gray-400">Generating recommendations...</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+        <!-- Loading State -->
+        <div id="loading-state" class="container mx-auto p-xl">
+            <div class="text-center py-2xl">
+                <div class="loading-spinner w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-xl"></div>
+                <h2 class="text-2xl font-bold text-gray-900 mb-md">Loading Analysis</h2>
+                <p class="text-gray-600">Preparing your investment analysis...</p>
+            </div>
+            
+            <!-- Loading Skeleton -->
+            <div class="space-y-xl mt-2xl">
+                <div class="loading-gradient h-32 rounded-xl"></div>
+                <div class="loading-gradient h-64 rounded-xl"></div>
+                <div class="loading-gradient h-48 rounded-xl"></div>
             </div>
         </div>
 
@@ -602,141 +527,201 @@
             </div>
         </div>
 
-        <!-- Property Input Form - Compact Layout -->
-        <div id="property-input-section" class="main-container hidden">
-            <div class="form-container">
-                <!-- Form Header -->
-                <div class="form-header">
-                    <h1 class="text-xl font-bold text-gray-900">Property Investment Analysis</h1>
-                    <!-- Compact Extension Banner -->
-                    <div class="info-banner">
-                        <svg class="w-5 h-5 text-indigo-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-                        </svg>
-                        <p class="text-sm text-gray-700 flex-1">
-                            <span class="font-medium">Quick tip:</span> Install our browser extension to auto-fill from REALTOR.ca
-                        </p>
-                        <a href="/extension/" target="_blank" class="text-sm font-medium text-indigo-600 hover:text-indigo-700 whitespace-nowrap">
-                            Install →
-                        </a>
-                    </div>
-                </div>
-                    
-                <!-- Form Body -->
-                <div class="form-body">
-                    <form id="property-analysis-form">
-                        <!-- Two Column Layout -->
-                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                            <!-- Left Column -->
-                            <div>
-                                <!-- Property Address -->
-                                <div class="input-group">
-                                    <label class="input-label">Property Address</label>
-                                    <input type="text" id="property-address" class="input-field" placeholder="123 Main Street, Toronto, ON" required>
-                                </div>
-                                
-                                <!-- Price and Bedrooms -->
-                                <div class="grid grid-cols-2 gap-3 mb-4">
-                                    <div>
-                                        <label class="input-label">Purchase Price</label>
-                                        <div class="relative">
-                                            <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">$</span>
-                                            <input type="number" id="property-price" class="input-field pl-8" placeholder="850,000" required min="0" step="1000">
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <label class="input-label">Bedrooms</label>
-                                        <select id="property-bedrooms" class="input-field" required>
-                                            <option value="">Select</option>
-                                            <option value="1">1 Bedroom</option>
-                                            <option value="2">2 Bedrooms</option>
-                                            <option value="3">3 Bedrooms</option>
-                                            <option value="4">4 Bedrooms</option>
-                                            <option value="5">5+ Bedrooms</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Right Column -->
-                            <div>
-                                <!-- Bathrooms and Property Type -->
-                                <div class="grid grid-cols-2 gap-3 mb-4">
-                                    <div>
-                                        <label class="input-label">Bathrooms</label>
-                                        <select id="property-bathrooms" class="input-field" required>
-                                            <option value="">Select</option>
-                                            <option value="1">1 Bathroom</option>
-                                            <option value="1.5">1.5 Bathrooms</option>
-                                            <option value="2">2 Bathrooms</option>
-                                            <option value="2.5">2.5 Bathrooms</option>
-                                            <option value="3">3+ Bathrooms</option>
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label class="input-label">Property Type</label>
-                                        <select id="property-type" class="input-field">
-                                            <option value="">Select Type</option>
-                                            <option value="condo">Condo</option>
-                                            <option value="house">House</option>
-                                            <option value="townhouse">Townhouse</option>
-                                            <option value="duplex">Duplex</option>
-                                        </select>
-                                    </div>
-                                </div>
-                        
-                                <!-- Add More Details Button -->
-                                <button type="button" onclick="window.toggleOptionalFields()" class="text-indigo-600 text-sm font-medium hover:text-indigo-700 mt-2">
-                                    + Add More Details
+        <!-- Property Input Form -->
+        <div id="property-input-section" class="hidden">
+            <div class="container mx-auto p-4 lg:p-xl">
+                <!-- Browser Extension CTA Banner -->
+                <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-lg mb-xl max-w-2xl mx-auto">
+                    <div class="flex items-start gap-md">
+                        <div class="flex-shrink-0">
+                            <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"/>
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="font-semibold text-gray-900 mb-sm">Save Time with Our Browser Extension!</h3>
+                            <p class="text-sm text-gray-700 mb-md">Automatically extract property data from REALTOR.ca with one click. No manual entry needed!</p>
+                            <div class="flex flex-wrap gap-sm">
+                                <a href="/extension/" target="_blank" class="inline-flex items-center gap-sm bg-blue-600 text-white px-md py-sm rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                                    </svg>
+                                    Install Extension
+                                </a>
+                                <button onclick="document.getElementById('extension-instructions').classList.toggle('hidden')" class="text-sm text-blue-600 hover:text-blue-700 font-medium">
+                                    How to Install
                                 </button>
-                            
-                                <!-- Additional Details (Hidden by default) -->
-                                <div id="optional-fields" style="display: none;" class="mt-4 space-y-3">
-                                    <div class="grid grid-cols-2 gap-3">
-                                        <div class="input-group">
-                                            <label class="input-label">Square Footage</label>
-                                            <input type="number" id="property-sqft" class="input-field" placeholder="1,200">
-                                        </div>
-                                        <div class="input-group">
-                                            <label class="input-label">Year Built</label>
-                                            <input type="number" id="property-year-built" class="input-field" placeholder="2010">
-                                        </div>
-                                    </div>
-                                    <div class="grid grid-cols-2 gap-3">
-                                        <div class="input-group">
-                                            <label class="input-label">Property Taxes/Year</label>
-                                            <div class="relative">
-                                                <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">$</span>
-                                                <input type="number" id="property-taxes" class="input-field pl-8" placeholder="6,800">
-                                            </div>
-                                        </div>
-                                        <div class="input-group">
-                                            <label class="input-label">Condo Fees/Month</label>
-                                            <div class="relative">
-                                                <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">$</span>
-                                                <input type="number" id="property-condofees" class="input-field pl-8" placeholder="650">
-                                            </div>
-                                        </div>
-                                    </div>
                             </div>
                         </div>
-                    </form>
+                    </div>
+                    <!-- Installation Instructions (Hidden by default) -->
+                    <div id="extension-instructions" class="hidden mt-lg pt-lg border-t border-blue-200">
+                        <h4 class="font-medium text-gray-900 mb-sm">Quick Installation Guide:</h4>
+                        <ol class="text-sm text-gray-700 space-y-2 list-decimal list-inside">
+                            <li>Download the extension files from the link above</li>
+                            <li>Open Chrome/Edge and go to <code class="bg-gray-100 px-2 py-1 rounded">chrome://extensions</code></li>
+                            <li>Enable "Developer mode" in the top right</li>
+                            <li>Click "Load unpacked" and select the extension folder</li>
+                            <li>Visit any REALTOR.ca listing and click "Analyze with StarterPackApp"</li>
+                        </ol>
+                    </div>
                 </div>
                 
-                <!-- Form Footer -->
-                <div class="form-footer">
-                    <div class="flex gap-3">
-                        <button type="submit" form="property-analysis-form" class="flex-1 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold py-3 px-6 rounded-lg flex items-center justify-center group hover:shadow-lg transition-all duration-200">
-                            <span class="loading-spinner w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin hidden mr-2" id="analyze-spinner"></span>
-                            <span id="analyze-text">Analyze Property</span>
-                            <svg class="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                <div class="card card-lg max-w-2xl mx-auto" style="overflow-x: hidden;">
+                    <div class="text-center mb-xl">
+                        <h2 class="text-3xl font-bold text-gray-900 mb-md">Analyze a Property</h2>
+                        <p class="text-gray-600">Enter property details manually or use our browser extension</p>
+                        <button onclick="window.fillSampleData()" class="mt-md text-sm text-blue-600 hover:text-blue-700 font-medium inline-flex items-center gap-sm">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
                             </svg>
-                        </button>
-                        <button type="button" onclick="fillSampleData()" class="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium">
-                            Sample Data
+                            Try with Sample Data
                         </button>
                     </div>
+                    
+                    <form id="property-analysis-form" class="space-y-lg">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-lg">
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-medium text-gray-700 mb-sm">
+                                    Property Address
+                                    <span class="group relative inline-block ml-2">
+                                        <svg class="w-4 h-4 text-gray-400 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                        </svg>
+                                        <span class="invisible group-hover:visible absolute z-10 w-64 p-2 mt-2 text-xs text-white bg-gray-800 rounded-lg -left-32">
+                                            Found at the top of any REALTOR.ca listing. Include street, city, and province.
+                                        </span>
+                                    </span>
+                                </label>
+                                <textarea id="property-address" rows="2" class="w-full p-md border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent resize-none" placeholder="123 Main Street, Toronto, ON M5V 3A8"></textarea>
+                                <p class="text-xs text-gray-500 mt-1">Example: 123 Main Street, Toronto, ON M5V 3A8</p>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-sm">
+                                    Purchase Price
+                                    <span class="group relative inline-block ml-2">
+                                        <svg class="w-4 h-4 text-gray-400 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                        </svg>
+                                        <span class="invisible group-hover:visible absolute z-10 w-64 p-2 mt-2 text-xs text-white bg-gray-800 rounded-lg -left-32">
+                                            The listing price shown prominently on REALTOR.ca. Enter without commas or $ sign.
+                                        </span>
+                                    </span>
+                                </label>
+                                <div class="relative">
+                                    <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">$</span>
+                                    <input type="number" id="property-price" class="w-full pl-8 pr-3 p-md border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="850000">
+                                </div>
+                                <p class="text-xs text-gray-500 mt-1">Example: 850000 (for $850,000)</p>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-sm">
+                                    Bedrooms
+                                    <span class="group relative inline-block ml-2">
+                                        <svg class="w-4 h-4 text-gray-400 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                        </svg>
+                                        <span class="invisible group-hover:visible absolute z-10 w-64 p-2 mt-2 text-xs text-white bg-gray-800 rounded-lg -left-32">
+                                            Found in the property details section. Look for the bed icon or "Bedrooms" label.
+                                        </span>
+                                    </span>
+                                </label>
+                                <select id="property-bedrooms" class="w-full p-md border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                                    <option value="">Select</option>
+                                    <option value="1">1 Bedroom</option>
+                                    <option value="2">2 Bedrooms</option>
+                                    <option value="3">3 Bedrooms</option>
+                                    <option value="4">4 Bedrooms</option>
+                                    <option value="5">5+ Bedrooms</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-sm">
+                                    Bathrooms
+                                    <span class="group relative inline-block ml-2">
+                                        <svg class="w-4 h-4 text-gray-400 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                        </svg>
+                                        <span class="invisible group-hover:visible absolute z-10 w-64 p-2 mt-2 text-xs text-white bg-gray-800 rounded-lg -left-32">
+                                            Found next to bedrooms in property details. May show as "2+1" meaning 2 full, 1 half bath.
+                                        </span>
+                                    </span>
+                                </label>
+                                <select id="property-bathrooms" class="w-full p-md border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                                    <option value="">Select</option>
+                                    <option value="1">1 Bathroom</option>
+                                    <option value="1.5">1.5 Bathrooms</option>
+                                    <option value="2">2 Bathrooms</option>
+                                    <option value="2.5">2.5 Bathrooms</option>
+                                    <option value="3">3 Bathrooms</option>
+                                    <option value="3.5">3.5 Bathrooms</option>
+                                    <option value="4">4+ Bathrooms</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <!-- Optional Fields Section -->
+                        <div class="mt-lg">
+                            <button type="button" onclick="window.toggleOptionalFields()" class="text-sm text-blue-600 hover:text-blue-700 font-medium inline-flex items-center gap-sm">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                                </svg>
+                                Add More Details (Optional)
+                            </button>
+                            
+                            <div id="optional-fields" class="hidden mt-lg grid grid-cols-1 md:grid-cols-2 gap-lg">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-sm">
+                                        Square Footage
+                                        <span class="text-xs text-gray-500 ml-1">(improves accuracy)</span>
+                                    </label>
+                                    <input type="number" id="property-sqft" class="w-full p-md border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="1200">
+                                    <p class="text-xs text-gray-500 mt-1">Example: 1200</p>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-sm">
+                                        Property Taxes (Annual)
+                                        <span class="text-xs text-gray-500 ml-1">(found in listing details)</span>
+                                    </label>
+                                    <div class="relative">
+                                        <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">$</span>
+                                        <input type="number" id="property-taxes" class="w-full pl-8 pr-3 p-md border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="5400">
+                                    </div>
+                                    <p class="text-xs text-gray-500 mt-1">Example: 5400</p>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-sm">
+                                        Condo/Strata Fees (Monthly)
+                                        <span class="text-xs text-gray-500 ml-1">(if applicable)</span>
+                                    </label>
+                                    <div class="relative">
+                                        <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">$</span>
+                                        <input type="number" id="property-condofees" class="w-full pl-8 pr-3 p-md border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="450">
+                                    </div>
+                                    <p class="text-xs text-gray-500 mt-1">Example: 450</p>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-sm">
+                                        Property Type
+                                    </label>
+                                    <select id="property-type" class="w-full p-md border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                                        <option value="">Select</option>
+                                        <option value="detached">Detached House</option>
+                                        <option value="semi-detached">Semi-Detached</option>
+                                        <option value="townhouse">Townhouse</option>
+                                        <option value="condo">Condo/Apartment</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center mt-xl">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <span class="loading-spinner w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin hidden" id="analyze-spinner"></span>
+                                <span id="analyze-text">Analyze Property</span>
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -781,7 +766,6 @@
             </button>
         </div>
     </div>
-    </template>
 
     <!-- Layout Component -->
     <script src="components/layout/CompactModernLayout.js"></script>
@@ -800,98 +784,16 @@
     <!-- Main Application Script -->
     <script src="js/roi-finder-app-fixed.js"></script>
     
-    <!-- Initialize Compact Modern Layout -->
-    <script>
-        // Wait for both DOM and app to be ready
-        function initializeLayout() {
-            // Get the template content
-            const template = document.getElementById('main-content-template');
-            const mainContent = template.content.cloneNode(true);
-            
-            // Create the layout wrapper
-            const appRoot = document.getElementById('app-root');
-            
-            // Apply CompactModernLayout if available
-            if (window.CompactModernLayout) {
-                // Create a wrapper div for the main content
-                const contentWrapper = document.createElement('div');
-                contentWrapper.id = 'main-content';
-                contentWrapper.className = 'min-h-screen';
-                // Don't hide the content wrapper
-                contentWrapper.appendChild(mainContent);
-                
-                // Render the layout with the content
-                const layoutHTML = window.CompactModernLayout({
-                    children: contentWrapper.outerHTML,
-                    currentPage: 'dashboard'
-                });
-                
-                appRoot.innerHTML = layoutHTML;
-                
-                // Set up mobile menu toggle
-                const mobileMenuToggle = document.getElementById('mobileMenuToggle');
-                const sidebar = document.getElementById('sidebar');
-                const sidebarOverlay = document.getElementById('sidebarOverlay');
-                
-                if (mobileMenuToggle && sidebar && sidebarOverlay) {
-                    mobileMenuToggle.addEventListener('click', () => {
-                        sidebar.classList.toggle('cm-sidebar-open');
-                        sidebarOverlay.classList.toggle('cm-sidebar-overlay-open');
-                    });
-                    
-                    sidebarOverlay.addEventListener('click', () => {
-                        sidebar.classList.remove('cm-sidebar-open');
-                        sidebarOverlay.classList.remove('cm-sidebar-overlay-open');
-                    });
-                }
-            } else {
-                // Fallback: just show the content without layout
-                const contentWrapper = document.createElement('main');
-                contentWrapper.id = 'main-content';
-                contentWrapper.className = 'min-h-screen';
-                // Don't hide the content wrapper
-                contentWrapper.appendChild(mainContent);
-                appRoot.appendChild(contentWrapper);
-            }
-            
-            // Make sure main content is visible after app initializes
-            setTimeout(() => {
-                const mainContent = document.getElementById('main-content');
-                if (mainContent) {
-                    mainContent.style.display = 'block';
-                }
-                
-                // Initialize the app after layout is ready
-                if (!window.app) {
-                    window.app = new ROIFinderApp();
-                }
-            }, 100);
-        }
-        
-        // Initialize layout after DOM is ready
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initializeLayout);
-        } else {
-            // Delay initialization to ensure all scripts are loaded
-            setTimeout(initializeLayout, 50);
-        }
-    </script>
-    
     <!-- Global Functions for Event Handlers -->
     <script>
         // These functions need to be in global scope for onclick handlers
         window.toggleOptionalFields = function() {
             const optionalFields = document.getElementById('optional-fields');
             if (optionalFields) {
-                if (optionalFields.style.display === 'none' || optionalFields.style.display === '') {
-                    optionalFields.style.display = 'block';
-                } else {
-                    optionalFields.style.display = 'none';
-                }
+                optionalFields.classList.toggle('hidden');
             }
         };
         
-        // Fill sample data
         window.fillSampleData = function() {
             // Sample Toronto property data
             const fields = {
@@ -946,7 +848,7 @@
     <script src="js/form-validation.js"></script>
     
     <!-- Navigation Protection -->
-    <script src="js/modules/navigationProtectionGlobal.js"></script>
+    <script src="js/modules/navigationProtection.js"></script>
     <script>
         if (window.navigationProtection) {
             window.navigationProtection.init();

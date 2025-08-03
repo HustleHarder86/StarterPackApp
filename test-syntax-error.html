@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Syntax Error</title>
+</head>
+<body>
+    <h1>Testing Syntax Error</h1>
+    
+    <button onclick="testFunction()">Test Regular Function</button>
+    <button onclick="window.testFunction2()">Test Window Function</button>
+    
+    <script type="module">
+        // Module script
+        console.log('Module script loaded');
+        
+        window.moduleLoaded = true;
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('Module: DOM loaded');
+            if (window.startApp) {
+                window.startApp();
+            }
+        });
+    </script>
+    
+    <script>
+        // Regular script
+        console.log('Regular script loaded');
+        
+        // Define test function
+        window.testFunction = function() {
+            alert('Test function called');
+        };
+        
+        window.testFunction2 = () => {
+            alert('Test function 2 called');
+        };
+        
+        // Define app
+        window.startApp = function() {
+            console.log('App started');
+            document.body.style.backgroundColor = '#e0e0e0';
+        };
+        
+        console.log('Script completed');
+    </script>
+</body>
+</html>

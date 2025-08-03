@@ -13,6 +13,8 @@ This workflow should be followed for ALL UI fixes to ensure quality and prevent 
 - Build a simple HTML mock of the desired fix
 - Include all necessary styles and structure
 - Test the mock in isolation to confirm it matches requirements
+- Take a screenshot of the mock and save as `mocks/[component]-baseline.png`
+- This will be your visual truth for comparison
 
 ### 3. **Implement the Fix**
 - Apply changes to the actual component
@@ -81,11 +83,14 @@ test.describe('UI Fix: [Component Name]', () => {
   });
 
   test('visual appearance matches mock', async ({ page }) => {
-    // Take screenshot of initial state
-    await page.screenshot({ 
-      path: 'tests/e2e/screenshots/[component]-initial.png',
-      fullPage: true 
-    });
+    // CRITICAL: Compare to mock baseline
+    await expect(page).toHaveScreenshot('[component]-current.png');
+    
+    // Manual check required:
+    // 1. Open mocks/[component]-baseline.png
+    // 2. Open tests/e2e/screenshots/[component]-current.png
+    // 3. Verify layout structure matches (columns, grids, positioning)
+    // 4. Verify styling matches (colors, shadows, borders)
     
     // Verify key elements are visible
     await expect(page.locator('[selector]')).toBeVisible();
@@ -144,7 +149,11 @@ Launch the e2e-test-validator agent with this prompt:
 Please test the [component name] UI fix at http://localhost:3000/[page].html
 
 Test Requirements:
-1. Visual appearance matches the mock at mocks/[mock-name].html
+1. Visual appearance EXACTLY matches the mock at mocks/[mock-name].html
+   - Verify form is in correct column layout (not single column if mock shows grid)
+   - Check container has proper card styling with shadows
+   - Confirm buttons are positioned correctly (side by side if shown in mock)
+   - Verify sidebar has all design elements (gradients, icons)
 2. All interactive elements work properly
 3. No JavaScript errors in console
 4. Responsive design works at 1920x1080, 1366x768, and 375x667
@@ -217,6 +226,17 @@ test('data structure mapping works correctly', async ({ page }) => {
   // Component should handle conversion to strAnalysis
 });
 ```
+
+### 5.5 **Manual Visual Verification** ⚠️ REQUIRED
+Before running agents, manually verify:
+1. Open mock in one tab: `file:///path/to/mocks/[component]-mock.html`
+2. Open implementation in another tab: `http://localhost:3000/[page].html`
+3. Check these specific items:
+   - [ ] Form layout (single column vs multi-column grid)
+   - [ ] Container styling (cards, shadows, rounded corners)
+   - [ ] Button positioning (inline vs stacked)
+   - [ ] Sidebar design elements (gradients, active states)
+   - [ ] Spacing and alignment match
 
 ### 6. **Pre-Commit Validation** ⚠️ CRITICAL STEP
 - **Run code-reviewer agent** to compare:

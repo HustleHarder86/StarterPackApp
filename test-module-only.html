@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Module Only</title>
+</head>
+<body>
+    <h1>Testing Module Script</h1>
+    
+    <script type="module">
+        console.log('Module script starting');
+        
+        // Test basic syntax
+        const test = () => {
+            console.log('Arrow function works');
+        };
+        
+        test();
+        
+        // Test window assignment  
+        window.toggleOptionalFields = () => {
+            console.log('Toggle function works');
+        };
+        
+        window.fillSampleData = () => {
+            console.log('Fill sample data works');
+        };
+        
+        console.log('Module script completed');
+    </script>
+</body>
+</html>
