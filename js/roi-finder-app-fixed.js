@@ -383,20 +383,34 @@
         }
         
         showPropertyConfirmation(propertyData) {
+            // Hide all sections first
             this.hideAllSections();
+            
+            // Also specifically hide the property input section
+            const propertySection = document.getElementById('property-input-section');
+            if (propertySection) {
+                propertySection.classList.add('hidden');
+                propertySection.style.display = 'none';
+            }
+            
+            // Hide the main content area to prevent layout issues
+            const mainContent = document.getElementById('main-content');
+            if (mainContent) {
+                mainContent.style.display = 'none';
+            }
             
             // Create confirmation container if it doesn't exist
             let confirmationContainer = document.getElementById('property-confirmation-container');
             if (!confirmationContainer) {
                 confirmationContainer = document.createElement('div');
                 confirmationContainer.id = 'property-confirmation-container';
-                confirmationContainer.className = 'fixed inset-0 z-50';
+                confirmationContainer.className = 'fixed inset-0 z-50 bg-gray-50';
                 document.body.appendChild(confirmationContainer);
             }
             
             // Show confirmation screen using PropertyConfirmation component
             if (window.PropertyConfirmation) {
-                const confirmation = window.PropertyConfirmation(
+                const confirmationHTML = window.PropertyConfirmation(
                     propertyData,
                     (analysisType) => {
                         // onConfirm callback
@@ -410,11 +424,23 @@
                         this.showLoadingWithProgress();
                         
                         // Convert analysis type for API
-                        const apiAnalysisType = analysisType === 'ltr' ? 'long-term' : 
-                                              analysisType === 'str' ? 'short-term' : 'both';
+                        const apiAnalysisType = analysisType === 'both' ? 'both' : 
+                                              analysisType === 'ltr' ? 'long-term' : 'short-term';
+                        
+                        // Prepare property data for analysis
+                        const analysisData = {
+                            address: propertyData.address,
+                            price: propertyData.price || 0,
+                            bedrooms: propertyData.bedrooms || 0,
+                            bathrooms: propertyData.bathrooms || 0,
+                            sqft: propertyData.sqft || 0,
+                            propertyTaxes: propertyData.propertyTaxes || 0,
+                            yearBuilt: propertyData.yearBuilt || new Date().getFullYear(),
+                            propertyType: propertyData.propertyType || 'house'
+                        };
                         
                         // Start analysis
-                        this.analyzeProperty(propertyData, apiAnalysisType);
+                        this.analyzeProperty(analysisData, apiAnalysisType);
                     },
                     () => {
                         // onCancel callback
@@ -423,6 +449,12 @@
                         // Hide confirmation
                         confirmationContainer.style.display = 'none';
                         confirmationContainer.innerHTML = '';
+                        
+                        // Show main content again
+                        const mainContent = document.getElementById('main-content');
+                        if (mainContent) {
+                            mainContent.style.display = 'block';
+                        }
                         
                         // Show property input form
                         this.showPropertyInput();
@@ -436,14 +468,9 @@
                     }
                 );
                 
-                // Render confirmation
-                confirmationContainer.innerHTML = confirmation.html;
+                // Render confirmation - it returns the HTML directly
+                confirmationContainer.innerHTML = confirmationHTML;
                 confirmationContainer.style.display = 'block';
-                
-                // Setup confirmation (e.g., trial count display)
-                if (confirmation.setup) {
-                    confirmation.setup(window.appState.currentUser);
-                }
             } else {
                 console.error('PropertyConfirmation component not loaded');
                 // Fallback to form pre-fill
