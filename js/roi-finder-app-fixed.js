@@ -482,9 +482,16 @@
                     }
                 );
                 
-                // Render confirmation - it returns the HTML directly
-                confirmationContainer.innerHTML = confirmationHTML;
+                // Render confirmation - extract HTML from the returned object
+                const confirmationData = typeof confirmationHTML === 'string' ? 
+                    confirmationHTML : confirmationHTML.html;
+                confirmationContainer.innerHTML = confirmationData;
                 confirmationContainer.style.display = 'block';
+                
+                // Run setup if available
+                if (confirmationHTML.setup) {
+                    confirmationHTML.setup(window.appState.currentUser);
+                }
             } else {
                 console.error('PropertyConfirmation component not loaded');
                 // Fallback to form pre-fill
