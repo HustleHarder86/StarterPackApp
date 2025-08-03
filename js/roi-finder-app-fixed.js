@@ -386,11 +386,19 @@
             // Hide all sections first
             this.hideAllSections();
             
-            // Also specifically hide the property input section
+            // Hide the entire app-root to remove sidebar and all content
+            const appRoot = document.getElementById('app-root');
+            if (appRoot) {
+                appRoot.style.display = 'none';
+            }
+            
+            // Also specifically hide the property input section with important
             const propertySection = document.getElementById('property-input-section');
             if (propertySection) {
                 propertySection.classList.add('hidden');
-                propertySection.style.display = 'none';
+                propertySection.style.display = 'none !important';
+                propertySection.style.visibility = 'hidden';
+                propertySection.style.opacity = '0';
             }
             
             // Hide the main content area to prevent layout issues
@@ -404,7 +412,7 @@
             if (!confirmationContainer) {
                 confirmationContainer = document.createElement('div');
                 confirmationContainer.id = 'property-confirmation-container';
-                confirmationContainer.className = 'fixed inset-0 z-50 bg-gray-50';
+                confirmationContainer.className = 'fixed inset-0 z-[9999] bg-gray-50';
                 document.body.appendChild(confirmationContainer);
             }
             
@@ -449,6 +457,12 @@
                         // Hide confirmation
                         confirmationContainer.style.display = 'none';
                         confirmationContainer.innerHTML = '';
+                        
+                        // Show app-root again
+                        const appRoot = document.getElementById('app-root');
+                        if (appRoot) {
+                            appRoot.style.display = '';
+                        }
                         
                         // Show main content again
                         const mainContent = document.getElementById('main-content');
@@ -862,12 +876,18 @@
         showLoadingWithProgress() {
             this.hideAllSections();
             
+            // Hide the entire app-root to remove sidebar and all content
+            const appRoot = document.getElementById('app-root');
+            if (appRoot) {
+                appRoot.style.display = 'none';
+            }
+            
             // Create loading container if it doesn't exist
             let loadingContainer = document.getElementById('analysis-loading-container');
             if (!loadingContainer) {
                 loadingContainer = document.createElement('div');
                 loadingContainer.id = 'analysis-loading-container';
-                loadingContainer.className = 'fixed inset-0 z-50 bg-gray-50';
+                loadingContainer.className = 'fixed inset-0 z-[9999] bg-gray-50';
                 document.body.appendChild(loadingContainer);
             }
             
@@ -1060,6 +1080,12 @@
             const confirmationContainer = document.getElementById('property-confirmation-container');
             if (confirmationContainer) {
                 confirmationContainer.style.display = 'none';
+            }
+            
+            // Show app-root again
+            const appRoot = document.getElementById('app-root');
+            if (appRoot) {
+                appRoot.style.display = '';
             }
             
             this.showAnalysisResults();
