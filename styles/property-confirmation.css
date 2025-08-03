@@ -6,33 +6,36 @@
 .property-confirmation-overlay {
   position: fixed;
   inset: 0;
-  background-color: rgba(17, 24, 39, 0.5); /* gray-900 with opacity */
+  background-color: rgba(17, 24, 39, 0.75); /* Increased opacity for better focus */
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 1rem;
+  padding: 2rem; /* Increased padding */
   z-index: 9999;
+  min-height: 100vh; /* Ensure full viewport height */
 }
 
 /* Modal Container */
 .property-confirmation-container {
-  max-width: 42rem; /* max-w-2xl */
-  width: 100%;
+  max-width: 48rem; /* Increased from 42rem */
+  width: 90%; /* Changed from 100% to give some margin on sides */
+  margin: 0 auto;
 }
 
 /* Modal Card */
 .property-confirmation-card {
   background-color: white;
-  border-radius: 0.75rem; /* rounded-xl */
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); /* shadow-2xl */
+  border-radius: 1rem; /* Increased from 0.75rem */
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35); /* Increased shadow opacity */
   overflow: hidden;
+  transform: scale(1.05); /* Slightly scale up the modal */
 }
 
 /* Modal Header */
 .property-confirmation-header {
   background: linear-gradient(to right, #2563eb, #9333ea); /* from-blue-600 to-purple-600 */
   color: white;
-  padding: 2rem;
+  padding: 2.5rem 2rem; /* Increased vertical padding */
 }
 
 /* Icon Container */
@@ -56,10 +59,10 @@
 
 /* Typography */
 .property-confirmation-title {
-  font-size: 1.875rem; /* text-3xl */
+  font-size: 2.25rem; /* Increased from 1.875rem */
   font-weight: 700;
   text-align: center;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.75rem;
   font-family: var(--cm-font-primary, 'Manrope', sans-serif);
 }
 
@@ -71,15 +74,15 @@
 
 /* Content Section */
 .property-confirmation-content {
-  padding: 1.5rem;
+  padding: 2rem; /* Increased from 1.5rem */
 }
 
 /* Property Grid */
 .property-confirmation-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 1rem;
-  margin-bottom: 1rem;
+  gap: 1.5rem; /* Increased from 1rem */
+  margin-bottom: 1.5rem; /* Increased from 1rem */
 }
 
 @media (min-width: 1024px) {
@@ -180,14 +183,14 @@
 
 /* Analysis Type Section */
 .analysis-type-section {
-  margin-bottom: 1.5rem;
+  margin-bottom: 2rem; /* Increased from 1.5rem */
 }
 
 .analysis-type-header {
-  font-size: 1.125rem;
+  font-size: 1.25rem; /* Increased from 1.125rem */
   font-weight: 600;
   color: #111827;
-  margin-bottom: 0.75rem;
+  margin-bottom: 1rem; /* Increased from 0.75rem */
   display: flex;
   align-items: center;
   font-family: var(--cm-font-primary, 'Manrope', sans-serif);
@@ -211,7 +214,7 @@
   position: relative;
   display: flex;
   align-items: flex-start;
-  padding: 0.75rem;
+  padding: 1rem; /* Increased from 0.75rem */
   border: 2px solid #e5e7eb;
   border-radius: 0.5rem;
   cursor: pointer;
@@ -307,8 +310,9 @@
 
 .property-confirmation-btn {
   flex: 1;
-  padding: 0.75rem 1.5rem;
+  padding: 1rem 1.5rem; /* Increased vertical padding */
   font-weight: 600;
+  font-size: 1rem; /* Explicit font size */
   border-radius: 0.5rem;
   transition: all 0.2s ease;
   border: none;
@@ -359,4 +363,36 @@
 .analysis-option.disabled:hover {
   border-color: #e5e7eb;
   background-color: white;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .property-confirmation-overlay {
+    padding: 1rem;
+  }
+  
+  .property-confirmation-container {
+    width: 95%;
+  }
+  
+  .property-confirmation-header {
+    padding: 2rem 1.5rem;
+  }
+  
+  .property-confirmation-title {
+    font-size: 1.875rem;
+  }
+  
+  .property-confirmation-content {
+    padding: 1.5rem;
+  }
+  
+  .property-confirmation-grid {
+    gap: 1rem;
+  }
+}
+
+/* Ensure minimum height for better visual presence */
+.property-confirmation-card {
+  min-height: 600px;
 }
