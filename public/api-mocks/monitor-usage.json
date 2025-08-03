@@ -1,0 +1,55 @@
+{
+  "summary": {
+    "totalAnalyses": 1247,
+    "totalUsers": 326,
+    "activeUsers24h": 48,
+    "apiCallsToday": 3892,
+    "avgResponseTime": 1.2,
+    "successRate": 98.5
+  },
+  "recentActivity": [
+    {
+      "timestamp": "2025-08-03T12:45:00Z",
+      "user": "user123@example.com",
+      "action": "property_analysis",
+      "status": "success",
+      "duration": 1.1
+    },
+    {
+      "timestamp": "2025-08-03T12:43:00Z",
+      "user": "user456@example.com",
+      "action": "str_analysis",
+      "status": "success",
+      "duration": 2.3
+    },
+    {
+      "timestamp": "2025-08-03T12:40:00Z",
+      "user": "user789@example.com",
+      "action": "report_generation",
+      "status": "success",
+      "duration": 3.5
+    }
+  ],
+  "apiHealth": {
+    "perplexity": {
+      "status": "operational",
+      "latency": 0.8,
+      "lastCheck": "2025-08-03T12:50:00Z"
+    },
+    "airbnb": {
+      "status": "operational",
+      "latency": 1.5,
+      "lastCheck": "2025-08-03T12:50:00Z"
+    },
+    "firebase": {
+      "status": "operational",
+      "latency": 0.2,
+      "lastCheck": "2025-08-03T12:50:00Z"
+    }
+  },
+  "errorRate": {
+    "last24h": 1.5,
+    "last7d": 1.2,
+    "last30d": 1.8
+  }
+}

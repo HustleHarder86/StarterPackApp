@@ -32,7 +32,7 @@
         <div class="cm-sidebar-overlay fixed inset-0 bg-black bg-opacity-50 z-40 hidden" id="sidebarOverlay"></div>
         
         <!-- Enhanced Compact Sidebar - 224px -->
-        <div class="sidebar" id="sidebar">
+        <div class="cm-sidebar" id="sidebar">
           <div class="sidebar-logo">
             <div class="flex items-center gap-3">
               <div class="logo-icon">

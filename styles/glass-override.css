@@ -3,47 +3,47 @@
 /* Override all white backgrounds with glass effect */
 .bg-white,
 [class*="bg-white"] {
-  background-color: rgba(255, 255, 255, 0.85) !important;
+  border: 1px solid rgb(255 255 255 / 0.3) !important;
+  background-color: rgb(255 255 255 / 0.85) !important;
   backdrop-filter: blur(12px) !important;
-  -webkit-backdrop-filter: blur(12px) !important;
-  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  backdrop-filter: blur(12px) !important;
 }
 
 /* Override gray backgrounds */
 .bg-gray-50,
 [class*="bg-gray-50"] {
-  background-color: rgba(249, 250, 251, 0.5) !important;
+  background-color: rgb(249 250 251 / 0.5) !important;
   backdrop-filter: blur(8px) !important;
-  -webkit-backdrop-filter: blur(8px) !important;
+  backdrop-filter: blur(8px) !important;
 }
 
 .bg-gray-100,
 [class*="bg-gray-100"] {
-  background-color: rgba(243, 244, 246, 0.5) !important;
+  background-color: rgb(243 244 246 / 0.5) !important;
   backdrop-filter: blur(8px) !important;
-  -webkit-backdrop-filter: blur(8px) !important;
+  backdrop-filter: blur(8px) !important;
 }
 
 .bg-gray-200 {
-  background-color: rgba(229, 231, 235, 0.5) !important;
+  background-color: rgb(229 231 235 / 0.5) !important;
   backdrop-filter: blur(6px) !important;
-  -webkit-backdrop-filter: blur(6px) !important;
+  backdrop-filter: blur(6px) !important;
 }
 
 /* Enhanced glass card effect */
 .glass-card,
 .card {
-  background: rgba(255, 255, 255, 0.95) !important;
-  backdrop-filter: blur(16px) saturate(180%) !important;
-  -webkit-backdrop-filter: blur(16px) saturate(180%) !important;
-  border: 1px solid rgba(255, 255, 255, 0.3) !important;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1) !important;
+  border: 1px solid rgb(255 255 255 / 0.3) !important;
   border-radius: 1rem !important;
+  background: rgb(255 255 255 / 0.95) !important;
+  backdrop-filter: blur(16px) saturate(180%) !important;
+  backdrop-filter: blur(16px) saturate(180%) !important;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1) !important;
 }
 
 /* Don't apply glass to all rounded elements */
 [class*="rounded"] {
-  background: rgba(255, 255, 255, 0.9) !important;
+  background: rgb(255 255 255 / 0.9) !important;
 }
 
 /* Strong glass effect for main containers */
@@ -58,54 +58,54 @@
 /* Modal glass effect */
 .modal-content,
 [role="dialog"] {
-  background: rgba(255, 255, 255, 0.95) !important;
+  border: 1px solid rgb(255 255 255 / 0.4) !important;
+  background: rgb(255 255 255 / 0.95) !important;
   backdrop-filter: blur(20px) !important;
-  -webkit-backdrop-filter: blur(20px) !important;
-  border: 1px solid rgba(255, 255, 255, 0.4) !important;
+  backdrop-filter: blur(20px) !important;
 }
 
 /* Table glass effect */
 table tbody tr:nth-child(even) {
-  background: rgba(249, 250, 251, 0.3) !important;
+  background: rgb(249 250 251 / 0.3) !important;
   backdrop-filter: blur(4px) !important;
 }
 
 table tbody tr:nth-child(odd) {
-  background: rgba(255, 255, 255, 0.3) !important;
+  background: rgb(255 255 255 / 0.3) !important;
   backdrop-filter: blur(4px) !important;
 }
 
 /* Button glass effects */
 .btn:not(.btn-gradient),
 button:not(.tab-button) {
-  background: rgba(255, 255, 255, 0.6) !important;
+  border: 1px solid rgb(255 255 255 / 0.4) !important;
+  background: rgb(255 255 255 / 0.6) !important;
   backdrop-filter: blur(8px) !important;
-  border: 1px solid rgba(255, 255, 255, 0.4) !important;
 }
 
 /* Input glass effects */
 input:not(.glass-input),
 select:not(.glass-input),
 textarea {
-  background: rgba(255, 255, 255, 0.5) !important;
+  border: 1px solid rgb(255 255 255 / 0.3) !important;
+  background: rgb(255 255 255 / 0.5) !important;
   backdrop-filter: blur(6px) !important;
-  border: 1px solid rgba(255, 255, 255, 0.3) !important;
 }
 
 /* Loading state glass */
 .loading-gradient,
 .skeleton {
   background: linear-gradient(90deg, 
-    rgba(240, 240, 240, 0.5) 25%, 
-    rgba(224, 224, 224, 0.5) 50%, 
-    rgba(240, 240, 240, 0.5) 75%) !important;
+    rgb(240 240 240 / 0.5) 25%, 
+    rgb(224 224 224 / 0.5) 50%, 
+    rgb(240 240 240 / 0.5) 75%) !important;
   backdrop-filter: blur(4px) !important;
 }
 
 /* Ensure gradient background is always visible */
 body {
-  background: transparent !important;
   color: #1f2937 !important; /* Ensure text is always readable */
+  background: transparent !important;
 }
 
 /* Fix text contrast globally */
@@ -116,14 +116,17 @@ p, span, div, h1, h2, h3, h4, h5, h6, label, td, th, li {
 /* Preserve white text where needed */
 .text-white,
 [class*="text-white"] {
-  color: #ffffff !important;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+  color: #fff !important;
+  text-shadow: 0 1px 2px rgb(0 0 0 / 0.1) !important;
 }
 
 /* Fix specific text colors */
 .text-gray-600 { color: #4b5563 !important; }
+
 .text-gray-700 { color: #374151 !important; }
+
 .text-gray-800 { color: #1f2937 !important; }
+
 .text-gray-900 { color: #111827 !important; }
 
 /* Remove any remaining opaque containers */
@@ -137,55 +140,55 @@ p, span, div, h1, h2, h3, h4, h5, h6, label, td, th, li {
 .hero-gradient,
 .gradient-hero,
 .property-hero-gradient {
-  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%) !important;
-  color: white !important;
+  margin-bottom: 2rem !important;
   padding: 1.5rem !important;
   border-radius: 1rem !important;
-  margin-bottom: 2rem !important;
-  box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3) !important;
+  color: white !important;
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%) !important;
+  box-shadow: 0 10px 30px rgb(99 102 241 / 0.3) !important;
 }
 
 .property-hero-gradient .stats-pill {
-  background: rgba(255, 255, 255, 0.95) !important;
+  background: rgb(255 255 255 / 0.95) !important;
   backdrop-filter: blur(10px) !important;
-  -webkit-backdrop-filter: blur(10px) !important;
+  backdrop-filter: blur(10px) !important;
 }
 
 /* Tab gradient when active */
 .tab-button.active,
 .tab-gradient.active {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
   color: white !important;
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3) !important;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  box-shadow: 0 4px 15px rgb(102 126 234 / 0.3) !important;
 }
 
 /* Tab buttons default state */
 .tab-button:not(.active) {
-  background: rgba(255, 255, 255, 0.9) !important;
+  border: 1px solid rgb(0 0 0 / 0.1) !important;
   color: #1f2937 !important;
-  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+  background: rgb(255 255 255 / 0.9) !important;
 }
 
 /* Floating elements */
 .floating-action {
   background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%) !important;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15) !important;
+  box-shadow: 0 8px 25px rgb(0 0 0 / 0.15) !important;
 }
 
 /* Stats pills with glass effect */
 .stats-pill {
-  background: rgba(255, 255, 255, 0.9) !important;
+  border: 1px solid rgb(255 255 255 / 0.4) !important;
+  background: rgb(255 255 255 / 0.9) !important;
   backdrop-filter: blur(10px) !important;
-  -webkit-backdrop-filter: blur(10px) !important;
-  border: 1px solid rgba(255, 255, 255, 0.4) !important;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1) !important;
+  backdrop-filter: blur(10px) !important;
+  box-shadow: 0 4px 15px rgb(0 0 0 / 0.1) !important;
 }
 
 /* Revenue banner gradient */
 .revenue-banner {
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
   color: white !important;
-  box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3) !important;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+  box-shadow: 0 10px 30px rgb(16 185 129 / 0.3) !important;
 }
 
 /* Ensure orbs are visible */
@@ -197,20 +200,20 @@ p, span, div, h1, h2, h3, h4, h5, h6, label, td, th, li {
 /* Navigation glass effect */
 nav,
 .navbar {
-  background: rgba(255, 255, 255, 0.8) !important;
+  border-bottom: 1px solid rgb(255 255 255 / 0.2) !important;
+  background: rgb(255 255 255 / 0.8) !important;
   backdrop-filter: blur(10px) !important;
-  -webkit-backdrop-filter: blur(10px) !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
+  backdrop-filter: blur(10px) !important;
 }
 
 /* Chart containers with gradient border */
 .chart-container-gradient {
   padding: 2px !important;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
   border-radius: 1rem !important;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
 }
 
 .chart-container-gradient > * {
-  background: rgba(255, 255, 255, 0.9) !important;
   border-radius: calc(1rem - 2px) !important;
+  background: rgb(255 255 255 / 0.9) !important;
 }

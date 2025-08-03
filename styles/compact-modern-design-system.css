@@ -7,6 +7,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap');
 
 :root {
+
   /* Compact Modern Layout Dimensions */
   --cm-sidebar-width: 224px; /* 14rem - Compact sidebar */
   --cm-header-height: 160px; /* Gradient hero height */
@@ -17,7 +18,7 @@
   --cm-sidebar-text: #d1d5db; /* gray-300 */
   --cm-sidebar-text-hover: #e5e7eb; /* gray-200 */
   --cm-sidebar-active-bg: #4f46e5; /* indigo-600 */
-  --cm-sidebar-active-text: #ffffff;
+  --cm-sidebar-active-text: #fff;
   --cm-sidebar-border: #374151; /* gray-700 */
   
   /* Compact Modern Gradient Colors */
@@ -28,17 +29,17 @@
   
   /* Compact Modern Content Colors */
   --cm-bg-primary: #f9fafb; /* gray-50 */
-  --cm-bg-secondary: #ffffff;
-  --cm-bg-glass: rgba(255, 255, 255, 0.9);
-  --cm-border-glass: rgba(255, 255, 255, 0.3);
+  --cm-bg-secondary: #fff;
+  --cm-bg-glass: rgb(255 255 255 / 0.9);
+  --cm-border-glass: rgb(255 255 255 / 0.3);
   
   /* Compact Modern Metric Card Colors */
-  --cm-metric-bg: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.7) 100%);
-  --cm-metric-border: 1px solid rgba(255,255,255,0.3);
-  --cm-metric-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+  --cm-metric-bg: linear-gradient(135deg, rgb(255 255 255 / 0.9) 0%, rgb(255 255 255 / 0.7) 100%);
+  --cm-metric-border: 1px solid rgb(255 255 255 / 0.3);
+  --cm-metric-shadow: 0 8px 32px rgb(0 0 0 / 0.08);
   
   /* Typography - Manrope for Compact Modern */
-  --cm-font-primary: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --cm-font-primary: 'Manrope', -apple-system, blinkmacsystemfont, 'Segoe UI', roboto, sans-serif;
   --font-weight-regular: 400;
   --font-weight-medium: 500;
   --font-weight-semibold: 600;
@@ -63,11 +64,11 @@
   --transition-slow: all 0.3s ease;
   
   /* Shadows */
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-  --shadow-glow: 0 0 40px rgba(79, 70, 229, 0.1);
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+  --shadow-glow: 0 0 40px rgb(79 70 229 / 0.1);
 }
 
 /* Global Body Font Override for Compact Modern */
@@ -78,77 +79,77 @@ body {
 /* Base Styles for Compact Modern Layout */
 .compact-modern-layout {
   font-family: var(--cm-font-primary);
-  background-color: var(--cm-bg-primary);
   color: #1f2937;
+  background-color: var(--cm-bg-primary);
 }
 
 /* Compact Modern Sidebar Styles */
 .cm-sidebar {
-  width: var(--cm-sidebar-width);
-  background-color: var(--cm-sidebar-bg);
-  color: var(--cm-sidebar-text);
-  height: 100vh;
   position: fixed;
-  left: 0;
   top: 0;
-  overflow-y: auto;
+  left: 0;
   z-index: 40;
+  width: var(--cm-sidebar-width);
+  height: 100vh;
+  overflow-y: auto;
+  color: var(--cm-sidebar-text);
+  background-color: var(--cm-sidebar-bg);
 }
 
 .cm-sidebar-link {
-  transition: var(--transition-fast);
-  padding: 0.5rem 0.75rem;
-  font-size: 0.875rem;
-  border-radius: 0.375rem;
   display: flex;
   align-items: center;
-  color: var(--cm-sidebar-text);
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
   text-decoration: none;
+  color: var(--cm-sidebar-text);
+  transition: var(--transition-fast);
 }
 
 .cm-sidebar-link:hover {
+  color: var(--cm-sidebar-text-hover);
   background-color: var(--cm-sidebar-hover-bg);
   transform: translateX(4px);
-  color: var(--cm-sidebar-text-hover);
 }
 
 .cm-sidebar-link.active {
-  background-color: var(--cm-sidebar-active-bg);
-  color: var(--cm-sidebar-active-text);
   font-weight: var(--font-weight-semibold);
+  color: var(--cm-sidebar-active-text);
+  background-color: var(--cm-sidebar-active-bg);
 }
 
 .cm-sidebar-link svg {
+  flex-shrink: 0;
   width: 1rem;
   height: 1rem;
   margin-right: 0.75rem;
-  flex-shrink: 0;
 }
 
 /* Compact Modern Main Content Area */
 .cm-main-content {
-  margin-left: var(--cm-sidebar-width);
   min-height: 100vh;
+  margin-left: var(--cm-sidebar-width);
   background-color: var(--cm-bg-primary);
 }
 
 /* Compact Modern Gradient Hero Section */
 .cm-gradient-hero {
-  background: var(--cm-gradient-primary);
-  color: white;
   padding: 1.5rem 2rem;
+  color: white;
+  background: var(--cm-gradient-primary);
   box-shadow: var(--shadow-lg);
 }
 
 .gradient-hero h1 {
+  margin-bottom: 0.5rem;
   font-size: 1.5rem;
   font-weight: var(--font-weight-bold);
-  margin-bottom: 0.5rem;
 }
 
 .gradient-hero .subtitle {
-  color: rgba(199, 210, 254, 1); /* indigo-100 */
   font-size: 0.875rem;
+  color: rgb(199 210 254 / 1); /* indigo-100 */
 }
 
 .gradient-hero .price {
@@ -175,44 +176,44 @@ body {
 
 .metric-label {
   font-size: 0.75rem;
-  color: rgba(199, 210, 254, 1); /* indigo-200 */
+  color: rgb(199 210 254 / 1); /* indigo-200 */
 }
 
 /* Compact Modern Glass Morphism Cards */
 .cm-metric-card {
-  background: var(--cm-metric-bg);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  padding: 1.5rem;
   border: var(--cm-metric-border);
   border-radius: 0.75rem;
-  padding: 1.5rem;
+  background: var(--cm-metric-bg);
+  backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
   box-shadow: var(--cm-metric-shadow);
   transition: var(--transition-normal);
 }
 
 .cm-metric-card:hover {
+  box-shadow: 0 12px 40px rgb(0 0 0 / 0.12);
   transform: translateY(-2px);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
 }
 
 /* Compact Modern Gradient Border Cards */
 .cm-gradient-border {
   position: relative;
-  background: white;
-  border-radius: 0.75rem;
   padding: 1.5rem;
+  border-radius: 0.75rem;
+  background: white;
   box-shadow: var(--shadow-sm);
 }
 
 .cm-gradient-border::before {
-  content: '';
   position: absolute;
   top: 0;
-  left: 0;
   right: 0;
+  left: 0;
   height: 4px;
-  background: var(--cm-gradient-accent);
   border-radius: 0.75rem 0.75rem 0 0;
+  background: var(--cm-gradient-accent);
+  content: '';
 }
 
 /* 12-Column Grid System */
@@ -224,25 +225,36 @@ body {
 }
 
 .col-span-1 { grid-column: span 1; }
+
 .col-span-2 { grid-column: span 2; }
+
 .col-span-3 { grid-column: span 3; }
+
 .col-span-4 { grid-column: span 4; }
+
 .col-span-5 { grid-column: span 5; }
+
 .col-span-6 { grid-column: span 6; }
+
 .col-span-7 { grid-column: span 7; }
+
 .col-span-8 { grid-column: span 8; }
+
 .col-span-9 { grid-column: span 9; }
+
 .col-span-10 { grid-column: span 10; }
+
 .col-span-11 { grid-column: span 11; }
+
 .col-span-12 { grid-column: span 12; }
 
 /* Compact Modern Investment Score Card */
 .cm-investment-score-card {
-  background: var(--cm-gradient-accent);
-  color: white;
-  border-radius: 0.75rem;
   padding: 1.5rem;
+  border-radius: 0.75rem;
   text-align: center;
+  color: white;
+  background: var(--cm-gradient-accent);
 }
 
 .score-large {
@@ -252,18 +264,18 @@ body {
 }
 
 .score-subtitle {
-  color: rgba(199, 210, 254, 1); /* indigo-200 */
-  font-size: 0.875rem;
   margin-top: 0.25rem;
+  font-size: 0.875rem;
+  color: rgb(199 210 254 / 1); /* indigo-200 */
 }
 
 /* Progress Bars */
 .progress-bar {
   width: 100%;
   height: 0.5rem;
-  background-color: #e5e7eb; /* gray-200 */
   border-radius: 0.25rem;
   overflow: hidden;
+  background-color: #e5e7eb; /* gray-200 */
 }
 
 .progress-fill {
@@ -286,32 +298,32 @@ body {
 
 /* Compact Modern Buttons */
 .cm-btn-gradient {
-  background: var(--cm-gradient-accent);
-  color: white;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
   padding: 0.5rem 1rem;
+  border: none;
   border-radius: 0.5rem;
   font-weight: var(--font-weight-medium);
+  color: white;
+  background: var(--cm-gradient-accent);
   transition: var(--transition-normal);
-  border: none;
   cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .cm-btn-gradient:hover {
   background: linear-gradient(135deg, #4338ca 0%, #6d28d9 100%); /* darker gradient */
-  transform: translateY(-1px);
   box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
 }
 
 .btn-outline {
-  background: transparent;
-  color: #4b5563; /* gray-700 */
   padding: 0.5rem 1rem;
   border: 2px solid #d1d5db; /* gray-300 */
   border-radius: 0.5rem;
   font-weight: var(--font-weight-medium);
+  color: #4b5563; /* gray-700 */
+  background: transparent;
   transition: var(--transition-normal);
   cursor: pointer;
 }
@@ -323,19 +335,19 @@ body {
 
 /* Mobile Menu Toggle Button */
 .cm-mobile-menu-toggle {
-  display: none;
   position: fixed;
   top: 1rem;
   left: 1rem;
   z-index: 50;
-  background: var(--cm-sidebar-active-bg);
-  color: white;
+  display: none;
+  padding: 0.5rem;
   border: none;
   border-radius: 0.375rem;
-  padding: 0.5rem;
-  cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  color: white;
+  background: var(--cm-sidebar-active-bg);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 0.15);
   transition: var(--transition-fast);
+  cursor: pointer;
 }
 
 .cm-mobile-menu-toggle:hover {
@@ -344,23 +356,23 @@ body {
 }
 
 .cm-sidebar-overlay {
-  display: none;
   position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.5);
   z-index: 30;
+  display: none;
+  background: rgb(0 0 0 / 0.5);
+  inset: 0;
 }
 
 /* Compact Modern Mobile Responsive */
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .cm-mobile-menu-toggle {
     display: block;
   }
   
   .cm-sidebar {
-    transform: translateX(-100%);
+    box-shadow: 2px 0 10px rgb(0 0 0 / 0.1);
     transition: transform 0.3s ease;
-    box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+    transform: translateX(-100%);
   }
   
   .cm-sidebar.open {
@@ -398,7 +410,7 @@ body {
 /* Compact Modern Utility Classes */
 .cm-text-gradient {
   background: var(--cm-gradient-accent);
-  -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
@@ -413,6 +425,7 @@ body {
     opacity: 0;
     transform: translateX(-20px);
   }
+
   to {
     opacity: 1;
     transform: translateX(0);
@@ -425,31 +438,31 @@ body {
 
 /* Compact Form Layout Classes */
 .main-container {
-  height: 100vh;
-  overflow: hidden;
   display: flex;
-  align-items: center;
   justify-content: center;
+  align-items: center;
+  height: 100vh;
   padding: 2rem;
+  overflow: hidden;
 }
 
 .form-container {
+  display: flex;
+  flex-direction: column;
   width: 100%;
   max-width: 1000px;
   height: 100%;
   max-height: 600px;
-  background: white;
   border-radius: 16px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
-  display: flex;
-  flex-direction: column;
   overflow: hidden;
+  background: white;
+  box-shadow: 0 10px 40px rgb(0 0 0 / 0.08);
 }
 
 .form-header {
+  flex-shrink: 0;
   padding: 1.5rem 2rem;
   border-bottom: 1px solid #e5e7eb;
-  flex-shrink: 0;
 }
 
 .form-body {
@@ -459,10 +472,10 @@ body {
 }
 
 .form-footer {
+  flex-shrink: 0;
   padding: 1.5rem 2rem;
   border-top: 1px solid #e5e7eb;
   background: #fafbfc;
-  flex-shrink: 0;
 }
 
 .input-group {
@@ -470,36 +483,36 @@ body {
 }
 
 .input-label {
+  display: block;
+  margin-bottom: 0.25rem;
   font-size: 0.875rem;
   font-weight: 500;
   color: #374151;
-  margin-bottom: 0.25rem;
-  display: block;
 }
 
 .input-field {
   width: 100%;
   padding: 0.5rem 0.75rem;
-  font-size: 0.875rem;
   border: 1px solid #d1d5db;
   border-radius: 6px;
+  font-size: 0.875rem;
   transition: all 0.15s;
 }
 
 .input-field:focus {
   outline: none;
   border-color: #6366f1;
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+  box-shadow: 0 0 0 3px rgb(99 102 241 / 0.1);
 }
 
 .info-banner {
-  background: linear-gradient(135deg, #f0f9ff 0%, #e0e7ff 100%);
-  border: 1px solid #c7d2fe;
-  border-radius: 8px;
-  padding: 0.75rem 1rem;
-  margin-bottom: 1rem;
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  margin-bottom: 1rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid #c7d2fe;
+  border-radius: 8px;
   font-size: 0.875rem;
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0e7ff 100%);
 }

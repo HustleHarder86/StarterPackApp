@@ -1,0 +1,107 @@
+{
+  "description": "Map of critical CSS classes that tests depend on. Update tests if these change.",
+  "lastUpdated": "2025-08-03",
+  "version": "1.0.0",
+  "critical": {
+    "layout": {
+      "sidebar": {
+        "container": "sidebar",
+        "nav": "sidebar-nav",
+        "link": "sidebar-link",
+        "linkActive": "active",
+        "logo": "sidebar-logo",
+        "footer": "sidebar-footer"
+      },
+      "main": {
+        "container": "main-content",
+        "wrapper": "content-wrapper",
+        "appContainer": "app-container"
+      },
+      "mobile": {
+        "menuToggle": "mobile-menu-toggle",
+        "overlay": "sidebar-overlay",
+        "hidden": "mobile-hidden",
+        "only": "mobile-only"
+      }
+    },
+    "forms": {
+      "container": "form-container",
+      "header": "form-header",
+      "body": "form-body",
+      "footer": "form-footer",
+      "grid": "form-grid",
+      "inputGroup": "input-group",
+      "inputLabel": "input-label",
+      "inputField": "input-field",
+      "propertyForm": "property-analysis-form"
+    },
+    "buttons": {
+      "base": "btn",
+      "primary": "btn-primary",
+      "secondary": "btn-secondary",
+      "gradient": "btn-gradient"
+    },
+    "cards": {
+      "base": "card",
+      "header": "card-header",
+      "body": "card-body",
+      "metric": "metric-card",
+      "gradientBorder": "gradient-border",
+      "glass": "glass-card"
+    },
+    "components": {
+      "infoBanner": "info-banner",
+      "tipBanner": "tip-banner",
+      "investmentScore": "investment-score-card",
+      "financialOverview": "financial-overview",
+      "loadingSpinner": "loading-spinner",
+      "progressBar": "animate-progress"
+    },
+    "states": {
+      "active": "active",
+      "open": "open",
+      "hidden": "hidden",
+      "visible": "visible",
+      "error": "error",
+      "success": "success",
+      "warning": "warning"
+    }
+  },
+  "testIds": {
+    "recommendation": "Use data-testid attributes instead of CSS classes for test selectors where possible",
+    "suggested": {
+      "loginForm": "data-testid=\"login-form\"",
+      "signupForm": "data-testid=\"signup-form\"",
+      "propertyForm": "data-testid=\"property-form\"",
+      "analysisResults": "data-testid=\"analysis-results\"",
+      "reportButton": "data-testid=\"generate-report\"",
+      "sidebar": "data-testid=\"sidebar\"",
+      "mobileMenu": "data-testid=\"mobile-menu\""
+    }
+  },
+  "usage": {
+    "playwright": {
+      "example": "await page.locator('.sidebar-link.active')",
+      "recommended": "await page.locator('[data-testid=\"active-nav-link\"]')"
+    },
+    "jest": {
+      "example": "expect(wrapper.find('.btn-primary')).toHaveLength(1)",
+      "recommended": "expect(wrapper.find('[data-testid=\"submit-button\"]')).toHaveLength(1)"
+    }
+  },
+  "migration": {
+    "deprecated": {
+      "cm-sidebar": "Use .sidebar instead",
+      "cm-sidebar-link": "Use .sidebar-link instead",
+      "glass-override": "Built into unified design system",
+      "gradient-theme": "Built into unified design system"
+    },
+    "breaking": {
+      "2025-08-03": [
+        "Removed all !important overrides",
+        "Consolidated to single CSS file",
+        "Changed from Inter to Manrope font"
+      ]
+    }
+  }
+}

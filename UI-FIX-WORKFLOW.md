@@ -2,6 +2,22 @@
 
 This workflow should be followed for ALL UI fixes to ensure quality and prevent integration issues.
 
+## 🎨 UNIFIED CSS SYSTEM
+
+**IMPORTANT**: All UI work must use the unified design system:
+- **Single CSS Source**: `/styles/unified-design-system.css`
+- **Font**: Manrope (not Inter)
+- **Design Reference**: `/mockups/hybrid-design-3-compact-modern.html`
+- **NO deprecated CSS**: styles.css, design-system.css, gradient-theme.css, etc.
+
+**Standard HTML Head:**
+```html
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="/styles/unified-design-system.css">
+<!-- NO OTHER CSS FILES -->
+```
+
 ## 🎯 Workflow Steps
 
 ### 1. **Identify the Component** 
@@ -11,7 +27,13 @@ This workflow should be followed for ALL UI fixes to ensure quality and prevent 
 
 ### 2. **Create a Mock First**
 - Build a simple HTML mock of the desired fix
-- Include all necessary styles and structure
+- **IMPORTANT**: Use the unified CSS system:
+  ```html
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/styles/unified-design-system.css">
+  ```
+- Do NOT import deprecated CSS files (styles.css, design-system.css, etc.)
 - Test the mock in isolation to confirm it matches requirements
 - Take a screenshot of the mock and save as `mocks/[component]-baseline.png`
 - This will be your visual truth for comparison
@@ -20,6 +42,12 @@ This workflow should be followed for ALL UI fixes to ensure quality and prevent 
 - Apply changes to the actual component
 - Ensure data bindings are correct (watch for snake_case vs camelCase)
 - Maintain existing functionality while making changes
+- **CSS VALIDATION**: Run the CSS import validator:
+  ```bash
+  node scripts/validate-css-imports.js
+  ```
+  - Fix any deprecated CSS imports
+  - Ensure only unified-design-system.css is used
 
 ### 4. **Quick Local Test**
 - Create a standalone test HTML file with just the affected component
@@ -239,9 +267,25 @@ Before running agents, manually verify:
    - [ ] Spacing and alignment match
 
 ### 6. **Pre-Commit Validation** ⚠️ CRITICAL STEP
-- **Run code-reviewer agent** to compare:
+
+#### A. CSS Class Validation
+```bash
+# Check if critical CSS classes still exist
+node scripts/check-css-classes.js
+```
+
+#### B. Visual Regression Testing
+```bash
+# Run visual regression tests
+npm run test:visual
+
+# Update baselines if design intentionally changed
+UPDATE_BASELINE=true npm run test:visual
+```
+
+#### C. Run code-reviewer agent to compare:
   - Mock vs implementation structure
-  - CSS class availability
+  - CSS class availability (use css-class-map.json)
   - Data property mapping
   - Event handler consistency
   - Script dependencies
@@ -275,13 +319,22 @@ Before committing, run the complete test suite:
 # 1. Run syntax validation
 npm run test:syntax
 
-# 2. Run your specific UI fix test
+# 2. Validate CSS imports
+node scripts/validate-css-imports.js
+
+# 3. Check CSS class dependencies
+node scripts/check-css-classes.js
+
+# 4. Run your specific UI fix test
 npx playwright test tests/e2e/ui-fix-[component-name].spec.js
 
-# 3. Run comprehensive E2E tests
+# 5. Run visual regression tests
+npm run test:visual
+
+# 6. Run comprehensive E2E tests
 npm run test:comprehensive
 
-# 4. Generate test report
+# 7. Generate test report
 npm run test:report
 ```
 
@@ -545,6 +598,61 @@ page.on('pageerror', err => errors.push(err.message));
 
 // Navigate AFTER setting up listeners
 await page.goto(url);
+```
+
+## 🎨 CSS Troubleshooting Guide
+
+### Common CSS Issues After Migration
+
+#### 1. **Styles Not Applied**
+```bash
+# Check CSS imports are correct
+node scripts/validate-css-imports.js
+
+# Common fix: Update HTML head
+<link rel="stylesheet" href="/styles/unified-design-system.css">
+```
+
+#### 2. **Missing CSS Classes**
+```bash
+# Check if classes exist in unified system
+node scripts/check-css-classes.js
+
+# If missing, check css-class-map.json for new names
+cat tests/css-class-map.json | grep "your-class-name"
+```
+
+#### 3. **Font Issues (Inter vs Manrope)**
+```css
+/* Wrong - old system */
+font-family: 'Inter', sans-serif;
+
+/* Correct - unified system */
+font-family: var(--font-primary); /* Manrope */
+```
+
+#### 4. **Conflicting Styles**
+- Remove ALL inline styles with !important
+- Check for duplicate CSS imports
+- Use browser DevTools to find style source
+
+#### 5. **Visual Regression Failures**
+```bash
+# Update baseline if change is intentional
+UPDATE_BASELINE=true npm run test:visual
+
+# Compare actual vs expected
+ls tests/visual/diff/
+```
+
+#### 6. **Legacy Class Names**
+```javascript
+// Deprecated
+.cm-sidebar → .sidebar
+.cm-sidebar-link → .sidebar-link
+
+// Check migration guide
+cat tests/css-class-map.json | jq '.migration.deprecated'
 ```
 
 ---

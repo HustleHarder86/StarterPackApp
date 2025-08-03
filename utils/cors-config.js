@@ -6,8 +6,12 @@
 const getAllowedOrigins = () => {
   const origins = [
     'https://starterpackapp.vercel.app',
+    'https://starter-pack-app.vercel.app',
+    'https://investorprops.vercel.app',
     'https://starterpackapp.com',
-    'https://www.starterpackapp.com'
+    'https://www.starterpackapp.com',
+    'https://investorprops.com',
+    'https://www.investorprops.com'
   ];
   
   // Add development origins

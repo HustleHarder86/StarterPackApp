@@ -1,0 +1,236 @@
+{
+  "extends": "stylelint-config-standard",
+  "plugins": [
+    "stylelint-order"
+  ],
+  "rules": {
+    "indentation": 2,
+    "string-quotes": "single",
+    "no-duplicate-selectors": true,
+    "color-hex-case": "lower",
+    "color-hex-length": "short",
+    "color-named": "never",
+    "selector-no-qualifying-type": true,
+    "selector-combinator-space-after": "always",
+    "selector-attribute-quotes": "always",
+    "selector-attribute-brackets-space-inside": "never",
+    "declaration-block-trailing-semicolon": "always",
+    "declaration-colon-space-before": "never",
+    "declaration-colon-space-after": "always",
+    "property-no-vendor-prefix": true,
+    "value-no-vendor-prefix": true,
+    "number-leading-zero": "always",
+    "function-url-quotes": "always",
+    "font-family-name-quotes": "always-unless-keyword",
+    "comment-whitespace-inside": "always",
+    "comment-empty-line-before": "always",
+    "at-rule-no-vendor-prefix": true,
+    "rule-empty-line-before": [
+      "always",
+      {
+        "except": ["first-nested"],
+        "ignore": ["after-comment"]
+      }
+    ],
+    "selector-pseudo-element-colon-notation": "double",
+    "selector-pseudo-class-parentheses-space-inside": "never",
+    "selector-no-vendor-prefix": true,
+    "media-feature-range-operator-space-before": "always",
+    "media-feature-range-operator-space-after": "always",
+    "media-feature-parentheses-space-inside": "never",
+    "media-feature-colon-space-before": "never",
+    "media-feature-colon-space-after": "always",
+    "no-duplicate-at-import-rules": true,
+    "no-unknown-animations": true,
+    "unit-no-unknown": true,
+    "property-no-unknown": true,
+    "declaration-block-no-duplicate-properties": true,
+    "declaration-block-no-redundant-longhand-properties": true,
+    "shorthand-property-no-redundant-values": true,
+    "value-keyword-case": "lower",
+    "function-name-case": "lower",
+    "at-rule-name-case": "lower",
+    "at-rule-name-space-after": "always",
+    "at-rule-semicolon-newline-after": "always",
+    "max-nesting-depth": 3,
+    "selector-max-compound-selectors": 3,
+    "font-family-no-missing-generic-family-keyword": true,
+    "order/properties-order": [
+      {
+        "groupName": "position",
+        "properties": [
+          "position",
+          "top",
+          "right",
+          "bottom",
+          "left",
+          "z-index"
+        ]
+      },
+      {
+        "groupName": "display",
+        "properties": [
+          "display",
+          "flex",
+          "flex-direction",
+          "flex-wrap",
+          "justify-content",
+          "align-items",
+          "align-content",
+          "order",
+          "flex-grow",
+          "flex-shrink",
+          "flex-basis",
+          "align-self",
+          "grid",
+          "grid-template",
+          "grid-template-columns",
+          "grid-template-rows",
+          "grid-template-areas",
+          "grid-gap",
+          "gap"
+        ]
+      },
+      {
+        "groupName": "box-model",
+        "properties": [
+          "width",
+          "min-width",
+          "max-width",
+          "height",
+          "min-height",
+          "max-height",
+          "margin",
+          "margin-top",
+          "margin-right",
+          "margin-bottom",
+          "margin-left",
+          "padding",
+          "padding-top",
+          "padding-right",
+          "padding-bottom",
+          "padding-left",
+          "border",
+          "border-top",
+          "border-right",
+          "border-bottom",
+          "border-left",
+          "border-width",
+          "border-style",
+          "border-color",
+          "border-radius",
+          "box-sizing",
+          "overflow",
+          "overflow-x",
+          "overflow-y"
+        ]
+      },
+      {
+        "groupName": "typography",
+        "properties": [
+          "font",
+          "font-family",
+          "font-size",
+          "font-weight",
+          "font-style",
+          "line-height",
+          "text-align",
+          "text-decoration",
+          "text-transform",
+          "letter-spacing",
+          "word-spacing",
+          "white-space",
+          "color"
+        ]
+      },
+      {
+        "groupName": "visual",
+        "properties": [
+          "background",
+          "background-color",
+          "background-image",
+          "background-repeat",
+          "background-position",
+          "background-size",
+          "background-attachment",
+          "background-clip",
+          "opacity",
+          "filter",
+          "backdrop-filter",
+          "box-shadow",
+          "text-shadow"
+        ]
+      },
+      {
+        "groupName": "animation",
+        "properties": [
+          "transition",
+          "transition-property",
+          "transition-duration",
+          "transition-timing-function",
+          "transition-delay",
+          "animation",
+          "animation-name",
+          "animation-duration",
+          "animation-timing-function",
+          "animation-delay",
+          "animation-iteration-count",
+          "animation-direction",
+          "animation-fill-mode",
+          "animation-play-state",
+          "transform",
+          "transform-origin"
+        ]
+      },
+      {
+        "groupName": "misc",
+        "properties": [
+          "cursor",
+          "user-select",
+          "pointer-events",
+          "resize",
+          "appearance",
+          "content",
+          "quotes",
+          "counter-reset",
+          "counter-increment",
+          "will-change"
+        ]
+      }
+    ],
+    "custom-property-pattern": "^(--[a-z][a-z0-9]*)(-[a-z0-9]+)*$",
+    "selector-class-pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$",
+    "selector-id-pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$",
+    "keyframes-name-pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$",
+    "declaration-block-no-duplicate-custom-properties": true,
+    "declaration-no-important": true,
+    "selector-max-id": 0,
+    "selector-max-universal": 1,
+    "selector-max-type": 2,
+    "property-disallowed-list": [
+      "font-smoothing",
+      "webkit-font-smoothing"
+    ],
+    "unit-disallowed-list": [
+      "em",
+      "ex"
+    ],
+    "function-disallowed-list": [
+      "rgb",
+      "hsl"
+    ],
+    "color-function-notation": "modern",
+    "alpha-value-notation": "number"
+  },
+  "ignoreFiles": [
+    "**/*.js",
+    "**/*.jsx",
+    "**/*.ts",
+    "**/*.tsx",
+    "node_modules/**",
+    "dist/**",
+    "build/**",
+    "coverage/**",
+    "**/*.min.css"
+  ]
+}

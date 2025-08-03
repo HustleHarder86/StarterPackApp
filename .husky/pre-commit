@@ -1,0 +1,39 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Run CSS import validation
+echo "🔍 Validating CSS imports..."
+node scripts/validate-css-imports.js
+if [ $? -ne 0 ]; then
+  echo "❌ CSS import validation failed!"
+  echo "Please fix the issues before committing."
+  exit 1
+fi
+
+# Run CSS class checking
+echo "🔍 Checking CSS class dependencies..."
+node scripts/check-css-classes.js
+if [ $? -ne 0 ]; then
+  echo "❌ CSS class check failed!"
+  echo "Critical CSS classes are missing or have changed."
+  exit 1
+fi
+
+# Run stylelint on CSS files
+echo "🎨 Linting CSS files..."
+npx stylelint "styles/**/*.css" --fix
+if [ $? -ne 0 ]; then
+  echo "❌ CSS linting failed!"
+  echo "Please fix the CSS issues before committing."
+  exit 1
+fi
+
+# Run syntax validation
+echo "✨ Validating JavaScript syntax..."
+npm run test:syntax
+if [ $? -ne 0 ]; then
+  echo "❌ JavaScript syntax validation failed!"
+  exit 1
+fi
+
+echo "✅ All pre-commit checks passed!"

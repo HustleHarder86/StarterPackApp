@@ -259,6 +259,7 @@ class ComponentLoaderCompactModern extends ComponentLoader {
     function toggleSidebar() {
       sidebar.classList.toggle('open');
       overlay.classList.toggle('active');
+      overlay.classList.toggle('hidden'); // Also toggle hidden class
       menuToggle.classList.toggle('sidebar-open');
     }
     
@@ -273,6 +274,7 @@ class ComponentLoaderCompactModern extends ComponentLoader {
       if (window.innerWidth > 768 && sidebar.classList.contains('open')) {
         sidebar.classList.remove('open');
         overlay.classList.remove('active');
+        overlay.classList.add('hidden'); // Ensure hidden is re-added
         menuToggle.classList.remove('sidebar-open');
       }
     });

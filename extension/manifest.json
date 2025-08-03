@@ -11,7 +11,13 @@
   "host_permissions": [
     "https://*.realtor.ca/*",
     "http://localhost:3000/*",
-    "https://starter-pack-app.vercel.app/*"
+    "https://starter-pack-app.vercel.app/*",
+    "https://starterpackapp.vercel.app/*",
+    "https://investorprops.vercel.app/*",
+    "https://starterpackapp.com/*",
+    "https://www.starterpackapp.com/*",
+    "https://investorprops.com/*",
+    "https://www.investorprops.com/*"
   ],
   "background": {
     "service_worker": "src/background.js"
@@ -24,7 +30,15 @@
       "run_at": "document_idle"
     },
     {
-      "matches": ["https://starter-pack-app.vercel.app/*"],
+      "matches": [
+        "https://starter-pack-app.vercel.app/*",
+        "https://starterpackapp.vercel.app/*",
+        "https://investorprops.vercel.app/*",
+        "https://starterpackapp.com/*",
+        "https://www.starterpackapp.com/*",
+        "https://investorprops.com/*",
+        "https://www.investorprops.com/*"
+      ],
       "js": ["src/app-content.js"],
       "run_at": "document_idle"
     }

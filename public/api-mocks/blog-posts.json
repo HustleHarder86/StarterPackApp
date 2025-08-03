@@ -1,0 +1,46 @@
+{
+  "posts": [
+    {
+      "id": "1",
+      "title": "Understanding Cap Rates in Real Estate Investment",
+      "slug": "understanding-cap-rates",
+      "excerpt": "Learn how capitalization rates work and why they're crucial for evaluating investment properties.",
+      "content": "Cap rates are a fundamental metric in real estate investing...",
+      "author": "InvestorProps Team",
+      "publishedAt": "2025-07-15T10:00:00Z",
+      "status": "published",
+      "category": "Education",
+      "tags": ["cap-rate", "roi", "investment-analysis"],
+      "imageUrl": "/images/blog/cap-rates.jpg"
+    },
+    {
+      "id": "2", 
+      "title": "Short-Term Rental vs Long-Term Rental: Which is Better?",
+      "slug": "str-vs-ltr-comparison",
+      "excerpt": "A comprehensive comparison of short-term and long-term rental strategies.",
+      "content": "When investing in rental properties, one of the biggest decisions...",
+      "author": "InvestorProps Team",
+      "publishedAt": "2025-07-22T14:30:00Z",
+      "status": "published",
+      "category": "Strategy",
+      "tags": ["str", "ltr", "rental-strategy"],
+      "imageUrl": "/images/blog/str-vs-ltr.jpg"
+    },
+    {
+      "id": "3",
+      "title": "Canadian Real Estate Market Update - Q3 2025",
+      "slug": "canadian-market-update-q3-2025",
+      "excerpt": "Latest trends and insights from the Canadian real estate market.",
+      "content": "The Canadian real estate market continues to show resilience...",
+      "author": "Market Analysis Team",
+      "publishedAt": "2025-07-30T09:00:00Z",
+      "status": "published",
+      "category": "Market Update",
+      "tags": ["market-update", "canada", "trends"],
+      "imageUrl": "/images/blog/market-update.jpg"
+    }
+  ],
+  "total": 3,
+  "page": 1,
+  "limit": 10
+}

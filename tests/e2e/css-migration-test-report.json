@@ -1,0 +1,798 @@
+{
+  "timestamp": "2025-08-03T16:59:02.359Z",
+  "summary": {
+    "total": 11,
+    "passed": 2,
+    "failed": 9,
+    "warnings": 0
+  },
+  "pages": [
+    {
+      "name": "Landing Page",
+      "url": "/index.html",
+      "priority": "high",
+      "tests": {
+        "pageLoad": {
+          "status": "passed",
+          "errors": []
+        },
+        "cssValidation": {
+          "status": "passed",
+          "issues": []
+        },
+        "fontLoading": {
+          "status": "passed",
+          "issues": []
+        },
+        "responsiveDesign": {
+          "status": "passed",
+          "viewports": {
+            "desktop": {
+              "hasOverflow": false,
+              "layoutCorrect": true,
+              "pageType": "static"
+            },
+            "tablet": {
+              "hasOverflow": false,
+              "layoutCorrect": true,
+              "pageType": "static"
+            },
+            "mobile": {
+              "hasOverflow": false,
+              "layoutCorrect": true,
+              "pageType": "static"
+            }
+          }
+        },
+        "consoleErrors": {
+          "status": "passed",
+          "errors": []
+        },
+        "visualElements": {
+          "status": "passed",
+          "issues": [],
+          "details": {
+            "Sidebar": {
+              "exists": false,
+              "visible": false
+            },
+            "Primary Button": {
+              "exists": true,
+              "visible": true
+            },
+            "Card Component": {
+              "exists": true,
+              "visible": true
+            },
+            "Gradient Accent": {
+              "exists": false,
+              "visible": false
+            }
+          }
+        }
+      },
+      "screenshots": [
+        "tests/e2e/screenshots/css-migration/landing-page-desktop.png",
+        "tests/e2e/screenshots/css-migration/landing-page-tablet.png",
+        "tests/e2e/screenshots/css-migration/landing-page-mobile.png"
+      ]
+    },
+    {
+      "name": "ROI Finder",
+      "url": "/roi-finder.html?e2e_test_mode=true",
+      "priority": "high",
+      "tests": {
+        "pageLoad": {
+          "status": "passed",
+          "errors": []
+        },
+        "cssValidation": {
+          "status": "passed",
+          "issues": []
+        },
+        "fontLoading": {
+          "status": "passed",
+          "issues": []
+        },
+        "responsiveDesign": {
+          "status": "failed",
+          "viewports": {
+            "desktop": {
+              "hasOverflow": false,
+              "layoutCorrect": true,
+              "pageType": "dashboard"
+            },
+            "tablet": {
+              "hasOverflow": false,
+              "layoutCorrect": true,
+              "pageType": "dashboard"
+            },
+            "mobile": {
+              "hasOverflow": true,
+              "layoutCorrect": true,
+              "pageType": "dashboard"
+            }
+          }
+        },
+        "consoleErrors": {
+          "status": "passed",
+          "errors": []
+        },
+        "visualElements": {
+          "status": "passed",
+          "issues": [],
+          "details": {
+            "Sidebar": {
+              "exists": false,
+              "visible": false
+            },
+            "Primary Button": {
+              "exists": true,
+              "visible": true
+            },
+            "Card Component": {
+              "exists": true,
+              "visible": true
+            },
+            "Gradient Accent": {
+              "exists": false,
+              "visible": false
+            }
+          }
+        }
+      },
+      "screenshots": [
+        "tests/e2e/screenshots/css-migration/roi-finder-desktop.png",
+        "tests/e2e/screenshots/css-migration/roi-finder-tablet.png",
+        "tests/e2e/screenshots/css-migration/roi-finder-mobile.png"
+      ]
+    },
+    {
+      "name": "Admin Dashboard",
+      "url": "/admin-dashboard.html",
+      "priority": "high",
+      "tests": {
+        "pageLoad": {
+          "status": "passed",
+          "errors": []
+        },
+        "cssValidation": {
+          "status": "passed",
+          "issues": []
+        },
+        "fontLoading": {
+          "status": "passed",
+          "issues": []
+        },
+        "responsiveDesign": {
+          "status": "failed",
+          "viewports": {
+            "desktop": {
+              "hasOverflow": false,
+              "layoutCorrect": false,
+              "pageType": "static"
+            },
+            "tablet": {
+              "hasOverflow": false,
+              "layoutCorrect": false,
+              "pageType": "static"
+            },
+            "mobile": {
+              "hasOverflow": false,
+              "layoutCorrect": false,
+              "pageType": "static"
+            }
+          }
+        },
+        "consoleErrors": {
+          "status": "failed",
+          "errors": [
+            "Failed to load resource: the server responded with a status of 404 (File not found)",
+            "Firebase init error: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON"
+          ]
+        },
+        "visualElements": {
+          "status": "passed",
+          "issues": [],
+          "details": {
+            "Sidebar": {
+              "exists": false,
+              "visible": false
+            },
+            "Primary Button": {
+              "exists": false,
+              "visible": false
+            },
+            "Card Component": {
+              "exists": false,
+              "visible": false
+            },
+            "Gradient Accent": {
+              "exists": false,
+              "visible": false
+            }
+          }
+        }
+      },
+      "screenshots": [
+        "tests/e2e/screenshots/css-migration/admin-dashboard-desktop.png",
+        "tests/e2e/screenshots/css-migration/admin-dashboard-tablet.png",
+        "tests/e2e/screenshots/css-migration/admin-dashboard-mobile.png"
+      ]
+    },
+    {
+      "name": "Payment Success",
+      "url": "/payment-success.html",
+      "priority": "medium",
+      "tests": {
+        "pageLoad": {
+          "status": "passed",
+          "errors": []
+        },
+        "cssValidation": {
+          "status": "passed",
+          "issues": []
+        },
+        "fontLoading": {
+          "status": "passed",
+          "issues": []
+        },
+        "responsiveDesign": {
+          "status": "failed",
+          "viewports": {
+            "desktop": {
+              "hasOverflow": false,
+              "layoutCorrect": false,
+              "pageType": "static"
+            },
+            "tablet": {
+              "hasOverflow": false,
+              "layoutCorrect": false,
+              "pageType": "static"
+            },
+            "mobile": {
+              "hasOverflow": false,
+              "layoutCorrect": false,
+              "pageType": "static"
+            }
+          }
+        },
+        "consoleErrors": {
+          "status": "failed",
+          "errors": [
+            "Failed to load resource: the server responded with a status of 404 (File not found)",
+            "Configuration load error: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON"
+          ]
+        },
+        "visualElements": {
+          "status": "passed",
+          "issues": [],
+          "details": {
+            "Sidebar": {
+              "exists": false,
+              "visible": false
+            },
+            "Primary Button": {
+              "exists": true,
+              "visible": true
+            },
+            "Card Component": {
+              "exists": false,
+              "visible": false
+            },
+            "Gradient Accent": {
+              "exists": false,
+              "visible": false
+            }
+          }
+        }
+      },
+      "screenshots": [
+        "tests/e2e/screenshots/css-migration/payment-success-desktop.png",
+        "tests/e2e/screenshots/css-migration/payment-success-tablet.png",
+        "tests/e2e/screenshots/css-migration/payment-success-mobile.png"
+      ]
+    },
+    {
+      "name": "Client View",
+      "url": "/client-view.html",
+      "priority": "medium",
+      "tests": {
+        "pageLoad": {
+          "status": "passed",
+          "errors": []
+        },
+        "cssValidation": {
+          "status": "passed",
+          "issues": []
+        },
+        "fontLoading": {
+          "status": "passed",
+          "issues": []
+        },
+        "responsiveDesign": {
+          "status": "failed",
+          "viewports": {
+            "desktop": {
+              "hasOverflow": false,
+              "layoutCorrect": false,
+              "pageType": "static"
+            },
+            "tablet": {
+              "hasOverflow": false,
+              "layoutCorrect": false,
+              "pageType": "static"
+            },
+            "mobile": {
+              "hasOverflow": false,
+              "layoutCorrect": false,
+              "pageType": "static"
+            }
+          }
+        },
+        "consoleErrors": {
+          "status": "passed",
+          "errors": []
+        },
+        "visualElements": {
+          "status": "passed",
+          "issues": [],
+          "details": {
+            "Sidebar": {
+              "exists": false,
+              "visible": false
+            },
+            "Primary Button": {
+              "exists": false,
+              "visible": false
+            },
+            "Card Component": {
+              "exists": false,
+              "visible": false
+            },
+            "Gradient Accent": {
+              "exists": false,
+              "visible": false
+            }
+          }
+        }
+      },
+      "screenshots": [
+        "tests/e2e/screenshots/css-migration/client-view-desktop.png",
+        "tests/e2e/screenshots/css-migration/client-view-tablet.png",
+        "tests/e2e/screenshots/css-migration/client-view-mobile.png"
+      ]
+    },
+    {
+      "name": "Realtor Settings",
+      "url": "/realtor-settings.html",
+      "priority": "medium",
+      "tests": {
+        "pageLoad": {
+          "status": "passed",
+          "errors": []
+        },
+        "cssValidation": {
+          "status": "passed",
+          "issues": []
+        },
+        "fontLoading": {
+          "status": "passed",
+          "issues": []
+        },
+        "responsiveDesign": {
+          "status": "failed",
+          "viewports": {
+            "desktop": {
+              "hasOverflow": false,
+              "layoutCorrect": false,
+              "pageType": "static"
+            },
+            "tablet": {
+              "hasOverflow": false,
+              "layoutCorrect": false,
+              "pageType": "static"
+            },
+            "mobile": {
+              "hasOverflow": false,
+              "layoutCorrect": false,
+              "pageType": "static"
+            }
+          }
+        },
+        "consoleErrors": {
+          "status": "failed",
+          "errors": [
+            "Failed to load resource: the server responded with a status of 404 (File not found)",
+            "Failed to load resource: the server responded with a status of 404 (File not found)",
+            "Failed to load resource: the server responded with a status of 404 (File not found)",
+            "Init error: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON"
+          ]
+        },
+        "visualElements": {
+          "status": "passed",
+          "issues": [],
+          "details": {
+            "Sidebar": {
+              "exists": false,
+              "visible": false
+            },
+            "Primary Button": {
+              "exists": false,
+              "visible": false
+            },
+            "Card Component": {
+              "exists": false,
+              "visible": false
+            },
+            "Gradient Accent": {
+              "exists": false,
+              "visible": false
+            }
+          }
+        }
+      },
+      "screenshots": [
+        "tests/e2e/screenshots/css-migration/realtor-settings-desktop.png",
+        "tests/e2e/screenshots/css-migration/realtor-settings-tablet.png",
+        "tests/e2e/screenshots/css-migration/realtor-settings-mobile.png"
+      ]
+    },
+    {
+      "name": "Blog",
+      "url": "/blog.html",
+      "priority": "low",
+      "tests": {
+        "pageLoad": {
+          "status": "passed",
+          "errors": []
+        },
+        "cssValidation": {
+          "status": "passed",
+          "issues": []
+        },
+        "fontLoading": {
+          "status": "passed",
+          "issues": []
+        },
+        "responsiveDesign": {
+          "status": "failed",
+          "viewports": {
+            "desktop": {
+              "hasOverflow": false,
+              "layoutCorrect": true,
+              "pageType": "static"
+            },
+            "tablet": {
+              "hasOverflow": false,
+              "layoutCorrect": true,
+              "pageType": "static"
+            },
+            "mobile": {
+              "hasOverflow": true,
+              "layoutCorrect": true,
+              "pageType": "static"
+            }
+          }
+        },
+        "consoleErrors": {
+          "status": "failed",
+          "errors": [
+            "Failed to load resource: the server responded with a status of 404 (File not found)",
+            "Error loading posts: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON"
+          ]
+        },
+        "visualElements": {
+          "status": "passed",
+          "issues": [],
+          "details": {
+            "Sidebar": {
+              "exists": false,
+              "visible": false
+            },
+            "Primary Button": {
+              "exists": true,
+              "visible": true
+            },
+            "Card Component": {
+              "exists": false,
+              "visible": false
+            },
+            "Gradient Accent": {
+              "exists": false,
+              "visible": false
+            }
+          }
+        }
+      },
+      "screenshots": [
+        "tests/e2e/screenshots/css-migration/blog-desktop.png",
+        "tests/e2e/screenshots/css-migration/blog-tablet.png",
+        "tests/e2e/screenshots/css-migration/blog-mobile.png"
+      ]
+    },
+    {
+      "name": "Blog Admin",
+      "url": "/blog-admin.html",
+      "priority": "low",
+      "tests": {
+        "pageLoad": {
+          "status": "passed",
+          "errors": []
+        },
+        "cssValidation": {
+          "status": "passed",
+          "issues": []
+        },
+        "fontLoading": {
+          "status": "passed",
+          "issues": []
+        },
+        "responsiveDesign": {
+          "status": "passed",
+          "viewports": {
+            "desktop": {
+              "hasOverflow": false,
+              "layoutCorrect": true,
+              "pageType": "static"
+            },
+            "tablet": {
+              "hasOverflow": false,
+              "layoutCorrect": true,
+              "pageType": "static"
+            },
+            "mobile": {
+              "hasOverflow": false,
+              "layoutCorrect": true,
+              "pageType": "static"
+            }
+          }
+        },
+        "consoleErrors": {
+          "status": "passed",
+          "errors": []
+        },
+        "visualElements": {
+          "status": "passed",
+          "issues": [],
+          "details": {
+            "Sidebar": {
+              "exists": false,
+              "visible": false
+            },
+            "Primary Button": {
+              "exists": false,
+              "visible": false
+            },
+            "Card Component": {
+              "exists": false,
+              "visible": false
+            },
+            "Gradient Accent": {
+              "exists": false,
+              "visible": false
+            }
+          }
+        }
+      },
+      "screenshots": [
+        "tests/e2e/screenshots/css-migration/blog-admin-desktop.png",
+        "tests/e2e/screenshots/css-migration/blog-admin-tablet.png",
+        "tests/e2e/screenshots/css-migration/blog-admin-mobile.png"
+      ]
+    },
+    {
+      "name": "Contact",
+      "url": "/contact.html",
+      "priority": "low",
+      "tests": {
+        "pageLoad": {
+          "status": "passed",
+          "errors": []
+        },
+        "cssValidation": {
+          "status": "passed",
+          "issues": []
+        },
+        "fontLoading": {
+          "status": "passed",
+          "issues": []
+        },
+        "responsiveDesign": {
+          "status": "failed",
+          "viewports": {
+            "desktop": {
+              "hasOverflow": false,
+              "layoutCorrect": false,
+              "pageType": "static"
+            },
+            "tablet": {
+              "hasOverflow": false,
+              "layoutCorrect": false,
+              "pageType": "static"
+            },
+            "mobile": {
+              "hasOverflow": false,
+              "layoutCorrect": false,
+              "pageType": "static"
+            }
+          }
+        },
+        "consoleErrors": {
+          "status": "passed",
+          "errors": []
+        },
+        "visualElements": {
+          "status": "passed",
+          "issues": [],
+          "details": {
+            "Sidebar": {
+              "exists": false,
+              "visible": false
+            },
+            "Primary Button": {
+              "exists": true,
+              "visible": true
+            },
+            "Card Component": {
+              "exists": false,
+              "visible": false
+            },
+            "Gradient Accent": {
+              "exists": false,
+              "visible": false
+            }
+          }
+        }
+      },
+      "screenshots": [
+        "tests/e2e/screenshots/css-migration/contact-desktop.png",
+        "tests/e2e/screenshots/css-migration/contact-tablet.png",
+        "tests/e2e/screenshots/css-migration/contact-mobile.png"
+      ]
+    },
+    {
+      "name": "Extension Welcome",
+      "url": "/extension-welcome.html",
+      "priority": "low",
+      "tests": {
+        "pageLoad": {
+          "status": "passed",
+          "errors": []
+        },
+        "cssValidation": {
+          "status": "passed",
+          "issues": []
+        },
+        "fontLoading": {
+          "status": "passed",
+          "issues": []
+        },
+        "responsiveDesign": {
+          "status": "failed",
+          "viewports": {
+            "desktop": {
+              "hasOverflow": false,
+              "layoutCorrect": false,
+              "pageType": "static"
+            },
+            "tablet": {
+              "hasOverflow": false,
+              "layoutCorrect": false,
+              "pageType": "static"
+            },
+            "mobile": {
+              "hasOverflow": false,
+              "layoutCorrect": false,
+              "pageType": "static"
+            }
+          }
+        },
+        "consoleErrors": {
+          "status": "passed",
+          "errors": []
+        },
+        "visualElements": {
+          "status": "passed",
+          "issues": [],
+          "details": {
+            "Sidebar": {
+              "exists": false,
+              "visible": false
+            },
+            "Primary Button": {
+              "exists": false,
+              "visible": false
+            },
+            "Card Component": {
+              "exists": false,
+              "visible": false
+            },
+            "Gradient Accent": {
+              "exists": false,
+              "visible": false
+            }
+          }
+        }
+      },
+      "screenshots": [
+        "tests/e2e/screenshots/css-migration/extension-welcome-desktop.png",
+        "tests/e2e/screenshots/css-migration/extension-welcome-tablet.png",
+        "tests/e2e/screenshots/css-migration/extension-welcome-mobile.png"
+      ]
+    },
+    {
+      "name": "Monitor Dashboard",
+      "url": "/monitor-dashboard.html",
+      "priority": "low",
+      "tests": {
+        "pageLoad": {
+          "status": "passed",
+          "errors": []
+        },
+        "cssValidation": {
+          "status": "passed",
+          "issues": []
+        },
+        "fontLoading": {
+          "status": "passed",
+          "issues": []
+        },
+        "responsiveDesign": {
+          "status": "failed",
+          "viewports": {
+            "desktop": {
+              "hasOverflow": false,
+              "layoutCorrect": false,
+              "pageType": "static"
+            },
+            "tablet": {
+              "hasOverflow": false,
+              "layoutCorrect": false,
+              "pageType": "static"
+            },
+            "mobile": {
+              "hasOverflow": true,
+              "layoutCorrect": false,
+              "pageType": "static"
+            }
+          }
+        },
+        "consoleErrors": {
+          "status": "failed",
+          "errors": [
+            "Failed to load resource: the server responded with a status of 404 (File not found)",
+            "Failed to fetch monitoring data: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON"
+          ]
+        },
+        "visualElements": {
+          "status": "passed",
+          "issues": [],
+          "details": {
+            "Sidebar": {
+              "exists": false,
+              "visible": false
+            },
+            "Primary Button": {
+              "exists": false,
+              "visible": false
+            },
+            "Card Component": {
+              "exists": false,
+              "visible": false
+            },
+            "Gradient Accent": {
+              "exists": false,
+              "visible": false
+            }
+          }
+        }
+      },
+      "screenshots": [
+        "tests/e2e/screenshots/css-migration/monitor-dashboard-desktop.png",
+        "tests/e2e/screenshots/css-migration/monitor-dashboard-tablet.png",
+        "tests/e2e/screenshots/css-migration/monitor-dashboard-mobile.png"
+      ]
+    }
+  ]
+}
