@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify Extension Integration</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .test-section {
+            border: 2px solid #ddd;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .pass {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .fail {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        pre {
+            background: #f5f5f5;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        iframe {
+            width: 100%;
+            height: 600px;
+            border: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <h1>Extension Integration Verification</h1>
+    
+    <div class="test-section">
+        <h2>Test Extension URL</h2>
+        <p>This simulates what happens when clicking analyze on realtor.ca:</p>
+        <button onclick="testExtensionIntegration()">Test Extension Integration</button>
+        <div id="test-results"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Live Test Frame</h2>
+        <p>URL with extension parameters:</p>
+        <pre id="test-url"></pre>
+        <iframe id="test-frame" src=""></iframe>
+    </div>
+    
+    <script>
+        function testExtensionIntegration() {
+            const baseUrl = 'http://localhost:3000/roi-finder.html';
+            const extensionParams = new URLSearchParams({
+                fromExtension: 'true',
+                street: '123 Main Street',
+                city: 'Toronto',
+                state: 'ON',
+                price: '599000',
+                bedrooms: '3',
+                bathrooms: '2',
+                sqft: '1500',
+                yearBuilt: '2010',
+                propertyTaxes: '4500',
+                autoAnalyze: 'false'
+            });
+            
+            const fullUrl = `${baseUrl}?${extensionParams.toString()}`;
+            
+            document.getElementById('test-url').textContent = fullUrl;
+            document.getElementById('test-frame').src = fullUrl;
+            
+            // Also test what the current implementation should do
+            const results = document.getElementById('test-results');
+            results.innerHTML = `
+                <h3>Expected Behavior:</h3>
+                <ol>
+                    <li>Page loads with extension parameters</li>
+                    <li>checkExtensionData() detects fromExtension=true</li>
+                    <li>showPropertyInput() is called to show the form</li>
+                    <li>prefillPropertyForm() fills in the data</li>
+                    <li>User sees pre-filled form (confirmation screen)</li>
+                </ol>
+                <h3>Actual Results:</h3>
+                <p>Check the iframe below to see what actually happens...</p>
+            `;
+        }
+        
+        // Auto-run test on page load
+        window.addEventListener('load', () => {
+            testExtensionIntegration();
+        });
+    </script>
+</body>
+</html>

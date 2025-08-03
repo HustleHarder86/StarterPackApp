@@ -101,16 +101,22 @@
                 // Continue initialization even if some event listeners fail
             }
             
-            // Check for extension data
-            this.checkExtensionData();
+            // Check for extension data first - this takes priority
+            const hasExtensionData = this.checkExtensionData();
             
-            // Setup auth state listener
+            if (hasExtensionData) {
+                console.log('Extension data found, skipping auth state handling');
+                // Extension data takes priority - don't let auth state override
+                return;
+            }
+            
+            // Only setup auth state listener if no extension data
             if (auth) {
                 auth.onAuthStateChanged(user => {
                     this.handleAuthStateChange(user);
                 });
             } else {
-                // No auth available, show property input
+                // No auth available and no extension data, show property input
                 console.log('No auth available, showing property input');
                 this.showPropertyInput();
             }
@@ -265,6 +271,13 @@
         }
         
         handleAuthStateChange(user) {
+            // Don't interfere if we have extension data
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('fromExtension') === 'true') {
+                console.log('Extension data present, ignoring auth state change');
+                return;
+            }
+            
             window.appState.currentUser = user;
             
             if (user) {
@@ -374,30 +387,48 @@
         
         checkExtensionData() {
             const urlParams = new URLSearchParams(window.location.search);
+            console.log('Checking extension data. URL params:', window.location.search);
+            
             if (urlParams.get('fromExtension') === 'true') {
+                console.log('Extension data detected');
+                
                 // Pre-fill form with extension data
                 const fields = ['street', 'city', 'state', 'price', 'bedrooms', 'bathrooms', 'sqft', 'yearBuilt', 'propertyTaxes'];
                 const propertyData = {};
                 
                 fields.forEach(field => {
                     const value = urlParams.get(field);
-                    if (value) propertyData[field] = value;
+                    if (value) {
+                        propertyData[field] = value;
+                        console.log(`Found ${field}: ${value}`);
+                    }
                 });
                 
+                console.log('Property data collected:', propertyData);
+                
                 if (Object.keys(propertyData).length > 0) {
+                    // Show the property input form first
+                    this.showPropertyInput();
+                    
+                    // Then prefill it
                     this.prefillPropertyForm(propertyData);
                     
                     // Auto-analyze if requested
                     if (urlParams.get('autoAnalyze') === 'true') {
+                        console.log('Auto-analyze requested');
                         setTimeout(() => {
                             const form = document.getElementById('property-analysis-form');
                             if (form) {
+                                console.log('Submitting form automatically');
                                 form.dispatchEvent(new Event('submit'));
                             }
                         }, 500);
                     }
+                    
+                    return true;
                 }
             }
+            return false;
         }
         
         prefillPropertyForm(data) {
@@ -429,7 +460,7 @@
             if (data.sqft || data.yearBuilt || data.propertyTaxes) {
                 const optionalFields = document.getElementById('optional-fields');
                 if (optionalFields) {
-                    optionalFields.classList.remove('hidden');
+                    optionalFields.style.display = 'block';
                 }
             }
         }

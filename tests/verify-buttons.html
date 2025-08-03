@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify Button Layout</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .test-section {
+            border: 2px solid #ddd;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .pass {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .fail {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        pre {
+            background: #f5f5f5;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Button Layout Verification Test</h1>
+    
+    <div class="test-section">
+        <h2>Expected Button Layout (from our code):</h2>
+        <pre><code>&lt;div class="flex gap-3"&gt;
+    &lt;button type="submit" form="property-analysis-form" class="flex-1 bg-gradient-to-r from-indigo-600 to-purple-600..."&gt;
+        Analyze Property
+    &lt;/button&gt;
+    &lt;button type="button" onclick="fillSampleData()" class="px-6 py-3 border border-gray-300..."&gt;
+        Sample Data
+    &lt;/button&gt;
+&lt;/div&gt;</code></pre>
+    </div>
+    
+    <div class="test-section">
+        <h2>Live Site Test</h2>
+        <button onclick="testLiveSite()">Test Live Site Button Layout</button>
+        <div id="test-results"></div>
+    </div>
+    
+    <script>
+        async function testLiveSite() {
+            const results = document.getElementById('test-results');
+            results.innerHTML = '<p>Testing live site...</p>';
+            
+            try {
+                // Fetch the live page
+                const response = await fetch('https://starter-pack-app.vercel.app/roi-finder.html');
+                const html = await response.text();
+                
+                // Check for button layout
+                const hasFlexGap3 = html.includes('flex gap-3');
+                const hasSampleDataButton = html.includes('fillSampleData()');
+                const hasAnalyzeButton = html.includes('Analyze Property');
+                const hasFormFooter = html.includes('form-footer');
+                
+                // Check for old layout pattern
+                const hasTextCenterMtXl = html.includes('text-center mt-xl');
+                
+                let resultHtml = '<h3>Test Results:</h3>';
+                resultHtml += `<div class="status ${hasFlexGap3 ? 'pass' : 'fail'}">
+                    Flex gap-3 container: ${hasFlexGap3 ? '✓ Found' : '✗ Not Found'}
+                </div>`;
+                resultHtml += `<div class="status ${hasSampleDataButton ? 'pass' : 'fail'}">
+                    Sample Data button: ${hasSampleDataButton ? '✓ Found' : '✗ Not Found'}
+                </div>`;
+                resultHtml += `<div class="status ${hasAnalyzeButton ? 'pass' : 'fail'}">
+                    Analyze Property button: ${hasAnalyzeButton ? '✓ Found' : '✗ Not Found'}
+                </div>`;
+                resultHtml += `<div class="status ${hasFormFooter ? 'pass' : 'fail'}">
+                    Form footer container: ${hasFormFooter ? '✓ Found' : '✗ Not Found'}
+                </div>`;
+                resultHtml += `<div class="status ${!hasTextCenterMtXl ? 'pass' : 'fail'}">
+                    Old layout (text-center mt-xl): ${hasTextCenterMtXl ? '✗ Still Present' : '✓ Not Found (Good)'}
+                </div>`;
+                
+                // Extract button section
+                const buttonMatch = html.match(/<div class="form-footer">([\s\S]*?)<\/div>\s*<\/div>\s*<\/div>/);
+                if (buttonMatch) {
+                    resultHtml += '<h4>Actual Button HTML Found:</h4>';
+                    resultHtml += '<pre>' + escapeHtml(buttonMatch[1].trim()) + '</pre>';
+                }
+                
+                results.innerHTML = resultHtml;
+                
+            } catch (error) {
+                results.innerHTML = `<div class="status fail">Error: ${error.message}</div>`;
+            }
+        }
+        
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+    </script>
+</body>
+</html>
