@@ -14,6 +14,29 @@ html, body {
   overflow-x: hidden;
 }
 
+/* Fix mobile gray background issue - ensure body background is visible */
+@media (max-width: 768px) {
+  body {
+    background-color: #f9fafb !important; /* Match --bg-secondary */
+    min-height: 100vh;
+  }
+  
+  /* Ensure main containers don't override background */
+  #__next,
+  #root,
+  .app-container,
+  .compact-modern-layout {
+    background: transparent !important;
+  }
+  
+  /* Fix any gray overlays */
+  .bg-gray-100,
+  .bg-gray-50,
+  .bg-gray-200 {
+    background-color: transparent !important;
+  }
+}
+
 /* Container fixes to prevent horizontal scrolling */
 .container {
   width: 100%;
