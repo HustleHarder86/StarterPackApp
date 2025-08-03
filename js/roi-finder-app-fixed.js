@@ -816,15 +816,19 @@
                 this.showLoadingWithProgress();
                 
                 // Make API call
+                const fromExtension = urlParams.get('fromExtension') === 'true';
+                
                 const response = await fetch('/api/analyze-property', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        ...(isE2ETest && { 'X-E2E-Test-Mode': 'true' })
+                        ...(isE2ETest && { 'X-E2E-Test-Mode': 'true' }),
+                        ...(fromExtension && { 'X-Extension-Request': 'true' })
                     },
                     body: JSON.stringify({
-                        propertyData,
+                        property: propertyData,  // Changed from propertyData to property
                         analysisType,
+                        fromExtension: fromExtension,
                         userId: window.appState.currentUser?.uid || 'anonymous',
                         userEmail: window.appState.currentUser?.email || null,
                         isE2ETest
