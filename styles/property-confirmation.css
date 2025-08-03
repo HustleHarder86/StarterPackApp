@@ -6,7 +6,7 @@
 .property-confirmation-overlay {
   position: fixed;
   inset: 0;
-  background-color: rgba(17, 24, 39, 0.75); /* Increased opacity for better focus */
+  background-color: rgba(107, 114, 128, 0.5); /* Lighter gray with 50% opacity */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -26,7 +26,7 @@
 .property-confirmation-card {
   background-color: white;
   border-radius: 1rem; /* Increased from 0.75rem */
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35); /* Increased shadow opacity */
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.15); /* Softer shadow */
   overflow: hidden;
   transform: scale(1.05); /* Slightly scale up the modal */
 }
