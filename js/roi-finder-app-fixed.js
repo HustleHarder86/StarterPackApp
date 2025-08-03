@@ -412,7 +412,7 @@
             if (!confirmationContainer) {
                 confirmationContainer = document.createElement('div');
                 confirmationContainer.id = 'property-confirmation-container';
-                confirmationContainer.className = 'fixed inset-0 z-[9999] bg-gray-50';
+                confirmationContainer.style.cssText = 'position: fixed; inset: 0; z-index: 9999;';
                 document.body.appendChild(confirmationContainer);
             }
             
