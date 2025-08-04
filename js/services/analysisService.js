@@ -30,8 +30,11 @@ class AnalysisService {
         method: 'POST',
         headers,
         body: JSON.stringify({
-          property: propertyData,
+          propertyAddress: propertyData.address,  // Required by Railway API
+          propertyData: propertyData,
+          requestType: fromExtension ? 'extension' : 'authenticated',
           analysisType: analysisType,
+          includeStrAnalysis: analysisType === 'both' || analysisType === 'str',
           fromExtension: fromExtension
         })
       });

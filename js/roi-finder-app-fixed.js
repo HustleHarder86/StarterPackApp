@@ -826,11 +826,15 @@
                         ...(fromExtension && { 'X-Extension-Request': 'true' })
                     },
                     body: JSON.stringify({
-                        propertyData,  // Original format
-                        analysisType,
-                        userId: window.appState.currentUser?.uid || 'anonymous',
-                        userEmail: window.appState.currentUser?.email || null,
-                        isE2ETest
+                        propertyAddress: propertyData.address,  // Required by Railway API
+                        propertyData: propertyData,
+                        requestType: isE2ETest ? 'e2e-test' : 'authenticated',
+                        analysisType: analysisType,
+                        includeStrAnalysis: analysisType === 'both' || analysisType === 'str',
+                        isE2ETest: isE2ETest,
+                        userId: isE2ETest ? 'test-user-id' : (window.appState.currentUser?.uid || 'anonymous'),
+                        userEmail: isE2ETest ? 'test@e2e.com' : (window.appState.currentUser?.email || null),
+                        userName: isE2ETest ? 'Test User' : (window.appState.currentUser?.displayName || null)
                     })
                 });
                 
