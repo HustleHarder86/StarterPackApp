@@ -1,7 +1,7 @@
 import { getFirebaseAdmin } from '../../utils/firebase-admin.js';
 
 import { applyCorsHeaders } from '../../utils/cors-config.js';
-import { apiLimits } from '../utils/rate-limiter.js';
+import { apiLimits } from '../../utils/rate-limiter.js';
 export default async function handler(req, res) {
   // Apply proper CORS headers
   applyCorsHeaders(req, res);

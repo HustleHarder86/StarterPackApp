@@ -12,22 +12,32 @@ const glob = require('glob');
 
 // Configuration
 const config = {
-  // The only allowed CSS file
+  // The only allowed CSS files (after reversion to original design)
   allowedCSS: [
-    '/styles/unified-design-system.css',
-    'https://cdn.tailwindcss.com' // Tailwind CDN is allowed as base utility
+    '/styles/design-system.css',
+    'styles/design-system.css',
+    '../styles/design-system.css',
+    '/styles/mobile-fixes.css',
+    'styles/mobile-fixes.css',
+    '/styles.css',
+    'styles.css',
+    'https://cdn.tailwindcss.com', // Tailwind CDN is allowed as base utility
+    'https://cdn.jsdelivr.net/npm/tailwindcss', // Versioned Tailwind CDN
+    'https://fonts.googleapis.com', // Google Fonts allowed
+    'https://cdnjs.cloudflare.com/ajax/libs/font-awesome', // Font Awesome allowed
+    'popup.css' // Extension popup styles
   ],
   
   // Deprecated CSS files that should not be imported
   deprecatedCSS: [
-    'styles.css',
-    'design-system.css',
     'gradient-theme.css',
     'compact-modern-design-system.css',
     'compact-modern.css',
-    'mobile-fixes.css',
     'glass-override.css',
-    'loading-enhancements.css'
+    'loading-enhancements.css',
+    'unified-design-system.css',
+    'property-confirmation.css',
+    'analysis-progress.css'
   ],
   
   // Patterns to search for CSS imports
@@ -74,9 +84,17 @@ const results = {
  * Check if a CSS import is allowed
  */
 function isAllowedCSS(cssPath) {
-  return config.allowedCSS.some(allowed => 
-    cssPath.includes(allowed.replace(/^\//, ''))
-  );
+  // Check for exact matches or partial matches
+  return config.allowedCSS.some(allowed => {
+    // For external URLs, check if cssPath starts with allowed
+    if (allowed.startsWith('http')) {
+      return cssPath.startsWith(allowed);
+    }
+    // For local paths, check various forms
+    const normalizedCss = cssPath.replace(/^\.\//, '').replace(/^\//, '');
+    const normalizedAllowed = allowed.replace(/^\.\//, '').replace(/^\//, '');
+    return normalizedCss === normalizedAllowed || cssPath.endsWith(normalizedAllowed);
+  });
 }
 
 /**
@@ -218,12 +236,13 @@ function printResults() {
     });
     
     console.log('\n' + colors.blue + 'Migration Guide:' + colors.reset);
-    console.log('1. Replace all CSS imports with:');
-    console.log('   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">');
-    console.log('   <script src="https://cdn.tailwindcss.com"></script>');
-    console.log('   <link rel="stylesheet" href="/styles/unified-design-system.css">');
-    console.log('2. Remove all inline styles with !important');
-    console.log('3. Update component classes to use the unified design system classes');
+    console.log('1. For application pages (roi-finder.html, etc), use:');
+    console.log('   <link rel="stylesheet" href="styles/design-system.css">');
+    console.log('   <link rel="stylesheet" href="styles/mobile-fixes.css">');
+    console.log('2. For landing pages (index.html, contact.html, etc), use:');
+    console.log('   <link rel="stylesheet" href="styles.css">');
+    console.log('3. Remove deprecated CSS files (unified-design-system.css, property-confirmation.css, etc)');
+    console.log('4. Test files can keep using Tailwind CDN and Font Awesome');
   }
 }
 

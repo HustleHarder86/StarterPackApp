@@ -169,6 +169,20 @@
         <!-- Featured post will be dynamically inserted here -->
       </div>
 
+      <!-- Error State -->
+      <div id="error-state" class="text-center py-12" style="display: none;">
+        <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-8 max-w-2xl mx-auto">
+          <svg class="w-16 h-16 text-yellow-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+          </svg>
+          <h3 class="text-xl font-semibold text-gray-900 mb-2">Unable to Load Blog Posts</h3>
+          <p class="text-gray-600 mb-4">We're experiencing issues loading the blog content. Please try again later.</p>
+          <button onclick="location.reload()" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition">
+            Refresh Page
+          </button>
+        </div>
+      </div>
+
       <!-- Loading State -->
       <div id="loading-state" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         <!-- Skeleton loaders -->
@@ -352,9 +366,21 @@
         }
       } catch (error) {
         console.error('Error loading posts:', error);
-        // Show sample posts as fallback
-        allPosts = getSamplePosts();
         document.getElementById('loading-state').style.display = 'none';
+        
+        // Check if this is a network error or server error
+        if (error.message && error.message.includes('Failed to fetch')) {
+          // Show error state for complete failures
+          document.getElementById('error-state').style.display = 'block';
+        } else {
+          // Show sample posts as fallback for other errors
+          allPosts = getSamplePosts();
+          // Add a notice that we're showing sample content
+          const notice = document.createElement('div');
+          notice.className = 'bg-blue-50 border border-blue-200 rounded-lg p-4 mb-8 text-center';
+          notice.innerHTML = '<p class="text-blue-800">Showing sample blog posts. Live content will be available soon.</p>';
+          document.getElementById('blog-grid').parentElement.insertBefore(notice, document.getElementById('blog-grid'));
+        }
       }
     }
 
