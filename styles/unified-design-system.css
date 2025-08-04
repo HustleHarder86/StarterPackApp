@@ -368,6 +368,7 @@ select.input-field {
   border-radius: var(--radius-lg);
   background: linear-gradient(135deg, rgb(255 255 255 / 0.9) 0%, rgb(255 255 255 / 0.7) 100%);
   backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px); /* Safari support */
   transition: transform var(--transition-base);
 }
 
@@ -636,7 +637,46 @@ select.input-field {
 }
 
 /* ==========================================
-   11. COMPONENT-SPECIFIC STYLES
+   11. GLASS MORPHISM & ANIMATED BACKGROUNDS
+   ========================================== */
+
+/* Glass Morphism Utilities */
+.glass-bg {
+  background: linear-gradient(135deg, rgb(255 255 255 / 0.9) 0%, rgb(255 255 255 / 0.7) 100%);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgb(255 255 255 / 0.3);
+}
+
+.glass-card {
+  background: rgb(255 255 255 / 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgb(255 255 255 / 0.3);
+  box-shadow: 0 8px 32px rgb(0 0 0 / 0.08);
+}
+
+/* Animated Gradient Background */
+.animated-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 0;
+  background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+  background-size: 400% 400%;
+  animation: gradientShift 15s ease infinite;
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* ==========================================
+   12. COMPONENT-SPECIFIC STYLES
    ========================================== */
 
 /* Property Analysis Form Specific */
@@ -686,7 +726,7 @@ select.input-field {
 }
 
 /* ==========================================
-   12. ACCESSIBILITY
+   13. ACCESSIBILITY
    ========================================== */
 
 /* Focus styles */
@@ -726,7 +766,7 @@ select.input-field {
 }
 
 /* ==========================================
-   13. MISSING CRITICAL CLASSES (for test compatibility)
+   14. MISSING CRITICAL CLASSES (for test compatibility)
    ========================================== */
 
 /* Mobile visibility classes */
@@ -796,7 +836,7 @@ select.input-field {
 }
 
 /* ==========================================
-   14. PRINT STYLES
+   15. PRINT STYLES
    ========================================== */
 
 @media print {

@@ -107,6 +107,8 @@ class ComponentLoaderCompactModern extends ComponentLoader {
     const strAnalysis = analysisData.strAnalysis || analysisData.str_analysis || {};
     const ltrAnalysis = analysisData.longTermRental || analysisData.long_term_rental || {};
     const costs = analysisData.costs || {};
+    const expenses = analysisData.expenses || analysisData.monthly_expenses || {};
+    const metrics = analysisData.metrics || {};
     
     // Render Property Hero Section with Compact Modern design
     const HeroComponent = window.PropertyHeroSectionCompactModern || window.PropertyHeroSection;

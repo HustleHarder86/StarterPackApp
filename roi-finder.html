@@ -623,7 +623,10 @@
     <script src="js/env-config.js"></script>
     
     <script src="js/firebase-wrapper-global.js"></script>
-    <script src="js/modules/analysisProgressTrackerGlobal.js"></script>
+    <script type="module">
+        import { AnalysisProgressTracker } from './js/modules/analysisProgressTracker.js';
+        window.AnalysisProgressTracker = AnalysisProgressTracker;
+    </script>
     <script src="js/config.js"></script>
     
     <!-- Main Application Script -->
@@ -798,7 +801,10 @@
     <script src="js/form-validation.js"></script>
     
     <!-- Navigation Protection -->
-    <script src="js/modules/navigationProtectionGlobal.js"></script>
+    <script type="module">
+        import NavigationProtection from './js/modules/navigationProtection.js';
+        window.NavigationProtection = NavigationProtection;
+    </script>
     <script>
         if (window.navigationProtection) {
             window.navigationProtection.init();

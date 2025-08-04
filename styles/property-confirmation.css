@@ -29,6 +29,9 @@
   box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.15); /* Softer shadow */
   overflow: hidden;
   transform: scale(1.05); /* Slightly scale up the modal */
+  max-height: 90vh; /* Ensure modal doesn't exceed viewport */
+  display: flex;
+  flex-direction: column;
 }
 
 /* Modal Header */
@@ -75,6 +78,8 @@
 /* Content Section */
 .property-confirmation-content {
   padding: 2rem; /* Increased from 1.5rem */
+  flex: 1;
+  overflow-y: auto; /* Make content scrollable if needed */
 }
 
 /* Property Grid */

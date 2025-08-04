@@ -1181,8 +1181,7 @@
                             `;
                         }
                         
-                        // Re-initialize mobile menu after layout change
-                        this.initializeMobileMenu();
+                        // Mobile menu is initialized by ComponentLoaderCompactModern
                     } else {
                         // Fallback if layout not available
                         this.showAnalysisResults();
