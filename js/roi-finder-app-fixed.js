@@ -867,7 +867,7 @@
                 // In E2E test mode, show results but keep the form accessible
                 if (isE2ETest) {
                     // Show mock results without hiding the form
-                    this.renderAnalysisResults(analysisData);
+                    this.completeProgressAndShowResults(analysisData);
                     // Ensure we preserve the e2e_test_mode parameter
                     if (!window.location.search.includes('e2e_test_mode=true')) {
                         const newUrl = window.location.pathname + '?e2e_test_mode=true';
@@ -875,7 +875,7 @@
                     }
                 } else {
                     // Normal flow - show results
-                    this.renderAnalysisResults(analysisData);
+                    this.completeProgressAndShowResults(analysisData);
                 }
                 
             } catch (error) {
@@ -1005,7 +1005,14 @@
             const totalSteps = steps.length;
             
             const updateStep = () => {
-                if (currentStep >= totalSteps) return;
+                if (currentStep >= totalSteps) {
+                    // Clear interval when all steps are complete
+                    if (window.appState.progressInterval) {
+                        clearInterval(window.appState.progressInterval);
+                        window.appState.progressInterval = null;
+                    }
+                    return;
+                }
                 
                 // Update current step to in-progress
                 const stepEl = document.getElementById(`step-${steps[currentStep].id}`);
@@ -1048,6 +1055,10 @@
             
             // Start the first step after a short delay
             setTimeout(updateStep, 500);
+            
+            // Store the progress interval reference for cleanup
+            // Note: We're not using setInterval, but storing a flag to track if progress is running
+            window.appState.progressRunning = true;
         }
         
         hideLoadingState() {
@@ -1113,44 +1124,134 @@
         }
         
         renderAnalysisResults(analysisData) {
-            // Hide loading container if it exists
-            const loadingContainer = document.getElementById('analysis-loading-container');
-            if (loadingContainer) {
-                loadingContainer.style.display = 'none';
-            }
+            console.log('Rendering analysis results...');
             
-            // Hide property confirmation container if it exists
-            const confirmationContainer = document.getElementById('property-confirmation-container');
-            if (confirmationContainer) {
-                confirmationContainer.style.display = 'none';
-            }
+            // First, hide ALL UI elements
+            this.hideAllUIElements();
             
-            // Show app-root again
-            const appRoot = document.getElementById('app-root');
-            if (appRoot) {
-                appRoot.style.display = '';
-            }
+            // Small delay to ensure smooth transition
+            setTimeout(() => {
+                // Extract property data for the layout
+                const propertyData = analysisData.data?.property_data || analysisData.data?.propertyData || {
+                    address: analysisData.data?.property_address || 'Property Analysis',
+                    city: analysisData.data?.property_details?.city || 'Location',
+                    price: analysisData.data?.property_details?.estimated_value || 0,
+                    bedrooms: analysisData.data?.property_details?.bedrooms || 0,
+                    bathrooms: analysisData.data?.property_details?.bathrooms || 0,
+                    propertyType: analysisData.data?.property_details?.property_type || 'Property'
+                };
+                
+                // Clear the entire app root
+                const appRoot = document.getElementById('app-root');
+                if (appRoot) {
+                    appRoot.innerHTML = '';
+                    appRoot.style.display = 'block';
+                    
+                    // Apply CompactModernLayout with analysis results
+                    if (window.CompactModernLayout) {
+                        // Create a container for the analysis results
+                        const analysisContent = document.createElement('div');
+                        analysisContent.id = 'analysis-results-content';
+                        
+                        // Render the layout with property data
+                        const layoutHTML = window.CompactModernLayout({
+                            children: analysisContent.outerHTML,
+                            currentPage: 'analytics',
+                            propertyData: propertyData
+                        });
+                        
+                        appRoot.innerHTML = layoutHTML;
+                        
+                        // Now render the analysis results into the content area
+                        const contentContainer = document.getElementById('analysis-results-content');
+                        if (contentContainer && (window.ComponentLoaderCompactModern || window.ComponentLoaderCompactModernGlobal)) {
+                            const LoaderClass = window.ComponentLoaderCompactModern || window.ComponentLoaderCompactModernGlobal;
+                            const loader = new LoaderClass();
+                            loader.renderAnalysisResults(analysisData, contentContainer);
+                        } else if (contentContainer) {
+                            // Fallback rendering
+                            contentContainer.innerHTML = `
+                                <div class="container mx-auto p-xl">
+                                    <div class="card card-lg">
+                                        <h2 class="text-2xl font-bold mb-lg">Analysis Complete</h2>
+                                        <pre>${JSON.stringify(analysisData, null, 2)}</pre>
+                                    </div>
+                                </div>
+                            `;
+                        }
+                        
+                        // Re-initialize mobile menu after layout change
+                        this.initializeMobileMenu();
+                    } else {
+                        // Fallback if layout not available
+                        this.showAnalysisResults();
+                        const resultsContainer = document.getElementById('analysis-results');
+                        if (resultsContainer) {
+                            resultsContainer.innerHTML = `
+                                <div class="container mx-auto p-xl">
+                                    <div class="card card-lg">
+                                        <h2 class="text-2xl font-bold mb-lg">Analysis Complete</h2>
+                                        <pre>${JSON.stringify(analysisData, null, 2)}</pre>
+                                    </div>
+                                </div>
+                            `;
+                        }
+                    }
+                }
+            }, 300); // 300ms delay for smooth transition
+        }
+        
+        hideAllUIElements() {
+            // Hide all possible UI containers
+            const elementsToHide = [
+                'analysis-loading-container',
+                'property-confirmation-container',
+                'property-input-section',
+                'login-section',
+                'loading-state',
+                'error-state',
+                'main-content',
+                'analysis-results'
+            ];
             
-            this.showAnalysisResults();
+            elementsToHide.forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.style.display = 'none';
+                }
+            });
             
-            const resultsContainer = document.getElementById('analysis-results');
+            // Also hide any class-based elements
+            document.querySelectorAll('.loading-overlay').forEach(el => el.style.display = 'none');
+            document.querySelectorAll('.property-confirmation-overlay').forEach(el => el.style.display = 'none');
+        }
+        
+        completeProgressAndShowResults(analysisData) {
+            // Stop any ongoing progress simulation
+            window.appState.progressRunning = false;
             
-            // Use ComponentLoaderCompactModern if available
-            if (window.ComponentLoaderCompactModern || window.ComponentLoaderCompactModernGlobal) {
-                const LoaderClass = window.ComponentLoaderCompactModern || window.ComponentLoaderCompactModernGlobal;
-                const loader = new LoaderClass();
-                loader.renderAnalysisResults(analysisData, resultsContainer);
-            } else {
-                // Fallback rendering
-                resultsContainer.innerHTML = `
-                    <div class="container mx-auto p-xl">
-                        <div class="card card-lg">
-                            <h2 class="text-2xl font-bold mb-lg">Analysis Complete</h2>
-                            <pre>${JSON.stringify(analysisData, null, 2)}</pre>
-                        </div>
-                    </div>
-                `;
-            }
+            // Set progress to 100% before transitioning
+            const progressBar = document.getElementById('progress-bar');
+            const progressText = document.getElementById('progress-percentage');
+            if (progressBar) progressBar.style.width = '100%';
+            if (progressText) progressText.textContent = '100%';
+            
+            // Mark all steps as completed
+            const steps = document.querySelectorAll('.analysis-step');
+            steps.forEach(step => {
+                step.classList.remove('active');
+                step.classList.add('completed');
+                const indicator = step.querySelector('.analysis-step-indicator');
+                if (indicator) {
+                    indicator.classList.remove('active');
+                    indicator.classList.add('completed');
+                }
+            });
+            
+            // Small delay to show 100% completion before transitioning
+            setTimeout(() => {
+                this.renderAnalysisResults(analysisData);
+            }, 800);
         }
     }
 
