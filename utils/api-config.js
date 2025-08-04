@@ -4,7 +4,7 @@
 const API_CONFIG = {
   // Railway API for heavy processing
   railway: {
-    baseUrl: !window.ENV?.production 
+    baseUrl: window.location.hostname === 'localhost' 
       ? 'http://localhost:3001' 
       : (window.ENV?.railwayUrl || 'https://real-estate-app-production-ba5c.up.railway.app'),
     endpoints: {
@@ -60,7 +60,7 @@ function shouldUseRailway() {
   
   // Always use Railway for production or when ENV flag is set
   // Railway handles: STR analysis, heavy processing, external APIs
-  return window.ENV?.production || window.ENV?.useRailway === true;
+  return window.location.hostname !== 'localhost' || window.ENV?.useRailway === true;
 }
 
 // Export for use in other files

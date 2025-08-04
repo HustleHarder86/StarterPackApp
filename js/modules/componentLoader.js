@@ -101,8 +101,8 @@ class ComponentLoader {
         financingModule,
         appreciationModule
       ] = await Promise.all([
-        this.loadComponent('components/analysis/InvestmentVerdictMockup.js'),
-        this.loadComponent('components/analysis/AirbnbListingsMockup.js'),
+        this.loadComponent('components/analysis/InvestmentVerdict.js'),
+        this.loadComponent('components/analysis/AirbnbListings.js'),
         this.loadComponent('components/analysis/LongTermRentalAnalysis.js'),
         this.loadComponent('components/analysis/EnhancedFinancialSummary.js'),
         this.loadComponent('components/ui/ShareModal.js'),
@@ -114,9 +114,8 @@ class ComponentLoader {
       ]);
 
       // Generate component HTML with real data
-      const verdictHtml = verdictModule.VerdictSummaryMockup({ 
-        analysis: analysisData,
-        useMockData: false  // Ensure real data is used
+      const verdictHtml = verdictModule.InvestmentVerdict({ 
+        analysis: analysisData
       });
       
       // Determine which analysis types to show
@@ -126,9 +125,9 @@ class ComponentLoader {
       const showTabs = analysisType === 'both';
       
       // Always generate content for tabs, but show appropriate messages if data is missing
-      const airbnbHtml = analysisData.strAnalysis ? airbnbModule.AirbnbHeroSectionMockup({ 
-        analysis: analysisData,
-        useMockData: false  // Ensure real data is used
+      const airbnbHtml = analysisData.strAnalysis ? airbnbModule.AirbnbListings({ 
+        comparables: analysisData.strAnalysis.comparables || [],
+        marketData: analysisData.strAnalysis
       }) : '<div class="text-center text-gray-500 py-12"><p class="text-lg">Short-term rental analysis was not included in this report.</p><p class="mt-2">Re-run the analysis with STR option selected to see Airbnb comparables.</p></div>';
       
       // Import chart modules dynamically
@@ -1661,3 +1660,6 @@ window.ComponentLoader = ComponentLoader;
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = ComponentLoader;
 }
+
+// ES6 export for module usage
+export default ComponentLoader;

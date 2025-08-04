@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visual Component Test - StarterPackApp</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="./styles/design-system.css">
+    <link rel="stylesheet" href="./styles/mobile-fixes.css">
+</head>
+<body>
+    <div class="min-h-screen bg-gray-50">
+        <!-- Navigation -->
+        <nav class="bg-white shadow-sm border-b">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between h-16">
+                    <div class="flex items-center">
+                        <span class="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 text-transparent bg-clip-text">
+                            StarterPackApp
+                        </span>
+                        <h1 class="ml-4 text-xl font-semibold text-gray-900">Visual Test</h1>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <div class="max-w-7xl mx-auto px-4 py-8">
+            <h2 class="text-2xl font-bold mb-8">Component Visual Test - After Reversion</h2>
+            
+            <!-- Test 1: Property Confirmation -->
+            <div class="mb-12">
+                <h3 class="text-xl font-semibold mb-4">1. Property Confirmation Screen</h3>
+                <div id="property-confirmation-test"></div>
+            </div>
+
+            <!-- Test 2: STR Analysis -->
+            <div class="mb-12">
+                <h3 class="text-xl font-semibold mb-4">2. STR Analysis Component</h3>
+                <div id="str-analysis-test"></div>
+            </div>
+
+            <!-- Test 3: Interactive Calculator -->
+            <div class="mb-12">
+                <h3 class="text-xl font-semibold mb-4">3. Interactive Financial Calculator</h3>
+                <div id="calculator-test"></div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        // Load components
+        import('./components/PropertyConfirmation.js').then(() => {
+            const propertyData = {
+                address: "789 Maple Avenue, Toronto, ON",
+                price: 899000,
+                bedrooms: 3,
+                bathrooms: 2,
+                sqft: 1800,
+                propertyType: "singleFamily",
+                propertyTaxes: 5490,
+                imageUrl: "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=400"
+            };
+            
+            const confirmation = window.PropertyConfirmation(
+                propertyData,
+                (type) => console.log('Analyze:', type),
+                () => console.log('Cancel')
+            );
+            
+            document.getElementById('property-confirmation-test').innerHTML = confirmation.html;
+            confirmation.setup({ strTrialUsed: 2 });
+        });
+
+        // Load STR Analysis
+        fetch('./components/STRAnalysis.jsx')
+            .then(r => r.text())
+            .then(text => {
+                // Extract the HTML template from the JSX
+                const htmlMatch = text.match(/return \(([\s\S]*?)\);/);
+                if (htmlMatch) {
+                    let html = htmlMatch[1];
+                    // Simple JSX to HTML conversion
+                    html = html.replace(/className=/g, 'class=');
+                    html = html.replace(/\{[^}]+\}/g, (match) => {
+                        if (match.includes('loading')) return 'false';
+                        if (match.includes('monthlyRevenue')) return '$4,500';
+                        if (match.includes('occupancyRate')) return '75%';
+                        if (match.includes('comparables')) return '';
+                        return '';
+                    });
+                    
+                    document.getElementById('str-analysis-test').innerHTML = `
+                        <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                            <div class="bg-gradient-to-r from-purple-600 to-pink-600 text-white p-6">
+                                <h2 class="text-2xl font-bold mb-2">Short-Term Rental Analysis</h2>
+                                <p class="text-purple-100">Based on current Airbnb market data</p>
+                            </div>
+                            <div class="p-6">
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                                    <div class="bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-lg">
+                                        <h3 class="text-lg font-semibold text-green-800 mb-2">Monthly Revenue</h3>
+                                        <p class="text-3xl font-bold text-green-900">$4,500</p>
+                                        <p class="text-sm text-green-700 mt-1">Average gross income</p>
+                                    </div>
+                                    <div class="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-lg">
+                                        <h3 class="text-lg font-semibold text-blue-800 mb-2">Occupancy Rate</h3>
+                                        <p class="text-3xl font-bold text-blue-900">75%</p>
+                                        <p class="text-sm text-blue-700 mt-1">Annual average</p>
+                                    </div>
+                                    <div class="bg-gradient-to-br from-purple-50 to-purple-100 p-6 rounded-lg">
+                                        <h3 class="text-lg font-semibold text-purple-800 mb-2">Nightly Rate</h3>
+                                        <p class="text-3xl font-bold text-purple-900">$200</p>
+                                        <p class="text-sm text-purple-700 mt-1">Recommended pricing</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+            });
+
+        // Load Interactive Calculator
+        import('./components/analysis/InteractiveFinancialCalculator.js').then(module => {
+            const calculatorHTML = module.InteractiveFinancialCalculator({
+                propertyData: {
+                    price: 899000,
+                    propertyTaxes: 5490
+                },
+                analysisData: {
+                    longTermRental: {
+                        monthlyRent: 2800
+                    }
+                }
+            });
+            document.getElementById('calculator-test').innerHTML = calculatorHTML;
+        });
+    </script>
+</body>
+</html>

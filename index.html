@@ -4,313 +4,194 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>InvestorProps - Real Estate SaaS</title>
-  <!-- Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  
-  <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  
-  <!-- Unified Design System -->
-  <link rel="stylesheet" href="/styles/unified-design-system.css">
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <nav class="navbar">
-    <div class="container mx-auto px-4 py-4 flex justify-between items-center">
-      <div class="text-2xl font-bold text-gray-900">InvestorProps</div>
-      <ul class="hidden md:flex space-x-6 items-center">
-        <li><a href="index.html" class="text-gray-700 hover:text-indigo-600 transition">Home</a></li>
-        <li><a href="blog.html" class="text-gray-700 hover:text-indigo-600 transition">Blog</a></li>
-        <li><a href="#features" class="text-gray-700 hover:text-indigo-600 transition">Features</a></li>
-        <li><a href="#pricing" class="text-gray-700 hover:text-indigo-600 transition">Pricing</a></li>
-        <li><a href="contact.html" class="text-gray-700 hover:text-indigo-600 transition">Contact</a></li>
-        <li><a href="roi-finder.html" class="btn btn-primary">Launch ROI Finder</a></li>
-      </ul>
-      <button class="mobile-menu-toggle md:hidden">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
-        </svg>
-      </button>
-    </div>
+  <nav class="nav-bar">
+    <div class="nav-logo">InvestorProps</div>
+    <ul class="nav-links">
+      <li><a href="index.html" class="nav-link">Home</a></li>
+      <li><a href="blog.html" class="nav-link">Blog</a></li>
+      <li><a href="#features" class="nav-link">Features</a></li>
+      <li><a href="#pricing" class="nav-link">Pricing</a></li>
+      <li><a href="contact.html" class="nav-link">Contact</a></li>
+      <li><a href="roi-finder.html" class="nav-link btn-primary">Launch ROI Finder</a></li>
+    </ul>
   </nav>
 
-  <section class="bg-gradient-to-br from-indigo-50 to-purple-50 py-20 px-4">
-    <div class="container mx-auto">
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-        <div>
-          <div class="inline-block px-4 py-2 bg-white rounded-full shadow-sm mb-6">
-            <span class="text-sm font-medium text-indigo-600">🚀 New: AI-Powered Property Analysis</span>
-          </div>
-          <h1 class="text-5xl lg:text-6xl font-bold text-gray-900 mb-6">
-            Real estate investing <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600">made simple</span>
-          </h1>
-          <p class="text-xl text-gray-600 mb-8">Discover cash-flow positive properties in seconds. Empower your clients with investment-ready listings, instantly.</p>
-          
-          <div class="grid grid-cols-3 gap-6 mb-8">
-            <div class="text-center">
-              <div class="text-3xl font-bold text-gray-900">10K+</div>
-              <div class="text-sm text-gray-600">Properties Analyzed</div>
-            </div>
-            <div class="text-center">
-              <div class="text-3xl font-bold text-gray-900">500+</div>
-              <div class="text-sm text-gray-600">Happy Realtors</div>
-            </div>
-            <div class="text-center">
-              <div class="text-3xl font-bold text-gray-900">95%</div>
-              <div class="text-sm text-gray-600">Accuracy Rate</div>
-            </div>
-          </div>
-          
-          <button class="btn btn-primary btn-lg" id="show-lead-form">Get Started Free</button>
-          
-          <form class="mt-6 p-6 bg-white rounded-lg shadow-lg hidden" id="lead-form">
-            <input type="text" name="name" placeholder="Your Name" required class="w-full px-4 py-3 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
-            <input type="email" name="email" placeholder="Your Email" required class="w-full px-4 py-3 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
-            <button type="submit" class="w-full btn btn-primary">Send My Free ROI Report</button>
-            <p class="text-sm text-gray-500 mt-2 text-center">No spam. Just one powerful sample report.</p>
-          </form>
+  <section class="hero-section">
+    <div class="hero-content">
+      <div class="hero-badge">🚀 New: AI-Powered Property Analysis</div>
+      <h1>Real estate investing <span class="highlight">made simple</span></h1>
+      <p class="hero-subtitle">Discover cash-flow positive properties in seconds. Empower your clients with investment-ready listings, instantly.</p>
+      <div class="hero-stats">
+        <div class="stat">
+          <div class="stat-number">10K+</div>
+          <div class="stat-label">Properties Analyzed</div>
         </div>
-        
-        <div class="relative">
-          <div class="space-y-4">
-            <div class="card p-6 transform rotate-3 hover:rotate-0 transition-transform">
-              <div class="text-2xl font-bold text-gray-900">$750,000</div>
-              <div class="text-lg text-indigo-600 font-medium">ROI: 5.8%</div>
-            </div>
-            <div class="card p-6 transform -rotate-2 hover:rotate-0 transition-transform">
-              <div class="text-2xl font-bold text-gray-900">$650,000</div>
-              <div class="text-lg text-indigo-600 font-medium">ROI: 6.2%</div>
-            </div>
-            <div class="card p-6 transform rotate-1 hover:rotate-0 transition-transform">
-              <div class="text-2xl font-bold text-gray-900">$850,000</div>
-              <div class="text-lg text-indigo-600 font-medium">ROI: 7.1%</div>
-            </div>
-          </div>
+        <div class="stat">
+          <div class="stat-number">500+</div>
+          <div class="stat-label">Happy Realtors</div>
+        </div>
+        <div class="stat">
+          <div class="stat-number">95%</div>
+          <div class="stat-label">Accuracy Rate</div>
+        </div>
+      </div>
+      <a href="#" class="btn-primary pulse" id="show-lead-form">Get Started Free</a>
+      <form class="hero-lead-form slide-down" id="lead-form" style="display: none;">
+        <input type="text" name="name" placeholder="Your Name" required />
+        <input type="email" name="email" placeholder="Your Email" required />
+        <button type="submit">Send My Free ROI Report</button>
+        <p class="form-note">No spam. Just one powerful sample report.</p>
+      </form>
+    </div>
+    <div class="hero-visual">
+      <div class="floating-cards">
+        <div class="property-card card-1">
+          <div class="property-price">$750,000</div>
+          <div class="property-roi">ROI: 5.8%</div>
+        </div>
+        <div class="property-card card-2">
+          <div class="property-price">$650,000</div>
+          <div class="property-roi">ROI: 6.2%</div>
+        </div>
+        <div class="property-card card-3">
+          <div class="property-price">$850,000</div>
+          <div class="property-roi">ROI: 7.1%</div>
         </div>
       </div>
     </div>
   </section>
 
-  <section class="py-16 bg-gray-50">
-    <div class="container mx-auto px-4">
-      <h2 class="text-3xl font-bold text-center text-gray-900 mb-12">Trusted by top real estate professionals</h2>
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-8 items-center justify-center">
-        <div class="flex justify-center opacity-60 hover:opacity-100 transition">
-          <img src="assets/remax.png" alt="REMAX" class="h-16 object-contain" />
-        </div>
-        <div class="flex justify-center opacity-60 hover:opacity-100 transition">
-          <img src="assets/royal_lepage.png" alt="Royal LePage" class="h-16 object-contain" />
-        </div>
-        <div class="flex justify-center opacity-60 hover:opacity-100 transition">
-          <img src="assets/century21.png" alt="Century 21" class="h-16 object-contain" />
-        </div>
-        <div class="flex justify-center opacity-60 hover:opacity-100 transition">
-          <img src="assets/exp_realty.png" alt="EXP Realty" class="h-16 object-contain" />
-        </div>
+  <section class="trusted-section">
+    <h2>Trusted by top real estate professionals</h2>
+    <div class="trusted-logos">
+      <img src="assets/remax.png" alt="REMAX" class="fade-in" />
+      <img src="assets/royal_lepage.png" alt="Royal LePage" class="fade-in" />
+      <img src="assets/century21.png" alt="Century 21" class="fade-in" />
+      <img src="assets/exp_realty.png" alt="EXP Realty" class="fade-in" />
+    </div>
+  </section>
+
+  <section class="features-section" id="features">
+    <h2>Why Realtors Love Us</h2>
+    <div class="features-grid">
+      <div class="feature-card hover-lift">
+        <div class="feature-icon">⚡</div>
+        <h3>Saves Time</h3>
+        <p>Instantly identify investment-ready listings without sifting through hundreds of properties.</p>
+      </div>
+      <div class="feature-card hover-lift">
+        <div class="feature-icon">📊</div>
+        <h3>Client-Ready Reports</h3>
+        <p>Generate beautiful, branded reports that investors love and trust.</p>
+      </div>
+      <div class="feature-card hover-lift">
+        <div class="feature-icon">🎯</div>
+        <h3>Boosts Credibility</h3>
+        <p>Stand out with data-backed insights and attract more investor clients.</p>
+      </div>
+      <div class="feature-card hover-lift">
+        <div class="feature-icon">🚀</div>
+        <h3>Easy to Use</h3>
+        <p>No training needed. Just input your criteria and get results in seconds.</p>
       </div>
     </div>
   </section>
 
-  <section class="py-20 px-4" id="features">
-    <div class="container mx-auto">
-      <h2 class="text-4xl font-bold text-center text-gray-900 mb-12">Why Realtors Love Us</h2>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <div class="card hover:shadow-xl transition-shadow p-8 text-center">
-          <div class="text-4xl mb-4">⚡</div>
-          <h3 class="text-xl font-bold text-gray-900 mb-4">Saves Time</h3>
-          <p class="text-gray-600">Instantly identify investment-ready listings without sifting through hundreds of properties.</p>
-        </div>
-        <div class="card hover:shadow-xl transition-shadow p-8 text-center">
-          <div class="text-4xl mb-4">📊</div>
-          <h3 class="text-xl font-bold text-gray-900 mb-4">Client-Ready Reports</h3>
-          <p class="text-gray-600">Generate beautiful, branded reports that investors love and trust.</p>
-        </div>
-        <div class="card hover:shadow-xl transition-shadow p-8 text-center">
-          <div class="text-4xl mb-4">🎯</div>
-          <h3 class="text-xl font-bold text-gray-900 mb-4">Boosts Credibility</h3>
-          <p class="text-gray-600">Stand out with data-backed insights and attract more investor clients.</p>
-        </div>
+  <section class="pricing-section" id="pricing">
+    <h2>Simple Pricing</h2>
+    <p class="pricing-subtitle">Choose the plan that fits your business</p>
+    <div class="pricing-grid">
+      <div class="pricing-card hover-lift">
+        <h3>Starter</h3>
+        <div class="price">$49<span>/month</span></div>
+        <ul>
+          <li>100 reports/month</li>
+          <li>Basic property filters</li>
+          <li>Email support</li>
+        </ul>
+        <a href="#" class="btn-secondary">Get Started</a>
       </div>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8 max-w-2xl mx-auto">
-        <div class="card hover:shadow-xl transition-shadow p-8 text-center">
-          <div class="text-4xl mb-4">🚀</div>
-          <h3 class="text-xl font-bold text-gray-900 mb-4">Easy to Use</h3>
-          <p class="text-gray-600">No training needed. Just input your criteria and get results in seconds.</p>
-        </div>
-        <div class="card hover:shadow-xl transition-shadow p-8 text-center">
-          <div class="text-4xl mb-4">🔍</div>
-          <h3 class="text-xl font-bold text-gray-900 mb-4">Market Analysis</h3>
-          <p class="text-gray-600">Get comprehensive market insights with rental comparables and trends.</p>
-        </div>
+      <div class="pricing-card highlight-card hover-lift">
+        <div class="popular-badge">Most Popular</div>
+        <h3>Pro</h3>
+        <div class="price">$99<span>/month</span></div>
+        <ul>
+          <li>250 reports/month</li>
+          <li>Advanced filters & analytics</li>
+          <li>Priority support</li>
+          <li>Custom branding</li>
+        </ul>
+        <a href="#" class="btn-primary">Get Started</a>
       </div>
-    </div>
-  </section>
-
-  <section class="py-20 px-4 bg-gray-50" id="pricing">
-    <div class="container mx-auto">
-      <h2 class="text-4xl font-bold text-center text-gray-900 mb-4">Simple Pricing</h2>
-      <p class="text-xl text-center text-gray-600 mb-12">Choose the plan that fits your business</p>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-        <div class="card p-8 hover:shadow-xl transition-shadow">
-          <h3 class="text-2xl font-bold text-gray-900 mb-4">Starter</h3>
-          <div class="text-4xl font-bold text-gray-900 mb-6">$49<span class="text-lg text-gray-600">/month</span></div>
-          <ul class="space-y-3 mb-8">
-            <li class="flex items-center text-gray-600">
-              <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-              </svg>
-              100 reports/month
-            </li>
-            <li class="flex items-center text-gray-600">
-              <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-              </svg>
-              Basic property filters
-            </li>
-            <li class="flex items-center text-gray-600">
-              <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-              </svg>
-              Email support
-            </li>
-          </ul>
-          <button class="btn btn-secondary w-full">Get Started</button>
-        </div>
-        
-        <div class="card p-8 hover:shadow-xl transition-shadow border-2 border-indigo-600 relative">
-          <div class="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-indigo-600 text-white px-4 py-1 rounded-full text-sm font-medium">Most Popular</div>
-          <h3 class="text-2xl font-bold text-gray-900 mb-4">Pro</h3>
-          <div class="text-4xl font-bold text-gray-900 mb-6">$99<span class="text-lg text-gray-600">/month</span></div>
-          <ul class="space-y-3 mb-8">
-            <li class="flex items-center text-gray-600">
-              <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-              </svg>
-              250 reports/month
-            </li>
-            <li class="flex items-center text-gray-600">
-              <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-              </svg>
-              Advanced filters & analytics
-            </li>
-            <li class="flex items-center text-gray-600">
-              <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-              </svg>
-              Priority support
-            </li>
-            <li class="flex items-center text-gray-600">
-              <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-              </svg>
-              Custom branding
-            </li>
-          </ul>
-          <button class="btn btn-primary w-full">Get Started</button>
-        </div>
-        
-        <div class="card p-8 hover:shadow-xl transition-shadow">
-          <h3 class="text-2xl font-bold text-gray-900 mb-4">Enterprise</h3>
-          <div class="text-4xl font-bold text-gray-900 mb-6">Custom</div>
-          <ul class="space-y-3 mb-8">
-            <li class="flex items-center text-gray-600">
-              <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-              </svg>
-              Unlimited reports
-            </li>
-            <li class="flex items-center text-gray-600">
-              <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-              </svg>
-              White-labeling
-            </li>
-            <li class="flex items-center text-gray-600">
-              <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-              </svg>
-              Dedicated success manager
-            </li>
-            <li class="flex items-center text-gray-600">
-              <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-              </svg>
-              API access
-            </li>
-          </ul>
-          <a href="contact.html" class="btn btn-secondary w-full text-center block">Contact Sales</a>
-        </div>
+      <div class="pricing-card hover-lift">
+        <h3>Enterprise</h3>
+        <div class="price">Custom</div>
+        <ul>
+          <li>Unlimited reports</li>
+          <li>White-labeling</li>
+          <li>Dedicated success manager</li>
+          <li>API access</li>
+        </ul>
+        <a href="contact.html" class="btn-secondary">Contact Sales</a>
       </div>
     </div>
   </section>
 
-  <section class="py-20 px-4">
-    <div class="container mx-auto">
-      <h2 class="text-4xl font-bold text-center text-gray-900 mb-12">What Realtors Are Saying</h2>
-      <div class="relative max-w-4xl mx-auto">
-        <div class="overflow-hidden">
-          <div class="flex transition-transform duration-300" id="testimonials-container">
-            <div class="w-full flex-shrink-0 px-4">
-              <div class="card p-8 text-center">
-                <div class="text-2xl text-yellow-500 mb-4">★★★★★</div>
-                <p class="text-lg text-gray-700 mb-6 italic">"Finally, a tool that speaks the investor's language. It's become my listing presentation secret weapon."</p>
-                <div class="flex items-center justify-center">
-                  <div class="w-12 h-12 bg-indigo-600 rounded-full flex items-center justify-center text-white font-bold mr-4">S</div>
-                  <div class="text-left">
-                    <div class="font-bold text-gray-900">Sarah K.</div>
-                    <div class="text-gray-600">Toronto Realtor</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="w-full flex-shrink-0 px-4">
-              <div class="card p-8 text-center">
-                <div class="text-2xl text-yellow-500 mb-4">★★★★★</div>
-                <p class="text-lg text-gray-700 mb-6 italic">"My clients love how clear and data-driven the reports are. It's made the buying process much smoother."</p>
-                <div class="flex items-center justify-center">
-                  <div class="w-12 h-12 bg-purple-600 rounded-full flex items-center justify-center text-white font-bold mr-4">J</div>
-                  <div class="text-left">
-                    <div class="font-bold text-gray-900">Jason L.</div>
-                    <div class="text-gray-600">Mississauga Agent</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="w-full flex-shrink-0 px-4">
-              <div class="card p-8 text-center">
-                <div class="text-2xl text-yellow-500 mb-4">★★★★★</div>
-                <p class="text-lg text-gray-700 mb-6 italic">"InvestorProps has doubled my investor client base. The ROI calculations are spot-on every time."</p>
-                <div class="flex items-center justify-center">
-                  <div class="w-12 h-12 bg-pink-600 rounded-full flex items-center justify-center text-white font-bold mr-4">M</div>
-                  <div class="text-left">
-                    <div class="font-bold text-gray-900">Maria C.</div>
-                    <div class="text-gray-600">Vancouver Realtor</div>
-                  </div>
-                </div>
-              </div>
+  <section class="testimonials-section">
+    <h2>What Realtors Are Saying</h2>
+    <div class="testimonials-container">
+      <div class="testimonial-card active">
+        <div class="testimonial-content">
+          <div class="stars">★★★★★</div>
+          <p>"Finally, a tool that speaks the investor's language. It's become my listing presentation secret weapon."</p>
+          <div class="testimonial-author">
+            <div class="author-avatar">S</div>
+            <div class="author-info">
+              <strong>Sarah K.</strong>
+              <span>Toronto Realtor</span>
             </div>
           </div>
         </div>
-        <div class="flex justify-center mt-6 space-x-2">
-          <button class="w-3 h-3 bg-indigo-600 rounded-full transition-all" onclick="showTestimonial(0)" id="dot-0"></button>
-          <button class="w-3 h-3 bg-gray-300 rounded-full transition-all" onclick="showTestimonial(1)" id="dot-1"></button>
-          <button class="w-3 h-3 bg-gray-300 rounded-full transition-all" onclick="showTestimonial(2)" id="dot-2"></button>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-content">
+          <div class="stars">★★★★★</div>
+          <p>"My clients love how clear and data-driven the reports are. It's made the buying process much smoother."</p>
+          <div class="testimonial-author">
+            <div class="author-avatar">J</div>
+            <div class="author-info">
+              <strong>Jason L.</strong>
+              <span>Mississauga Agent</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-content">
+          <div class="stars">★★★★★</div>
+          <p>"InvestorProps has doubled my investor client base. The ROI calculations are spot-on every time."</p>
+          <div class="testimonial-author">
+            <div class="author-avatar">M</div>
+            <div class="author-info">
+              <strong>Maria C.</strong>
+              <span>Vancouver Realtor</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
+    <div class="testimonial-dots">
+      <span class="dot active" data-slide="0"></span>
+      <span class="dot" data-slide="1"></span>
+      <span class="dot" data-slide="2"></span>
+    </div>
   </section>
 
-  <footer class="bg-gray-900 text-white py-8 px-4">
-    <div class="container mx-auto text-center">
-      <p>&copy; 2025 InvestorProps. All rights reserved.</p>
-      <div class="mt-4 space-x-6">
-        <a href="#" class="text-gray-400 hover:text-white transition">Privacy Policy</a>
-        <a href="#" class="text-gray-400 hover:text-white transition">Terms of Service</a>
-        <a href="contact.html" class="text-gray-400 hover:text-white transition">Contact</a>
-      </div>
-    </div>
+  <footer class="footer">
+    &copy; 2025 InvestorProps. All rights reserved.
   </footer>
 
   <script>
@@ -347,30 +228,48 @@
 
     // Testimonials carousel
     let currentSlide = 0;
-    const container = document.getElementById('testimonials-container');
-    
-    function showTestimonial(n) {
-      currentSlide = n;
-      container.style.transform = `translateX(-${n * 100}%)`;
+    const testimonials = document.querySelectorAll('.testimonial-card');
+    const dots = document.querySelectorAll('.dot');
+
+    function showSlide(n) {
+      testimonials.forEach(card => card.classList.remove('active'));
+      dots.forEach(dot => dot.classList.remove('active'));
       
-      // Update dots
-      for (let i = 0; i < 3; i++) {
-        const dot = document.getElementById(`dot-${i}`);
-        if (i === n) {
-          dot.classList.remove('bg-gray-300');
-          dot.classList.add('bg-indigo-600');
-        } else {
-          dot.classList.remove('bg-indigo-600');
-          dot.classList.add('bg-gray-300');
-        }
-      }
+      testimonials[n].classList.add('active');
+      dots[n].classList.add('active');
     }
-    
+
+    dots.forEach((dot, index) => {
+      dot.addEventListener('click', () => {
+        currentSlide = index;
+        showSlide(currentSlide);
+      });
+    });
+
     // Auto-rotate testimonials
     setInterval(() => {
-      currentSlide = (currentSlide + 1) % 3;
-      showTestimonial(currentSlide);
+      currentSlide = (currentSlide + 1) % testimonials.length;
+      showSlide(currentSlide);
     }, 5000);
+
+    // Intersection Observer for animations
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('animate');
+        }
+      });
+    }, observerOptions);
+
+    // Observe elements for animation
+    document.querySelectorAll('.feature-card, .pricing-card, .fade-in').forEach(el => {
+      observer.observe(el);
+    });
   </script>
 </body>
 </html>

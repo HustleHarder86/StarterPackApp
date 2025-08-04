@@ -35,12 +35,9 @@ class AnalysisService {
         body: JSON.stringify({
           userId,
           propertyAddress,
-          propertyData: { address: propertyAddress },  // Add minimal propertyData for consistency
           userEmail,
           userName,
-          requestType,
-          analysisType: 'both',  // Default to both analyses
-          includeStrAnalysis: true  // Include STR by default
+          requestType
         })
       });
 

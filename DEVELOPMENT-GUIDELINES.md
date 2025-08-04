@@ -13,18 +13,12 @@
 ```html
 <!-- In HTML -->
 <script src="js/modules/componentLoader.js"></script>
-<script src="js/modules/componentLoaderCompactModern.js"></script>
 ```
 
 ```javascript
 // In componentLoader.js
 class ComponentLoader { ... }
 window.ComponentLoader = ComponentLoader;
-
-// In componentLoaderCompactModern.js
-const ComponentLoader = window.ComponentLoader;
-class ComponentLoaderCompactModern extends ComponentLoader { ... }
-window.ComponentLoaderCompactModern = ComponentLoaderCompactModern;
 ```
 
 **Option 2: ES6 Modules Throughout**
@@ -32,13 +26,10 @@ window.ComponentLoaderCompactModern = ComponentLoaderCompactModern;
 // componentLoader.js
 export default class ComponentLoader { ... }
 
-// componentLoaderCompactModern.js
-import ComponentLoader from './componentLoader.js';
-export default class ComponentLoaderCompactModern extends ComponentLoader { ... }
-
 // In HTML
 <script type="module">
-  import ComponentLoaderCompactModern from './js/modules/componentLoaderCompactModern.js';
+  import ComponentLoader from './js/modules/componentLoader.js';
+  const loader = new ComponentLoader();
 </script>
 ```
 
@@ -59,9 +50,9 @@ Before launching any new feature:
 - [ ] Dependencies are properly loaded before use
 
 ### 2. CSS Namespacing
-- [ ] All new CSS classes have unique prefixes (e.g., `cm-` for Compact Modern)
-- [ ] CSS variables are namespaced to prevent conflicts
-- [ ] Font choices don't conflict with existing fonts
+- [ ] All new CSS classes follow design system conventions
+- [ ] CSS variables use consistent naming patterns
+- [ ] Styles don't conflict with existing design system
 
 ### 3. Testing
 - [ ] Run `npm run test:syntax` - Must pass

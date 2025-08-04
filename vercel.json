@@ -8,12 +8,6 @@
     },
     "api/analyze-property.js": {
       "maxDuration": 300
-    },
-    "api/inject-env.js": {
-      "maxDuration": 10
-    },
-    "api/health.js": {
-      "maxDuration": 10
     }
   },
   "rewrites": [

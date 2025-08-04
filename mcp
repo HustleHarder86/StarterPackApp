@@ -1,0 +1,21 @@
+# MCP Servers Configuration
+
+## Playwright MCP Server
+- **Added**: npx @playwright/mcp@latest
+- **Purpose**: Browser automation and testing capabilities
+- **Node.js**: Requires v20+ (upgraded from v18.19.1 to v20.19.4)
+- **Installation**: `claude mcp add playwright "npx @playwright/mcp@latest"`
+
+### Usage
+The Playwright MCP server provides browser automation capabilities for:
+- Web scraping
+- UI testing
+- Screenshot capture
+- Browser interaction automation
+
+### Available Options
+- `--browser <browser>`: chrome, firefox, webkit, msedge
+- `--headless`: Run browser in headless mode
+- `--viewport-size <size>`: Set browser viewport (e.g., "1280, 720")
+- `--device <device>`: Emulate device (e.g., "iPhone 15")
+- `--caps <caps>`: Enable capabilities (vision, pdf)

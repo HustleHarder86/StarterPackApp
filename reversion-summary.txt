@@ -1,0 +1,38 @@
+# Reversion Summary - Compact Modern Design Removal
+
+## Date: August 4, 2025
+## Reversion Point: Commit f4a0cd3 (July 29, 2025)
+
+### What was removed:
+1. All Compact Modern CSS files:
+   - styles/compact-modern-design-system.css
+   - styles/unified-design-system.css
+   - styles/gradient-theme.css
+   - styles/glass-override.css
+   - styles/loading-enhancements.css
+   - styles/analysis-progress.css
+   - styles/property-confirmation.css
+
+2. All Compact Modern components:
+   - components/analysis/FinancialSummaryCompactModern.js
+   - components/analysis/InvestmentVerdictCompactModern.js
+   - components/analysis/MarketComparisonCompactModern.js
+   - components/analysis/PropertyHeroSectionCompactModern.js
+   - components/layout/CompactModernLayout.js
+   - js/modules/componentLoaderCompactModern.js
+
+### What was restored:
+- Original design system with simple purple gradients
+- Original component architecture
+- Clean Tailwind utility-based styling
+- Original STR analysis page design
+
+### New additions:
+- STYLE-CHANGE-GUIDELINES.md - Document to guide future style changes
+- Updated CLAUDE.md with reference to style guidelines
+
+### Backup:
+- Pre-reversion state saved in branch: backup-compact-modern-20250804
+
+This reversion restores the application to its simpler, more maintainable state
+while preserving all functionality and user data.
