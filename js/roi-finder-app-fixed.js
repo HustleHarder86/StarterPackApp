@@ -826,9 +826,8 @@
                         ...(fromExtension && { 'X-Extension-Request': 'true' })
                     },
                     body: JSON.stringify({
-                        property: propertyData,  // Changed from propertyData to property
+                        propertyData,  // Original format
                         analysisType,
-                        fromExtension: fromExtension,
                         userId: window.appState.currentUser?.uid || 'anonymous',
                         userEmail: window.appState.currentUser?.email || null,
                         isE2ETest
@@ -901,19 +900,8 @@
                     this.showPropertyInput();
                     this.showError(errorMessage);
                 } else {
-                    // For extension flow, use the error overlay instead
-                    const urlParams = new URLSearchParams(window.location.search);
-                    const fromExtension = urlParams.get('fromExtension') === 'true';
-                    
-                    if (fromExtension) {
-                        // Hide loading state first
-                        this.hideLoadingState();
-                        // Use the overlay error message for extension users
-                        this.showErrorMessage(errorMessage);
-                    } else {
-                        // Show error state for regular users
-                        this.showErrorState(errorMessage);
-                    }
+                    // Show error state
+                    this.showErrorState(errorMessage);
                 }
                 
                 // Reset button
@@ -1058,14 +1046,18 @@
             setTimeout(updateStep, 500);
         }
         
-        showErrorState(message) {
-            this.hideAllSections();
-            
-            // Hide the loading container if it exists
+        hideLoadingState() {
             const loadingContainer = document.getElementById('analysis-loading-container');
             if (loadingContainer) {
                 loadingContainer.style.display = 'none';
             }
+        }
+        
+        showErrorState(message) {
+            this.hideAllSections();
+            
+            // Hide the loading container if it exists
+            this.hideLoadingState();
             
             // Hide app-root if it was hidden
             const appRoot = document.getElementById('app-root');
