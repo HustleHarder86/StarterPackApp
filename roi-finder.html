@@ -802,8 +802,8 @@
     
     <!-- Navigation Protection -->
     <script type="module">
-        import NavigationProtection from './js/modules/navigationProtection.js';
-        window.NavigationProtection = NavigationProtection;
+        import { init as NavigationProtection } from './js/modules/navigationProtection.js';
+        window.NavigationProtection = { init: NavigationProtection };
     </script>
     <script>
         if (window.navigationProtection) {
