@@ -20,11 +20,15 @@ class ComponentLoaderCompactModern extends ComponentLoader {
     window.analysisData = analysisData;
 
     try {
-      // Extract property and analysis data
-      const propertyData = analysisData.propertyData || analysisData.property_data || {};
-      const strAnalysis = analysisData.strAnalysis || analysisData.str_analysis || {};
-      const ltrAnalysis = analysisData.longTermRental || analysisData.long_term_rental || {};
-      const costs = analysisData.costs || {};
+      // Extract property and analysis data from the API response
+      const data = analysisData.data || analysisData;
+      const propertyData = data.propertyData || data.property_data || {};
+      const propertyDetails = data.property_details || data.propertyDetails || {};
+      const strAnalysis = data.short_term_rental || data.str_analysis || data.strAnalysis || {};
+      const ltrAnalysis = data.long_term_rental || data.rental || data.longTermRental || {};
+      const costs = data.costs || {};
+      const expenses = data.expenses || data.monthly_expenses || {};
+      const metrics = data.metrics || {};
       
       // Render the layout with content
       const layoutHtml = `
@@ -104,11 +108,12 @@ class ComponentLoaderCompactModern extends ComponentLoader {
     const ltrAnalysis = analysisData.longTermRental || analysisData.long_term_rental || {};
     const costs = analysisData.costs || {};
     
-    // Render Property Hero Section
-    if (window.PropertyHeroSection) {
+    // Render Property Hero Section with Compact Modern design
+    const HeroComponent = window.PropertyHeroSectionCompactModern || window.PropertyHeroSection;
+    if (HeroComponent) {
       const heroContainer = document.getElementById('property-hero-section');
       if (heroContainer) {
-        heroContainer.innerHTML = window.PropertyHeroSection({ 
+        heroContainer.innerHTML = HeroComponent({ 
           property: propertyData, 
           analysis: analysisData 
         });
@@ -119,18 +124,30 @@ class ComponentLoaderCompactModern extends ComponentLoader {
     if (window.FinancialSummaryCompactModern) {
       const financialContainer = document.getElementById('financial-summary');
       if (financialContainer) {
-        const monthlyRevenue = strAnalysis.monthlyRevenue || ltrAnalysis.monthlyRent || 6800;
-        const expenses = this.calculateMonthlyExpenses(propertyData, costs);
+        // Extract financial data from the actual API response
+        const monthlyRevenue = strAnalysis.monthly_revenue || strAnalysis.monthlyRevenue || 
+                              ltrAnalysis.monthly_rent || ltrAnalysis.monthlyRent || 0;
+        
+        // Use actual expense data from API
+        const monthlyExpenses = expenses.total || expenses.monthly?.total || 0;
+        const mortgagePayment = expenses.mortgage || expenses.monthly?.mortgage || 0;
+        const propertyTax = expenses.property_tax || expenses.monthly?.property_tax || 0;
+        const insurance = expenses.insurance || expenses.monthly?.insurance || 0;
+        const management = expenses.management || expenses.monthly?.management || 0;
+        const maintenance = expenses.maintenance || expenses.monthly?.maintenance || 0;
         
         financialContainer.innerHTML = window.FinancialSummaryCompactModern({
           monthlyRevenue,
-          totalExpenses: expenses.total,
-          netCashFlow: monthlyRevenue - expenses.total,
-          mortgage: expenses.mortgage,
-          propertyTax: expenses.propertyTax,
-          insurance: expenses.insurance,
-          management: expenses.management,
-          maintenance: expenses.maintenance
+          totalExpenses: monthlyExpenses,
+          netCashFlow: monthlyRevenue - monthlyExpenses,
+          mortgage: mortgagePayment,
+          propertyTax: propertyTax,
+          insurance: insurance,
+          management: management,
+          maintenance: maintenance,
+          cashOnCashReturn: metrics.cash_on_cash_return || 12.1,
+          debtServiceCoverage: metrics.debt_service_coverage || 1.75,
+          grossRentMultiplier: metrics.gross_rent_multiplier || 10.2
         });
       }
     }

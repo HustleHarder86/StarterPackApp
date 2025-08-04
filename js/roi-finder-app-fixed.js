@@ -1161,6 +1161,7 @@
                         });
                         
                         appRoot.innerHTML = layoutHTML;
+                        appRoot.classList.add('fade-in');
                         
                         // Now render the analysis results into the content area
                         const contentContainer = document.getElementById('analysis-results-content');
@@ -1248,7 +1249,13 @@
                 }
             });
             
-            // Small delay to show 100% completion before transitioning
+            // Add fade-out class to loading container
+            const loadingContainer = document.getElementById('analysis-loading-container');
+            if (loadingContainer) {
+                loadingContainer.classList.add('fade-out');
+            }
+            
+            // Small delay to show 100% completion and fade out before transitioning
             setTimeout(() => {
                 this.renderAnalysisResults(analysisData);
             }, 800);

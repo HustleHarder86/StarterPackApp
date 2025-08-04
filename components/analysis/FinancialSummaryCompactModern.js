@@ -44,8 +44,8 @@
                 <span class="text-gray-600">Monthly Revenue</span>
                 <span class="font-semibold">${formatCurrency(monthlyRevenue)}</span>
               </div>
-              <div class="progress-bar">
-                <div class="progress-fill progress-green" style="width: ${revenuePercentage}%"></div>
+              <div class="w-full bg-gray-200 rounded-full h-2">
+                <div class="bg-gradient-to-r from-green-400 to-green-600 h-2 rounded-full" style="width: ${revenuePercentage}%"></div>
               </div>
             </div>
             
@@ -54,8 +54,8 @@
                 <span class="text-gray-600">Operating Expenses</span>
                 <span class="font-semibold">${formatCurrency(totalExpenses)}</span>
               </div>
-              <div class="progress-bar">
-                <div class="progress-fill progress-red" style="width: ${expensesPercentage}%"></div>
+              <div class="w-full bg-gray-200 rounded-full h-2">
+                <div class="bg-gradient-to-r from-red-400 to-red-600 h-2 rounded-full" style="width: ${expensesPercentage}%"></div>
               </div>
             </div>
             
@@ -64,8 +64,8 @@
                 <span class="font-semibold text-gray-900">Net Cash Flow</span>
                 <span class="font-bold text-green-600">${formatCurrency(netCashFlow)}</span>
               </div>
-              <div class="progress-bar">
-                <div class="progress-fill progress-indigo" style="width: ${cashFlowPercentage}%"></div>
+              <div class="w-full bg-gray-200 rounded-full h-2">
+                <div class="bg-gradient-to-r from-indigo-400 to-purple-600 h-2 rounded-full" style="width: ${cashFlowPercentage}%"></div>
               </div>
             </div>
           </div>
