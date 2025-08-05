@@ -184,6 +184,37 @@ export const STRRevenueCalculator = ({
             ? 'text-lg font-bold text-green-600' 
             : 'text-lg font-bold text-red-600';
         }
+        
+        // Auto-sync with financial calculator
+        const revenueInput = document.getElementById('monthlyRevenue');
+        if (revenueInput && revenueInput.value !== monthly.toString()) {
+          revenueInput.value = monthly;
+          // Trigger financial calculator update
+          revenueInput.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+        
+        // Also update STR-specific expenses based on new revenue
+        const propertyMgmtInput = document.getElementById('propertyMgmt');
+        const suppliesInput = document.getElementById('supplies');
+        const platformFeesInput = document.getElementById('platformFees');
+        
+        if (propertyMgmtInput) {
+          const mgmtFee = Math.round(monthly * 0.10);
+          propertyMgmtInput.value = mgmtFee;
+          propertyMgmtInput.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+        
+        if (suppliesInput) {
+          const supplies = Math.round(monthly * 0.04);
+          suppliesInput.value = supplies;
+          suppliesInput.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+        
+        if (platformFeesInput) {
+          const fees = Math.round(monthly * 0.03);
+          platformFeesInput.value = fees;
+          platformFeesInput.dispatchEvent(new Event('input', { bubbles: true }));
+        }
       };
       
       // Reset function

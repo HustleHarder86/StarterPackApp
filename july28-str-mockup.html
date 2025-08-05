@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STR Analysis - July 28th Version</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .animate-pulse-subtle {
+            animation: pulse-subtle 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse-subtle {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 p-8">
+    <div class="max-w-7xl mx-auto">
+        <h1 class="text-3xl font-bold mb-8">Short-Term Rental Analysis - July 28th, 2025</h1>
+        
+        <!-- Property Header with Photo -->
+        <div class="bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl p-6 text-white mb-6">
+            <div class="flex items-start gap-6">
+                <img src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=200&h=150&fit=crop" 
+                     alt="Property" class="rounded-lg shadow-lg">
+                <div class="flex-1">
+                    <h2 class="text-2xl font-bold mb-2">123 Main Street, Toronto</h2>
+                    <p class="text-purple-100 mb-4">2 Bedrooms • 2 Bathrooms • 1,244 sq ft • Condo</p>
+                    <div class="flex items-center gap-4">
+                        <span class="inline-flex items-center gap-1 px-3 py-1 bg-white/20 backdrop-blur text-white text-sm font-bold rounded">
+                            <span class="inline-block animate-pulse">●</span>
+                            LIVE DATA
+                        </span>
+                        <span class="text-sm">Analysis performed: July 28, 2025</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Key Components from July 28th -->
+        <div class="space-y-6">
+            
+            <!-- 1. Live Airbnb Market Data Section -->
+            <div class="bg-white rounded-xl p-6 shadow-sm">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center gap-3">
+                        <h3 class="text-lg font-bold text-gray-900">Live Airbnb Market Data</h3>
+                        <span class="text-green-600 text-sm font-medium">● 12 active listings found</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs text-gray-500">Updated 3 minutes ago</span>
+                        <span class="inline-flex items-center gap-1 px-3 py-1 bg-gradient-to-r from-pink-500 to-red-500 text-white text-xs font-bold rounded shadow-md animate-pulse-subtle">
+                            <span class="inline-block animate-pulse">●</span>
+                            REAL MARKET DATA
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Airbnb Listing Cards -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <!-- Top Performer -->
+                    <div class="bg-white rounded-lg overflow-hidden border border-gray-200 hover:shadow-xl transition-all">
+                        <div class="relative h-48">
+                            <img src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=600&h=400&fit=crop" class="w-full h-full object-cover">
+                            <div class="absolute top-3 left-3">
+                                <span class="px-2 py-1 bg-green-500 text-white text-xs font-bold rounded">TOP PERFORMER</span>
+                            </div>
+                            <div class="absolute top-3 right-3 bg-black/70 backdrop-blur text-white px-2 py-1 rounded text-xs font-bold">$220/night</div>
+                        </div>
+                        <div class="p-4">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="font-bold text-gray-900">2BR • 2BA • Similar Property</span>
+                                <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">98% booked</span>
+                            </div>
+                            <p class="text-sm text-gray-600 mb-3">Luxury amenities, great location</p>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm font-medium text-gray-700">4.9★ (327)</span>
+                                <div class="text-right">
+                                    <div class="text-green-600 font-bold">+$6,400</div>
+                                    <div class="text-xs text-gray-500">+18% potential</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Most Similar -->
+                    <div class="bg-white rounded-lg overflow-hidden border border-gray-200 hover:shadow-xl transition-all">
+                        <div class="relative h-48">
+                            <img src="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=600&h=400&fit=crop" class="w-full h-full object-cover">
+                            <div class="absolute top-3 left-3">
+                                <span class="px-2 py-1 bg-blue-600 text-white text-xs font-bold rounded">MOST SIMILAR</span>
+                            </div>
+                            <div class="absolute top-3 right-3 bg-black/70 backdrop-blur text-white px-2 py-1 rounded text-xs font-bold">$185/night</div>
+                        </div>
+                        <div class="p-4">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="font-bold text-gray-900">2BR • 2BA • Similar size</span>
+                                <span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">85% booked</span>
+                            </div>
+                            <p class="text-sm text-gray-600 mb-3">Same neighborhood, modern</p>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm font-medium text-gray-700">4.7★ (89)</span>
+                                <div class="text-right">
+                                    <div class="text-blue-600 font-bold">+$5,200</div>
+                                    <div class="text-xs text-gray-500">Expected range</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Value Option -->
+                    <div class="bg-white rounded-lg overflow-hidden border border-gray-200 hover:shadow-xl transition-all">
+                        <div class="relative h-48">
+                            <img src="https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=600&h=400&fit=crop" class="w-full h-full object-cover">
+                            <div class="absolute top-3 left-3">
+                                <span class="px-2 py-1 bg-orange-500 text-white text-xs font-bold rounded">VALUE OPTION</span>
+                            </div>
+                            <div class="absolute top-3 right-3 bg-black/70 backdrop-blur text-white px-2 py-1 rounded text-xs font-bold">$145/night</div>
+                        </div>
+                        <div class="p-4">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="font-bold text-gray-900">2BR • 1.5BA • Compact</span>
+                                <span class="text-xs bg-orange-100 text-orange-800 px-2 py-1 rounded">72% booked</span>
+                            </div>
+                            <p class="text-sm text-gray-600 mb-3">Basic amenities, good location</p>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm font-medium text-gray-700">4.5★ (156)</span>
+                                <div class="text-right">
+                                    <div class="text-orange-600 font-bold">+$3,800</div>
+                                    <div class="text-xs text-gray-500">-30% potential</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- View All Button -->
+                <div class="mt-4 text-center">
+                    <button class="px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:shadow-lg transition-all">
+                        View All 12 Properties
+                    </button>
+                </div>
+            </div>
+
+            <!-- 2. Two-Column Layout: Revenue Chart + Interactive Calculator -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                
+                <!-- Annual Revenue Comparison Chart -->
+                <div class="bg-white rounded-xl p-6 shadow-sm">
+                    <h3 class="text-lg font-bold text-gray-900 mb-4">Annual Revenue Comparison</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <div class="flex justify-between mb-2">
+                                <span class="text-sm font-medium text-gray-700">Short-Term Rental (STR)</span>
+                                <span class="font-bold text-green-600">$61,200</span>
+                            </div>
+                            <div class="relative h-8 bg-gray-200 rounded-full overflow-hidden">
+                                <div class="absolute left-0 top-0 h-full bg-gradient-to-r from-green-400 to-green-600 rounded-full" style="width: 100%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between mb-2">
+                                <span class="text-sm font-medium text-gray-700">Long-Term Rental (LTR)</span>
+                                <span class="font-bold text-blue-600">$36,000</span>
+                            </div>
+                            <div class="relative h-8 bg-gray-200 rounded-full overflow-hidden">
+                                <div class="absolute left-0 top-0 h-full bg-gradient-to-r from-blue-400 to-blue-600 rounded-full" style="width: 58.8%"></div>
+                            </div>
+                        </div>
+                        <div class="pt-4 border-t">
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm font-medium text-gray-700">Additional STR Revenue</span>
+                                <span class="text-xl font-bold text-green-600">+$25,200/year (+70%)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Interactive STR Revenue Calculator -->
+                <div class="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-6 shadow-sm">
+                    <h3 class="text-lg font-bold text-gray-900 mb-4">STR Revenue Calculator</h3>
+                    
+                    <!-- Nightly Rate Slider -->
+                    <div class="mb-6">
+                        <div class="flex justify-between mb-2">
+                            <label class="text-sm font-medium text-gray-700">Average Nightly Rate</label>
+                            <span class="text-xl font-bold text-purple-600">$170</span>
+                        </div>
+                        <input type="range" min="100" max="300" value="170" class="w-full h-2 bg-purple-200 rounded-lg appearance-none cursor-pointer">
+                        <div class="flex justify-between text-xs text-gray-500 mt-1">
+                            <span>$100</span>
+                            <span>$200</span>
+                            <span>$300</span>
+                        </div>
+                    </div>
+
+                    <!-- Occupancy Slider -->
+                    <div class="mb-6">
+                        <div class="flex justify-between mb-2">
+                            <label class="text-sm font-medium text-gray-700">Occupancy Rate</label>
+                            <span class="text-xl font-bold text-pink-600">85%</span>
+                        </div>
+                        <input type="range" min="50" max="100" value="85" class="w-full h-2 bg-pink-200 rounded-lg appearance-none cursor-pointer">
+                        <div class="flex justify-between text-xs text-gray-500 mt-1">
+                            <span>50%</span>
+                            <span>75%</span>
+                            <span>100%</span>
+                        </div>
+                    </div>
+
+                    <!-- Revenue Results -->
+                    <div class="bg-white rounded-lg p-4 space-y-3">
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-gray-600">Monthly Revenue</span>
+                            <span class="text-xl font-bold text-gray-900">$5,100</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-gray-600">Annual Revenue</span>
+                            <span class="text-2xl font-bold text-green-600">$61,200</span>
+                        </div>
+                        <div class="flex justify-between items-center pt-3 border-t">
+                            <span class="text-sm text-gray-600">vs Long-Term Rental</span>
+                            <span class="text-lg font-bold text-green-600">+$25,200 (+70%)</span>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="mt-4 flex gap-2">
+                        <button class="flex-1 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
+                            Update Financial Calculator
+                        </button>
+                        <button class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+                            Reset
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. Enhanced Financial Calculator with Collapsible Sections -->
+            <div class="bg-white rounded-xl p-6 shadow-sm">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-xl font-bold text-gray-900">Financial Calculator</h3>
+                    <button class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200">
+                        Reset to Defaults
+                    </button>
+                </div>
+                
+                <!-- Key Metrics -->
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                    <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-4">
+                        <p class="text-sm text-green-700 font-medium">Monthly Cash Flow</p>
+                        <p class="text-2xl font-bold text-green-700">+$1,265</p>
+                    </div>
+                    <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-4">
+                        <p class="text-sm text-blue-700 font-medium">Annual ROI</p>
+                        <p class="text-2xl font-bold text-blue-700">8.9%</p>
+                    </div>
+                    <div class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg p-4">
+                        <p class="text-sm text-purple-700 font-medium">Cap Rate</p>
+                        <p class="text-2xl font-bold text-purple-700">4.8%</p>
+                    </div>
+                    <div class="bg-gradient-to-br from-orange-50 to-orange-100 rounded-lg p-4">
+                        <p class="text-sm text-orange-700 font-medium">Break-Even</p>
+                        <p class="text-2xl font-bold text-orange-700">6.2 years</p>
+                    </div>
+                </div>
+                
+                <!-- Collapsible Assumptions Section -->
+                <div class="mt-6">
+                    <button class="w-full bg-blue-50 rounded-lg p-4 border border-blue-200 hover:bg-blue-100 transition-colors group">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-base font-semibold text-blue-900 flex items-center gap-2">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                View Financial Assumptions & Calculator Details
+                            </h3>
+                            <svg class="w-5 h-5 text-blue-600 transform rotate-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </div>
+                    </button>
+                    
+                    <!-- Hidden content (would be shown when expanded) -->
+                    <div class="bg-blue-50 rounded-b-lg px-4 pb-4 -mt-1 border border-t-0 border-blue-200" style="display: none;">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-blue-800">
+                            <div class="space-y-2">
+                                <h4 class="font-semibold text-blue-900">Mortgage Payment</h4>
+                                <ul class="space-y-1.5 ml-4 text-sm">
+                                    <li>• Down Payment: 20% of property price</li>
+                                    <li>• Interest Rate: 5.5% (current market rate)</li>
+                                    <li>• Amortization: 25 years</li>
+                                    <li>• Loan Amount: $680,000</li>
+                                </ul>
+                            </div>
+                            <div class="space-y-2">
+                                <h4 class="font-semibold text-blue-900">Fixed Costs (Actual vs Calculated)</h4>
+                                <ul class="space-y-1.5 ml-4 text-sm">
+                                    <li>• Property Tax: <span class="font-medium text-green-700">ACTUAL from Realtor.ca</span> ($6,350/year)</li>
+                                    <li>• HOA/Condo Fees: <span class="font-medium text-green-700">ACTUAL from Realtor.ca</span> ($536/month)</li>
+                                    <li>• Insurance: Estimated at $132/month</li>
+                                    <li>• Maintenance: 0.38% of property value/year</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 4. Floating Change Assumptions Button (appears on scroll) -->
+            <div class="fixed bottom-8 right-8 z-50 bg-gradient-to-r from-purple-600 to-purple-700 text-white px-6 py-3 rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200">
+                <button class="flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    </svg>
+                    <span class="font-medium">Change Assumptions</span>
+                </button>
+            </div>
+            
+            <!-- 5. Complete Components List -->
+            <div class="bg-blue-50 rounded-xl p-6 mt-6">
+                <h3 class="text-lg font-bold text-gray-900 mb-4">All Components on STR Tab (July 28th)</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <h4 class="font-semibold text-gray-800 mb-2">Visual Components:</h4>
+                        <ul class="space-y-1 text-sm text-gray-700">
+                            <li>✓ Property header with photo and live data badge</li>
+                            <li>✓ Live Airbnb Market Data section (12 listings)</li>
+                            <li>✓ 3 Airbnb listing cards (Top Performer, Most Similar, Value Option)</li>
+                            <li>✓ "View All Properties" button</li>
+                            <li>✓ Annual Revenue Comparison chart (bar chart)</li>
+                            <li>✓ Interactive STR Revenue Calculator</li>
+                            <li>✓ Enhanced Financial Calculator (2-column layout)</li>
+                            <li>✓ Collapsible Assumptions Section</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-gray-800 mb-2">Interactive Features:</h4>
+                        <ul class="space-y-1 text-sm text-gray-700">
+                            <li>✓ Nightly rate slider ($100-$300 range)</li>
+                            <li>✓ Occupancy rate slider (50%-100% range)</li>
+                            <li>✓ Real-time revenue calculations</li>
+                            <li>✓ Update Financial Calculator button</li>
+                            <li>✓ Reset to Defaults functionality</li>
+                            <li>✓ Floating "Change Assumptions" button (appears on scroll)</li>
+                            <li>✓ Collapsible assumptions with mortgage/tax details</li>
+                            <li>✓ Interactive annual revenue chart (Chart.js)</li>
+                            <li>✓ Auto-sync between STR and Financial calculators</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="mt-4 p-4 bg-yellow-100 rounded-lg border border-yellow-300">
+                    <h4 class="font-semibold text-yellow-800 mb-2">⚠️ Key Features from July 28th:</h4>
+                    <ul class="space-y-1 text-sm text-yellow-700">
+                        <li>• Financial Calculator was integrated directly into STR tab</li>
+                        <li>• Used 2-column layout with revenue comparison chart</li>
+                        <li>• Included collapsible assumptions section with blue background</li>
+                        <li>• Floating button only appeared when scrolling past calculator</li>
+                        <li>• All data auto-synced between calculators</li>
+                        <li>• Real Airbnb data from Apify API (up to 20 listings)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -285,7 +285,7 @@ class ComponentLoader {
       
       // Create reusable property header
       const propertyHeaderHtml = `
-        <div class="bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-xl mb-6 shadow-lg overflow-hidden">
+        <div class="bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl mb-6 shadow-lg overflow-hidden">
           <div class="p-6">
             <div class="flex flex-col lg:flex-row items-center gap-6">
               <!-- Property Image - Only show if image exists -->
@@ -295,6 +295,7 @@ class ComponentLoader {
                   src="${propertyImage}" 
                   alt="Property" 
                   class="w-full h-full object-cover"
+                  onerror="this.style.display='none'; this.parentElement.style.display='none';"
                 />
               </div>
               ` : ''}
@@ -467,6 +468,23 @@ class ComponentLoader {
                   <div id="str-content" class="tab-content">
                     ${propertyHeaderHtml}
                     
+                    <!-- 2-Column Layout for Revenue Chart and STR Calculator -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                      <!-- Revenue Comparison Chart -->
+                      ${strData && window.RevenueComparisonChart ? window.RevenueComparisonChart({
+                        strRevenue: strData.monthly_revenue || strData.monthlyRevenue || 0,
+                        ltrRevenue: ltrAnalysis.monthly_rent || ltrAnalysis.monthlyRent || 0,
+                        averageStrRevenue: strData.market_average_revenue || null
+                      }) : ''}
+                      
+                      <!-- Interactive STR Calculator -->
+                      ${strData && window.STRRevenueCalculator ? window.STRRevenueCalculator({
+                        defaultNightlyRate: strData.avg_nightly_rate || strData.avgNightlyRate || 150,
+                        defaultOccupancy: (strData.occupancy_rate || strData.occupancyRate || 0.75) * 100,
+                        comparables: strData.comparables || []
+                      }) : ''}
+                    </div>
+                    
                     <!-- STR Cash Flow Card -->
                     ${strData && window.STRCashFlowCard ? window.STRCashFlowCard({
                       monthlyRevenue: strData.monthly_revenue || strData.monthlyRevenue || 0,
@@ -475,19 +493,14 @@ class ComponentLoader {
                       operatingExpenses: strData.expenses?.monthly?.total || 0
                     }) : ''}
                     
-                    <!-- Revenue Comparison Chart -->
-                    ${strData && window.RevenueComparisonChart ? window.RevenueComparisonChart({
-                      strRevenue: strData.monthly_revenue || strData.monthlyRevenue || 0,
-                      ltrRevenue: ltrAnalysis.monthly_rent || ltrAnalysis.monthlyRent || 0,
-                      averageStrRevenue: strData.market_average_revenue || null
-                    }) : ''}
-                    
-                    <!-- Interactive STR Calculator -->
-                    ${strData && window.STRRevenueCalculator ? window.STRRevenueCalculator({
-                      defaultNightlyRate: strData.avg_nightly_rate || strData.avgNightlyRate || 150,
-                      defaultOccupancy: (strData.occupancy_rate || strData.occupancyRate || 0.75) * 100,
-                      comparables: strData.comparables || []
-                    }) : ''}
+                    <!-- Integrated Enhanced Financial Calculator -->
+                    ${financialModule.EnhancedFinancialCalculator ? 
+                      financialModule.EnhancedFinancialCalculator({ 
+                        analysisData: {
+                          ...analysisData,
+                          analysisType: 'str' // Force STR context
+                        }
+                      }) : ''}
                     
                     <!-- Airbnb Listings -->
                     ${airbnbHtml}
@@ -516,12 +529,94 @@ class ComponentLoader {
           </div>
 
         </div>
+        
+        <!-- Floating Change Assumptions Button -->
+        <button id="floating-assumptions-btn" 
+          class="fixed bottom-8 right-8 bg-gradient-to-r from-purple-600 to-purple-700 text-white px-6 py-3 rounded-full shadow-lg hover:shadow-xl transform transition-all duration-200 hover:scale-105 hidden z-40 flex items-center gap-2"
+          onclick="window.scrollToFinancialCalculator()"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+          </svg>
+          Change Assumptions
+        </button>
 
         <!-- Share Modal -->
         ${shareModalHtml}
 
         <!-- Share Modal Script -->
         ${shareModule.shareModalScript}
+        
+        <!-- Floating Button Script -->
+        <script>
+          // Scroll to financial calculator function
+          window.scrollToFinancialCalculator = function() {
+            const calculator = document.querySelector('[id*="financial-calc-data"]')?.closest('.bg-white');
+            if (calculator) {
+              calculator.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              // Flash the calculator to draw attention
+              calculator.classList.add('ring-4', 'ring-purple-400', 'ring-opacity-50');
+              setTimeout(() => {
+                calculator.classList.remove('ring-4', 'ring-purple-400', 'ring-opacity-50');
+              }, 2000);
+            }
+          };
+          
+          // Show/hide floating button based on calculator visibility
+          (function() {
+            const floatingBtn = document.getElementById('floating-assumptions-btn');
+            if (!floatingBtn) return;
+            
+            let calculatorElement = null;
+            let hasScrolled = false;
+            
+            function checkCalculatorVisibility() {
+              // Only check on STR tab
+              const activeTab = document.querySelector('[data-tab].active, .tab-button[class*="from-blue-600"]');
+              if (!activeTab || activeTab.id !== 'str-tab') {
+                floatingBtn.classList.add('hidden');
+                return;
+              }
+              
+              // Find the financial calculator
+              if (!calculatorElement) {
+                calculatorElement = document.querySelector('[id*="financial-calc-data"]')?.closest('.bg-white');
+              }
+              
+              if (!calculatorElement) {
+                floatingBtn.classList.add('hidden');
+                return;
+              }
+              
+              const rect = calculatorElement.getBoundingClientRect();
+              const isVisible = rect.top < window.innerHeight && rect.bottom > 0;
+              
+              // Show button only if user has scrolled past calculator and it's not visible
+              if (hasScrolled && !isVisible && rect.top < 0) {
+                floatingBtn.classList.remove('hidden');
+              } else {
+                floatingBtn.classList.add('hidden');
+              }
+            }
+            
+            // Track if user has scrolled
+            window.addEventListener('scroll', () => {
+              hasScrolled = window.scrollY > 100;
+              checkCalculatorVisibility();
+            }, { passive: true });
+            
+            // Check visibility on tab switch
+            window.addEventListener('click', (e) => {
+              if (e.target.closest('.tab-button')) {
+                setTimeout(checkCalculatorVisibility, 100);
+              }
+            });
+            
+            // Initial check
+            setTimeout(checkCalculatorVisibility, 500);
+          })();
+        </script>
         
         <!-- Tab Switching Script -->
         <script>
@@ -535,6 +630,22 @@ class ComponentLoader {
           }
           .animate-pulse-subtle { 
             animation: pulse-subtle 2s ease-in-out infinite; 
+          }
+          
+          /* Ring animation for calculator highlight */
+          @keyframes ring-fade {
+            0% { opacity: 0.5; }
+            100% { opacity: 0; }
+          }
+          
+          /* Transition for floating button */
+          #floating-assumptions-btn {
+            transition: all 0.3s ease-in-out;
+          }
+          
+          #floating-assumptions-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
           }
         </style>
       `;

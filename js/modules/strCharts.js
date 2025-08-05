@@ -190,8 +190,8 @@ export function updateSTRCalculator(analysisData = {}) {
  * Setup floating button functionality
  */
 export function setupFloatingButton() {
-  const floatingButton = document.getElementById('floating-button-container');
-  const calculatorSection = document.getElementById('str-calculator-section');
+  const floatingButton = document.getElementById('floating-assumptions-btn');
+  const calculatorSection = document.getElementById('financial-calculator-str');
   
   if (!floatingButton || !calculatorSection) {
     console.log('Floating button or calculator section not found');
@@ -204,9 +204,9 @@ export function setupFloatingButton() {
     const isVisible = rect.top < window.innerHeight && rect.bottom > 0;
     
     if (!isVisible && window.scrollY > 200) {
-      floatingButton.style.opacity = '1';
+      floatingButton.classList.remove('hidden');
     } else {
-      floatingButton.style.opacity = '0';
+      floatingButton.classList.add('hidden');
     }
   });
   
