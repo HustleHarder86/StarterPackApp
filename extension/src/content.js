@@ -516,6 +516,9 @@ function extractSquareFootage() {
   try {
     console.log('[StarterPack] Starting square footage extraction...');
     
+    // Collect all square footage values found on the page
+    const sqftValues = [];
+    
     // Try multiple approaches
     const selectors = [
       '[class*="sqft"]',
@@ -554,7 +557,12 @@ function extractSquareFootage() {
             if (lowSqft > 100 && lowSqft < 50000 && highSqft > 100 && highSqft < 50000 && highSqft > lowSqft) {
               const midpointSqft = Math.round((lowSqft + highSqft) / 2);
               console.log('[StarterPack] Found square footage RANGE:', `${lowSqft}-${highSqft}`, 'using midpoint:', midpointSqft, 'in text:', text, 'element:', el.tagName);
-              return midpointSqft;
+              sqftValues.push({
+                value: midpointSqft,
+                source: 'range',
+                text: text,
+                priority: 1
+              });
             }
           }
         }
@@ -574,11 +582,45 @@ function extractSquareFootage() {
             const sqft = parseInt(match[1].replace(/,/g, ''));
             if (sqft > 100 && sqft < 50000) { // Sanity check
               console.log('[StarterPack] Found square footage (single):', sqft, 'in text:', text, 'element:', el.tagName);
-              return sqft;
+              sqftValues.push({
+                value: sqft,
+                source: 'single',
+                text: text,
+                priority: 2
+              });
             }
           }
         }
       }
+    }
+    
+    // If we found any values, return the best one
+    if (sqftValues.length > 0) {
+      // Sort by priority (ranges first) and then by value (larger values first)
+      sqftValues.sort((a, b) => {
+        if (a.priority !== b.priority) return a.priority - b.priority;
+        return b.value - a.value; // Larger values first
+      });
+      
+      console.log('[StarterPack] All square footage values found:', sqftValues);
+      
+      // If we have range values, prefer them
+      const rangeValues = sqftValues.filter(v => v.source === 'range');
+      if (rangeValues.length > 0) {
+        console.log('[StarterPack] Using range value:', rangeValues[0].value);
+        return rangeValues[0].value;
+      }
+      
+      // Otherwise, return the largest reasonable value
+      const reasonableValues = sqftValues.filter(v => v.value >= 400); // Filter out suspiciously small values
+      if (reasonableValues.length > 0) {
+        console.log('[StarterPack] Using largest reasonable value:', reasonableValues[0].value);
+        return reasonableValues[0].value;
+      }
+      
+      // Last resort: return the largest value found
+      console.log('[StarterPack] Using largest value found:', sqftValues[0].value);
+      return sqftValues[0].value;
     }
     
     // Search in property details table more thoroughly
@@ -600,7 +642,12 @@ function extractSquareFootage() {
             if (lowSqft > 100 && lowSqft < 50000 && highSqft > 100 && highSqft < 50000 && highSqft > lowSqft) {
               const midpointSqft = Math.round((lowSqft + highSqft) / 2);
               console.log('[StarterPack] Found square footage RANGE in table:', `${lowSqft}-${highSqft}`, 'using midpoint:', midpointSqft, 'from row:', text);
-              return midpointSqft;
+              sqftValues.push({
+                value: midpointSqft,
+                source: 'range',
+                text: text,
+                priority: 1
+              });
             }
           }
           
@@ -611,7 +658,12 @@ function extractSquareFootage() {
               const sqft = parseInt(num.replace(/,/g, ''));
               if (sqft > 100 && sqft < 50000) {
                 console.log('[StarterPack] Found potential square footage in table:', sqft, 'from row:', text);
-                return sqft;
+                sqftValues.push({
+                  value: sqft,
+                  source: 'table',
+                  text: text,
+                  priority: 3
+                });
               }
             }
           }
@@ -619,48 +671,90 @@ function extractSquareFootage() {
       }
     }
     
-    // Last resort: look for any text with sq ft pattern in full page
-    const allText = document.body.innerText;
-    console.log('[StarterPack] Searching full page text for square footage patterns...');
-    
-    // PRIORITY 1: Look for range patterns in full page text
-    const pageRangePatterns = [
-      /(\d{1,3}(?:,\d{3})*)\s*-\s*(\d{1,3}(?:,\d{3})*)\s*(?:sq\.?\s*ft\.?|square\s*feet|sqft|sf)(?!\s*lot)/i,
-      /living\s*area[:\s]*(\d{1,3}(?:,\d{3})*)\s*-\s*(\d{1,3}(?:,\d{3})*)/i,
-      /floor\s*area[:\s]*(\d{1,3}(?:,\d{3})*)\s*-\s*(\d{1,3}(?:,\d{3})*)/i
-    ];
-    
-    for (const pattern of pageRangePatterns) {
-      const matches = allText.match(pattern);
-      if (matches) {
-        const lowSqft = parseInt(matches[1].replace(/,/g, ''));
-        const highSqft = parseInt(matches[2].replace(/,/g, ''));
-        
-        if (lowSqft > 100 && lowSqft < 50000 && highSqft > 100 && highSqft < 50000 && highSqft > lowSqft) {
-          const midpointSqft = Math.round((lowSqft + highSqft) / 2);
-          console.log('[StarterPack] Found square footage RANGE via page text search:', `${lowSqft}-${highSqft}`, 'using midpoint:', midpointSqft, 'pattern:', pattern);
-          return midpointSqft;
+    // If we still haven't found any values from the initial scan, check the rest
+    if (sqftValues.length === 0) {
+      // Last resort: look for any text with sq ft pattern in full page
+      const allText = document.body.innerText;
+      console.log('[StarterPack] Searching full page text for square footage patterns...');
+      
+      // PRIORITY 1: Look for range patterns in full page text
+      const pageRangePatterns = [
+        /(\d{1,3}(?:,\d{3})*)\s*-\s*(\d{1,3}(?:,\d{3})*)\s*(?:sq\.?\s*ft\.?|square\s*feet|sqft|sf)(?!\s*lot)/i,
+        /living\s*area[:\s]*(\d{1,3}(?:,\d{3})*)\s*-\s*(\d{1,3}(?:,\d{3})*)/i,
+        /floor\s*area[:\s]*(\d{1,3}(?:,\d{3})*)\s*-\s*(\d{1,3}(?:,\d{3})*)/i
+      ];
+      
+      for (const pattern of pageRangePatterns) {
+        const matches = allText.match(pattern);
+        if (matches) {
+          const lowSqft = parseInt(matches[1].replace(/,/g, ''));
+          const highSqft = parseInt(matches[2].replace(/,/g, ''));
+          
+          if (lowSqft > 100 && lowSqft < 50000 && highSqft > 100 && highSqft < 50000 && highSqft > lowSqft) {
+            const midpointSqft = Math.round((lowSqft + highSqft) / 2);
+            console.log('[StarterPack] Found square footage RANGE via page text search:', `${lowSqft}-${highSqft}`, 'using midpoint:', midpointSqft, 'pattern:', pattern);
+            sqftValues.push({
+              value: midpointSqft,
+              source: 'page-range',
+              text: matches[0],
+              priority: 1
+            });
+          }
+        }
+      }
+      
+      // PRIORITY 2: Try single number patterns in full page text
+      const pageSinglePatterns = [
+        /(\d{1,3}(?:,\d{3})*)\s*(?:sq\.?\s*ft\.?|square\s*feet|sqft|sf)(?!\s*lot)/i,
+        /living\s*area[:\s]*(\d{1,3}(?:,\d{3})*)/i,
+        /floor\s*area[:\s]*(\d{1,3}(?:,\d{3})*)/i,
+        /(\d{3,5})\s*sf(?:\s|$)/i
+      ];
+      
+      for (const pattern of pageSinglePatterns) {
+        const matches = allText.match(pattern);
+        if (matches) {
+          const sqft = parseInt(matches[1].replace(/,/g, ''));
+          if (sqft > 100 && sqft < 50000) {
+            console.log('[StarterPack] Found square footage via page text search:', sqft, 'pattern:', pattern);
+            sqftValues.push({
+              value: sqft,
+              source: 'page-single',
+              text: matches[0],
+              priority: 4
+            });
+          }
         }
       }
     }
     
-    // PRIORITY 2: Try single number patterns in full page text
-    const pageSinglePatterns = [
-      /(\d{1,3}(?:,\d{3})*)\s*(?:sq\.?\s*ft\.?|square\s*feet|sqft|sf)(?!\s*lot)/i,
-      /living\s*area[:\s]*(\d{1,3}(?:,\d{3})*)/i,
-      /floor\s*area[:\s]*(\d{1,3}(?:,\d{3})*)/i,
-      /(\d{3,5})\s*sf(?:\s|$)/i
-    ];
-    
-    for (const pattern of pageSinglePatterns) {
-      const matches = allText.match(pattern);
-      if (matches) {
-        const sqft = parseInt(matches[1].replace(/,/g, ''));
-        if (sqft > 100 && sqft < 50000) {
-          console.log('[StarterPack] Found square footage via page text search:', sqft, 'pattern:', pattern);
-          return sqft;
-        }
+    // Final selection from all collected values
+    if (sqftValues.length > 0) {
+      // Sort by priority (ranges first) and then by value (larger values first)
+      sqftValues.sort((a, b) => {
+        if (a.priority !== b.priority) return a.priority - b.priority;
+        return b.value - a.value; // Larger values first
+      });
+      
+      console.log('[StarterPack] Final square footage selection from all values:', sqftValues);
+      
+      // If we have range values, prefer them
+      const rangeValues = sqftValues.filter(v => v.source === 'range' || v.source === 'page-range');
+      if (rangeValues.length > 0) {
+        console.log('[StarterPack] Using range value:', rangeValues[0].value);
+        return rangeValues[0].value;
       }
+      
+      // Otherwise, return the largest reasonable value
+      const reasonableValues = sqftValues.filter(v => v.value >= 400); // Filter out suspiciously small values
+      if (reasonableValues.length > 0) {
+        console.log('[StarterPack] Using largest reasonable value:', reasonableValues[0].value);
+        return reasonableValues[0].value;
+      }
+      
+      // Last resort: return the largest value found
+      console.log('[StarterPack] Using largest value found:', sqftValues[0].value);
+      return sqftValues[0].value;
     }
     
     console.log('[StarterPack] Could not extract square footage from any source');
