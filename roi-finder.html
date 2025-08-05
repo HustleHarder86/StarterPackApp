@@ -1328,7 +1328,17 @@
                         headers['Authorization'] = 'Bearer e2e-test-token';
                         headers['X-E2E-Test-Mode'] = 'true';
                     } else {
-                        headers['Authorization'] = `Bearer ${await window.appState.currentUser.getIdToken()}`;
+                        // Check if user is authenticated
+                        if (window.appState.currentUser) {
+                            try {
+                                headers['Authorization'] = `Bearer ${await window.appState.currentUser.getIdToken()}`;
+                            } catch (authError) {
+                                console.warn('Failed to get auth token:', authError);
+                                // Continue without auth - backend supports optional auth
+                            }
+                        } else {
+                            console.log('No authenticated user, proceeding without auth');
+                        }
                     }
                     
                     // Set timeout from configuration
@@ -1337,19 +1347,27 @@
                         window.appState.currentAnalysisController.abort();
                     }, analysisTimeout);
                     
+                    // Debug logging
+                    console.log('Sending analysis request:', {
+                        url: apiUrl,
+                        propertyAddress: propertyData.address || propertyData.propertyAddress,
+                        hasAuth: !!headers.Authorization,
+                        analysisType: analysisType
+                    });
+                    
                     const response = await fetch(apiUrl, {
                         method: 'POST',
                         headers: headers,
                         body: JSON.stringify({
-                            propertyAddress: propertyData.address, // Required by API
+                            propertyAddress: propertyData.address || propertyData.propertyAddress || '', // Required by API
                             propertyData: propertyData,
-                            requestType: isTestMode ? 'e2e-test' : 'authenticated',
+                            requestType: isTestMode ? 'e2e-test' : (window.appState.currentUser ? 'authenticated' : 'anonymous'),
                             analysisType: analysisType,
                             includeStrAnalysis: analysisType === 'both' || analysisType === 'str',
                             isE2ETest: isTestMode,
-                            userId: isTestMode ? 'test-user-id' : window.appState.currentUser?.uid,
-                            userEmail: isTestMode ? 'test@e2e.com' : window.appState.currentUser?.email,
-                            userName: isTestMode ? 'Test User' : window.appState.currentUser?.displayName
+                            userId: isTestMode ? 'test-user-id' : window.appState.currentUser?.uid || null,
+                            userEmail: isTestMode ? 'test@e2e.com' : window.appState.currentUser?.email || null,
+                            userName: isTestMode ? 'Test User' : window.appState.currentUser?.displayName || null
                         }),
                         signal: window.appState.currentAnalysisController.signal
                     });
@@ -1358,7 +1376,13 @@
                     clearTimeout(timeoutId);
                     
                     if (!response.ok) {
-                        throw new Error(`Analysis failed: ${response.statusText}`);
+                        const errorData = await response.json().catch(() => ({}));
+                        console.error('Analysis API error:', {
+                            status: response.status,
+                            statusText: response.statusText,
+                            error: errorData
+                        });
+                        throw new Error(`Analysis failed: ${errorData.message || response.statusText}`);
                     }
                     
                     const result = await response.json();

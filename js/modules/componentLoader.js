@@ -494,13 +494,15 @@ class ComponentLoader {
                     }) : ''}
                     
                     <!-- Integrated Enhanced Financial Calculator -->
-                    ${financialModule.EnhancedFinancialCalculator ? 
-                      financialModule.EnhancedFinancialCalculator({ 
-                        analysisData: {
-                          ...analysisData,
-                          analysisType: 'str' // Force STR context
-                        }
-                      }) : ''}
+                    <div id="financial-calculator-str">
+                      ${financialModule.EnhancedFinancialCalculator ? 
+                        financialModule.EnhancedFinancialCalculator({ 
+                          analysisData: {
+                            ...analysisData,
+                            analysisType: 'str' // Force STR context
+                          }
+                        }) : ''}
+                    </div>
                     
                     <!-- Airbnb Listings -->
                     ${airbnbHtml}
