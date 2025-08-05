@@ -101,10 +101,10 @@ router.post('/property', optionalAuth, async (req, res, next) => {
           // Check if user has access to STR analysis
           if (req.userId) {
             const userDoc = await db.collection('users').doc(req.userId).get();
-            const userData = userDoc.data();
+            const userData = userDoc.exists ? userDoc.data() : null;
             
             // Admin users have unlimited access
-            const isAdmin = userData.role === 'admin' || userData.isAdmin === true;
+            const isAdmin = userData && (userData.role === 'admin' || userData.isAdmin === true);
             
             const canUseSTR = isAdmin ||
                               userData.subscriptionTier === 'pro' || 
@@ -407,12 +407,12 @@ router.post('/property', optionalAuth, async (req, res, next) => {
               // Update user's trial count if free tier (skip for admin)
               if (req.userId) {
                 const userDoc = await db.collection('users').doc(req.userId).get();
-                const userData = userDoc.data();
+                const userData = userDoc.exists ? userDoc.data() : null;
                 
                 // Admin users have unlimited access
-                const isAdmin = userData.role === 'admin' || userData.isAdmin === true;
+                const isAdmin = userData && (userData.role === 'admin' || userData.isAdmin === true);
                 
-                if (userData.subscriptionTier === 'free' && !isAdmin) {
+                if (userData && userData.subscriptionTier === 'free' && !isAdmin) {
                   await db.collection('users').doc(req.userId).update({
                     strTrialUsed: admin.firestore.FieldValue.increment(1),
                     lastStrAnalysis: admin.firestore.FieldValue.serverTimestamp()
