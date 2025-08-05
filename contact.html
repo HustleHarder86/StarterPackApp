@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Contact Us - InvestorProps</title>
   <link rel="stylesheet" href="styles.css" />
+  <script src="js/navigation.js"></script>
 </head>
 <body>
   <nav class="nav-bar">
@@ -17,7 +18,30 @@
       <li><a href="contact.html" class="nav-link">Contact</a></li>
       <li><a href="roi-finder.html" class="nav-link btn-primary">Launch ROI Finder</a></li>
     </ul>
+    <button class="hamburger-menu" id="hamburger-menu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
   </nav>
+
+  <!-- Mobile Menu -->
+  <div class="mobile-menu" id="mobile-menu">
+    <div class="mobile-menu-content">
+      <div class="mobile-menu-header">
+        <div class="nav-logo">InvestorProps</div>
+        <button class="mobile-menu-close" id="mobile-menu-close">✕</button>
+      </div>
+      <ul class="mobile-nav-links">
+        <li><a href="index.html" class="nav-link">Home</a></li>
+        <li><a href="blog.html" class="nav-link">Blog</a></li>
+        <li><a href="index.html#features" class="nav-link">Features</a></li>
+        <li><a href="index.html#pricing" class="nav-link">Pricing</a></li>
+        <li><a href="contact.html" class="nav-link">Contact</a></li>
+        <li><a href="roi-finder.html" class="nav-link btn-primary">Launch ROI Finder</a></li>
+      </ul>
+    </div>
+  </div>
 
   <!-- Contact Hero Section -->
   <section class="hero-section">
@@ -79,10 +103,73 @@
   </section>
 
   <footer class="footer">
-    &copy; 2025 InvestorProps. All rights reserved.
+    &copy; 2025 InvestorProps. All rights reserved. | 
+    <a href="privacy-policy.html" style="color: #9ca3af;">Privacy Policy</a> | 
+    <a href="terms-of-service.html" style="color: #9ca3af;">Terms of Service</a>
   </footer>
 
   <script>
+    // Form validation functions
+    function validateEmail(email) {
+      const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return re.test(email);
+    }
+
+    function validateName(name) {
+      return name.trim().length >= 2;
+    }
+
+    function validateMessage(message) {
+      return message.trim().length >= 10;
+    }
+
+    function showError(input, message) {
+      const formGroup = input.parentElement;
+      let errorDiv = formGroup.querySelector('.error-message');
+      if (!errorDiv) {
+        errorDiv = document.createElement('div');
+        errorDiv.className = 'error-message';
+        errorDiv.style.cssText = 'color: #ef4444; font-size: 0.875rem; margin-top: 0.25rem;';
+        formGroup.appendChild(errorDiv);
+      }
+      errorDiv.textContent = message;
+      input.style.borderColor = '#ef4444';
+    }
+
+    function clearError(input) {
+      const formGroup = input.parentElement;
+      const errorDiv = formGroup.querySelector('.error-message');
+      if (errorDiv) {
+        errorDiv.remove();
+      }
+      input.style.borderColor = '';
+    }
+
+    // Real-time validation
+    document.getElementById('name').addEventListener('blur', function() {
+      if (!validateName(this.value)) {
+        showError(this, 'Name must be at least 2 characters long');
+      } else {
+        clearError(this);
+      }
+    });
+
+    document.getElementById('email').addEventListener('blur', function() {
+      if (!validateEmail(this.value)) {
+        showError(this, 'Please enter a valid email address');
+      } else {
+        clearError(this);
+      }
+    });
+
+    document.getElementById('message').addEventListener('blur', function() {
+      if (!validateMessage(this.value)) {
+        showError(this, 'Message must be at least 10 characters long');
+      } else {
+        clearError(this);
+      }
+    });
+
     // Contact form functionality
     document.getElementById('contact-form').addEventListener('submit', async function(e) {
       e.preventDefault();
@@ -91,14 +178,36 @@
       const btnText = submitBtn.querySelector('.btn-text');
       const originalText = btnText.textContent;
       
+      const name = this.name.value;
+      const email = this.email.value;
+      const message = this.message.value;
+      
+      // Validate all fields
+      let isValid = true;
+      
+      if (!validateName(name)) {
+        showError(this.name, 'Name must be at least 2 characters long');
+        isValid = false;
+      }
+      
+      if (!validateEmail(email)) {
+        showError(this.email, 'Please enter a valid email address');
+        isValid = false;
+      }
+      
+      if (!validateMessage(message)) {
+        showError(this.message, 'Message must be at least 10 characters long');
+        isValid = false;
+      }
+      
+      if (!isValid) {
+        return;
+      }
+      
       // Show loading state
       btnText.textContent = 'Sending...';
       submitBtn.style.opacity = '0.7';
       submitBtn.disabled = true;
-      
-      const name = this.name.value;
-      const email = this.email.value;
-      const message = this.message.value;
       
       try {
         const response = await fetch('/api/submit-contact', {

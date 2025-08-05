@@ -18,6 +18,7 @@
   
   <link rel="stylesheet" href="styles.css" />
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="js/navigation.js"></script>
   
   <style>
     /* Blog-specific styles */
@@ -94,12 +95,35 @@
     <ul class="nav-links">
       <li><a href="index.html" class="nav-link">Home</a></li>
       <li><a href="blog.html" class="nav-link active">Blog</a></li>
-      <li><a href="#features" class="nav-link">Features</a></li>
-      <li><a href="#pricing" class="nav-link">Pricing</a></li>
+      <li><a href="index.html#features" class="nav-link">Features</a></li>
+      <li><a href="index.html#pricing" class="nav-link">Pricing</a></li>
       <li><a href="contact.html" class="nav-link">Contact</a></li>
       <li><a href="roi-finder.html" class="nav-link btn-primary">Launch ROI Finder</a></li>
     </ul>
+    <button class="hamburger-menu" id="hamburger-menu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
   </nav>
+
+  <!-- Mobile Menu -->
+  <div class="mobile-menu" id="mobile-menu">
+    <div class="mobile-menu-content">
+      <div class="mobile-menu-header">
+        <div class="nav-logo">InvestorProps</div>
+        <button class="mobile-menu-close" id="mobile-menu-close">✕</button>
+      </div>
+      <ul class="mobile-nav-links">
+        <li><a href="index.html" class="nav-link">Home</a></li>
+        <li><a href="blog.html" class="nav-link">Blog</a></li>
+        <li><a href="index.html#features" class="nav-link">Features</a></li>
+        <li><a href="index.html#pricing" class="nav-link">Pricing</a></li>
+        <li><a href="contact.html" class="nav-link">Contact</a></li>
+        <li><a href="roi-finder.html" class="nav-link btn-primary">Launch ROI Finder</a></li>
+      </ul>
+    </div>
+  </div>
 
   <!-- Hero Section -->
   <section class="relative bg-gradient-to-br from-gray-50 to-blue-50 py-20">
@@ -320,7 +344,10 @@
         </div>
       </div>
       <div class="mt-8 pt-8 border-t border-gray-800 text-center text-gray-400">
-        <p>&copy; 2024 InvestorProps. All rights reserved.</p>
+        <p>&copy; 2024 InvestorProps. All rights reserved. | 
+          <a href="/privacy-policy.html" class="hover:text-white">Privacy Policy</a> | 
+          <a href="/terms-of-service.html" class="hover:text-white">Terms of Service</a>
+        </p>
       </div>
     </div>
   </footer>
@@ -379,7 +406,10 @@
           const notice = document.createElement('div');
           notice.className = 'bg-blue-50 border border-blue-200 rounded-lg p-4 mb-8 text-center';
           notice.innerHTML = '<p class="text-blue-800">Showing sample blog posts. Live content will be available soon.</p>';
-          document.getElementById('blog-grid').parentElement.insertBefore(notice, document.getElementById('blog-grid'));
+          const blogPosts = document.getElementById('blog-posts');
+          if (blogPosts && blogPosts.parentElement) {
+            blogPosts.parentElement.insertBefore(notice, blogPosts);
+          }
         }
       }
     }

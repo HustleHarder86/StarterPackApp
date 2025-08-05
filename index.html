@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>InvestorProps - Real Estate SaaS</title>
   <link rel="stylesheet" href="styles.css" />
+  <script src="js/navigation.js"></script>
 </head>
 <body>
   <nav class="nav-bar">
@@ -17,7 +18,30 @@
       <li><a href="contact.html" class="nav-link">Contact</a></li>
       <li><a href="roi-finder.html" class="nav-link btn-primary">Launch ROI Finder</a></li>
     </ul>
+    <button class="hamburger-menu" id="hamburger-menu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
   </nav>
+
+  <!-- Mobile Menu -->
+  <div class="mobile-menu" id="mobile-menu">
+    <div class="mobile-menu-content">
+      <div class="mobile-menu-header">
+        <div class="nav-logo">InvestorProps</div>
+        <button class="mobile-menu-close" id="mobile-menu-close">✕</button>
+      </div>
+      <ul class="mobile-nav-links">
+        <li><a href="index.html" class="nav-link">Home</a></li>
+        <li><a href="blog.html" class="nav-link">Blog</a></li>
+        <li><a href="#features" class="nav-link">Features</a></li>
+        <li><a href="#pricing" class="nav-link">Pricing</a></li>
+        <li><a href="contact.html" class="nav-link">Contact</a></li>
+        <li><a href="roi-finder.html" class="nav-link btn-primary">Launch ROI Finder</a></li>
+      </ul>
+    </div>
+  </div>
 
   <section class="hero-section">
     <div class="hero-content">
@@ -112,7 +136,7 @@
           <li>Basic property filters</li>
           <li>Email support</li>
         </ul>
-        <a href="#" class="btn-secondary">Get Started</a>
+        <a href="roi-finder.html?plan=starter" class="btn-secondary">Get Started</a>
       </div>
       <div class="pricing-card highlight-card hover-lift">
         <div class="popular-badge">Most Popular</div>
@@ -124,7 +148,7 @@
           <li>Priority support</li>
           <li>Custom branding</li>
         </ul>
-        <a href="#" class="btn-primary">Get Started</a>
+        <a href="roi-finder.html?plan=pro" class="btn-primary">Get Started</a>
       </div>
       <div class="pricing-card hover-lift">
         <h3>Enterprise</h3>
@@ -191,7 +215,9 @@
   </section>
 
   <footer class="footer">
-    &copy; 2025 InvestorProps. All rights reserved.
+    &copy; 2025 InvestorProps. All rights reserved. | 
+    <a href="privacy-policy.html" style="color: #9ca3af;">Privacy Policy</a> | 
+    <a href="terms-of-service.html" style="color: #9ca3af;">Terms of Service</a>
   </footer>
 
   <script>
