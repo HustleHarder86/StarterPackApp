@@ -1005,7 +1005,14 @@
                 if (propertyData.address.city) addressParts.push(propertyData.address.city);
                 if (propertyData.address.province) addressParts.push(propertyData.address.province);
                 if (propertyData.address.postalCode) addressParts.push(propertyData.address.postalCode);
-                propertyData.address = addressParts.join(', ');
+                
+                // Store the full address string but keep the original object
+                const fullAddress = addressParts.join(', ');
+                if (fullAddress) {
+                    propertyData.address = fullAddress;
+                } else {
+                    propertyData.address = null;
+                }
                 
                 // Show property confirmation screen instead of auto-analyzing
                 this.showPropertyConfirmation(propertyData);
