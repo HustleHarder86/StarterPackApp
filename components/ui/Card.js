@@ -51,25 +51,32 @@ export const ComparableCard = ({ comparable, variant = 'default' }) => {
                       comparable.performance === 'match' ? 'info' : 
                       comparable.performance === 'value' ? 'warning' : 'secondary';
   
+  // Handle both snake_case and camelCase field names
+  const nightlyRate = comparable.nightly_rate || comparable.nightlyRate || comparable.price || 0;
+  const monthlyRevenue = comparable.monthly_revenue || comparable.monthlyRevenue || 0;
+  const occupancyRate = comparable.occupancy_rate || comparable.occupancyRate || 70;
+  const imageUrl = comparable.image || comparable.imageUrl || comparable.image_url || comparable.thumbnail;
+  const propertyType = comparable.propertyType || comparable.property_type || 'Property';
+  
   return `
     <div class="card card-interactive border border-gray-200 overflow-hidden">
-      ${comparable.image ? `<img src="${comparable.image}" alt="Comparable Property" class="w-full h-32 object-cover">` : ''}
+      ${imageUrl ? `<img src="${imageUrl}" alt="Comparable Property" class="w-full h-32 object-cover">` : ''}
       <div class="p-lg">
         <div class="flex items-start justify-between mb-md">
           <div>
-            <div class="text-lg font-bold text-gray-900">$${comparable.nightly_rate}/night</div>
-            <div class="text-sm text-gray-600">${comparable.bedrooms}BR • ${comparable.area} • ${comparable.rating}★</div>
+            <div class="text-lg font-bold text-gray-900">$${nightlyRate}/night</div>
+            <div class="text-sm text-gray-600">${comparable.bedrooms || 0}BR • ${comparable.area || propertyType} • ${comparable.rating || 0}★</div>
           </div>
           ${comparable.performance ? `<span class="badge badge-${badgeVariant}">${comparable.performance.toUpperCase()}</span>` : ''}
         </div>
         <div class="space-y-xs">
           <div class="flex items-center justify-between">
             <span class="text-sm text-gray-600">Monthly Revenue:</span>
-            <span class="font-bold text-revenue">$${comparable.monthly_revenue?.toLocaleString()}</span>
+            <span class="font-bold text-revenue">$${monthlyRevenue.toLocaleString()}</span>
           </div>
           <div class="flex items-center justify-between">
             <span class="text-sm text-gray-600">Occupancy:</span>
-            <span class="font-medium text-gray-900">${comparable.occupancy_rate}%</span>
+            <span class="font-medium text-gray-900">${Math.round(occupancyRate * (occupancyRate > 1 ? 1 : 100))}%</span>
           </div>
         </div>
       </div>

@@ -18,9 +18,9 @@ export const AirbnbListings = ({
   }
 
   const topComparables = comparables.slice(0, 6);
-  const averageRate = marketData.averageRate || Math.round(comparables.reduce((sum, comp) => sum + comp.nightly_rate, 0) / comparables.length);
-  const averageOccupancy = marketData.averageOccupancy || Math.round(comparables.reduce((sum, comp) => sum + comp.occupancy_rate, 0) / comparables.length);
-  const averageRevenue = marketData.averageRevenue || Math.round(comparables.reduce((sum, comp) => sum + comp.monthly_revenue, 0) / comparables.length);
+  const averageRate = marketData.averageRate || Math.round(comparables.reduce((sum, comp) => sum + (comp.nightly_rate || comp.nightlyRate || comp.price || 0), 0) / comparables.length);
+  const averageOccupancy = marketData.averageOccupancy || Math.round(comparables.reduce((sum, comp) => sum + (comp.occupancy_rate || comp.occupancyRate || 0.70) * 100, 0) / comparables.length);
+  const averageRevenue = marketData.averageRevenue || Math.round(comparables.reduce((sum, comp) => sum + (comp.monthly_revenue || comp.monthlyRevenue || 0), 0) / comparables.length);
 
   return Card({
     children: `
@@ -219,18 +219,21 @@ const generateMarketInsights = (comparables, marketData) => {
 };
 
 export const AirbnbHeroSection = ({ analysis }) => {
-  if (!analysis?.strAnalysis?.comparables) {
+  // Check for both naming conventions
+  const strData = analysis?.strAnalysis || analysis?.short_term_rental;
+  
+  if (!strData?.comparables) {
     return AirbnbListingsEmpty();
   }
 
   return AirbnbListings({
-    comparables: analysis.strAnalysis.comparables,
+    comparables: strData.comparables,
     marketData: {
-      averageRate: analysis.strAnalysis.avgNightlyRate,
-      averageOccupancy: analysis.strAnalysis.occupancyRate,
-      averageRevenue: analysis.strAnalysis.monthlyRevenue
+      averageRate: strData.avgNightlyRate || strData.avg_nightly_rate || strData.daily_rate,
+      averageOccupancy: strData.occupancyRate || strData.occupancy_rate,
+      averageRevenue: strData.monthlyRevenue || strData.monthly_revenue
     },
-    lastUpdated: analysis.createdAt ? formatTimeAgo(analysis.createdAt) : 'just now'
+    lastUpdated: analysis.createdAt || analysis.created_at ? formatTimeAgo(analysis.createdAt || analysis.created_at) : 'just now'
   });
 };
 

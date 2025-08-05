@@ -126,6 +126,15 @@ class ComponentLoader {
       
       // Always generate content for tabs, but show appropriate messages if data is missing
       const strData = analysisData.strAnalysis || analysisData.short_term_rental || null;
+      
+      // Debug logging to see what data we have
+      console.log('[ComponentLoader] STR Data Debug:', {
+        hasStrData: !!strData,
+        strDataKeys: strData ? Object.keys(strData) : [],
+        comparablesLength: strData?.comparables?.length || 0,
+        comparables: strData?.comparables?.slice(0, 3) || 'No comparables'
+      });
+      
       const airbnbHtml = strData ? airbnbModule.AirbnbListings({ 
         comparables: strData.comparables || [],
         marketData: strData
@@ -457,6 +466,30 @@ class ComponentLoader {
                   <!-- STR Content -->
                   <div id="str-content" class="tab-content">
                     ${propertyHeaderHtml}
+                    
+                    <!-- STR Cash Flow Card -->
+                    ${strData && window.STRCashFlowCard ? window.STRCashFlowCard({
+                      monthlyRevenue: strData.monthly_revenue || strData.monthlyRevenue || 0,
+                      totalExpenses: ((strData.expenses?.monthly?.total || 0) + (analysisData.monthlyExpenses?.mortgage || 0)) || 2000,
+                      mortgagePayment: analysisData.monthlyExpenses?.mortgage || 0,
+                      operatingExpenses: strData.expenses?.monthly?.total || 0
+                    }) : ''}
+                    
+                    <!-- Revenue Comparison Chart -->
+                    ${strData && window.RevenueComparisonChart ? window.RevenueComparisonChart({
+                      strRevenue: strData.monthly_revenue || strData.monthlyRevenue || 0,
+                      ltrRevenue: ltrAnalysis.monthly_rent || ltrAnalysis.monthlyRent || 0,
+                      averageStrRevenue: strData.market_average_revenue || null
+                    }) : ''}
+                    
+                    <!-- Interactive STR Calculator -->
+                    ${strData && window.STRRevenueCalculator ? window.STRRevenueCalculator({
+                      defaultNightlyRate: strData.avg_nightly_rate || strData.avgNightlyRate || 150,
+                      defaultOccupancy: (strData.occupancy_rate || strData.occupancyRate || 0.75) * 100,
+                      comparables: strData.comparables || []
+                    }) : ''}
+                    
+                    <!-- Airbnb Listings -->
                     ${airbnbHtml}
                   </div>
                   
