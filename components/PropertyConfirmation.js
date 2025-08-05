@@ -1,10 +1,7 @@
 // Property Confirmation Component (Plain JavaScript)
 // Shows property details and asks for user confirmation before analysis
 
-(function() {
-    'use strict';
-    
-    window.PropertyConfirmation = function(propertyData, onConfirm, onCancel) {
+export function PropertyConfirmation(propertyData, onConfirm, onCancel) {
     // Format currency
     const formatCurrency = (amount) => {
         if (!amount) return 'N/A';
@@ -285,5 +282,4 @@
             document.getElementById('property-confirm-cancel').addEventListener('click', onCancel);
         }
     };
-    };
-})();
+}

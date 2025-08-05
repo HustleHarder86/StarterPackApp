@@ -16,24 +16,10 @@
   <!-- Load Component -->
   <script type="text/babel" src="/components/ClientPresentationView.jsx"></script>
   
+  <!-- Print styles -->
+  <link rel="stylesheet" href="styles/print.css">
+  
   <style>
-    /* Clean print styles */
-    @media print {
-      @page {
-        size: letter;
-        margin: 0.5in;
-      }
-      
-      .no-print {
-        display: none !important;
-      }
-      
-      body {
-        print-color-adjust: exact;
-        -webkit-print-color-adjust: exact;
-      }
-    }
-    
     /* Loading animation */
     .loading-spinner {
       border: 3px solid #f3f4f6;

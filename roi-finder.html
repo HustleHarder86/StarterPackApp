@@ -951,7 +951,21 @@
             handleExtensionData() {
                 const urlParams = new URLSearchParams(window.location.search);
                 
-                // Build property data from URL parameters
+                // Check if property data is sent as JSON
+                const propertyDataParam = urlParams.get('property_data');
+                if (propertyDataParam) {
+                    try {
+                        const propertyData = JSON.parse(decodeURIComponent(propertyDataParam));
+                        console.log('Extension property data:', propertyData);
+                        // Show property confirmation screen
+                        this.showPropertyConfirmation(propertyData);
+                        return;
+                    } catch (e) {
+                        console.error('Failed to parse property_data:', e);
+                    }
+                }
+                
+                // Fallback to individual parameters
                 const propertyData = {
                     address: {},
                     price: null,

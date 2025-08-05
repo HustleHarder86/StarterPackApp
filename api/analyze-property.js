@@ -1,10 +1,10 @@
 // api/analyze-property.js
 // Proxy to Railway API for heavy property analysis processing
 
-const { applyCorsHeaders } = require('../utils/cors-config.js');
-const crypto = require('crypto');
+import { applyCorsHeaders } from '../utils/cors-config.js';
+import crypto from 'crypto';
 
-module.exports = async function handler(req, res) {
+export default async function handler(req, res) {
   // Apply proper CORS headers
   applyCorsHeaders(req, res);
 

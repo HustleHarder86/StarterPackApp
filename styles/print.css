@@ -1,0 +1,16 @@
+/* Clean print styles */
+@media print {
+  @page {
+    size: letter;
+    margin: 0.5in;
+  }
+  
+  .no-print {
+    display: none !important;
+  }
+  
+  body {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+}

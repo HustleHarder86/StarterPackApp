@@ -21,6 +21,8 @@ const config = {
     'styles/mobile-fixes.css',
     '/styles.css',
     'styles.css',
+    '/styles/print.css',
+    'styles/print.css',
     'https://cdn.tailwindcss.com', // Tailwind CDN is allowed as base utility
     'https://cdn.jsdelivr.net/npm/tailwindcss', // Versioned Tailwind CDN
     'https://fonts.googleapis.com', // Google Fonts allowed
@@ -48,7 +50,8 @@ const config = {
     '!dist/**',
     '!build/**',
     '!mocks/**', // Exclude mocks directory
-    '!mockups/**' // Exclude mockups directory
+    '!mockups/**', // Exclude mockups directory
+    '!playwright-report/**' // Exclude playwright reports
   ],
   
   // Patterns that indicate CSS imports
