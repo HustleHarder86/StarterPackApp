@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Sidebar Navigation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+    <div id="analysis-results" class="p-6">
+        <!-- Container will be filled by componentLoader -->
+    </div>
+    
+    <script>
+        // Mock data for testing
+        const mockAnalysisData = {
+            propertyData: {
+                address: '123 Test St, Toronto, ON',
+                bedrooms: 3,
+                bathrooms: 2,
+                price: 850000,
+                squareFeet: 1800
+            },
+            strAnalysis: {
+                monthlyRevenue: 6500,
+                avgNightlyRate: 220,
+                occupancyRate: 0.75,
+                comparables: []
+            },
+            longTermRental: {
+                monthlyRent: 3100
+            },
+            cashFlow: {
+                monthly: 1500
+            }
+        };
+        
+        // Set analysis data globally
+        window.analysisData = mockAnalysisData;
+    </script>
+    
+    <!-- Load component loader module -->
+    <script type="module">
+        import { displayAnalysisResults } from '../js/modules/componentLoader.js';
+        
+        // Render the analysis results with sidebar
+        const container = document.getElementById('analysis-results');
+        displayAnalysisResults(mockAnalysisData, container);
+        
+        // Test sidebar navigation after a delay
+        setTimeout(() => {
+            console.log('Testing sidebar navigation...');
+            
+            // Check if sidebar elements exist
+            const strNav = document.getElementById('str-nav');
+            const ltrNav = document.getElementById('ltr-nav');
+            const investmentNav = document.getElementById('investment-nav');
+            
+            console.log('Sidebar elements found:', {
+                strNav: !!strNav,
+                ltrNav: !!ltrNav,
+                investmentNav: !!investmentNav
+            });
+            
+            // Check if switchSection function exists
+            console.log('switchSection function exists:', typeof window.switchSection === 'function');
+            console.log('switchTab function exists:', typeof window.switchTab === 'function');
+            
+            // Test clicking LTR navigation
+            if (ltrNav && window.switchSection) {
+                console.log('Switching to LTR section...');
+                window.switchSection('ltr');
+                
+                setTimeout(() => {
+                    const ltrContent = document.getElementById('ltr-content');
+                    const strContent = document.getElementById('str-content');
+                    console.log('After switching to LTR:', {
+                        ltrVisible: ltrContent && !ltrContent.classList.contains('hidden'),
+                        strHidden: strContent && strContent.classList.contains('hidden')
+                    });
+                }, 100);
+            }
+        }, 1000);
+    </script>
+</body>
+</html>

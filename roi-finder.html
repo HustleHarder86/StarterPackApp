@@ -792,6 +792,13 @@
                     return;
                 }
                 
+                // Check if auth is available
+                if (!auth) {
+                    console.log('Firebase auth not available, proceeding without authentication');
+                    this.showPropertyInput();
+                    return;
+                }
+                
                 // Normal authentication flow
                 auth.onAuthStateChanged(async (user) => {
                     if (user) {
@@ -813,7 +820,9 @@
                             // Store the current URL to redirect back after login
                             sessionStorage.setItem('redirectAfterLogin', window.location.href);
                         }
-                        this.showLoginForm();
+                        // Allow access without authentication - show property input instead of login
+                        console.log('No authenticated user, proceeding without auth');
+                        this.showPropertyInput();
                     }
                 });
             }
@@ -1900,11 +1909,16 @@
 
         // Initialize the application
         document.addEventListener('DOMContentLoaded', async () => {
-            // Initialize Firebase first
-            await initializeFirebase();
+            try {
+                // Try to initialize Firebase
+                await initializeFirebase();
+            } catch (error) {
+                console.warn('Firebase initialization failed, continuing without auth:', error);
+            }
             
-            // Then start the app
-            new ROIFinderApp();
+            // Start the app regardless of Firebase status
+            console.log('Starting ROI Finder App...');
+            window.roiFinderApp = new ROIFinderApp();
         });
         
     </script>

@@ -74,6 +74,7 @@ class ComponentLoader {
     // Store analysis data for later access
     this.lastAnalysisData = analysisData;
     window.analysisData = analysisData; // Make it globally accessible
+    window.strCalculatorScript = null; // Will be set after loading components
     console.log('Stored analysis data:', analysisData);
 
     // Show loading state first
@@ -92,6 +93,7 @@ class ComponentLoader {
       const [
         verdictModule,
         airbnbModule,
+        airbnbHeroModule,
         ltrModule,
         financialModule,
         shareModule,
@@ -103,6 +105,7 @@ class ComponentLoader {
       ] = await Promise.all([
         this.loadComponent('components/analysis/InvestmentVerdict.js'),
         this.loadComponent('components/analysis/AirbnbListings.js'),
+        this.loadComponent('components/analysis/AirbnbHeroSection.js'),
         this.loadComponent('components/analysis/LongTermRentalAnalysis.js'),
         this.loadComponent('components/analysis/EnhancedFinancialSummary.js'),
         this.loadComponent('components/ui/ShareModal.js'),
@@ -135,10 +138,18 @@ class ComponentLoader {
         comparables: strData?.comparables?.slice(0, 3) || 'No comparables'
       });
       
-      const airbnbHtml = strData ? airbnbModule.AirbnbListings({ 
-        comparables: strData.comparables || [],
-        marketData: strData
-      }) : '<div class="text-center text-gray-500 py-12"><p class="text-lg">Short-term rental analysis was not included in this report.</p><p class="mt-2">Re-run the analysis with STR option selected to see Airbnb comparables.</p></div>';
+      // Use the enhanced AirbnbHeroSection for STR analysis if available
+      const airbnbHtml = strData ? (airbnbHeroModule?.AirbnbHeroSection ? 
+        airbnbHeroModule.AirbnbHeroSection({ analysis: analysisData }) : 
+        airbnbModule.AirbnbListings({ 
+          comparables: strData.comparables || [],
+          marketData: strData
+        })) : '<div class="text-center text-gray-500 py-12"><p class="text-lg">Short-term rental analysis was not included in this report.</p><p class="mt-2">Re-run the analysis with STR option selected to see Airbnb comparables.</p></div>';
+      
+      // Store calculator script for later use
+      if (airbnbHeroModule?.strCalculatorScript) {
+        window.strCalculatorScript = airbnbHeroModule.strCalculatorScript;
+      }
       
       // Import chart modules dynamically
       let ltrChartsModule = null;
@@ -342,7 +353,7 @@ class ComponentLoader {
         </div>
       `;
 
-      // Render the complete analysis layout
+      // Render the complete analysis layout with sidebar
       const analysisLayout = `
         <div class="min-h-screen relative bg-transparent" style="overflow-x: hidden;">
           
@@ -387,83 +398,127 @@ class ComponentLoader {
             </div>
           </div>
           
+          <!-- Main Content with Sidebar Layout -->
           <div class="max-w-7xl mx-auto px-4 lg:px-6" style="overflow-x: hidden;">
-            <!-- Enhanced Rental Analysis Tabs as Main Header -->
-            <div class="mb-8">
-              <!-- Tab Navigation -->
-              <div class="glass-card backdrop-blur-lg bg-white/70 rounded-lg shadow-lg">
-                <div class="p-4 rounded-t-lg border-b border-gray-200">
-                  
-                  <!-- Enhanced Tab Buttons -->
-                  <div class="flex flex-wrap gap-2">
-                    <!-- STR Tab -->
-                    <button
-                      id="str-tab"
-                      onclick="window.switchTab('str')"
-                      class="tab-button ${showSTR ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg border-transparent transform scale-105' : 'glass backdrop-blur-sm bg-white/50 text-gray-600 hover:bg-white/70 hover:shadow-sm border-white/30'} 
-                      flex items-center gap-2 px-4 py-3 rounded-lg border-2 font-medium transition-all duration-200 group"
-                    >
-                      <span class="text-xl group-hover:scale-110 transition-transform">
-                        ${showSTR ? '🏠' : '🏡'}
-                      </span>
-                      <div class="text-left">
-                        <div class="font-semibold">Short-Term Rental</div>
-                        <div class="text-xs ${showSTR ? 'text-blue-100' : 'text-gray-500'}">
-                          Airbnb & VRBO Analysis
-                        </div>
-                      </div>
-                      ${showSTR ? '<span class="ml-2 text-white">✓</span>' : ''}
-                    </button>
+            <div class="flex flex-col lg:flex-row gap-6">
+              
+              <!-- Sidebar Navigation -->
+              <aside class="lg:w-72 flex-shrink-0">
+                <div class="sticky top-4">
+                  <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                    <div class="p-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white">
+                      <h3 class="font-bold text-lg">Analysis Options</h3>
+                      <p class="text-xs text-purple-100 mt-1">Select to view details</p>
+                    </div>
                     
-                    <!-- LTR Tab -->
-                    <button
-                      id="ltr-tab"
-                      onclick="window.switchTab('ltr')"
-                      class="tab-button ${showLTR && !showSTR ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg border-transparent transform scale-105' : 'glass backdrop-blur-sm bg-white/50 text-gray-600 hover:bg-white/70 hover:shadow-sm border-white/30'} 
-                      flex items-center gap-2 px-4 py-3 rounded-lg border-2 font-medium transition-all duration-200 group"
-                    >
-                      <span class="text-xl group-hover:scale-110 transition-transform">
-                        ${showLTR && !showSTR ? '🏘️' : '🏢'}
-                      </span>
-                      <div class="text-left">
-                        <div class="font-semibold">Long-Term Rental</div>
-                        <div class="text-xs ${showLTR && !showSTR ? 'text-blue-100' : 'text-gray-500'}">
-                          Traditional Rental Income
+                    <nav class="p-2">
+                      <!-- STR Navigation Item -->
+                      <button
+                        id="str-nav"
+                        onclick="window.switchSection('str')"
+                        class="sidebar-nav-item ${showSTR ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white border-transparent' : 'bg-white text-gray-700 border-gray-200 hover:border-purple-300'} 
+                        w-full flex items-start gap-3 px-4 py-3 rounded-lg border-2 transition-all duration-200 mb-2"
+                      >
+                        <div class="w-10 h-10 rounded-lg bg-gradient-to-br ${showSTR ? 'from-purple-500 to-purple-600' : 'from-gray-400 to-gray-500'} flex items-center justify-center text-white text-xl flex-shrink-0">
+                          🏠
                         </div>
-                      </div>
-                      ${showLTR && !showSTR ? '<span class="ml-2 text-white">✓</span>' : ''}
-                    </button>
+                        <div class="text-left flex-1">
+                          <div class="font-semibold">Short-Term Rental</div>
+                          <div class="text-xs opacity-75 mt-1">
+                            Airbnb & VRBO Analysis
+                          </div>
+                          ${showSTR && strData ? `
+                            <div class="mt-2 text-xs">
+                              <span class="font-medium text-green-600">\$${strData.monthlyRevenue || strData.monthly_revenue || 0}/mo</span>
+                            </div>
+                          ` : ''}
+                        </div>
+                        ${showSTR ? '<span class="text-purple-600">›</span>' : ''}
+                      </button>
+                      
+                      <!-- LTR Navigation Item -->
+                      <button
+                        id="ltr-nav"
+                        onclick="window.switchSection('ltr')"
+                        class="sidebar-nav-item ${!showSTR && showLTR ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white border-transparent' : 'bg-white text-gray-700 border-gray-200 hover:border-purple-300'} 
+                        w-full flex items-start gap-3 px-4 py-3 rounded-lg border-2 transition-all duration-200 mb-2"
+                      >
+                        <div class="w-10 h-10 rounded-lg bg-gradient-to-br ${!showSTR && showLTR ? 'from-purple-500 to-purple-600' : 'from-gray-400 to-gray-500'} flex items-center justify-center text-white text-xl flex-shrink-0">
+                          🏢
+                        </div>
+                        <div class="text-left flex-1">
+                          <div class="font-semibold">Long-Term Rental</div>
+                          <div class="text-xs opacity-75 mt-1">
+                            Traditional Rental Income
+                          </div>
+                          ${showLTR && ltrData ? `
+                            <div class="mt-2 text-xs">
+                              <span class="font-medium text-green-600">\$${ltrData.monthlyRent || ltrData.monthly_rent || 0}/mo</span>
+                            </div>
+                          ` : ''}
+                        </div>
+                        ${!showSTR && showLTR ? '<span class="text-purple-600">›</span>' : ''}
+                      </button>
+                      
+                      <!-- Investment Planning Navigation Item -->
+                      <button
+                        id="investment-nav"
+                        onclick="window.switchSection('investment')"
+                        class="sidebar-item hover:bg-gray-50 border-transparent text-gray-700
+                        w-full flex items-start gap-3 px-4 py-3 rounded-lg border-2 transition-all duration-200 mb-2"
+                      >
+                        <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-gray-400 to-gray-500 flex items-center justify-center text-white text-xl flex-shrink-0">
+                          📊
+                        </div>
+                        <div class="text-left flex-1">
+                          <div class="font-semibold">Investment Planning</div>
+                          <div class="text-xs opacity-75 mt-1">
+                            Tax, Financing & ROI
+                          </div>
+                        </div>
+                      </button>
+                      
+                      <!-- Comparison View Navigation Item -->
+                      <button
+                        id="comparison-nav"
+                        onclick="window.switchSection('comparison')"
+                        class="sidebar-item hover:bg-gray-50 border-transparent text-gray-700
+                        w-full flex items-start gap-3 px-4 py-3 rounded-lg border-2 transition-all duration-200"
+                      >
+                        <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-gray-400 to-gray-500 flex items-center justify-center text-white text-xl flex-shrink-0">
+                          ⚖️
+                        </div>
+                        <div class="text-left flex-1">
+                          <div class="font-semibold">Compare All</div>
+                          <div class="text-xs opacity-75 mt-1">
+                            Side-by-side comparison
+                          </div>
+                        </div>
+                      </button>
+                    </nav>
                     
-                    <!-- Investment Tab -->
-                    <button
-                      id="investment-tab"
-                      onclick="window.switchTab('investment')"
-                      class="tab-button glass backdrop-blur-sm bg-white/50 text-gray-600 hover:bg-white/70 hover:shadow-sm border-white/30 
-                      flex items-center gap-2 px-4 py-3 rounded-lg border-2 font-medium transition-all duration-200 group"
-                    >
-                      <span class="text-xl group-hover:scale-110 transition-transform">
-                        📊
-                      </span>
-                      <div class="text-left">
-                        <div class="font-semibold">Investment Planning</div>
-                        <div class="text-xs text-gray-500">
-                          ROI & Tax Calculator
-                        </div>
-                      </div>
-                    </button>
+                    <!-- Quick Actions -->
+                    <div class="border-t border-gray-200 p-4">
+                      <button onclick="window.print()" class="w-full text-sm text-gray-600 hover:text-purple-600 flex items-center justify-center gap-2 py-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
+                        </svg>
+                        Print Report
+                      </button>
+                      <button onclick="window.saveAnalysis()" class="w-full text-sm text-gray-600 hover:text-purple-600 flex items-center justify-center gap-2 py-2 mt-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V2"></path>
+                        </svg>
+                        Save Analysis
+                      </button>
+                    </div>
                   </div>
-                  
-                  <!-- Helper Text -->
-                  <p class="text-sm text-gray-600 mt-3 flex items-center gap-1">
-                    <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                    Click any tab above to explore different rental strategies and investment options
-                  </p>
                 </div>
-                
-                <!-- Tab Content with Padding -->
-                <div class="p-6">
+              </aside>
+              
+              <!-- Main Content Area -->
+              <main class="flex-1 min-w-0">
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden p-6">
                   <!-- STR Content -->
                   <div id="str-content" class="tab-content">
                     ${propertyHeaderHtml}
@@ -514,14 +569,30 @@ class ComponentLoader {
                     ${ltrHtml}
                   </div>
                   
-                  <!-- Investment Planning Content - Always available -->
-                  <div id="investment-content" class="tab-content hidden">
+                  <!-- Investment Planning Content -->
+                  <div id="investment-content" class="section-content hidden">
                     ${propertyHeaderHtml}
                     ${investmentPlanningHtml}
                   </div>
+                  
+                  <!-- Comparison Content -->
+                  <div id="comparison-content" class="section-content hidden">
+                    ${propertyHeaderHtml}
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                      <div>
+                        <h3 class="text-lg font-bold mb-4">Short-Term Rental</h3>
+                        ${airbnbHtml}
+                      </div>
+                      <div>
+                        <h3 class="text-lg font-bold mb-4">Long-Term Rental</h3>
+                        ${ltrHtml}
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              </div>
+              </main>
             </div>
+          </div>
 
             <!-- Enhanced Financial Summary with Calculator -->
             <div class="mb-8">
@@ -674,96 +745,83 @@ class ComponentLoader {
         }
       }, 100);
       
-      // Define switchTab function globally
-      window.switchTab = function(tabName) {
-        console.log('Switching to tab:', tabName);
+      // Define switchSection function globally for sidebar navigation
+      window.switchSection = function(sectionName) {
+        console.log('Switching to section:', sectionName);
         
-        // Debug: Log all tab contents found
-        const allTabContents = document.querySelectorAll('.tab-content');
-        console.log('Found tab contents:', allTabContents.length);
-        allTabContents.forEach(content => {
-          console.log('Tab content:', content.id, 'Hidden:', content.classList.contains('hidden'));
+        // Debug: Log all section contents found
+        const allSectionContents = document.querySelectorAll('.section-content');
+        console.log('Found section contents:', allSectionContents.length);
+        allSectionContents.forEach(content => {
+          console.log('Section content:', content.id, 'Hidden:', content.classList.contains('hidden'));
         });
         
-        // Update tab buttons for new design
-        document.querySelectorAll('.tab-button').forEach(btn => {
+        // Update sidebar navigation items
+        document.querySelectorAll('.sidebar-nav-item').forEach(btn => {
           // Remove active classes - including gradient backgrounds
-          btn.classList.remove('bg-gradient-to-r', 'from-blue-600', 'to-purple-600', 'bg-white', 'text-white', 'text-blue-700', 'shadow-lg', 'shadow-md', 'border-transparent', 'border-blue-300', 'transform', 'scale-105');
-          btn.classList.add('glass', 'backdrop-blur-sm', 'bg-white/50', 'text-gray-600', 'border-white/30');
+          btn.classList.remove('bg-gradient-to-r', 'from-purple-600', 'to-blue-600', 'text-white', 'border-transparent');
+          btn.classList.add('bg-white', 'text-gray-700', 'border-gray-200', 'hover:border-purple-300');
           
-          // Remove checkmark if exists
-          const checkmark = btn.querySelector('.text-white, .text-green-500');
-          if (checkmark) checkmark.remove();
-          
-          // Update icon to inactive state
-          const icon = btn.querySelector('.text-xl');
+          // Update icon color to inactive state
+          const icon = btn.querySelector('.text-2xl');
           if (icon) {
-            if (btn.id === 'str-tab') icon.textContent = '🏡';
-            else if (btn.id === 'ltr-tab') icon.textContent = '🏢';
+            icon.classList.remove('text-white');
+            icon.classList.add('text-gray-400');
           }
           
-          // Update subtitle color
-          const subtitle = btn.querySelector('.text-xs');
-          if (subtitle) {
-            subtitle.classList.remove('text-blue-100', 'text-blue-600');
-            subtitle.classList.add('text-gray-500');
-          }
+          // Update text colors
+          const texts = btn.querySelectorAll('.font-bold, .text-sm');
+          texts.forEach(text => {
+            text.classList.remove('text-white');
+            text.classList.add('text-gray-700');
+          });
         });
         
-        const activeTab = document.getElementById(tabName + '-tab');
+        const activeTab = document.getElementById(sectionName + '-nav');
         if (activeTab) {
           // Add active classes with gradient background
-          activeTab.classList.remove('glass', 'backdrop-blur-sm', 'bg-white/50', 'text-gray-600', 'border-white/30');
-          activeTab.classList.add('bg-gradient-to-r', 'from-blue-600', 'to-purple-600', 'text-white', 'shadow-lg', 'border-transparent', 'transform', 'scale-105');
-          
-          // Add checkmark if not already present
-          if (!activeTab.querySelector('.text-white')) {
-            const checkmark = document.createElement('span');
-            checkmark.className = 'ml-2 text-white';
-            checkmark.textContent = '✓';
-            activeTab.appendChild(checkmark);
-          }
+          activeTab.classList.remove('bg-white', 'text-gray-700', 'border-gray-200', 'hover:border-purple-300');
+          activeTab.classList.add('bg-gradient-to-r', 'from-purple-600', 'to-blue-600', 'text-white', 'border-transparent');
           
           // Update icon to active state
-          const icon = activeTab.querySelector('.text-xl');
+          const icon = activeTab.querySelector('.text-2xl');
           if (icon) {
-            if (tabName === 'str') icon.textContent = '🏠';
-            else if (tabName === 'ltr') icon.textContent = '🏘️';
-            else if (tabName === 'investment') icon.textContent = '📈';
+            icon.classList.remove('text-gray-400');
+            icon.classList.add('text-white');
           }
           
-          // Update subtitle color
-          const subtitle = activeTab.querySelector('.text-xs');
-          if (subtitle) {
-            subtitle.classList.remove('text-gray-500');
-            subtitle.classList.add('text-blue-100');
-          }
+          // Update text colors to active state
+          const texts = activeTab.querySelectorAll('.font-bold, .text-sm');
+          texts.forEach(text => {
+            text.classList.remove('text-gray-700');
+            text.classList.add('text-white');
+          });
           
-          console.log('Activated tab button:', tabName + '-tab');
+          console.log('Activated sidebar item:', sectionName + '-nav');
         } else {
-          console.error('Tab button not found:', tabName + '-tab');
+          console.error('Sidebar nav item not found:', sectionName + '-nav');
         }
         
-        // Update tab content
-        document.querySelectorAll('.tab-content').forEach(content => {
+        // Update section content
+        document.querySelectorAll('.section-content').forEach(content => {
           content.classList.add('hidden');
         });
         
-        const activeContent = document.getElementById(tabName + '-content');
+        const activeContent = document.getElementById(sectionName + '-content');
         if (activeContent) {
           activeContent.classList.remove('hidden');
-          console.log('Showed content:', tabName + '-content');
+          console.log('Showed content:', sectionName + '-content');
         } else {
-          console.error('Tab content not found:', tabName + '-content');
+          console.error('Section content not found:', sectionName + '-content');
         }
         
-        // Store active tab in session
-        sessionStorage.setItem('activeRentalTab', tabName);
+        // Store active section in session
+        sessionStorage.setItem('activeRentalSection', sectionName);
         
         // Refresh financial calculator for tab context
         if (window.refreshFinancialCalculator) {
           setTimeout(() => {
-            console.log('Refreshing financial calculator for tab:', tabName);
+            console.log('Refreshing financial calculator for section:', sectionName);
             window.refreshFinancialCalculator();
           }, 50);
         }
@@ -784,20 +842,30 @@ class ComponentLoader {
         }
         
         // Re-initialize STR components if switching to STR tab
-        if (tabName === 'str' && strChartsModule && strChartsModule.initializeSTRComponents) {
+        if (tabName === 'str') {
           setTimeout(() => {
             console.log('Re-initializing STR components for tab switch');
+            
+            // Initialize the enhanced STR calculator if using AirbnbHeroSection
+            if (window.strCalculatorScript) {
+              const script = document.createElement('script');
+              script.textContent = window.strCalculatorScript;
+              document.body.appendChild(script);
+            }
+            
             // Ensure Chart.js is available before re-initializing
-            if (window.Chart) {
-              strChartsModule.initializeSTRComponents(analysisData);
-            } else {
-              console.error('Chart.js not available for tab switch');
-              // Try once more after a delay
-              setTimeout(() => {
-                if (window.Chart) {
-                  strChartsModule.initializeSTRComponents(analysisData);
-                }
-              }, 500);
+            if (strChartsModule && strChartsModule.initializeSTRComponents) {
+              if (window.Chart) {
+                strChartsModule.initializeSTRComponents(analysisData);
+              } else {
+                console.error('Chart.js not available for tab switch');
+                // Try once more after a delay
+                setTimeout(() => {
+                  if (window.Chart) {
+                    strChartsModule.initializeSTRComponents(analysisData);
+                  }
+                }, 500);
+              }
             }
           }, 100);
         }
@@ -850,11 +918,17 @@ class ComponentLoader {
         }
       };
       
-      // Restore active tab if exists
+      // Define switchTab function for backward compatibility
+      window.switchTab = function(tabName) {
+        console.log('switchTab called, redirecting to switchSection:', tabName);
+        window.switchSection(tabName);
+      };
+      
+      // Restore active section if exists
       setTimeout(() => {
-        const activeTab = sessionStorage.getItem('activeRentalTab');
-        if (activeTab && (activeTab === 'ltr' || activeTab === 'investment')) {
-          window.switchTab(activeTab);
+        const activeSection = sessionStorage.getItem('activeRentalSection') || sessionStorage.getItem('activeRentalTab');
+        if (activeSection && (activeSection === 'ltr' || activeSection === 'investment')) {
+          window.switchSection(activeSection);
         }
       }, 100);
       
