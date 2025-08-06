@@ -101,7 +101,10 @@ class ComponentLoader {
         taxCalcModule,
         dummiesModule,
         financingModule,
-        appreciationModule
+        appreciationModule,
+        strCalculatorModule,
+        enhancedFinancialCalcModule,
+        strCashFlowModule
       ] = await Promise.all([
         this.loadComponent('components/analysis/InvestmentVerdict.js'),
         this.loadComponent('components/analysis/AirbnbListings.js'),
@@ -113,7 +116,10 @@ class ComponentLoader {
         this.loadComponent('components/analysis/CanadianCapitalGainsTaxCalculator.js'),
         this.loadComponent('components/analysis/InvestmentSummaryForDummies.js'),
         this.loadComponent('components/analysis/FinancingScenariosComparison.js'),
-        this.loadComponent('components/analysis/PropertyAppreciationChart.js')
+        this.loadComponent('components/analysis/PropertyAppreciationChart.js'),
+        this.loadComponent('components/calculator/STRRevenueCalculator.js'),
+        this.loadComponent('components/calculator/EnhancedFinancialCalculator.js'),
+        this.loadComponent('components/analysis/STRCashFlowCard.js')
       ]);
 
       // Generate component HTML with real data
@@ -165,13 +171,24 @@ class ComponentLoader {
         console.log('Chart modules not loaded:', error);
       }
       
-      // Generate LTR content with enhanced charts
+      // Generate LTR content with enhanced charts and calculator
       const ltrHtml = analysisData.longTermRental ? `
         ${ltrModule.LongTermRentalAnalysis({ analysis: analysisData })}
         <div class="space-y-6 mt-6">
           ${ltrChartsModule ? ltrChartsModule.createRentalComparisonChart(analysisData) : ''}
           ${ltrChartsModule ? ltrChartsModule.createExpenseBreakdownChart(analysisData.costs || {}) : ''}
           ${ltrChartsModule ? ltrChartsModule.createCashFlowProjection(analysisData) : ''}
+          
+          <!-- Interactive Financial Calculator for LTR -->
+          <div id="financial-calculator-ltr">
+            ${enhancedFinancialCalcModule?.EnhancedFinancialCalculator ? 
+              enhancedFinancialCalcModule.EnhancedFinancialCalculator({ 
+                analysisData: {
+                  ...analysisData,
+                  analysisType: 'ltr' // Force LTR context
+                }
+              }) : ''}
+          </div>
         </div>
       ` : '<div class="text-center text-gray-500 py-12"><p class="text-lg">Long-term rental analysis was not included in this report.</p><p class="mt-2">Re-run the analysis with LTR option selected to see rental estimates.</p></div>';
       
@@ -519,10 +536,12 @@ class ComponentLoader {
               
               <!-- Main Content Area -->
               <main class="flex-1 min-w-0">
-                <div class="bg-white rounded-xl shadow-lg overflow-hidden p-6">
+                <!-- Property Header (Shared across all sections) -->
+                ${propertyHeaderHtml}
+                
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden p-6 mt-6">
                   <!-- STR Content -->
                   <div id="str-content" class="section-content">
-                    ${propertyHeaderHtml}
                     
                     <!-- 2-Column Layout for Revenue Chart and STR Calculator -->
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
@@ -534,7 +553,7 @@ class ComponentLoader {
                       }) : ''}
                       
                       <!-- Interactive STR Calculator -->
-                      ${strData && window.STRRevenueCalculator ? window.STRRevenueCalculator({
+                      ${strData && strCalculatorModule?.STRRevenueCalculator ? strCalculatorModule.STRRevenueCalculator({
                         initialNightlyRate: strData.avg_nightly_rate || strData.avgNightlyRate || 170,
                         initialOccupancy: (strData.occupancy_rate || strData.occupancyRate || 0.85) * 100,
                         ltrMonthlyRent: ltrAnalysis.monthly_rent || ltrAnalysis.monthlyRent || 3000
@@ -542,7 +561,7 @@ class ComponentLoader {
                     </div>
                     
                     <!-- STR Cash Flow Card -->
-                    ${strData && window.STRCashFlowCard ? window.STRCashFlowCard({
+                    ${strData && strCashFlowModule?.STRCashFlowCard ? strCashFlowModule.STRCashFlowCard({
                       monthlyRevenue: strData.monthly_revenue || strData.monthlyRevenue || 0,
                       totalExpenses: ((strData.expenses?.monthly?.total || 0) + (analysisData.monthlyExpenses?.mortgage || 0)) || 2000,
                       mortgagePayment: analysisData.monthlyExpenses?.mortgage || 0,
@@ -551,8 +570,8 @@ class ComponentLoader {
                     
                     <!-- Integrated Enhanced Financial Calculator -->
                     <div id="financial-calculator-str">
-                      ${financialModule.EnhancedFinancialCalculator ? 
-                        financialModule.EnhancedFinancialCalculator({ 
+                      ${enhancedFinancialCalcModule?.EnhancedFinancialCalculator ? 
+                        enhancedFinancialCalcModule.EnhancedFinancialCalculator({ 
                           analysisData: {
                             ...analysisData,
                             analysisType: 'str' // Force STR context
@@ -566,19 +585,16 @@ class ComponentLoader {
                   
                   <!-- LTR Content -->
                   <div id="ltr-content" class="section-content hidden">
-                    ${propertyHeaderHtml}
                     ${ltrHtml}
                   </div>
                   
                   <!-- Investment Planning Content -->
                   <div id="investment-content" class="section-content hidden">
-                    ${propertyHeaderHtml}
                     ${investmentPlanningHtml}
                   </div>
                   
                   <!-- Comparison Content -->
                   <div id="comparison-content" class="section-content hidden">
-                    ${propertyHeaderHtml}
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                       <div>
                         <h3 class="text-lg font-bold mb-4">Short-Term Rental</h3>
