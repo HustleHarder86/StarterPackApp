@@ -521,7 +521,7 @@ class ComponentLoader {
               <main class="flex-1 min-w-0">
                 <div class="bg-white rounded-xl shadow-lg overflow-hidden p-6">
                   <!-- STR Content -->
-                  <div id="str-content" class="tab-content">
+                  <div id="str-content" class="section-content">
                     ${propertyHeaderHtml}
                     
                     <!-- 2-Column Layout for Revenue Chart and STR Calculator -->
@@ -565,7 +565,7 @@ class ComponentLoader {
                   </div>
                   
                   <!-- LTR Content -->
-                  <div id="ltr-content" class="tab-content hidden">
+                  <div id="ltr-content" class="section-content hidden">
                     ${propertyHeaderHtml}
                     ${ltrHtml}
                   </div>
@@ -828,7 +828,7 @@ class ComponentLoader {
         }
         
         // Initialize investment planning scripts if switching to investment tab
-        if (tabName === 'investment') {
+        if (sectionName === 'investment') {
           console.log('Initializing investment planning scripts...');
           setTimeout(() => {
             if (window.calculateCapitalGains) {
@@ -843,7 +843,7 @@ class ComponentLoader {
         }
         
         // Re-initialize STR components if switching to STR tab
-        if (tabName === 'str') {
+        if (sectionName === 'str') {
           setTimeout(() => {
             console.log('Re-initializing STR components for tab switch');
             
@@ -872,7 +872,7 @@ class ComponentLoader {
         }
         
         // Initialize LTR charts when switching to LTR tab
-        if (tabName === 'ltr') {
+        if (sectionName === 'ltr') {
           // Add a small delay to ensure DOM is ready
           setTimeout(() => {
             console.log('Initializing LTR charts for tab switch');
