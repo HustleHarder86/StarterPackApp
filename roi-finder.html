@@ -1557,17 +1557,8 @@
                     // Attach to property analysis form
                     validator.attachToForm('property-analysis-form');
                     
-                    // Set form submission handler
-                    const form = document.getElementById('property-analysis-form');
-                    if (form) {
-                        form.onValidSubmit = () => {
-                            // Form is valid, proceed with analysis
-                            const formData = new FormData(form);
-                            const propertyData = Object.fromEntries(formData);
-                            const analysisType = document.querySelector('input[name="analysis-type"]:checked')?.value || 'both';
-                            this.analyzeProperty(propertyData, analysisType);
-                        };
-                    }
+                    // Note: Form submission is already handled in attachEventListeners()
+                    // We only need the validator for validation, not submission
                     
                     // Also attach to login/signup forms
                     validator.attachToForm('login-form');
