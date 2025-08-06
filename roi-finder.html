@@ -1575,67 +1575,13 @@
             }
             
             mapAnalysisData(analysisData) {
-                // Map API response fields to frontend expectations
-                if (analysisData.short_term_rental) {
-                    analysisData.strAnalysis = analysisData.short_term_rental;
-                    
-                    // Ensure proper field mapping for comparables
-                    if (analysisData.strAnalysis.comparables) {
-                        analysisData.strAnalysis.comparables = analysisData.strAnalysis.comparables.map(comp => ({
-                            ...comp,
-                            nightly_rate: comp.nightlyRate || comp.nightly_rate || comp.price,
-                            occupancy_rate: comp.occupancyRate || comp.occupancy_rate || 0.70,
-                            monthly_revenue: comp.monthlyRevenue || comp.monthly_revenue || 0,
-                            area: comp.area || comp.neighborhood || 'Local Area'
-                        }));
-                    }
-                    
-                    // Map top-level STR fields
-                    if (analysisData.strAnalysis.daily_rate !== undefined) {
-                        analysisData.strAnalysis.avgNightlyRate = analysisData.strAnalysis.daily_rate;
-                        analysisData.strAnalysis.nightlyRate = analysisData.strAnalysis.daily_rate;
-                    }
-                    if (analysisData.strAnalysis.occupancy_rate !== undefined) {
-                        analysisData.strAnalysis.occupancyRate = analysisData.strAnalysis.occupancy_rate * 100; // Convert to percentage
-                    }
-                    if (analysisData.strAnalysis.annual_revenue !== undefined) {
-                        analysisData.strAnalysis.monthlyRevenue = Math.round(analysisData.strAnalysis.annual_revenue / 12);
-                    }
+                // Use centralized data converter if available
+                if (window.dataConverter && window.dataConverter.convertAnalysisData) {
+                    return window.dataConverter.convertAnalysisData(analysisData);
                 }
                 
-                // Map long-term rental data
-                if (analysisData.long_term_rental) {
-                    analysisData.longTermRental = analysisData.long_term_rental;
-                    
-                    // Map LTR fields
-                    if (analysisData.longTermRental.monthly_rent !== undefined) {
-                        analysisData.longTermRental.monthlyRent = analysisData.longTermRental.monthly_rent;
-                    }
-                    if (analysisData.longTermRental.annual_profit !== undefined) {
-                        analysisData.longTermRental.cashFlow = Math.round(analysisData.longTermRental.annual_profit / 12);
-                    }
-                    if (analysisData.longTermRental.annual_revenue !== undefined && analysisData.property_details?.estimated_value) {
-                        analysisData.longTermRental.roi = (analysisData.longTermRental.annual_profit / analysisData.property_details.estimated_value) * 100;
-                    }
-                }
-                
-                // Map property data if needed
-                if (analysisData.property_data && !analysisData.propertyData) {
-                    analysisData.propertyData = {
-                        ...analysisData.property_data,
-                        // Ensure mainImage is mapped correctly
-                        mainImage: analysisData.property_data.mainImage || analysisData.property_data.image || analysisData.property_data.imageUrl
-                    };
-                } else if (analysisData.property_details && !analysisData.propertyData) {
-                    analysisData.propertyData = {
-                        ...analysisData.property_details,
-                        price: analysisData.property_details.estimated_value,
-                        address: analysisData.propertyAddress || analysisData.property_address,
-                        propertyTaxes: analysisData.costs?.property_tax_annual,
-                        condoFees: analysisData.costs?.hoa_monthly
-                    };
-                }
-                
+                // Fallback: Basic conversion if converter not loaded
+                console.warn('Data converter not loaded, using fallback conversion');
                 return analysisData;
             }
             
@@ -1923,6 +1869,8 @@
         
     </script>
     
+    <!-- Data Converter Utility -->
+    <script src="js/utils/dataConverter.js" type="module"></script>
     <!-- Error Handler -->
     <script src="js/error-handler.js"></script>
     <!-- Form Validation -->

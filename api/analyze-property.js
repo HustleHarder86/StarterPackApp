@@ -2,6 +2,7 @@
 // Proxy to Railway API for heavy property analysis processing
 
 import { applyCorsHeaders } from '../utils/cors-config.js';
+import { convertAnalysisData } from '../js/utils/dataConverter.js';
 import crypto from 'crypto';
 
 export default async function handler(req, res) {
@@ -51,8 +52,11 @@ export default async function handler(req, res) {
     
     console.log('[Vercel Proxy] Successfully received analysis from Railway');
     
-    // Return the Railway response
-    return res.status(200).json(data);
+    // Convert snake_case response to camelCase for frontend
+    const convertedData = convertAnalysisData(data);
+    
+    // Return the converted Railway response
+    return res.status(200).json(convertedData);
     
   } catch (error) {
     console.error('[Vercel Proxy] Error forwarding to Railway:', error);
