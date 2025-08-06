@@ -1369,6 +1369,7 @@
                         headers: headers,
                         body: JSON.stringify({
                             propertyAddress: propertyData.address || propertyData.propertyAddress || '', // Required by API
+                            address: propertyData.address || propertyData.propertyAddress || '', // Also send as 'address' for compatibility
                             propertyData: propertyData,
                             requestType: isTestMode ? 'e2e-test' : (window.appState.currentUser ? 'authenticated' : 'anonymous'),
                             analysisType: analysisType,

@@ -129,6 +129,7 @@ class ComponentLoader {
       
       // Always generate content for tabs, but show appropriate messages if data is missing
       const strData = analysisData.strAnalysis || analysisData.short_term_rental || null;
+      const ltrData = analysisData.longTermRental || analysisData.long_term_rental || null;
       
       // Debug logging to see what data we have
       console.log('[ComponentLoader] STR Data Debug:', {

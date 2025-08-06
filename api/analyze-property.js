@@ -2,8 +2,17 @@
 // Proxy to Railway API for heavy property analysis processing
 
 import { applyCorsHeaders } from '../utils/cors-config.js';
-import { convertAnalysisData } from '../js/utils/dataConverter.js';
 import crypto from 'crypto';
+
+// Import data converter - handle both module and non-module scenarios
+let convertAnalysisData;
+try {
+  const converter = await import('../js/utils/dataConverter.js');
+  convertAnalysisData = converter.convertAnalysisData;
+} catch (e) {
+  console.warn('[Vercel Proxy] Data converter not available, using passthrough');
+  convertAnalysisData = (data) => data; // Passthrough if converter fails to load
+}
 
 export default async function handler(req, res) {
   // Apply proper CORS headers
