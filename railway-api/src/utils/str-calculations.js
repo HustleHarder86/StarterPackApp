@@ -11,41 +11,64 @@
 function filterComparables(listings, targetProperty) {
   if (!listings || listings.length === 0) return [];
   
-  console.log(`Filtering ${listings.length} listings with price and property type quality checks`);
+  console.log(`Filtering ${listings.length} listings for quality and relevance`);
   
-  // Apply practical filtering based on available API data
+  // More lenient filtering - keep most listings unless clearly invalid
   const filteredListings = listings.filter(listing => {
-    // Price sanity check
+    // Price sanity check - be more lenient
     const price = listing.price || listing.nightly_rate || 0;
-    if (price < 50 || price > 2000) {
-      console.log(`Filtered out: "${listing.title}" - unrealistic price ($${price})`);
+    if (price < 30 || price > 5000) {
+      console.log(`Filtered out: "${listing.title}" - price out of range ($${price})`);
+      return false;
+    }
+    
+    // Skip if no title/name (likely bad data)
+    if (!listing.title && !listing.name) {
+      console.log(`Filtered out: No title/name - likely bad data`);
       return false;
     }
     
     return true;
   });
   
-  // Add basic similarity scores for display and ranking
+  // Add similarity scores based on property characteristics
+  const targetBedrooms = targetProperty.bedrooms || 2;
+  const targetPropertyType = (targetProperty.propertyType || '').toLowerCase();
+  
   const scoredListings = filteredListings.map(listing => {
     let score = 50; // Base score
     
-    // Boost score for better property types
+    // Score based on bedroom similarity (most important factor)
+    const bedroomDiff = Math.abs((listing.bedrooms || 0) - targetBedrooms);
+    if (bedroomDiff === 0) score += 30;      // Exact match
+    else if (bedroomDiff === 1) score += 15; // Close match
+    else if (bedroomDiff === 2) score += 5;  // Somewhat similar
+    else score -= bedroomDiff * 5;           // Penalty for big differences
+    
+    // Boost score for matching property types
     const propertyType = (listing.propertyType || listing.property_type || '').toLowerCase();
-    if (propertyType.includes('entire_home') || propertyType.includes('house')) {
-      score += 20; // Better for house analysis
-    } else if (propertyType.includes('apartment') || propertyType.includes('condo')) {
-      score += 10; // Decent for house analysis
-    } else if (propertyType.includes('private_room') || propertyType.includes('shared_room')) {
-      score -= 20; // Poor comparables for house analysis
+    if (targetPropertyType.includes('condo') && propertyType.includes('condo')) {
+      score += 15;
+    } else if (targetPropertyType.includes('house') && propertyType.includes('house')) {
+      score += 15;
+    } else if (propertyType.includes('entire')) {
+      score += 10; // Entire place is generally good
     }
     
     // Boost score for better ratings
-    if (listing.rating >= 4.5) score += 10;
-    else if (listing.rating >= 4.0) score += 5;
+    const rating = listing.rating || listing.avgRating || 0;
+    if (rating >= 4.8) score += 15;
+    else if (rating >= 4.5) score += 10;
+    else if (rating >= 4.0) score += 5;
+    
+    // Boost for more reviews (more reliable data)
+    const reviewCount = listing.reviewsCount || listing.review_count || 0;
+    if (reviewCount >= 50) score += 10;
+    else if (reviewCount >= 20) score += 5;
     
     return {
       ...listing,
-      similarityScore: Math.max(10, score) // Minimum score of 10
+      similarityScore: Math.max(20, Math.min(100, score)) // Score between 20-100
     };
   })
   .sort((a, b) => b.similarityScore - a.similarityScore);

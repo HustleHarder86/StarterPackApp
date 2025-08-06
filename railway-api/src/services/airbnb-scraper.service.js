@@ -176,8 +176,8 @@ class AirbnbScraperService {
    * Wait for actor run to complete and return results
    */
   async waitForResults(runId, controller) {
-    const maxAttempts = 60; // More attempts for debug mode
-    const delayMs = 5000; // 5 second delay between checks
+    const maxAttempts = 50; // 50 attempts * 6 seconds = 5 minutes max
+    const delayMs = 6000; // 6 second delay between checks
 
     for (let attempt = 0; attempt < maxAttempts; attempt++) {
       await new Promise(resolve => setTimeout(resolve, delayMs));
@@ -194,9 +194,11 @@ class AirbnbScraperService {
 
       const status = await statusResponse.json();
       
-      // Log progress every 5 attempts (25 seconds)
-      if (attempt % 5 === 0 || attempt > 20) {
-        logger.info(`Waiting for Apify results: attempt ${attempt + 1}/${maxAttempts}, status: ${status.data.status}, elapsed: ${((attempt + 1) * delayMs / 1000).toFixed(0)}s`);
+      // Log progress every 3 attempts (18 seconds) or when getting close to timeout
+      if (attempt % 3 === 0 || attempt > 40) {
+        const elapsed = ((attempt + 1) * delayMs / 1000).toFixed(0);
+        const remaining = ((maxAttempts - attempt - 1) * delayMs / 1000).toFixed(0);
+        logger.info(`Apify actor status: ${status.data.status} | Elapsed: ${elapsed}s | Remaining: ${remaining}s | Attempt: ${attempt + 1}/${maxAttempts}`);
       }
 
       if (status.data.status === 'SUCCEEDED') {
@@ -220,7 +222,40 @@ class AirbnbScraperService {
           throw new Error(`Failed to fetch results: ${resultsResponse.status} - ${errorText}`);
         }
 
-        const results = await resultsResponse.json();
+        // Get the raw text first to check for corruption
+        const rawText = await resultsResponse.text();
+        
+        // Check if the response looks corrupted (character-by-character JSON)
+        let results;
+        try {
+          results = JSON.parse(rawText);
+          
+          // If the first item looks corrupted (has numeric keys), try to reconstruct
+          if (results.length > 0 && typeof results[0] === 'object' && results[0]['0'] !== undefined) {
+            logger.warn('Detected corrupted Apify response format, attempting to reconstruct...');
+            results = results.map(item => {
+              // Reconstruct the JSON string from the character array
+              const chars = [];
+              let i = 0;
+              while (item[i] !== undefined) {
+                chars.push(item[i]);
+                i++;
+              }
+              const jsonString = chars.join('');
+              try {
+                return JSON.parse(jsonString);
+              } catch (e) {
+                logger.error('Failed to parse reconstructed JSON:', e.message);
+                return null;
+              }
+            }).filter(item => item !== null);
+            logger.info(`Successfully reconstructed ${results.length} listings from corrupted response`);
+          }
+        } catch (e) {
+          logger.error('Failed to parse Apify response:', e.message);
+          throw new Error('Invalid JSON response from Apify');
+        }
+        
         logger.info(`Successfully fetched ${Array.isArray(results) ? results.length : 'unknown'} results`);
         return results;
       }
@@ -244,21 +279,105 @@ class AirbnbScraperService {
    */
   normalizeListings(results) {
     if (!Array.isArray(results)) return [];
+    
+    // Log first item structure for debugging
+    if (results.length > 0) {
+      logger.info('Sample listing structure:', {
+        hasPrice: !!results[0].price,
+        hasPricing: !!results[0].pricing,
+        hasPricingRate: !!results[0].pricing?.rate,
+        hasPricingRateAmount: !!results[0].pricing?.rate?.amount,
+        priceValue: results[0].price,
+        pricingValue: results[0].pricing?.price || results[0].pricing?.rate?.amount || results[0].pricing?.label,
+        keys: Object.keys(results[0]).slice(0, 15)
+      });
+    }
 
     return results.map(item => {
       // Extract price from various possible locations
       let nightlyPrice = 0;
-      if (item.pricing?.price) {
-        const priceMatch = item.pricing.price.match(/\$(\d+(?:\.\d{2})?)/);
-        nightlyPrice = priceMatch ? parseFloat(priceMatch[1]) : 0;
-      } else if (item.price) {
-        nightlyPrice = typeof item.price === 'number' ? item.price : 
-                      parseFloat(item.price.toString().replace(/[^\d.]/g, ''));
+      
+      // Try multiple price extraction methods based on Apify's tri_angle actor format
+      if (item.pricing) {
+        // The pricing.label often contains the TOTAL price for the stay
+        // We need to divide by number of nights (7 in our case)
+        const checkInDate = new Date(item.checkIn || this.getCheckInDate());
+        const checkOutDate = new Date(item.checkOut || this.getCheckOutDate());
+        const nights = Math.ceil((checkOutDate - checkInDate) / (1000 * 60 * 60 * 24)) || 7;
+        
+        // First try the label field which often contains the total price
+        if (item.pricing.label) {
+          const labelMatch = item.pricing.label.match(/\$?([\d,]+(?:\.\d{2})?)/);
+          if (labelMatch) {
+            const totalPrice = parseFloat(labelMatch[1].replace(/,/g, ''));
+            // Convert total to nightly rate
+            nightlyPrice = Math.round(totalPrice / nights);
+          }
+        }
+        // Then try the price field
+        if (!nightlyPrice && item.pricing.price) {
+          const priceMatch = item.pricing.price.match(/\$?([\d,]+(?:\.\d{2})?)/);
+          if (priceMatch) {
+            const totalPrice = parseFloat(priceMatch[1].replace(/,/g, ''));
+            // Convert total to nightly rate
+            nightlyPrice = Math.round(totalPrice / nights);
+          }
+        }
+        // Try rate.amount (this might already be nightly)
+        if (!nightlyPrice && item.pricing.rate?.amount) {
+          nightlyPrice = item.pricing.rate.amount;
+        }
+        // Check for qualifier that indicates "per night"
+        if (item.pricing.qualifier && item.pricing.qualifier.includes('night')) {
+          // If qualifier says "per night", the price might already be nightly
+          // Re-extract if needed
+          if (item.pricing.price) {
+            const priceMatch = item.pricing.price.match(/\$?([\d,]+(?:\.\d{2})?)/);
+            if (priceMatch) {
+              nightlyPrice = parseFloat(priceMatch[1].replace(/,/g, ''));
+            }
+          }
+        }
+      }
+      
+      // Fallback to top-level price field
+      if (!nightlyPrice && item.price) {
+        if (typeof item.price === 'number') {
+          nightlyPrice = item.price;
+        } else if (typeof item.price === 'string') {
+          const priceMatch = item.price.match(/\$?([\d,]+(?:\.\d{2})?)/);
+          nightlyPrice = priceMatch ? parseFloat(priceMatch[1].replace(/,/g, '')) : 0;
+        }
       }
 
-      // TEMPORARY DEBUG: Use raw API data without extraction
-      const bedrooms = item.bedrooms || item.beds || 0;
-      const bathrooms = item.bathrooms || 1;
+      // Extract bedroom count from subtitles if not in main fields
+      let bedrooms = item.bedrooms || 0;
+      if (!bedrooms && item.subtitles) {
+        // Look for "2 bedrooms" or "4 beds" in subtitles array
+        const bedroomSubtitle = item.subtitles.find(s => s && s.includes('bedroom'));
+        if (bedroomSubtitle) {
+          const match = bedroomSubtitle.match(/(\d+)\s*bedroom/);
+          if (match) bedrooms = parseInt(match[1]);
+        }
+        // If no bedrooms found, try beds
+        if (!bedrooms) {
+          const bedSubtitle = item.subtitles.find(s => s && s.includes('bed'));
+          if (bedSubtitle) {
+            const match = bedSubtitle.match(/(\d+)\s*bed/);
+            if (match) bedrooms = Math.max(1, Math.ceil(parseInt(match[1]) / 2)); // Estimate bedrooms from beds
+          }
+        }
+      }
+
+      // Extract bathroom count
+      let bathrooms = item.bathrooms || 1;
+      if (!bathrooms && item.subtitles) {
+        const bathSubtitle = item.subtitles.find(s => s && s.includes('bath'));
+        if (bathSubtitle) {
+          const match = bathSubtitle.match(/([\d.]+)\s*bath/);
+          if (match) bathrooms = parseFloat(match[1]);
+        }
+      }
 
       // Extract room type
       const roomType = item.roomType || item.room_type || item.property_type || 'Entire place';
@@ -271,14 +390,14 @@ class AirbnbScraperService {
         bedrooms: bedrooms,
         bathrooms: bathrooms,
         propertyType: roomType,
-        rating: parseFloat(item.star_rating || item.rating) || 4.5,
-        reviewsCount: parseInt(item.reviews_count || item.number_of_reviews) || 0,
+        rating: item.rating?.average || parseFloat(item.rating?.value || item.rating) || 4.5,
+        reviewsCount: item.rating?.reviewsCount || parseInt(item.reviews_count || item.number_of_reviews) || 0,
         occupancy_rate: 0.70, // Default occupancy
-        image_url: item.images?.[0] || item.picture_url || item.thumbnail_url || '',
+        image_url: item.images?.[0]?.url || item.images?.[0] || item.picture_url || item.thumbnail_url || '',
         url: item.url || `https://www.airbnb.ca/rooms/${item.id}`,
         location: {
-          lat: item.coordinates?.lat || item.lat || item.latitude,
-          lng: item.coordinates?.lng || item.lng || item.longitude
+          lat: item.coordinates?.latitude || item.coordinates?.lat || item.lat || item.latitude,
+          lng: item.coordinates?.longitude || item.coordinates?.lng || item.lng || item.longitude
         },
         amenities: item.amenities || [],
         host: {
@@ -286,8 +405,15 @@ class AirbnbScraperService {
           isSuperhost: item.host?.is_superhost || false
         }
       };
-    }); // TEMPORARY DEBUG: Removed price filter to show all listings
-    //.filter(listing => listing.price >= 50); // Filter out listings with no price or unrealistic prices
+    })
+    .filter(listing => {
+      // More lenient filtering but still remove clearly invalid listings
+      const valid = listing.price >= 30 && listing.price <= 5000;
+      if (!valid) {
+        logger.debug(`Filtered out listing with price: $${listing.price}`);
+      }
+      return valid;
+    });
   }
 
   /**
@@ -329,6 +455,54 @@ class AirbnbScraperService {
     if (!text) return null;
     const match = text.match(pattern);
     return match ? parseFloat(match[1]) : null;
+  }
+  
+  /**
+   * Get mock data for development
+   * TEMPORARY: Remove when Apify performance improves
+   */
+  getMockData(propertyData) {
+    const { address, bedrooms = 2, bathrooms = 2 } = propertyData;
+    const city = address?.city || 'Toronto';
+    
+    logger.info('Returning mock Airbnb data for development', { city, bedrooms });
+    
+    // Generate realistic mock listings based on property
+    const basePrice = bedrooms === 1 ? 120 : bedrooms === 2 ? 180 : 250;
+    const listings = [];
+    
+    for (let i = 0; i < 10; i++) {
+      const priceVariation = Math.random() * 60 - 30; // ±$30 variation
+      const nightlyPrice = Math.round(basePrice + priceVariation);
+      
+      listings.push({
+        id: `mock_${i + 1}`,
+        title: `${bedrooms}BR ${['Condo', 'Apartment', 'House'][i % 3]} in ${city}`,
+        name: `Modern ${bedrooms} Bedroom in ${city}`,
+        price: nightlyPrice,
+        nightly_rate: nightlyPrice,
+        bedrooms: bedrooms + (i % 3 === 0 ? -1 : i % 3 === 2 ? 1 : 0), // Vary bedrooms slightly
+        bathrooms: bathrooms,
+        propertyType: ['Entire rental unit', 'Entire condo', 'Entire home'][i % 3],
+        roomType: 'Entire place',
+        rating: (4.5 + Math.random() * 0.5).toFixed(2),
+        reviewsCount: Math.floor(10 + Math.random() * 100),
+        occupancy: 0.65 + Math.random() * 0.2, // 65-85% occupancy
+        distance: (Math.random() * 2).toFixed(1),
+        url: `https://www.airbnb.ca/rooms/mock_${i + 1}`,
+        images: [`https://picsum.photos/300/200?random=${i}`]
+      });
+    }
+    
+    return {
+      listings,
+      metadata: {
+        location: `${city}, Ontario`,
+        searchParams: { bedrooms, bathrooms },
+        resultCount: listings.length,
+        dataSource: 'mock_data_development'
+      }
+    };
   }
 }
 

@@ -29,16 +29,36 @@ export const EnhancedFinancialCalculator = ({ analysisData = {} }) => {
   // Determine which revenue to use based on analysis type
   const analysisType = analysisData.analysisType || 'both';
   
-  // Check active tab - default to STR if not found
-  const activeTabElement = typeof document !== 'undefined' ? 
-    document.querySelector('.tab-button:not(.bg-gray-50)') || 
-    document.querySelector('[class*="from-blue-600"][class*="to-purple-600"]') : null;
-  const activeTabId = activeTabElement ? activeTabElement.id : 'str-tab';
-  const isSTRTab = activeTabId === 'str-tab';
-  const isLTRTab = activeTabId === 'ltr-tab';
+  // Check active section for sidebar navigation
+  let isSTRSection = false;
+  let isLTRSection = false;
   
-  // Use tab context to determine revenue source
-  const monthlyRevenue = isLTRTab && ltrData.monthlyRent
+  if (typeof document !== 'undefined') {
+    // First check visible section content
+    const strContent = document.getElementById('str-content');
+    const ltrContent = document.getElementById('ltr-content');
+    
+    if (strContent && !strContent.classList.contains('hidden')) {
+      isSTRSection = true;
+    } else if (ltrContent && !ltrContent.classList.contains('hidden')) {
+      isLTRSection = true;
+    } else {
+      // Fallback: check active sidebar nav item
+      const activeNav = document.querySelector('.sidebar-nav-item.bg-gradient-to-r');
+      if (activeNav) {
+        isSTRSection = activeNav.id === 'str-nav';
+        isLTRSection = activeNav.id === 'ltr-nav';
+      }
+    }
+  }
+  
+  // Default to STR if neither is detected
+  if (!isSTRSection && !isLTRSection) {
+    isSTRSection = true;
+  }
+  
+  // Use section context to determine revenue source
+  const monthlyRevenue = isLTRSection && ltrData.monthlyRent
     ? (ltrData.monthlyRent || ltrData.monthly_rent || 3100)
     : (strData.monthlyRevenue || strData.monthly_revenue || 5400);
   
@@ -60,8 +80,8 @@ export const EnhancedFinancialCalculator = ({ analysisData = {} }) => {
     'maintenance': maintenance
   });
   
-  // STR-specific expenses (show on STR tab or when analysisType is str/both)
-  const showSTRExpenses = isSTRTab || analysisType === 'str' || (analysisType === 'both' && !isLTRTab);
+  // STR-specific expenses (show on STR section or when analysisType is str/both)
+  const showSTRExpenses = isSTRSection || (analysisType === 'str') || (analysisType === 'both' && !isLTRSection);
   const propertyMgmt = showSTRExpenses ? Math.round(monthlyRevenue * 0.10) : 0;
   const cleaning = showSTRExpenses ? 400 : 0;
   const supplies = showSTRExpenses ? Math.round(monthlyRevenue * 0.04) : 0;
@@ -365,7 +385,7 @@ export const EnhancedFinancialCalculator = ({ analysisData = {} }) => {
         data-annual-revenue="${annualRevenue}"
         data-annual-expenses="${annualExpenses}"
         data-analysis-type="${analysisType}"
-        data-active-tab="${activeTabId}"
+        data-active-section="${isSTRSection ? 'str' : isLTRSection ? 'ltr' : 'str'}"
         data-show-str-expenses="${showSTRExpenses}"
         style="display: none;"
       ></div>

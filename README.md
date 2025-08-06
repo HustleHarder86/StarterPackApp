@@ -4,9 +4,33 @@
 
 **✅ REFACTORING COMPLETE**: Successfully deployed modern component-based architecture with Airbnb listings prominently featured as hero section. See [DEPLOYMENT_COMPLETE.md](DEPLOYMENT_COMPLETE.md) for full details.
 
-## 🚨 CRITICAL ARCHITECTURE RULE - READ BEFORE ANY CHANGES 🚨
+## 🚀 LOCAL DEVELOPMENT - START HERE
 
-**THIS PROJECT USES A DUAL-DEPLOYMENT ARCHITECTURE:**
+**NEW: 1800x faster development with hot reload!**
+
+### Quick Start (2 minutes)
+```bash
+# One-time setup
+npm install
+./scripts/switch-env.sh dev
+
+# Daily development
+npm run dev                # Starts both servers
+# Open http://localhost:3000
+# Make changes - see instantly!
+```
+
+**Benefits:**
+- ⚡ Instant hot reload (<1 second vs 3-minute deploys)
+- 🐛 Full debugging with Chrome DevTools
+- ✅ Automatic testing on commit
+- 🔄 Easy environment switching
+
+See [DEVELOPMENT.md](DEVELOPMENT.md) for complete guide.
+
+## 🚨 CRITICAL ARCHITECTURE RULE 🚨
+
+**DUAL-DEPLOYMENT ARCHITECTURE:**
 
 ### Railway API (`/railway-api/`)
 Handles ALL heavy processing and external API calls:

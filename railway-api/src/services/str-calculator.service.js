@@ -337,7 +337,6 @@ class STRCalculatorService {
       comparables: {
         total: listings.length,
         quality: qualityListings.length,
-        listings: qualityListings, // TEMPORARY DEBUG: Show all listings
         location: metadata.location
       },
       rates: {

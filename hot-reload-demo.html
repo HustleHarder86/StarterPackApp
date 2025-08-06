@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hot Reload Demo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-purple-500 to-pink-500 min-h-screen flex items-center justify-center">
+    <div class="bg-white rounded-xl shadow-2xl p-8 max-w-md">
+        <h1 class="text-3xl font-bold text-gray-800 mb-4">🚀 Hot Reload Works!</h1>
+        <p class="text-gray-600 mb-4">
+            This page was created without deploying to Vercel!
+        </p>
+        <div class="bg-green-100 border-l-4 border-green-500 p-4 mb-4">
+            <p class="text-green-700">
+                ✅ Vercel Dev Server: Running<br>
+                ✅ Railway API: Running<br>
+                ✅ Hot Reload: Active
+            </p>
+        </div>
+        <p class="text-sm text-gray-500">
+            Try editing this file and watch it update instantly!
+        </p>
+        <div class="mt-6 p-4 bg-purple-50 rounded-lg">
+            <p class="text-purple-700 font-semibold">Current Time:</p>
+            <p class="text-2xl font-mono text-purple-900" id="time"></p>
+        </div>
+    </div>
+    
+    <script>
+        // Show current time to prove it's live
+        function updateTime() {
+            document.getElementById('time').textContent = new Date().toLocaleTimeString();
+        }
+        updateTime();
+        setInterval(updateTime, 1000);
+    </script>
+</body>
+</html>

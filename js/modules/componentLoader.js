@@ -535,9 +535,9 @@ class ComponentLoader {
                       
                       <!-- Interactive STR Calculator -->
                       ${strData && window.STRRevenueCalculator ? window.STRRevenueCalculator({
-                        defaultNightlyRate: strData.avg_nightly_rate || strData.avgNightlyRate || 150,
-                        defaultOccupancy: (strData.occupancy_rate || strData.occupancyRate || 0.75) * 100,
-                        comparables: strData.comparables || []
+                        initialNightlyRate: strData.avg_nightly_rate || strData.avgNightlyRate || 170,
+                        initialOccupancy: (strData.occupancy_rate || strData.occupancyRate || 0.85) * 100,
+                        ltrMonthlyRent: ltrAnalysis.monthly_rent || ltrAnalysis.monthlyRent || 3000
                       }) : ''}
                     </div>
                     

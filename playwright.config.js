@@ -66,11 +66,20 @@ module.exports = defineConfig({
     },
   ],
 
-  // Run your local dev server before starting the tests
-  webServer: process.env.CI ? undefined : {
-    command: 'npx vercel dev --listen 3000',
-    port: 3000,
-    reuseExistingServer: true,
-    timeout: 120 * 1000,
-  },
+  // Run local dev servers before starting tests
+  // NOTE: Always test locally first using the dev servers!
+  webServer: process.env.CI ? undefined : [
+    {
+      command: 'npm run dev:vercel',
+      port: 3000,
+      reuseExistingServer: true,
+      timeout: 120 * 1000,
+    },
+    {
+      command: 'npm run dev:railway',
+      port: 3001,
+      reuseExistingServer: true,
+      timeout: 120 * 1000,
+    }
+  ],
 });

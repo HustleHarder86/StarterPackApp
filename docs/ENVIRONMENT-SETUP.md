@@ -19,32 +19,42 @@ FIREBASE_ADMIN_CLIENT_EMAIL=your-client-email
 FIREBASE_ADMIN_PRIVATE_KEY=your-private-key
 ```
 
-## Quick Fix Steps
+## Local Development Setup (RECOMMENDED)
 
-1. **Generate Internal API Key**:
+1. **One-time Setup**:
    ```bash
-   openssl rand -base64 32
+   npm install
+   ./scripts/switch-env.sh dev
    ```
 
-2. **Set Vercel Environment Variables**:
+2. **Start Development Servers**:
    ```bash
-   # Set Railway URL
+   npm run dev  # Starts both Vercel and Railway locally
+   ```
+
+3. **Test Locally First**:
+   - Open http://localhost:3000
+   - All features work instantly with hot reload
+   - No deployment needed for testing!
+
+## Production Deployment
+
+Only deploy after testing locally:
+
+1. **Set Environment Variables**:
+   ```bash
    npx vercel env add RAILWAY_API_URL production
-   # Enter: https://real-estate-app-production-ba5c.up.railway.app
-
-   # Set Internal API Key
    npx vercel env add INTERNAL_API_KEY production
-   # Enter: [the key you generated above]
    ```
 
-3. **Redeploy to Vercel**:
+2. **Deploy**:
    ```bash
-   npx vercel --prod
+   npm run deploy:fast  # Only after local testing
    ```
 
 ## Verification
 
-After deployment, test the STR analysis:
+Test locally first, then verify production:
 
 1. Go to https://starter-pack-app.vercel.app
 2. Click "Load Sample Data"

@@ -51,8 +51,8 @@ function analyzeSTRPotential(property, comparables, marketData = {}) {
     cashOnCashReturn: financialMetrics.cashOnCashReturn,
     paybackPeriod: financialMetrics.paybackPeriod,
     
-    // Market analysis - TEMPORARY DEBUG: Show ALL comparables
-    comparables: filteredComparables, // Show all comparables instead of top 5
+    // Market analysis - Show top 5 most relevant comparables
+    comparables: filteredComparables.slice(0, 5),
     confidence: baseMetrics.confidence,
     dataPoints: baseMetrics.dataPoints,
     priceRange: baseMetrics.priceRange,

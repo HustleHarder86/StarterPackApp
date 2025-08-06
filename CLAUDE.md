@@ -38,14 +38,42 @@ git checkout -b claude/description-YYYYMMDD_HHMMSS
 - All changes require PR review
 
 
+## 🚀 LOCAL DEVELOPMENT WORKFLOW - MANDATORY
+
+**ALWAYS test locally BEFORE deploying:**
+1. **Start both servers:** `npm run dev`
+2. **Test changes instantly** at http://localhost:3000
+3. **Hot reload** updates in <1 second (no deployment needed!)
+4. **Full debugging** with Chrome DevTools
+
+**Setup (one-time):**
+```bash
+npm install
+./scripts/switch-env.sh dev  # Use local Railway API
+```
+
+**Daily workflow:**
+```bash
+npm run dev                   # Start both servers
+# Make changes - see instantly!
+# Test thoroughly locally
+git commit                    # Auto-runs validation
+npm run deploy:fast          # Only when ready for production
+```
+
 ## 🧪 TESTING REQUIREMENTS
 
-**Before EVERY push:**
-1. Run tests: `npm run test:comprehensive`
-2. Check syntax: `npm run test:syntax`
-3. Test E2E: `npm run test:e2e`
+**Automatic Testing (via Git Hooks):**
+- Pre-commit hooks validate syntax and environment
+- All changes are tested automatically before commit
+- Tests run in <10 seconds locally
 
-**Self-Debugging System Available:**
+**Manual Testing:**
+1. Local quick test: `npm run test:quick`
+2. Comprehensive: `npm run test:comprehensive`
+3. E2E with screenshots: `npm run test:e2e`
+
+**Self-Debugging System:**
 - Tests can take screenshots and self-heal
 - Use `VisualDebugger` for UI debugging
 - Run `node tests/e2e/screenshot-analyzer.js report` for analysis
