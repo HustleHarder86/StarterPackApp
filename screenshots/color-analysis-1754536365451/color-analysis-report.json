@@ -1,0 +1,1504 @@
+{
+  "timestamp": "2025-08-07T03:13:02.628Z",
+  "url": "http://localhost:3000/roi-finder.html",
+  "colorAnalysis": {
+    "totalUniqueColors": 27,
+    "uniqueColors": [
+      "rgb(0, 0, 0)",
+      "rgb(229, 231, 235)",
+      "rgb(249, 250, 251)",
+      "rgb(17, 24, 39)",
+      "rgb(255, 255, 255)",
+      "rgb(37, 99, 235)",
+      "rgb(75, 85, 99)",
+      "rgb(55, 65, 81)",
+      "rgb(209, 213, 219)",
+      "rgba(0, 0, 0, 0) rgb(229, 231, 235) rgb(229, 231, 235)",
+      "rgb(240, 253, 244)",
+      "rgb(21, 128, 61)",
+      "rgb(187, 247, 208)",
+      "rgb(254, 242, 242)",
+      "rgb(185, 28, 28)",
+      "rgb(254, 202, 202)",
+      "rgb(59, 130, 246)",
+      "rgba(0, 0, 0, 0) rgb(255, 255, 255) rgb(255, 255, 255)",
+      "rgb(107, 114, 128)",
+      "rgb(239, 246, 255)",
+      "rgb(30, 64, 175)",
+      "rgb(29, 78, 216)",
+      "rgb(191, 219, 254)",
+      "rgb(243, 244, 246)",
+      "rgb(156, 163, 175)",
+      "rgb(31, 41, 55)",
+      "rgb(239, 239, 239)"
+    ],
+    "backgroundColors": [
+      "rgb(249, 250, 251)",
+      "rgb(255, 255, 255)",
+      "rgb(240, 253, 244)",
+      "rgb(254, 242, 242)",
+      "rgb(59, 130, 246)",
+      "rgb(239, 246, 255)",
+      "rgb(37, 99, 235)",
+      "rgb(243, 244, 246)",
+      "rgb(31, 41, 55)",
+      "rgb(239, 239, 239)"
+    ],
+    "textColors": [
+      "rgb(0, 0, 0)",
+      "rgb(17, 24, 39)",
+      "rgb(37, 99, 235)",
+      "rgb(75, 85, 99)",
+      "rgb(55, 65, 81)",
+      "rgb(21, 128, 61)",
+      "rgb(185, 28, 28)",
+      "rgb(255, 255, 255)",
+      "rgb(107, 114, 128)",
+      "rgb(30, 64, 175)",
+      "rgb(29, 78, 216)",
+      "rgb(59, 130, 246)",
+      "rgb(156, 163, 175)"
+    ],
+    "borderColors": [
+      "rgb(229, 231, 235)",
+      "rgb(209, 213, 219)",
+      "rgba(0, 0, 0, 0) rgb(229, 231, 235) rgb(229, 231, 235)",
+      "rgb(187, 247, 208)",
+      "rgb(254, 202, 202)",
+      "rgba(0, 0, 0, 0) rgb(255, 255, 255) rgb(255, 255, 255)",
+      "rgb(191, 219, 254)",
+      "rgb(255, 255, 255)"
+    ],
+    "elementColorMap": [
+      {
+        "tag": "BODY",
+        "className": "bg-gray-50 min-h-screen",
+        "id": "",
+        "backgroundColor": "rgb(249, 250, 251)",
+        "color": "rgb(17, 24, 39)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "NAV",
+        "className": "bg-white shadow-sm border-b border-gray-200 sticky top-0 z-40",
+        "id": "",
+        "backgroundColor": "rgb(255, 255, 255)",
+        "color": "rgb(17, 24, 39)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "DIV",
+        "className": "container mx-auto px-4",
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(17, 24, 39)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "DIV",
+        "className": "flex items-center justify-between h-16",
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(17, 24, 39)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "DIV",
+        "className": "flex items-center gap-2 sm:gap-lg min-w-0",
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(17, 24, 39)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "SPAN",
+        "className": "text-2xl font-bold text-blue-600 flex-shrink-0",
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(37, 99, 235)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "H1",
+        "className": "text-lg font-bold text-gray-900 mobile-hidden truncate",
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(17, 24, 39)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "DIV",
+        "className": "flex items-center gap-2 sm:gap-md flex-shrink-0",
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(17, 24, 39)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "BUTTON",
+        "className": "mobile-only p-2 text-gray-600",
+        "id": "mobile-menu-toggle",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(75, 85, 99)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "svg",
+        "className": {},
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(75, 85, 99)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "path",
+        "className": {},
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(75, 85, 99)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "SPAN",
+        "className": "text-sm text-gray-600 mobile-hidden truncate max-w-xs",
+        "id": "user-email",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(75, 85, 99)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "BUTTON",
+        "className": "btn btn-secondary btn-sm whitespace-nowrap",
+        "id": "logout-btn",
+        "backgroundColor": "rgb(255, 255, 255)",
+        "color": "rgb(55, 65, 81)",
+        "borderColor": "rgb(209, 213, 219)"
+      },
+      {
+        "tag": "MAIN",
+        "className": "min-h-screen",
+        "id": "main-content",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(17, 24, 39)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "DIV",
+        "className": "container mx-auto p-xl hidden",
+        "id": "loading-state",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(17, 24, 39)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "DIV",
+        "className": "text-center py-2xl",
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(17, 24, 39)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "DIV",
+        "className": "loading-spinner w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-xl",
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(17, 24, 39)",
+        "borderColor": "rgba(0, 0, 0, 0) rgb(229, 231, 235) rgb(229, 231, 235)"
+      },
+      {
+        "tag": "H2",
+        "className": "text-2xl font-bold text-gray-900 mb-md",
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(17, 24, 39)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "P",
+        "className": "text-gray-600",
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(75, 85, 99)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "DIV",
+        "className": "space-y-xl mt-2xl",
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(17, 24, 39)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "DIV",
+        "className": "loading-gradient h-32 rounded-xl",
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(17, 24, 39)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "DIV",
+        "className": "loading-gradient h-64 rounded-xl",
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(17, 24, 39)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "DIV",
+        "className": "loading-gradient h-48 rounded-xl",
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(17, 24, 39)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "DIV",
+        "className": "hidden",
+        "id": "login-section",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(17, 24, 39)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "DIV",
+        "className": "container mx-auto p-xl",
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(17, 24, 39)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "DIV",
+        "className": "max-w-md mx-auto mb-lg hidden",
+        "id": "auth-feedback",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(17, 24, 39)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "DIV",
+        "className": "hidden bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg",
+        "id": "auth-success",
+        "backgroundColor": "rgb(240, 253, 244)",
+        "color": "rgb(21, 128, 61)",
+        "borderColor": "rgb(187, 247, 208)"
+      },
+      {
+        "tag": "P",
+        "className": "font-medium",
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(75, 85, 99)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "P",
+        "className": "text-sm",
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(75, 85, 99)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "DIV",
+        "className": "hidden bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg",
+        "id": "auth-error",
+        "backgroundColor": "rgb(254, 242, 242)",
+        "color": "rgb(185, 28, 28)",
+        "borderColor": "rgb(254, 202, 202)"
+      },
+      {
+        "tag": "P",
+        "className": "font-medium",
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(75, 85, 99)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "P",
+        "className": "text-sm",
+        "id": "auth-error-message",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(75, 85, 99)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "DIV",
+        "className": "grid grid-cols-1 lg:grid-cols-2 gap-xl max-w-5xl mx-auto",
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(17, 24, 39)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "DIV",
+        "className": "card card-lg",
+        "id": "login-card",
+        "backgroundColor": "rgb(255, 255, 255)",
+        "color": "rgb(17, 24, 39)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "DIV",
+        "className": "text-center mb-xl",
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(17, 24, 39)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "H2",
+        "className": "text-2xl font-bold text-gray-900 mb-md",
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(17, 24, 39)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "P",
+        "className": "text-gray-600",
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(75, 85, 99)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "FORM",
+        "className": "space-y-lg",
+        "id": "login-form",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(17, 24, 39)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "LABEL",
+        "className": "block text-sm font-medium text-gray-700 mb-sm",
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(55, 65, 81)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "INPUT",
+        "className": "w-full p-md border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent",
+        "id": "login-email",
+        "backgroundColor": "rgb(255, 255, 255)",
+        "color": "rgb(17, 24, 39)",
+        "borderColor": "rgb(209, 213, 219)"
+      },
+      {
+        "tag": "LABEL",
+        "className": "block text-sm font-medium text-gray-700 mb-sm",
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(55, 65, 81)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "INPUT",
+        "className": "w-full p-md border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent",
+        "id": "login-password",
+        "backgroundColor": "rgb(255, 255, 255)",
+        "color": "rgb(17, 24, 39)",
+        "borderColor": "rgb(209, 213, 219)"
+      },
+      {
+        "tag": "BUTTON",
+        "className": "w-full bg-primary text-white font-semibold py-md px-xl rounded-lg hover:bg-primary-dark transition-colors flex items-center justify-center",
+        "id": "",
+        "backgroundColor": "rgb(59, 130, 246)",
+        "color": "rgb(255, 255, 255)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "SPAN",
+        "className": "loading-spinner w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin hidden mr-2",
+        "id": "login-spinner",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(255, 255, 255)",
+        "borderColor": "rgba(0, 0, 0, 0) rgb(255, 255, 255) rgb(255, 255, 255)"
+      },
+      {
+        "tag": "SPAN",
+        "className": "",
+        "id": "login-button-text",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(255, 255, 255)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "DIV",
+        "className": "text-center mt-lg",
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(17, 24, 39)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "A",
+        "className": "text-sm text-gray-600 hover:text-gray-800",
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(75, 85, 99)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "DIV",
+        "className": "card card-lg",
+        "id": "signup-card",
+        "backgroundColor": "rgb(255, 255, 255)",
+        "color": "rgb(17, 24, 39)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "DIV",
+        "className": "text-center mb-xl",
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(17, 24, 39)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "H2",
+        "className": "text-2xl font-bold text-gray-900 mb-md",
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(17, 24, 39)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "P",
+        "className": "text-gray-600",
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(75, 85, 99)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "FORM",
+        "className": "space-y-lg",
+        "id": "register-form",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(17, 24, 39)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "LABEL",
+        "className": "block text-sm font-medium text-gray-700 mb-sm",
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(55, 65, 81)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "INPUT",
+        "className": "w-full p-md border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent",
+        "id": "register-name",
+        "backgroundColor": "rgb(255, 255, 255)",
+        "color": "rgb(17, 24, 39)",
+        "borderColor": "rgb(209, 213, 219)"
+      },
+      {
+        "tag": "LABEL",
+        "className": "block text-sm font-medium text-gray-700 mb-sm",
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(55, 65, 81)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "INPUT",
+        "className": "w-full p-md border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent",
+        "id": "register-email",
+        "backgroundColor": "rgb(255, 255, 255)",
+        "color": "rgb(17, 24, 39)",
+        "borderColor": "rgb(209, 213, 219)"
+      },
+      {
+        "tag": "LABEL",
+        "className": "block text-sm font-medium text-gray-700 mb-sm",
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(55, 65, 81)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "INPUT",
+        "className": "w-full p-md border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent",
+        "id": "register-password",
+        "backgroundColor": "rgb(255, 255, 255)",
+        "color": "rgb(17, 24, 39)",
+        "borderColor": "rgb(209, 213, 219)"
+      },
+      {
+        "tag": "DIV",
+        "className": "mt-2 text-sm text-gray-600",
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(75, 85, 99)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "P",
+        "className": "mb-1",
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(75, 85, 99)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "UL",
+        "className": "list-disc list-inside space-y-1 text-xs",
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(75, 85, 99)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "LI",
+        "className": "text-gray-500",
+        "id": "password-length",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(107, 114, 128)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "LI",
+        "className": "text-gray-500",
+        "id": "password-uppercase",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(107, 114, 128)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "LI",
+        "className": "text-gray-500",
+        "id": "password-lowercase",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(107, 114, 128)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "LI",
+        "className": "text-gray-500",
+        "id": "password-number",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(107, 114, 128)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "BUTTON",
+        "className": "w-full bg-secondary text-white font-semibold py-md px-xl rounded-lg hover:bg-secondary-dark transition-colors flex items-center justify-center",
+        "id": "",
+        "backgroundColor": "rgb(249, 250, 251)",
+        "color": "rgb(255, 255, 255)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "SPAN",
+        "className": "loading-spinner w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin hidden mr-2",
+        "id": "register-spinner",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(255, 255, 255)",
+        "borderColor": "rgba(0, 0, 0, 0) rgb(255, 255, 255) rgb(255, 255, 255)"
+      },
+      {
+        "tag": "SPAN",
+        "className": "",
+        "id": "register-button-text",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(255, 255, 255)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "DIV",
+        "className": "mt-lg p-4 bg-blue-50 rounded-lg",
+        "id": "",
+        "backgroundColor": "rgb(239, 246, 255)",
+        "color": "rgb(17, 24, 39)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "P",
+        "className": "text-sm text-blue-800",
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(30, 64, 175)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "UL",
+        "className": "text-sm text-blue-700 mt-2 space-y-1",
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(29, 78, 216)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "DIV",
+        "className": "text-center mt-lg lg:hidden",
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(17, 24, 39)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "P",
+        "className": "text-gray-600",
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(75, 85, 99)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "SPAN",
+        "className": "",
+        "id": "mobile-auth-text",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(75, 85, 99)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "BUTTON",
+        "className": "text-primary hover:text-primary-dark font-medium ml-1",
+        "id": "mobile-auth-toggle",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(59, 130, 246)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "DIV",
+        "className": "",
+        "id": "property-input-section",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(17, 24, 39)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "DIV",
+        "className": "container mx-auto p-4 lg:p-xl",
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(17, 24, 39)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "DIV",
+        "className": "bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-lg mb-xl max-w-2xl mx-auto",
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(17, 24, 39)",
+        "borderColor": "rgb(191, 219, 254)"
+      },
+      {
+        "tag": "DIV",
+        "className": "flex items-start gap-md",
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(17, 24, 39)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "DIV",
+        "className": "flex-shrink-0",
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(17, 24, 39)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "svg",
+        "className": {},
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(37, 99, 235)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "path",
+        "className": {},
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(37, 99, 235)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "DIV",
+        "className": "flex-1",
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(17, 24, 39)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "H3",
+        "className": "font-semibold text-gray-900 mb-sm",
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(17, 24, 39)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "P",
+        "className": "text-sm text-gray-700 mb-md",
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(55, 65, 81)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "DIV",
+        "className": "flex flex-wrap gap-sm",
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(17, 24, 39)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "A",
+        "className": "inline-flex items-center gap-sm bg-blue-600 text-white px-md py-sm rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium",
+        "id": "",
+        "backgroundColor": "rgb(37, 99, 235)",
+        "color": "rgb(255, 255, 255)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "svg",
+        "className": {},
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(255, 255, 255)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "path",
+        "className": {},
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(255, 255, 255)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "BUTTON",
+        "className": "text-sm text-blue-600 hover:text-blue-700 font-medium",
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(37, 99, 235)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "DIV",
+        "className": "hidden mt-lg pt-lg border-t border-blue-200",
+        "id": "extension-instructions",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(17, 24, 39)",
+        "borderColor": "rgb(191, 219, 254)"
+      },
+      {
+        "tag": "H4",
+        "className": "font-medium text-gray-900 mb-sm",
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(17, 24, 39)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "OL",
+        "className": "text-sm text-gray-700 space-y-2 list-decimal list-inside",
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(55, 65, 81)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "CODE",
+        "className": "bg-gray-100 px-2 py-1 rounded",
+        "id": "",
+        "backgroundColor": "rgb(243, 244, 246)",
+        "color": "rgb(55, 65, 81)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "DIV",
+        "className": "card card-lg max-w-2xl mx-auto",
+        "id": "",
+        "backgroundColor": "rgb(255, 255, 255)",
+        "color": "rgb(17, 24, 39)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "DIV",
+        "className": "text-center mb-xl",
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(17, 24, 39)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "H2",
+        "className": "text-3xl font-bold text-gray-900 mb-md",
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(17, 24, 39)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "P",
+        "className": "text-gray-600",
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(75, 85, 99)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "BUTTON",
+        "className": "mt-md text-sm text-blue-600 hover:text-blue-700 font-medium inline-flex items-center gap-sm",
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(37, 99, 235)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "svg",
+        "className": {},
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(37, 99, 235)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "path",
+        "className": {},
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(37, 99, 235)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "FORM",
+        "className": "space-y-lg",
+        "id": "property-analysis-form",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(17, 24, 39)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "DIV",
+        "className": "grid grid-cols-1 md:grid-cols-2 gap-lg",
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(17, 24, 39)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "DIV",
+        "className": "md:col-span-2",
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(17, 24, 39)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "LABEL",
+        "className": "block text-sm font-medium text-gray-700 mb-sm",
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(55, 65, 81)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "SPAN",
+        "className": "group relative inline-block ml-2",
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(55, 65, 81)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "svg",
+        "className": {},
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(156, 163, 175)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "path",
+        "className": {},
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(156, 163, 175)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "SPAN",
+        "className": "invisible group-hover:visible absolute z-10 w-64 p-2 mt-2 text-xs text-white bg-gray-800 rounded-lg -left-32",
+        "id": "",
+        "backgroundColor": "rgb(31, 41, 55)",
+        "color": "rgb(255, 255, 255)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "TEXTAREA",
+        "className": "w-full p-md border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent resize-none",
+        "id": "property-address",
+        "backgroundColor": "rgb(255, 255, 255)",
+        "color": "rgb(17, 24, 39)",
+        "borderColor": "rgb(209, 213, 219)"
+      },
+      {
+        "tag": "P",
+        "className": "text-xs text-gray-500 mt-1",
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(107, 114, 128)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "LABEL",
+        "className": "block text-sm font-medium text-gray-700 mb-sm",
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(55, 65, 81)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "SPAN",
+        "className": "group relative inline-block ml-2",
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(55, 65, 81)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "svg",
+        "className": {},
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(156, 163, 175)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "path",
+        "className": {},
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(156, 163, 175)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "SPAN",
+        "className": "invisible group-hover:visible absolute z-10 w-64 p-2 mt-2 text-xs text-white bg-gray-800 rounded-lg -left-32",
+        "id": "",
+        "backgroundColor": "rgb(31, 41, 55)",
+        "color": "rgb(255, 255, 255)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "DIV",
+        "className": "relative",
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(17, 24, 39)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "SPAN",
+        "className": "absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500",
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(107, 114, 128)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "INPUT",
+        "className": "w-full pl-8 pr-3 p-md border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent",
+        "id": "property-price",
+        "backgroundColor": "rgb(255, 255, 255)",
+        "color": "rgb(17, 24, 39)",
+        "borderColor": "rgb(209, 213, 219)"
+      },
+      {
+        "tag": "P",
+        "className": "text-xs text-gray-500 mt-1",
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(107, 114, 128)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "LABEL",
+        "className": "block text-sm font-medium text-gray-700 mb-sm",
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(55, 65, 81)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "SPAN",
+        "className": "group relative inline-block ml-2",
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(55, 65, 81)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "svg",
+        "className": {},
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(156, 163, 175)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "path",
+        "className": {},
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(156, 163, 175)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "SPAN",
+        "className": "invisible group-hover:visible absolute z-10 w-64 p-2 mt-2 text-xs text-white bg-gray-800 rounded-lg -left-32",
+        "id": "",
+        "backgroundColor": "rgb(31, 41, 55)",
+        "color": "rgb(255, 255, 255)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "SELECT",
+        "className": "w-full p-md border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent",
+        "id": "property-bedrooms",
+        "backgroundColor": "rgb(239, 239, 239)",
+        "color": "rgb(17, 24, 39)",
+        "borderColor": "rgb(209, 213, 219)"
+      },
+      {
+        "tag": "LABEL",
+        "className": "block text-sm font-medium text-gray-700 mb-sm",
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(55, 65, 81)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "SPAN",
+        "className": "group relative inline-block ml-2",
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(55, 65, 81)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "svg",
+        "className": {},
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(156, 163, 175)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "path",
+        "className": {},
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(156, 163, 175)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "SPAN",
+        "className": "invisible group-hover:visible absolute z-10 w-64 p-2 mt-2 text-xs text-white bg-gray-800 rounded-lg -left-32",
+        "id": "",
+        "backgroundColor": "rgb(31, 41, 55)",
+        "color": "rgb(255, 255, 255)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "SELECT",
+        "className": "w-full p-md border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent",
+        "id": "property-bathrooms",
+        "backgroundColor": "rgb(239, 239, 239)",
+        "color": "rgb(17, 24, 39)",
+        "borderColor": "rgb(209, 213, 219)"
+      },
+      {
+        "tag": "DIV",
+        "className": "mt-lg",
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(17, 24, 39)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "BUTTON",
+        "className": "text-sm text-blue-600 hover:text-blue-700 font-medium inline-flex items-center gap-sm",
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(37, 99, 235)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "svg",
+        "className": {},
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(37, 99, 235)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "path",
+        "className": {},
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(37, 99, 235)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "DIV",
+        "className": "hidden mt-lg grid grid-cols-1 md:grid-cols-2 gap-lg",
+        "id": "optional-fields",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(17, 24, 39)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "LABEL",
+        "className": "block text-sm font-medium text-gray-700 mb-sm",
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(55, 65, 81)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "SPAN",
+        "className": "text-xs text-gray-500 ml-1",
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(107, 114, 128)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "INPUT",
+        "className": "w-full p-md border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent",
+        "id": "property-sqft",
+        "backgroundColor": "rgb(255, 255, 255)",
+        "color": "rgb(17, 24, 39)",
+        "borderColor": "rgb(209, 213, 219)"
+      },
+      {
+        "tag": "P",
+        "className": "text-xs text-gray-500 mt-1",
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(107, 114, 128)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "LABEL",
+        "className": "block text-sm font-medium text-gray-700 mb-sm",
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(55, 65, 81)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "SPAN",
+        "className": "text-xs text-gray-500 ml-1",
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(107, 114, 128)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "DIV",
+        "className": "relative",
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(17, 24, 39)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "SPAN",
+        "className": "absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500",
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(107, 114, 128)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "INPUT",
+        "className": "w-full pl-8 pr-3 p-md border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent",
+        "id": "property-taxes",
+        "backgroundColor": "rgb(255, 255, 255)",
+        "color": "rgb(17, 24, 39)",
+        "borderColor": "rgb(209, 213, 219)"
+      },
+      {
+        "tag": "P",
+        "className": "text-xs text-gray-500 mt-1",
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(107, 114, 128)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "LABEL",
+        "className": "block text-sm font-medium text-gray-700 mb-sm",
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(55, 65, 81)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "SPAN",
+        "className": "text-xs text-gray-500 ml-1",
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(107, 114, 128)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "DIV",
+        "className": "relative",
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(17, 24, 39)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "SPAN",
+        "className": "absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500",
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(107, 114, 128)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "INPUT",
+        "className": "w-full pl-8 pr-3 p-md border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent",
+        "id": "property-condofees",
+        "backgroundColor": "rgb(255, 255, 255)",
+        "color": "rgb(17, 24, 39)",
+        "borderColor": "rgb(209, 213, 219)"
+      },
+      {
+        "tag": "P",
+        "className": "text-xs text-gray-500 mt-1",
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(107, 114, 128)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "LABEL",
+        "className": "block text-sm font-medium text-gray-700 mb-sm",
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(55, 65, 81)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "SELECT",
+        "className": "w-full p-md border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent",
+        "id": "property-type",
+        "backgroundColor": "rgb(239, 239, 239)",
+        "color": "rgb(17, 24, 39)",
+        "borderColor": "rgb(209, 213, 219)"
+      },
+      {
+        "tag": "DIV",
+        "className": "text-center mt-xl",
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(17, 24, 39)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "BUTTON",
+        "className": "btn btn-primary btn-lg",
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(255, 255, 255)",
+        "borderColor": "rgb(255, 255, 255)"
+      },
+      {
+        "tag": "SPAN",
+        "className": "loading-spinner w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin hidden",
+        "id": "analyze-spinner",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(255, 255, 255)",
+        "borderColor": "rgba(0, 0, 0, 0) rgb(255, 255, 255) rgb(255, 255, 255)"
+      },
+      {
+        "tag": "SPAN",
+        "className": "",
+        "id": "analyze-text",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(255, 255, 255)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "DIV",
+        "className": "hidden",
+        "id": "analysis-results",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(17, 24, 39)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "DIV",
+        "className": "hidden",
+        "id": "property-confirmation",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(17, 24, 39)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "DIV",
+        "className": "hidden",
+        "id": "error-state",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(17, 24, 39)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "DIV",
+        "className": "mobile-only fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-md z-40",
+        "id": "",
+        "backgroundColor": "rgb(255, 255, 255)",
+        "color": "rgb(17, 24, 39)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "DIV",
+        "className": "grid grid-cols-3 gap-md text-center",
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(17, 24, 39)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "BUTTON",
+        "className": "p-md text-primary",
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(59, 130, 246)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "svg",
+        "className": {},
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(59, 130, 246)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "path",
+        "className": {},
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(59, 130, 246)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "SPAN",
+        "className": "text-xs",
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(59, 130, 246)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "BUTTON",
+        "className": "p-md text-gray-400",
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(156, 163, 175)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "svg",
+        "className": {},
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(156, 163, 175)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "path",
+        "className": {},
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(156, 163, 175)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "SPAN",
+        "className": "text-xs",
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(156, 163, 175)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "BUTTON",
+        "className": "p-md text-gray-400",
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(156, 163, 175)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "svg",
+        "className": {},
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(156, 163, 175)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "path",
+        "className": {},
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(156, 163, 175)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      {
+        "tag": "SPAN",
+        "className": "text-xs",
+        "id": "",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(156, 163, 175)",
+        "borderColor": "rgb(229, 231, 235)"
+      }
+    ]
+  },
+  "screenshotDirectory": "/home/amy/StarterPackApp/screenshots/color-analysis-1754536365451",
+  "findings": {
+    "totalColors": 27,
+    "colorReduction": "NEEDS_IMPROVEMENT",
+    "mostCommonColors": [
+      "rgb(0, 0, 0)",
+      "rgb(229, 231, 235)",
+      "rgb(249, 250, 251)",
+      "rgb(17, 24, 39)",
+      "rgb(255, 255, 255)",
+      "rgb(37, 99, 235)",
+      "rgb(75, 85, 99)",
+      "rgb(55, 65, 81)",
+      "rgb(209, 213, 219)",
+      "rgba(0, 0, 0, 0) rgb(229, 231, 235) rgb(229, 231, 235)"
+    ]
+  },
+  "recommendations": [
+    "Consider consolidating color palette to 8-12 colors maximum",
+    "Color palette is too diverse - implement design system colors"
+  ]
+}

@@ -1,5 +1,5 @@
 const { test, expect } = require('@playwright/test');
-const { VisualDebugger } = require('./helpers/visual-debugger');
+const { VisualDebugger } = require('../helpers/visual-debugger');
 const path = require('path');
 
 test.describe('Local File System Test', () => {

@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ROI Finder - Real Estate Investment Analysis</title>
     
+    <!-- Unified Design System -->
+    <link rel="stylesheet" href="styles/unified-design.css">
+    <link rel="stylesheet" href="styles/color-override.css">
+    
     <!-- External Dependencies -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.2/firebase-app-compat.js"></script>
@@ -668,6 +672,7 @@
         import ComponentLoader from './js/modules/componentLoader.js';
         import { FirebaseWrapper } from './js/firebase-wrapper.js';
         import { progressTracker } from './js/modules/analysisProgressTracker.js';
+        import { convertAnalysisData } from './js/utils/dataConverter.js';
         
         // Initialize Firebase with wrapper
         const firebaseWrapper = new FirebaseWrapper();
@@ -1707,9 +1712,9 @@
             }
             
             mapAnalysisData(analysisData) {
-                // Use centralized data converter if available
-                if (window.dataConverter && window.dataConverter.convertAnalysisData) {
-                    return window.dataConverter.convertAnalysisData(analysisData);
+                // Use imported data converter
+                if (typeof convertAnalysisData === 'function') {
+                    return convertAnalysisData(analysisData);
                 }
                 
                 // Fallback: Basic conversion if converter not loaded
@@ -2001,12 +2006,10 @@
         
     </script>
     
-    <!-- Data Converter Utility -->
-    <script src="js/utils/dataConverter.js" type="module"></script>
     <!-- Component Scripts -->
-    <script src="components/calculator/EnhancedFinancialCalculator.js"></script>
-    <script src="components/calculator/STRRevenueCalculator.js"></script>
-    <script src="components/analysis/STRCashFlowCard.js"></script>
+    <script type="module" src="components/calculator/EnhancedFinancialCalculator.js"></script>
+    <script type="module" src="components/calculator/STRRevenueCalculator.js"></script>
+    <script type="module" src="components/analysis/STRCashFlowCard.js"></script>
     <!-- Error Handler -->
     <script src="js/error-handler.js"></script>
     <!-- Form Validation -->

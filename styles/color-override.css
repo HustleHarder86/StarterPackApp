@@ -1,0 +1,217 @@
+/* Color Override - Force Consistent Palette */
+
+/* Import design tokens */
+@import './design-tokens.css';
+
+/* Override all Tailwind colors with our limited palette */
+* {
+  /* Force text colors to use our palette */
+  color: var(--color-text-primary) !important;
+}
+
+/* Headers use primary text */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--color-text-primary) !important;
+}
+
+/* Secondary text elements */
+p, span, small {
+  color: var(--color-text-secondary) !important;
+}
+
+/* Labels and small text */
+label, .text-sm, .text-xs {
+  color: var(--color-text-secondary) !important;
+}
+
+/* Override gray variations */
+.text-gray-900, .text-gray-800, .text-gray-700 {
+  color: var(--color-text-primary) !important;
+}
+
+.text-gray-600, .text-gray-500 {
+  color: var(--color-text-secondary) !important;
+}
+
+.text-gray-400, .text-gray-300 {
+  color: var(--color-text-muted) !important;
+}
+
+/* Override background colors */
+.bg-gray-50, .bg-gray-100 {
+  background-color: var(--color-background-secondary) !important;
+}
+
+.bg-gray-200, .bg-gray-300 {
+  background-color: var(--color-gray-200) !important;
+}
+
+.bg-white {
+  background-color: var(--color-background) !important;
+}
+
+/* Override blue variations */
+.bg-blue-50, .bg-blue-100 {
+  background-color: var(--color-primary-100) !important;
+}
+
+.bg-blue-500, .bg-blue-600, .bg-blue-700 {
+  background-color: var(--color-primary-500) !important;
+}
+
+.text-blue-500, .text-blue-600, .text-blue-700 {
+  color: var(--color-primary-500) !important;
+}
+
+.border-blue-400, .border-blue-500, .border-blue-600 {
+  border-color: var(--color-primary-500) !important;
+}
+
+/* Override green variations */
+.bg-green-50, .bg-green-100 {
+  background-color: var(--color-success-light) !important;
+}
+
+.bg-green-500, .bg-green-600 {
+  background-color: var(--color-success) !important;
+}
+
+.text-green-500, .text-green-600, .text-green-700 {
+  color: var(--color-success) !important;
+}
+
+/* Override red variations */
+.bg-red-50, .bg-red-100 {
+  background-color: var(--color-error-light) !important;
+}
+
+.bg-red-500, .bg-red-600 {
+  background-color: var(--color-error) !important;
+}
+
+.text-red-500, .text-red-600, .text-red-700 {
+  color: var(--color-error) !important;
+}
+
+/* Border color overrides */
+.border-gray-200, .border-gray-300 {
+  border-color: var(--color-border) !important;
+}
+
+.border-gray-400, .border-gray-500 {
+  border-color: var(--color-border-hover) !important;
+}
+
+/* Button overrides */
+button, .btn {
+  transition: all var(--transition-base) !important;
+}
+
+button:hover, .btn:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md) !important;
+}
+
+/* Form element overrides */
+input, select, textarea {
+  background-color: var(--color-background) !important;
+  border-color: var(--color-border) !important;
+  color: var(--color-text-primary) !important;
+  transition: all var(--transition-fast) !important;
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: var(--color-primary-500) !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+  outline: none !important;
+}
+
+/* Card and panel overrides */
+.card, .panel, [class*="rounded"] {
+  box-shadow: var(--shadow-base) !important;
+  transition: all var(--transition-base) !important;
+}
+
+.card:hover, .panel:hover {
+  box-shadow: var(--shadow-lg) !important;
+  transform: translateY(-2px);
+}
+
+/* Remove all other background gradients and replace with solid colors */
+[class*="gradient"], [class*="bg-gradient"] {
+  background: var(--color-primary-500) !important;
+}
+
+/* Ensure consistent hover states */
+a:hover {
+  color: var(--color-primary-600) !important;
+}
+
+/* Loading and skeleton overrides */
+.skeleton, [class*="skeleton"] {
+  background: linear-gradient(
+    90deg,
+    var(--color-gray-200) 25%,
+    var(--color-gray-100) 50%,
+    var(--color-gray-200) 75%
+  ) !important;
+  background-size: 200% 100% !important;
+  animation: skeleton-loading 1.5s infinite !important;
+}
+
+/* Alert color overrides */
+.alert-info, .bg-blue-50.border-l-4.border-blue-400 {
+  background-color: var(--color-info-light) !important;
+  border-left-color: var(--color-info) !important;
+}
+
+.alert-success, .bg-green-50.border-l-4.border-green-400 {
+  background-color: var(--color-success-light) !important;
+  border-left-color: var(--color-success) !important;
+}
+
+.alert-error, .bg-red-50.border-l-4.border-red-400 {
+  background-color: var(--color-error-light) !important;
+  border-left-color: var(--color-error) !important;
+}
+
+/* Specific component fixes */
+.navbar, nav {
+  background-color: var(--color-background) !important;
+  border-bottom: 1px solid var(--color-border) !important;
+}
+
+/* Ensure icons don't override colors */
+svg {
+  color: currentColor !important;
+}
+
+/* Remove all box shadows except our defined ones */
+[class*="shadow"] {
+  box-shadow: var(--shadow-base) !important;
+}
+
+.shadow-sm {
+  box-shadow: var(--shadow-sm) !important;
+}
+
+.shadow-md {
+  box-shadow: var(--shadow-md) !important;
+}
+
+.shadow-lg {
+  box-shadow: var(--shadow-lg) !important;
+}
+
+.shadow-xl {
+  box-shadow: var(--shadow-xl) !important;
+}
+
+/* Smooth all transitions */
+* {
+  transition: color var(--transition-fast),
+              background-color var(--transition-fast),
+              border-color var(--transition-fast),
+              box-shadow var(--transition-fast),
+              transform var(--transition-fast) !important;
+}

@@ -1,6 +1,6 @@
 // Fixed E2E test using actual element IDs
 const { test, expect } = require('@playwright/test');
-const { VisualDebugger } = require('./helpers/visual-debugger');
+const { VisualDebugger } = require('../helpers/visual-debugger');
 const path = require('path');
 
 test.describe('ROI Finder - Fixed Tests', () => {

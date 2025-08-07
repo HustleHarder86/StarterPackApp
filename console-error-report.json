@@ -1,0 +1,63 @@
+{
+  "timestamp": "2025-08-07T03:07:52.188Z",
+  "url": "http://localhost:3000/roi-finder.html",
+  "pageTitle": "ROI Finder - Real Estate Investment Analysis",
+  "hasMainContent": true,
+  "totalConsoleMessages": 6,
+  "totalJsErrors": 0,
+  "unexpectedTokenExportErrors": 0,
+  "allConsoleMessages": [
+    {
+      "type": "warn",
+      "text": "cdn.tailwindcss.com should not be used in production. To use Tailwind CSS in production, install it as a PostCSS plugin or use the Tailwind CLI: https://tailwindcss.com/docs/installation",
+      "location": {
+        "url": "https://cdn.tailwindcss.com/",
+        "lineNumber": 63,
+        "columnNumber": 1710
+      }
+    },
+    {
+      "type": "verbose",
+      "text": "[DOM] Input elements should have autocomplete attributes (suggested: \"current-password\"): (More info: https://goo.gl/9p2vKq) %o",
+      "location": {
+        "url": "http://localhost:3000/roi-finder.html"
+      }
+    },
+    {
+      "type": "verbose",
+      "text": "[DOM] Input elements should have autocomplete attributes (suggested: \"current-password\"): (More info: https://goo.gl/9p2vKq) %o",
+      "location": {
+        "url": "http://localhost:3000/roi-finder.html"
+      }
+    },
+    {
+      "type": "log",
+      "text": "Firebase initialized successfully with project: real-estate-roi-app",
+      "location": {
+        "url": "http://localhost:3000/roi-finder.html",
+        "lineNumber": 703,
+        "columnNumber": 24
+      }
+    },
+    {
+      "type": "log",
+      "text": "Starting ROI Finder App...",
+      "location": {
+        "url": "http://localhost:3000/roi-finder.html",
+        "lineNumber": 1998,
+        "columnNumber": 20
+      }
+    },
+    {
+      "type": "log",
+      "text": "No authenticated user, proceeding without auth",
+      "location": {
+        "url": "http://localhost:3000/roi-finder.html",
+        "lineNumber": 824,
+        "columnNumber": 32
+      }
+    }
+  ],
+  "jsErrors": [],
+  "exportErrors": []
+}

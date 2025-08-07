@@ -1,0 +1,154 @@
+{
+  "timestamp": "2025-08-07T03:01:13.078Z",
+  "summary": {
+    "totalScreenshots": 6,
+    "totalIssues": 5,
+    "criticalIssues": 0,
+    "highIssues": 3,
+    "mediumIssues": 2,
+    "lowIssues": 0
+  },
+  "screenshots": [
+    {
+      "name": "landing-page-desktop-initial",
+      "description": "landing-page initial desktop view (1280x720)",
+      "filename": "landing-page-desktop-initial-1754535595409.png",
+      "filepath": "/home/amy/StarterPackApp/tests/e2e/screenshots/ux-audit/landing-page-desktop-initial-1754535595409.png",
+      "timestamp": "2025-08-07T02:59:56.375Z"
+    },
+    {
+      "name": "landing-page-mobile",
+      "description": "landing-page mobile view (375x667)",
+      "filename": "landing-page-mobile-1754535596884.png",
+      "filepath": "/home/amy/StarterPackApp/tests/e2e/screenshots/ux-audit/landing-page-mobile-1754535596884.png",
+      "timestamp": "2025-08-07T02:59:57.374Z"
+    },
+    {
+      "name": "landing-page-cta-hover",
+      "description": "landing-page CTA button hover state",
+      "filename": "landing-page-cta-hover-1754535598344.png",
+      "filepath": "/home/amy/StarterPackApp/tests/e2e/screenshots/ux-audit/landing-page-cta-hover-1754535598344.png",
+      "timestamp": "2025-08-07T02:59:59.155Z"
+    },
+    {
+      "name": "landing-page-cta-focus",
+      "description": "landing-page CTA button focus state",
+      "filename": "landing-page-cta-focus-1754535599478.png",
+      "filepath": "/home/amy/StarterPackApp/tests/e2e/screenshots/ux-audit/landing-page-cta-focus-1754535599478.png",
+      "timestamp": "2025-08-07T03:00:00.291Z"
+    },
+    {
+      "name": "roi-finder-page-desktop-initial",
+      "description": "roi-finder-page initial desktop view (1280x720)",
+      "filename": "roi-finder-page-desktop-initial-1754535641148.png",
+      "filepath": "/home/amy/StarterPackApp/tests/e2e/screenshots/ux-audit/roi-finder-page-desktop-initial-1754535641148.png",
+      "timestamp": "2025-08-07T03:00:41.351Z"
+    },
+    {
+      "name": "roi-finder-page-mobile",
+      "description": "roi-finder-page mobile view (375x667)",
+      "filename": "roi-finder-page-mobile-1754535641867.png",
+      "filepath": "/home/amy/StarterPackApp/tests/e2e/screenshots/ux-audit/roi-finder-page-mobile-1754535641867.png",
+      "timestamp": "2025-08-07T03:00:41.996Z"
+    }
+  ],
+  "issues": [
+    {
+      "type": "color_scheme",
+      "severity": "medium",
+      "page": "landing-page",
+      "message": "High color variety detected (19 unique colors). Consider using a more consistent color palette.",
+      "details": {
+        "backgroundColors": [
+          "rgba(255, 255, 255, 0.95)",
+          "rgb(255, 255, 255)"
+        ],
+        "textColors": [
+          "rgb(31, 41, 55)",
+          "rgb(102, 126, 234)",
+          "rgb(107, 114, 128)",
+          "rgb(255, 255, 255)",
+          "rgb(251, 191, 36)",
+          "rgb(55, 65, 81)",
+          "rgb(156, 163, 175)"
+        ],
+        "borderColors": [
+          "rgb(31, 41, 55)",
+          "rgb(102, 126, 234)",
+          "rgb(107, 114, 128)",
+          "rgb(255, 255, 255)",
+          "rgba(255, 255, 255, 0.2)",
+          "rgb(31, 41, 55) rgb(31, 41, 55) rgb(243, 244, 246)",
+          "rgb(243, 244, 246)",
+          "rgb(251, 191, 36)",
+          "rgb(55, 65, 81)",
+          "rgb(156, 163, 175)"
+        ],
+        "totalElements": 139
+      }
+    },
+    {
+      "type": "page_error",
+      "severity": "high",
+      "message": "Unexpected token 'export'",
+      "stack": ""
+    },
+    {
+      "type": "page_error",
+      "severity": "high",
+      "message": "Unexpected token 'export'",
+      "stack": ""
+    },
+    {
+      "type": "page_error",
+      "severity": "high",
+      "message": "Unexpected token 'export'",
+      "stack": ""
+    },
+    {
+      "type": "color_scheme",
+      "severity": "medium",
+      "page": "roi-finder-page",
+      "message": "High color variety detected (16 unique colors). Consider using a more consistent color palette.",
+      "details": {
+        "backgroundColors": [
+          "rgb(255, 255, 255)",
+          "rgb(37, 99, 235)",
+          "rgb(31, 41, 55)",
+          "rgb(239, 239, 239)"
+        ],
+        "textColors": [
+          "rgb(0, 0, 0)",
+          "rgb(37, 99, 235)",
+          "rgb(17, 24, 39)",
+          "rgb(75, 85, 99)",
+          "rgb(55, 65, 81)",
+          "rgb(255, 255, 255)",
+          "rgb(156, 163, 175)",
+          "rgb(107, 114, 128)"
+        ],
+        "borderColors": [
+          "rgb(229, 231, 235)",
+          "rgb(209, 213, 219)",
+          "rgb(191, 219, 254)",
+          "rgb(255, 255, 255)"
+        ],
+        "totalElements": 81
+      }
+    }
+  ],
+  "recommendations": [
+    {
+      "category": "Design System",
+      "priority": "Medium",
+      "title": "Standardize Color Palette",
+      "description": "Consider creating a consistent color palette with primary, secondary, and accent colors.",
+      "impact": "Improved visual consistency and brand recognition"
+    }
+  ],
+  "overallScore": {
+    "score": 39,
+    "rating": "Critical Issues",
+    "deductions": 61
+  }
+}

@@ -1,5 +1,5 @@
 const { test, expect } = require('@playwright/test');
-const { VisualDebugger } = require('./helpers/visual-debugger');
+const { VisualDebugger } = require('../helpers/visual-debugger');
 
 test.describe('Quick Application Test', () => {
   test('check homepage and main components', async ({ page }, testInfo) => {
