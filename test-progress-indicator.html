@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STR Progress Indicator Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 p-8">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-2xl font-bold mb-6">STR Analysis Progress Indicator Test</h1>
+        
+        <button id="startTest" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 mb-6">
+            Start STR Analysis Simulation
+        </button>
+        
+        <div id="analysisResults"></div>
+    </div>
+
+    <script>
+        // Copy the exact functions from roi-finder.html
+        function showSTRTimeoutWarning() {
+            const warningDiv = document.createElement('div');
+            warningDiv.id = 'str-timeout-warning';
+            warningDiv.className = 'bg-blue-50 border-l-4 border-blue-400 p-4 mb-4';
+            warningDiv.innerHTML = `
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <svg class="h-5 w-5 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm text-blue-700">
+                            <strong>STR Analysis in Progress:</strong> This analysis searches real-time Airbnb data and may take up to 5 minutes to complete. Please do not refresh the page.
+                        </p>
+                    </div>
+                </div>
+            `;
+            
+            const resultsDiv = document.getElementById('analysisResults');
+            if (resultsDiv && !document.getElementById('str-timeout-warning')) {
+                resultsDiv.insertBefore(warningDiv, resultsDiv.firstChild);
+            }
+        }
+        
+        function startProgressTimer() {
+            let elapsed = 0;
+            const progressDiv = document.createElement('div');
+            progressDiv.id = 'str-progress-timer';
+            progressDiv.className = 'text-sm text-gray-600 mt-2';
+            
+            const warningDiv = document.getElementById('str-timeout-warning');
+            if (warningDiv) {
+                warningDiv.appendChild(progressDiv);
+            }
+            
+            return setInterval(() => {
+                elapsed += 1;
+                const minutes = Math.floor(elapsed / 60);
+                const seconds = elapsed % 60;
+                const timeStr = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                
+                if (progressDiv) {
+                    progressDiv.innerHTML = `
+                        <span class="inline-flex items-center">
+                            <svg class="animate-spin -ml-1 mr-3 h-4 w-4 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            Analyzing Airbnb data... (${timeStr} elapsed, up to 5:00 expected)
+                        </span>
+                    `;
+                    
+                    // Add progress stages
+                    let stage = '';
+                    if (elapsed < 30) {
+                        stage = ' - Searching properties...';
+                    } else if (elapsed < 90) {
+                        stage = ' - Analyzing comparables...';
+                    } else if (elapsed < 180) {
+                        stage = ' - Calculating revenue metrics...';
+                    } else if (elapsed < 240) {
+                        stage = ' - Generating recommendations...';
+                    } else {
+                        stage = ' - Finalizing analysis...';
+                    }
+                    
+                    progressDiv.innerHTML += `<span class="text-gray-500">${stage}</span>`;
+                }
+            }, 1000);
+        }
+        
+        // Test button handler
+        document.getElementById('startTest').addEventListener('click', function() {
+            // Clear previous results
+            document.getElementById('analysisResults').innerHTML = '';
+            
+            // Show the warning
+            showSTRTimeoutWarning();
+            
+            // Start the progress timer
+            const timer = startProgressTimer();
+            
+            // Stop after 30 seconds for demo
+            setTimeout(() => {
+                clearInterval(timer);
+                
+                // Show success message
+                const successDiv = document.createElement('div');
+                successDiv.className = 'bg-green-50 border-l-4 border-green-400 p-4 mt-4';
+                successDiv.innerHTML = `
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <svg class="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm text-green-700">
+                                <strong>Analysis Complete!</strong> STR data has been successfully retrieved and analyzed.
+                            </p>
+                        </div>
+                    </div>
+                `;
+                document.getElementById('analysisResults').appendChild(successDiv);
+            }, 30000);
+        });
+    </script>
+</body>
+</html>

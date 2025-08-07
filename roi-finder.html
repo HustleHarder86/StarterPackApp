@@ -1303,10 +1303,54 @@
                 }
             }
             
+            cancelAnalysis() {
+                console.log('Cancelling analysis...');
+                
+                // Abort the fetch request
+                if (window.appState.currentAnalysisController) {
+                    window.appState.currentAnalysisController.abort();
+                    window.appState.currentAnalysisController = null;
+                }
+                
+                // Clear any progress timers
+                if (window.appState.progressTimer) {
+                    clearInterval(window.appState.progressTimer);
+                    window.appState.progressTimer = null;
+                }
+                
+                // Remove progress indicators
+                const warningDiv = document.getElementById('str-timeout-warning');
+                if (warningDiv) {
+                    warningDiv.remove();
+                }
+                
+                // Show cancelled message
+                this.showError('Analysis cancelled. You can start a new analysis at any time.');
+                
+                // Re-enable the analyze button
+                const analyzeBtn = document.getElementById('analyzeBtn');
+                if (analyzeBtn) {
+                    analyzeBtn.disabled = false;
+                    analyzeBtn.textContent = 'Analyze Property';
+                }
+            }
+            
             async retrySTRAnalysis() {
-                // Implement retry logic for STR only
                 console.log('Retrying STR analysis...');
-                // This would need to be implemented on the backend
+                
+                // Check if we have the last property data
+                if (!window.appState.lastPropertyData) {
+                    this.showError('No previous analysis data found. Please fill the form and try again.');
+                    return;
+                }
+                
+                // Clear any existing errors
+                const errorDivs = document.querySelectorAll('.bg-red-50');
+                errorDivs.forEach(div => div.remove());
+                
+                // Retry with the last analysis type
+                const analysisType = window.appState.lastAnalysisType || 'both';
+                await this.analyzeProperty(window.appState.lastPropertyData, analysisType);
             }
             
             showSTRTimeoutWarning() {
@@ -1315,17 +1359,23 @@
                 warningDiv.id = 'str-timeout-warning';
                 warningDiv.className = 'bg-blue-50 border-l-4 border-blue-400 p-4 mb-4';
                 warningDiv.innerHTML = `
-                    <div class="flex">
-                        <div class="flex-shrink-0">
-                            <svg class="h-5 w-5 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
-                            </svg>
+                    <div class="flex justify-between items-start">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <svg class="h-5 w-5 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-sm text-blue-700">
+                                    <strong>STR Analysis in Progress:</strong> This analysis searches real-time Airbnb data and may take up to 5 minutes to complete. Please do not refresh the page.
+                                </p>
+                            </div>
                         </div>
-                        <div class="ml-3">
-                            <p class="text-sm text-blue-700">
-                                <strong>STR Analysis in Progress:</strong> This analysis searches real-time Airbnb data and may take up to 5 minutes to complete. Please do not refresh the page.
-                            </p>
-                        </div>
+                        <button onclick="window.propertyAnalyzer.cancelAnalysis()" 
+                                class="ml-4 px-3 py-1 text-sm bg-red-500 text-white rounded hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500">
+                            Cancel
+                        </button>
                     </div>
                 `;
                 
@@ -1438,6 +1488,7 @@
                     let progressTimer = null;
                     if (analysisType === 'both' || analysisType === 'str') {
                         progressTimer = this.startProgressTimer();
+                        window.appState.progressTimer = progressTimer;
                     }
                     
                     // Debug logging

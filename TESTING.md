@@ -1,5 +1,20 @@
 # 🧪 StarterPackApp Testing Guide
 
+## Quick Reference
+
+### Run Tests
+```bash
+npm run test:quick         # Syntax + lint checks
+npm run test:e2e           # Full E2E suite
+npm run test:comprehensive # Everything
+./test-5min-timeout.sh     # Test 5-minute STR timeout
+```
+
+### Timeout Configuration
+- STR analysis can take up to 5 minutes
+- See [docs/TIMEOUT-CONFIGURATION.md](docs/TIMEOUT-CONFIGURATION.md) for details
+- Progress indicators show during long-running analysis
+
 ## 🔑 Tester Access for Unlimited STR Analysis
 
 ### Quick Setup for Testers
