@@ -73,6 +73,14 @@ npm run deploy:fast          # Only when ready for production
 2. Comprehensive: `npm run test:comprehensive`
 3. E2E with screenshots: `npm run test:e2e`
 
+**🔑 TESTER ACCESS FOR UNLIMITED STR ANALYSIS:**
+Testers have unlimited STR analysis without the 5-trial limit:
+- **Hardcoded User ID**: `yBilXCUnWAdqUuJfy2YwXnRz4Xy2` (always has access)
+- **Email domains**: `@test.com`, `@e2e.com`, `@starterpackapp.com`
+- **Database role**: Users with `role: 'tester'` or `isTester: true`
+- **Test headers**: `X-E2E-Test-Mode: true` or `X-Test-API-Key: [TEST_API_KEY]`
+- **Grant access**: `node scripts/grant-tester-access.js <userId or email>`
+
 **Self-Debugging System:**
 - Tests can take screenshots and self-heal
 - Use `VisualDebugger` for UI debugging
@@ -80,6 +88,7 @@ npm run deploy:fast          # Only when ready for production
 
 **📚 IMPORTANT: Test Debugging Guide**
 - See [TEST-AGENT-LEARNINGS.md](./tests/e2e/TEST-AGENT-LEARNINGS.md) for debugging patterns
+- See [TESTING.md](./TESTING.md) for comprehensive testing guide
 - Contains lessons from real debugging sessions
 - Includes data structure mismatch solutions, E2E test tips, and common pitfalls
 

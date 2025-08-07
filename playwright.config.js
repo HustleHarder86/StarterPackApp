@@ -20,6 +20,13 @@ module.exports = defineConfig({
     
     // Default test user credentials
     // storageState: 'tests/e2e/.auth/user.json', // Commented out for visual tests
+    
+    // Tester access headers for unlimited STR analysis
+    extraHTTPHeaders: {
+      'X-E2E-Test-Mode': 'true',
+      // Optionally use test API key if configured
+      ...(process.env.TEST_API_KEY && { 'X-Test-API-Key': process.env.TEST_API_KEY })
+    },
   },
   
   // Extended timeout for visual tests that call real APIs
