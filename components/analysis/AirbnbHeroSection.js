@@ -328,13 +328,17 @@ export const strCalculatorScript = `
     const monthlyRevenue = strData.monthly_revenue || strData.monthlyRevenue || 0;
     const ltrRent = ltrData.monthly_rent || ltrData.monthlyRent || 3100;
     
+    // Validate values to prevent NaN
+    const validMonthlyRevenue = isNaN(monthlyRevenue) ? 0 : monthlyRevenue;
+    const validLtrRent = isNaN(ltrRent) ? 3100 : ltrRent;
+    
     const chart = new Chart(ctx.getContext('2d'), {
       type: 'bar',
       data: {
         labels: ['Short-Term Rental', 'Long-Term Rental'],
         datasets: [{
           label: 'Monthly Revenue',
-          data: [monthlyRevenue, ltrRent],
+          data: [validMonthlyRevenue, validLtrRent],
           backgroundColor: ['#9333ea', '#6b7280'],
           borderRadius: 8
         }]

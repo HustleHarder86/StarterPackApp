@@ -101,18 +101,38 @@ router.post('/property', optionalAuth, async (req, res, next) => {
           // Check if user has access to STR analysis
           if (req.userId) {
             const userDoc = await db.collection('users').doc(req.userId).get();
-            const userData = userDoc.exists ? userDoc.data() : null;
+            const userData = userDoc.exists ? userDoc.data() : {};
             
             // Admin users have unlimited access
-            const isAdmin = userData && (userData.role === 'admin' || userData.isAdmin === true);
+            const isAdmin = userData.role === 'admin' || userData.isAdmin === true;
             
+            // Check subscription tier (default to 'free' if not set)
+            const subscriptionTier = userData.subscriptionTier || 'free';
+            const strTrialUsed = userData.strTrialUsed || 0;
+            
+            // Allow STR access for:
+            // 1. Admin users
+            // 2. Pro/Enterprise subscribers
+            // 3. Free users with trials remaining (5 trials)
             const canUseSTR = isAdmin ||
-                              userData.subscriptionTier === 'pro' || 
-                              userData.subscriptionTier === 'enterprise' ||
-                              (userData.strTrialUsed || 0) < 5;
+                              subscriptionTier === 'pro' || 
+                              subscriptionTier === 'enterprise' ||
+                              strTrialUsed < 5;
+            
+            logger.info('STR access check', {
+              userId: req.userId,
+              isAdmin,
+              subscriptionTier,
+              strTrialUsed,
+              canUseSTR
+            });
             
             if (!canUseSTR) {
-              logger.warn('User does not have STR access', { userId: req.userId });
+              logger.warn('User does not have STR access', { 
+                userId: req.userId,
+                strTrialUsed,
+                subscriptionTier
+              });
               // Don't throw error, just return LTR analysis with snake_case conversion
               const snakeCaseResult = toSnakeCase(result);
               
@@ -125,10 +145,27 @@ router.post('/property', optionalAuth, async (req, res, next) => {
               return res.json({
                 success: true,
                 data: snakeCaseResult,
-                message: 'Analysis completed (STR requires Pro subscription)',
-                strAccessDenied: true
+                message: 'Analysis completed (STR trial limit reached - upgrade to Pro for unlimited)',
+                strAccessDenied: true,
+                strTrialUsed,
+                strTrialLimit: 5
               });
             }
+            
+            // If user has access and is using a trial, increment the counter
+            if (!isAdmin && subscriptionTier === 'free' && strTrialUsed < 5) {
+              await db.collection('users').doc(req.userId).update({
+                strTrialUsed: admin.firestore.FieldValue.increment(1),
+                lastStrTrialDate: admin.firestore.FieldValue.serverTimestamp()
+              });
+              logger.info('Incremented STR trial usage', {
+                userId: req.userId,
+                newTrialCount: strTrialUsed + 1
+              });
+            }
+          } else {
+            // Anonymous users get 1 free STR analysis
+            logger.info('Anonymous user requesting STR analysis - allowing one free trial');
           }
           
           // Prepare property data for STR analysis

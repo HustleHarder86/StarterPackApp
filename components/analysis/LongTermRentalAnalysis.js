@@ -108,8 +108,10 @@ export const LongTermRentalAnalysis = ({
   
   // STR comparison data
   const strRevenue = analysis.shortTermRental?.monthlyRevenue || analysis.short_term_rental?.monthly_revenue || 5045;
-  const revenueGap = strRevenue - monthlyRent;
-  const strHigherPercentage = ((strRevenue - monthlyRent) / monthlyRent * 100).toFixed(0);
+  const validStrRevenue = isNaN(strRevenue) ? 5045 : strRevenue;
+  const validMonthlyRent = isNaN(monthlyRent) ? 3100 : monthlyRent;
+  const revenueGap = validStrRevenue - validMonthlyRent;
+  const strHigherPercentage = ((validStrRevenue - validMonthlyRent) / validMonthlyRent * 100).toFixed(0);
   
   return `
     <div class="${className}">
@@ -562,13 +564,14 @@ export const LongTermRentalAnalysis = ({
         }
         
         const ctx = canvas.getContext('2d');
-        const monthlyRent = ${monthlyRent};
+        const monthlyRent = ${validMonthlyRent};
         const growthRate = ${effectiveGrowthRate} / 100;
           
           // Calculate 5-year projections
           const projections = [];
           for (let year = 1; year <= 5; year++) {
-            projections.push(Math.round(monthlyRent * Math.pow(1 + growthRate, year - 1) * 12));
+            const projection = Math.round(monthlyRent * Math.pow(1 + growthRate, year - 1) * 12);
+            projections.push(isNaN(projection) ? 0 : projection);
           }
           
           new Chart(ctx, {
@@ -678,8 +681,8 @@ export const LongTermRentalAnalysis = ({
           }
           
           const ctx = canvas.getContext('2d');
-          const strMonthly = ${strRevenue};
-          const ltrMonthly = ${monthlyRent};
+          const strMonthly = ${validStrRevenue};
+          const ltrMonthly = ${validMonthlyRent};
           
           console.log('Creating revenue comparison chart with data:', { strMonthly, ltrMonthly });
           

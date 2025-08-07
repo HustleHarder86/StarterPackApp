@@ -568,17 +568,6 @@ class ComponentLoader {
                       operatingExpenses: strData.expenses?.monthly?.total || 0
                     }) : ''}
                     
-                    <!-- Integrated Enhanced Financial Calculator -->
-                    <div id="financial-calculator-str">
-                      ${enhancedFinancialCalcModule?.EnhancedFinancialCalculator ? 
-                        enhancedFinancialCalcModule.EnhancedFinancialCalculator({ 
-                          analysisData: {
-                            ...analysisData,
-                            analysisType: 'str' // Force STR context
-                          }
-                        }) : ''}
-                    </div>
-                    
                     <!-- Airbnb Listings -->
                     ${airbnbHtml}
                   </div>
