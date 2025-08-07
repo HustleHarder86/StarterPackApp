@@ -106,22 +106,46 @@ router.post('/property', optionalAuth, async (req, res, next) => {
             // Admin users have unlimited access
             const isAdmin = userData.role === 'admin' || userData.isAdmin === true;
             
+            // Tester users have unlimited access
+            // Multiple ways to identify testers:
+            // 1. User has 'tester' role
+            // 2. User email ends with @test.com or @e2e.com
+            // 3. User ID is in the tester whitelist
+            // 4. Special test API key is provided
+            const testerEmails = ['@test.com', '@e2e.com', '@starterpackapp.com'];
+            const testerUserIds = [
+              'test-user-e2e',
+              'test-user-id',
+              'yBilXCUnWAdqUuJfy2YwXnRz4Xy2' // Add your tester's user ID here
+            ];
+            
+            const isTester = userData.role === 'tester' ||
+                             userData.isTester === true ||
+                             testerEmails.some(domain => req.userEmail?.endsWith(domain)) ||
+                             testerUserIds.includes(req.userId) ||
+                             req.headers['x-test-api-key'] === process.env.TEST_API_KEY ||
+                             req.headers['x-e2e-test-mode'] === 'true';
+            
             // Check subscription tier (default to 'free' if not set)
             const subscriptionTier = userData.subscriptionTier || 'free';
             const strTrialUsed = userData.strTrialUsed || 0;
             
             // Allow STR access for:
             // 1. Admin users
-            // 2. Pro/Enterprise subscribers
-            // 3. Free users with trials remaining (5 trials)
+            // 2. Tester users
+            // 3. Pro/Enterprise subscribers
+            // 4. Free users with trials remaining (5 trials)
             const canUseSTR = isAdmin ||
+                              isTester ||
                               subscriptionTier === 'pro' || 
                               subscriptionTier === 'enterprise' ||
                               strTrialUsed < 5;
             
             logger.info('STR access check', {
               userId: req.userId,
+              userEmail: req.userEmail,
               isAdmin,
+              isTester,
               subscriptionTier,
               strTrialUsed,
               canUseSTR
@@ -153,7 +177,8 @@ router.post('/property', optionalAuth, async (req, res, next) => {
             }
             
             // If user has access and is using a trial, increment the counter
-            if (!isAdmin && subscriptionTier === 'free' && strTrialUsed < 5) {
+            // Skip incrementing for admins and testers
+            if (!isAdmin && !isTester && subscriptionTier === 'free' && strTrialUsed < 5) {
               await db.collection('users').doc(req.userId).update({
                 strTrialUsed: admin.firestore.FieldValue.increment(1),
                 lastStrTrialDate: admin.firestore.FieldValue.serverTimestamp()
@@ -161,6 +186,11 @@ router.post('/property', optionalAuth, async (req, res, next) => {
               logger.info('Incremented STR trial usage', {
                 userId: req.userId,
                 newTrialCount: strTrialUsed + 1
+              });
+            } else if (isTester) {
+              logger.info('Tester access - not incrementing trial counter', {
+                userId: req.userId,
+                userEmail: req.userEmail
               });
             }
           } else {
