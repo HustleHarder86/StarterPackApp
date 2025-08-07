@@ -142,10 +142,21 @@ const gracefulShutdown = () => {
 process.on('SIGTERM', gracefulShutdown);
 process.on('SIGINT', gracefulShutdown);
 
-// Start server
+// Start server with extended timeout for long-running STR analysis
 const PORT = config.port;
 const server = app.listen(PORT, () => {
   logger.info(`Railway API server listening on port ${PORT}`);
   logger.info(`Environment: ${config.nodeEnv}`);
   logger.info(`CORS origins: ${config.cors.origin.join(', ')}`);
+});
+
+// Set server timeouts to handle long-running STR analysis (up to 5 minutes)
+server.keepAliveTimeout = 310000; // 310 seconds (slightly more than 5 minutes)
+server.headersTimeout = 320000; // 320 seconds (must be > keepAliveTimeout)
+server.timeout = 330000; // 330 seconds (5.5 minutes total timeout)
+
+logger.info('Server timeouts configured for long-running analysis', {
+  keepAliveTimeout: '310s',
+  headersTimeout: '320s',
+  timeout: '330s'
 });
