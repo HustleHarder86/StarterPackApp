@@ -1,0 +1,623 @@
+{
+  "timestamp": "2025-08-07T03:25:40.928Z",
+  "testUrl": "http://localhost:3002/roi-finder.html",
+  "overallScore": {
+    "score": 50,
+    "grade": "F",
+    "feedback": [
+      "Accessibility issues: 14 (-30 points)",
+      "Good hover effects: 100% of buttons have hover effects",
+      "Mobile issues: 15 (-20 points)",
+      "Good typography consistency: 6 font sizes"
+    ]
+  },
+  "detailedResults": {
+    "javascriptErrors": [],
+    "colorPalette": {
+      "count": 19,
+      "colors": [
+        "rgb(17, 24, 39)",
+        "rgb(229, 231, 235)",
+        "rgb(249, 250, 251)",
+        "rgb(59, 130, 246)",
+        "rgb(255, 255, 255)",
+        "rgb(75, 85, 99)",
+        "rgb(209, 213, 219)",
+        "rgba(0, 0, 0, 0) rgb(229, 231, 235) rgb(229, 231, 235)",
+        "rgb(52, 211, 153)",
+        "rgb(16, 185, 129)",
+        "rgb(187, 247, 208)",
+        "rgb(254, 226, 226)",
+        "rgb(239, 68, 68)",
+        "rgb(254, 202, 202)",
+        "rgba(0, 0, 0, 0) rgb(255, 255, 255) rgb(255, 255, 255)",
+        "rgb(219, 234, 254)",
+        "rgb(191, 219, 254)",
+        "rgb(156, 163, 175)",
+        "rgb(31, 41, 55)"
+      ]
+    },
+    "accessibilityIssues": [
+      "Button without accessible name found: mobile-menu-toggle",
+      "Input without label: login-email",
+      "Input without label: login-password",
+      "Input without label: register-name",
+      "Input without label: register-email",
+      "Input without label: register-password",
+      "Input without label: property-address",
+      "Input without label: property-price",
+      "Input without label: property-bedrooms",
+      "Input without label: property-bathrooms",
+      "Input without label: property-sqft",
+      "Input without label: property-taxes",
+      "Input without label: property-condofees",
+      "Input without label: property-type"
+    ],
+    "visualHierarchy": [
+      {
+        "tagName": "H1",
+        "fontSize": "18px",
+        "fontWeight": "700",
+        "margin": "0px",
+        "textContent": "ROI Finder"
+      },
+      {
+        "tagName": "H2",
+        "fontSize": "24px",
+        "fontWeight": "700",
+        "margin": "0px 0px 12px",
+        "textContent": "Loading Analysis"
+      },
+      {
+        "tagName": "H2",
+        "fontSize": "24px",
+        "fontWeight": "700",
+        "margin": "0px 0px 12px",
+        "textContent": "Welcome Back"
+      },
+      {
+        "tagName": "H2",
+        "fontSize": "24px",
+        "fontWeight": "700",
+        "margin": "0px 0px 12px",
+        "textContent": "Create Account"
+      },
+      {
+        "tagName": "H3",
+        "fontSize": "16px",
+        "fontWeight": "600",
+        "margin": "0px 0px 8px",
+        "textContent": "Save Time with Our Browser Extension!"
+      },
+      {
+        "tagName": "H4",
+        "fontSize": "16px",
+        "fontWeight": "500",
+        "margin": "0px 0px 8px",
+        "textContent": "Quick Installation Guide:"
+      },
+      {
+        "tagName": "H2",
+        "fontSize": "30px",
+        "fontWeight": "700",
+        "margin": "0px 0px 12px",
+        "textContent": "Analyze a Property"
+      }
+    ],
+    "buttonStyles": [
+      {
+        "index": 0,
+        "initial": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(75, 85, 99)",
+          "border": "0px solid rgb(229, 231, 235)",
+          "borderRadius": "0px",
+          "padding": "8px",
+          "fontSize": "16px",
+          "transition": "0.2s"
+        },
+        "hover": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(75, 85, 99)",
+          "border": "0px solid rgb(229, 231, 235)",
+          "borderRadius": "0px",
+          "padding": "8px",
+          "fontSize": "16px",
+          "transition": "0.2s"
+        },
+        "hasTransition": true,
+        "error": "Could not test hover state"
+      },
+      {
+        "index": 1,
+        "initial": {
+          "backgroundColor": "rgb(255, 255, 255)",
+          "color": "rgb(17, 24, 39)",
+          "border": "2px solid rgb(209, 213, 219)",
+          "borderRadius": "8px",
+          "padding": "12px 16px",
+          "fontSize": "14px",
+          "transition": "0.2s"
+        },
+        "hover": {
+          "backgroundColor": "rgb(239, 246, 255)",
+          "color": "rgb(17, 24, 39)",
+          "transform": "matrix(1, 0, 0, 1, 0, -1)",
+          "boxShadow": "rgba(0, 0, 0, 0.07) 0px 4px 6px 0px, rgba(0, 0, 0, 0.06) 0px 2px 4px 0px"
+        },
+        "hasTransition": true
+      },
+      {
+        "index": 2,
+        "initial": {
+          "backgroundColor": "rgb(59, 130, 246)",
+          "color": "rgb(17, 24, 39)",
+          "border": "0px solid rgb(229, 231, 235)",
+          "borderRadius": "8px",
+          "padding": "0px 24px",
+          "fontSize": "16px",
+          "transition": "0.2s"
+        },
+        "hover": {
+          "backgroundColor": "rgb(59, 130, 246)",
+          "color": "rgb(17, 24, 39)",
+          "border": "0px solid rgb(229, 231, 235)",
+          "borderRadius": "8px",
+          "padding": "0px 24px",
+          "fontSize": "16px",
+          "transition": "0.2s"
+        },
+        "hasTransition": true,
+        "error": "Could not test hover state"
+      },
+      {
+        "index": 3,
+        "initial": {
+          "backgroundColor": "rgb(249, 250, 251)",
+          "color": "rgb(17, 24, 39)",
+          "border": "0px solid rgb(229, 231, 235)",
+          "borderRadius": "8px",
+          "padding": "0px 24px",
+          "fontSize": "16px",
+          "transition": "0.2s"
+        },
+        "hover": {
+          "backgroundColor": "rgb(249, 250, 251)",
+          "color": "rgb(17, 24, 39)",
+          "border": "0px solid rgb(229, 231, 235)",
+          "borderRadius": "8px",
+          "padding": "0px 24px",
+          "fontSize": "16px",
+          "transition": "0.2s"
+        },
+        "hasTransition": true,
+        "error": "Could not test hover state"
+      },
+      {
+        "index": 4,
+        "initial": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(17, 24, 39)",
+          "border": "0px solid rgb(229, 231, 235)",
+          "borderRadius": "0px",
+          "padding": "0px",
+          "fontSize": "16px",
+          "transition": "0.2s"
+        },
+        "hover": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(17, 24, 39)",
+          "border": "0px solid rgb(229, 231, 235)",
+          "borderRadius": "0px",
+          "padding": "0px",
+          "fontSize": "16px",
+          "transition": "0.2s"
+        },
+        "hasTransition": true,
+        "error": "Could not test hover state"
+      },
+      {
+        "index": 5,
+        "initial": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(59, 130, 246)",
+          "border": "0px solid rgb(229, 231, 235)",
+          "borderRadius": "0px",
+          "padding": "0px",
+          "fontSize": "14px",
+          "transition": "0.2s"
+        },
+        "hover": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(59, 130, 246)",
+          "transform": "matrix(1, 0, 0, 1, 0, -1)",
+          "boxShadow": "rgba(0, 0, 0, 0.07) 0px 4px 6px 0px, rgba(0, 0, 0, 0.06) 0px 2px 4px 0px"
+        },
+        "hasTransition": true
+      },
+      {
+        "index": 6,
+        "initial": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(59, 130, 246)",
+          "border": "0px solid rgb(229, 231, 235)",
+          "borderRadius": "0px",
+          "padding": "0px",
+          "fontSize": "14px",
+          "transition": "0.2s"
+        },
+        "hover": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(59, 130, 246)",
+          "transform": "matrix(1, 0, 0, 1, 0, -1)",
+          "boxShadow": "rgba(0, 0, 0, 0.07) 0px 4px 6px 0px, rgba(0, 0, 0, 0.06) 0px 2px 4px 0px"
+        },
+        "hasTransition": true
+      },
+      {
+        "index": 7,
+        "initial": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(59, 130, 246)",
+          "border": "0px solid rgb(229, 231, 235)",
+          "borderRadius": "0px",
+          "padding": "0px",
+          "fontSize": "14px",
+          "transition": "0.2s"
+        },
+        "hover": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(59, 130, 246)",
+          "transform": "matrix(1, 0, 0, 1, 0, -1)",
+          "boxShadow": "rgba(0, 0, 0, 0.07) 0px 4px 6px 0px, rgba(0, 0, 0, 0.06) 0px 2px 4px 0px"
+        },
+        "hasTransition": true
+      },
+      {
+        "index": 8,
+        "initial": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(17, 24, 39)",
+          "border": "0px none rgb(17, 24, 39)",
+          "borderRadius": "8px",
+          "padding": "16px 32px",
+          "fontSize": "18px",
+          "transition": "0.2s"
+        },
+        "hover": {
+          "backgroundColor": "rgb(37, 99, 235)",
+          "color": "rgb(17, 24, 39)",
+          "transform": "matrix(1, 0, 0, 1, 0, -1)",
+          "boxShadow": "rgba(0, 0, 0, 0.07) 0px 4px 6px 0px, rgba(0, 0, 0, 0.06) 0px 2px 4px 0px"
+        },
+        "hasTransition": true
+      },
+      {
+        "index": 9,
+        "initial": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(17, 24, 39)",
+          "border": "0px solid rgb(229, 231, 235)",
+          "borderRadius": "0px",
+          "padding": "12px",
+          "fontSize": "16px",
+          "transition": "0.2s"
+        },
+        "hover": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(17, 24, 39)",
+          "border": "0px solid rgb(229, 231, 235)",
+          "borderRadius": "0px",
+          "padding": "12px",
+          "fontSize": "16px",
+          "transition": "0.2s"
+        },
+        "hasTransition": true,
+        "error": "Could not test hover state"
+      }
+    ],
+    "formInteractions": [
+      {
+        "id": "login-email",
+        "type": "email",
+        "focusStyles": {
+          "outline": "rgb(17, 24, 39) none 0px",
+          "boxShadow": "rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.1) 0px 2px 4px -2px",
+          "borderColor": "rgb(229, 231, 235)"
+        },
+        "hasFocusIndicator": true
+      },
+      {
+        "id": "login-password",
+        "type": "password",
+        "focusStyles": {
+          "outline": "rgb(17, 24, 39) none 0px",
+          "boxShadow": "rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.1) 0px 2px 4px -2px",
+          "borderColor": "rgb(229, 231, 235)"
+        },
+        "hasFocusIndicator": true
+      },
+      {
+        "id": "register-name",
+        "type": "text",
+        "focusStyles": {
+          "outline": "rgb(17, 24, 39) none 0px",
+          "boxShadow": "rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.1) 0px 2px 4px -2px",
+          "borderColor": "rgb(229, 231, 235)"
+        },
+        "hasFocusIndicator": true
+      },
+      {
+        "id": "register-email",
+        "type": "email",
+        "focusStyles": {
+          "outline": "rgb(17, 24, 39) none 0px",
+          "boxShadow": "rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.1) 0px 2px 4px -2px",
+          "borderColor": "rgb(229, 231, 235)"
+        },
+        "hasFocusIndicator": true
+      },
+      {
+        "id": "register-password",
+        "type": "password",
+        "focusStyles": {
+          "outline": "rgb(17, 24, 39) none 0px",
+          "boxShadow": "rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.1) 0px 2px 4px -2px",
+          "borderColor": "rgb(229, 231, 235)"
+        },
+        "hasFocusIndicator": true
+      }
+    ],
+    "spacingIssues": [],
+    "loadingElements": {
+      "skeletons": 0,
+      "animations": [
+        {
+          "element": "HTML",
+          "animation": "none 0s ease 0s 1 normal none running"
+        },
+        {
+          "element": "HEAD",
+          "animation": "none 0s ease 0s 1 normal none running"
+        },
+        {
+          "element": "META",
+          "animation": "none 0s ease 0s 1 normal none running"
+        },
+        {
+          "element": "META",
+          "animation": "none 0s ease 0s 1 normal none running"
+        },
+        {
+          "element": "TITLE",
+          "animation": "none 0s ease 0s 1 normal none running"
+        },
+        {
+          "element": "LINK",
+          "animation": "none 0s ease 0s 1 normal none running"
+        },
+        {
+          "element": "LINK",
+          "animation": "none 0s ease 0s 1 normal none running"
+        },
+        {
+          "element": "SCRIPT",
+          "animation": "none 0s ease 0s 1 normal none running"
+        },
+        {
+          "element": "SCRIPT",
+          "animation": "none 0s ease 0s 1 normal none running"
+        },
+        {
+          "element": "SCRIPT",
+          "animation": "none 0s ease 0s 1 normal none running"
+        }
+      ]
+    },
+    "typography": {
+      "uniqueFontSizes": 6,
+      "uniqueFontFamilies": 1,
+      "uniqueFontWeights": 4,
+      "uniqueLineHeights": 8,
+      "fontSizes": [
+        "16px",
+        "24px",
+        "18px",
+        "14px",
+        "30px",
+        "12px"
+      ],
+      "fontFamilies": [
+        "-apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, \"Helvetica Neue\", Arial, sans-serif"
+      ]
+    },
+    "animations": [
+      {
+        "index": 0,
+        "hasTransition": true,
+        "transitionStyles": {
+          "transition": "0.2s",
+          "transform": "none",
+          "opacity": "1"
+        }
+      },
+      {
+        "index": 1,
+        "hasTransition": false,
+        "transitionStyles": {
+          "transition": "unknown",
+          "transform": "unknown",
+          "opacity": "unknown"
+        },
+        "error": "Could not test hover animation"
+      },
+      {
+        "index": 2,
+        "hasTransition": true,
+        "transitionStyles": {
+          "transition": "0.2s",
+          "transform": "matrix(1, 0, 0, 1, 0, -1)",
+          "opacity": "1"
+        }
+      },
+      {
+        "index": 3,
+        "hasTransition": false,
+        "transitionStyles": {
+          "transition": "unknown",
+          "transform": "unknown",
+          "opacity": "unknown"
+        },
+        "error": "Could not test hover animation"
+      },
+      {
+        "index": 4,
+        "hasTransition": false,
+        "transitionStyles": {
+          "transition": "unknown",
+          "transform": "unknown",
+          "opacity": "unknown"
+        },
+        "error": "Could not test hover animation"
+      }
+    ],
+    "mobileIssues": [
+      "Overlapping elements on Mobile Portrait: HTML and BODY",
+      "Overlapping elements on Mobile Portrait: HTML and A",
+      "Overlapping elements on Mobile Portrait: HTML and NAV",
+      "Overlapping elements on Mobile Portrait: HTML and DIV",
+      "Overlapping elements on Mobile Portrait: HTML and DIV",
+      "Overlapping elements on Tablet Portrait: HTML and BODY",
+      "Overlapping elements on Tablet Portrait: HTML and A",
+      "Overlapping elements on Tablet Portrait: HTML and NAV",
+      "Overlapping elements on Tablet Portrait: HTML and DIV",
+      "Overlapping elements on Tablet Portrait: HTML and DIV",
+      "Overlapping elements on Tablet Landscape: HTML and BODY",
+      "Overlapping elements on Tablet Landscape: HTML and A",
+      "Overlapping elements on Tablet Landscape: HTML and NAV",
+      "Overlapping elements on Tablet Landscape: HTML and DIV",
+      "Overlapping elements on Tablet Landscape: HTML and DIV"
+    ]
+  },
+  "screenshots": [
+    {
+      "name": "01-initial-load",
+      "description": "Initial page load",
+      "filepath": "/home/amy/StarterPackApp/test-screenshots/2025-08-07T03:25:18/01-initial-load-1754537127423.png",
+      "timestamp": "2025-08-07T03:25:27.706Z"
+    },
+    {
+      "name": "02-accessibility-check",
+      "description": "Accessibility features check",
+      "filepath": "/home/amy/StarterPackApp/test-screenshots/2025-08-07T03:25:18/02-accessibility-check-1754537130167.png",
+      "timestamp": "2025-08-07T03:25:30.417Z"
+    },
+    {
+      "name": "03-visual-hierarchy",
+      "description": "Visual hierarchy analysis",
+      "filepath": "/home/amy/StarterPackApp/test-screenshots/2025-08-07T03:25:18/03-visual-hierarchy-1754537130422.png",
+      "timestamp": "2025-08-07T03:25:30.612Z"
+    },
+    {
+      "name": "04-button-hover",
+      "description": "Button hover state",
+      "filepath": "/home/amy/StarterPackApp/test-screenshots/2025-08-07T03:25:18/04-button-hover-1754537130672.png",
+      "timestamp": "2025-08-07T03:25:30.858Z"
+    },
+    {
+      "name": "05-form-interaction",
+      "description": "Form interaction testing",
+      "filepath": "/home/amy/StarterPackApp/test-screenshots/2025-08-07T03:25:18/05-form-interaction-1754537135228.png",
+      "timestamp": "2025-08-07T03:25:35.429Z"
+    },
+    {
+      "name": "06-spacing-alignment",
+      "description": "Spacing and alignment check",
+      "filepath": "/home/amy/StarterPackApp/test-screenshots/2025-08-07T03:25:18/06-spacing-alignment-1754537135437.png",
+      "timestamp": "2025-08-07T03:25:35.614Z"
+    },
+    {
+      "name": "07-typography",
+      "description": "Typography analysis",
+      "filepath": "/home/amy/StarterPackApp/test-screenshots/2025-08-07T03:25:18/07-typography-1754537135633.png",
+      "timestamp": "2025-08-07T03:25:35.832Z"
+    },
+    {
+      "name": "08-mobile-mobile-portrait",
+      "description": "Mobile Portrait (375x667)",
+      "filepath": "/home/amy/StarterPackApp/test-screenshots/2025-08-07T03:25:18/08-mobile-mobile-portrait-1754537136860.png",
+      "timestamp": "2025-08-07T03:25:37.017Z"
+    },
+    {
+      "name": "08-mobile-tablet-portrait",
+      "description": "Tablet Portrait (768x1024)",
+      "filepath": "/home/amy/StarterPackApp/test-screenshots/2025-08-07T03:25:18/08-mobile-tablet-portrait-1754537138040.png",
+      "timestamp": "2025-08-07T03:25:38.232Z"
+    },
+    {
+      "name": "08-mobile-tablet-landscape",
+      "description": "Tablet Landscape (1024x768)",
+      "filepath": "/home/amy/StarterPackApp/test-screenshots/2025-08-07T03:25:18/08-mobile-tablet-landscape-1754537139268.png",
+      "timestamp": "2025-08-07T03:25:39.460Z"
+    },
+    {
+      "name": "09-animations",
+      "description": "Animation and transition testing",
+      "filepath": "/home/amy/StarterPackApp/test-screenshots/2025-08-07T03:25:18/09-animations-1754537140687.png",
+      "timestamp": "2025-08-07T03:25:40.926Z"
+    }
+  ],
+  "recommendations": [
+    {
+      "priority": "High",
+      "category": "Accessibility",
+      "issue": "14 accessibility issues",
+      "solution": "Add proper ARIA labels, form labels, and skip navigation",
+      "issues": [
+        "Button without accessible name found: mobile-menu-toggle",
+        "Input without label: login-email",
+        "Input without label: login-password",
+        "Input without label: register-name",
+        "Input without label: register-email",
+        "Input without label: register-password",
+        "Input without label: property-address",
+        "Input without label: property-price",
+        "Input without label: property-bedrooms",
+        "Input without label: property-bathrooms",
+        "Input without label: property-sqft",
+        "Input without label: property-taxes",
+        "Input without label: property-condofees",
+        "Input without label: property-type"
+      ]
+    },
+    {
+      "priority": "High",
+      "category": "Responsive Design",
+      "issue": "15 mobile issues",
+      "solution": "Fix responsive design issues for better mobile experience",
+      "issues": [
+        "Overlapping elements on Mobile Portrait: HTML and BODY",
+        "Overlapping elements on Mobile Portrait: HTML and A",
+        "Overlapping elements on Mobile Portrait: HTML and NAV",
+        "Overlapping elements on Mobile Portrait: HTML and DIV",
+        "Overlapping elements on Mobile Portrait: HTML and DIV",
+        "Overlapping elements on Tablet Portrait: HTML and BODY",
+        "Overlapping elements on Tablet Portrait: HTML and A",
+        "Overlapping elements on Tablet Portrait: HTML and NAV",
+        "Overlapping elements on Tablet Portrait: HTML and DIV",
+        "Overlapping elements on Tablet Portrait: HTML and DIV",
+        "Overlapping elements on Tablet Landscape: HTML and BODY",
+        "Overlapping elements on Tablet Landscape: HTML and A",
+        "Overlapping elements on Tablet Landscape: HTML and NAV",
+        "Overlapping elements on Tablet Landscape: HTML and DIV",
+        "Overlapping elements on Tablet Landscape: HTML and DIV"
+      ]
+    },
+    {
+      "priority": "Low",
+      "category": "User Experience",
+      "issue": "No loading skeletons found",
+      "solution": "Consider adding loading skeletons for better perceived performance"
+    }
+  ]
+}

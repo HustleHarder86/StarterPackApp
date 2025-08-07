@@ -1,0 +1,349 @@
+{
+  "accessibility": {
+    "formInputs": [
+      {
+        "id": "login-email",
+        "type": "email",
+        "hasLabel": true,
+        "labelText": "Email Address",
+        "ariaLabel": null,
+        "placeholder": "your@email.com"
+      },
+      {
+        "id": "login-password",
+        "type": "password",
+        "hasLabel": true,
+        "labelText": "Password",
+        "ariaLabel": null,
+        "placeholder": "Your password"
+      },
+      {
+        "id": "register-name",
+        "type": "text",
+        "hasLabel": true,
+        "labelText": "Full Name",
+        "ariaLabel": null,
+        "placeholder": "Your full name"
+      },
+      {
+        "id": "register-email",
+        "type": "email",
+        "hasLabel": true,
+        "labelText": "Email Address",
+        "ariaLabel": null,
+        "placeholder": "your@email.com"
+      },
+      {
+        "id": "register-password",
+        "type": "password",
+        "hasLabel": true,
+        "labelText": "Password",
+        "ariaLabel": null,
+        "placeholder": "Choose a secure password"
+      },
+      {
+        "id": "property-address",
+        "type": "textarea",
+        "hasLabel": true,
+        "labelText": "Property Address\n                                    \n                                        \n                                            \n                                        \n                                        \n                                            Found at the top of any REALTOR.ca listing. Include street, city, and province.",
+        "ariaLabel": null,
+        "placeholder": "123 Main Street, Toronto, ON M5V 3A8"
+      },
+      {
+        "id": "property-price",
+        "type": "number",
+        "hasLabel": true,
+        "labelText": "Purchase Price\n                                    \n                                        \n                                            \n                                        \n                                        \n                                            The listing price shown prominently on REALTOR.ca. Enter without commas or $ sign.",
+        "ariaLabel": null,
+        "placeholder": "850000"
+      },
+      {
+        "id": "property-bedrooms",
+        "type": "select-one",
+        "hasLabel": true,
+        "labelText": "Bedrooms\n                                    \n                                        \n                                            \n                                        \n                                        \n                                            Found in the property details section. Look for the bed icon or \"Bedrooms\" label.",
+        "ariaLabel": null
+      },
+      {
+        "id": "property-bathrooms",
+        "type": "select-one",
+        "hasLabel": true,
+        "labelText": "Bathrooms\n                                    \n                                        \n                                            \n                                        \n                                        \n                                            Found next to bedrooms in property details. May show as \"2+1\" meaning 2 full, 1 half bath.",
+        "ariaLabel": null
+      },
+      {
+        "id": "property-sqft",
+        "type": "number",
+        "hasLabel": true,
+        "labelText": "Square Footage\n                                        (improves accuracy)",
+        "ariaLabel": null,
+        "placeholder": "1200"
+      },
+      {
+        "id": "property-taxes",
+        "type": "number",
+        "hasLabel": true,
+        "labelText": "Property Taxes (Annual)\n                                        (found in listing details)",
+        "ariaLabel": null,
+        "placeholder": "5400"
+      },
+      {
+        "id": "property-condofees",
+        "type": "number",
+        "hasLabel": true,
+        "labelText": "Condo/Strata Fees (Monthly)\n                                        (if applicable)",
+        "ariaLabel": null,
+        "placeholder": "450"
+      },
+      {
+        "id": "property-type",
+        "type": "select-one",
+        "hasLabel": true,
+        "labelText": "Property Type",
+        "ariaLabel": null
+      }
+    ],
+    "mobileMenuButton": {
+      "ariaLabel": "Open mobile menu",
+      "className": "mobile-only p-2 text-gray-600",
+      "text": ""
+    }
+  },
+  "responsiveness": {
+    "Mobile": {
+      "viewport": {
+        "name": "Mobile",
+        "width": 375,
+        "height": 667
+      },
+      "overlappingElements": [
+        {
+          "element1": "HTML",
+          "element2": "BODY.bg-gray-50",
+          "overlapPercentage": "100.0"
+        },
+        {
+          "element1": "HTML",
+          "element2": "A.sr-only",
+          "overlapPercentage": "84.8"
+        },
+        {
+          "element1": "HTML",
+          "element2": "NAV.bg-white",
+          "overlapPercentage": "100.0"
+        },
+        {
+          "element1": "HTML",
+          "element2": "DIV.container",
+          "overlapPercentage": "100.0"
+        },
+        {
+          "element1": "HTML",
+          "element2": "DIV.flex",
+          "overlapPercentage": "100.0"
+        },
+        {
+          "element1": "HTML",
+          "element2": "DIV.flex",
+          "overlapPercentage": "100.0"
+        },
+        {
+          "element1": "HTML",
+          "element2": "SPAN.text-2xl",
+          "overlapPercentage": "100.0"
+        },
+        {
+          "element1": "HTML",
+          "element2": "DIV.flex",
+          "overlapPercentage": "100.0"
+        },
+        {
+          "element1": "HTML",
+          "element2": "BUTTON.mobile-only",
+          "overlapPercentage": "100.0"
+        },
+        {
+          "element1": "HTML",
+          "element2": "svg",
+          "overlapPercentage": "100.0"
+        }
+      ],
+      "screenshotTaken": true
+    },
+    "Tablet": {
+      "viewport": {
+        "name": "Tablet",
+        "width": 768,
+        "height": 1024
+      },
+      "overlappingElements": [
+        {
+          "element1": "HTML",
+          "element2": "BODY.bg-gray-50",
+          "overlapPercentage": "100.0"
+        },
+        {
+          "element1": "HTML",
+          "element2": "A.sr-only",
+          "overlapPercentage": "84.8"
+        },
+        {
+          "element1": "HTML",
+          "element2": "NAV.bg-white",
+          "overlapPercentage": "100.0"
+        },
+        {
+          "element1": "HTML",
+          "element2": "DIV.container",
+          "overlapPercentage": "100.0"
+        },
+        {
+          "element1": "HTML",
+          "element2": "DIV.flex",
+          "overlapPercentage": "100.0"
+        },
+        {
+          "element1": "HTML",
+          "element2": "DIV.flex",
+          "overlapPercentage": "100.0"
+        },
+        {
+          "element1": "HTML",
+          "element2": "SPAN.text-2xl",
+          "overlapPercentage": "100.0"
+        },
+        {
+          "element1": "HTML",
+          "element2": "H1.text-lg",
+          "overlapPercentage": "100.0"
+        },
+        {
+          "element1": "HTML",
+          "element2": "DIV.flex",
+          "overlapPercentage": "100.0"
+        },
+        {
+          "element1": "HTML",
+          "element2": "BUTTON.btn",
+          "overlapPercentage": "100.0"
+        }
+      ],
+      "screenshotTaken": true
+    },
+    "Desktop": {
+      "viewport": {
+        "name": "Desktop",
+        "width": 1280,
+        "height": 720
+      },
+      "overlappingElements": [
+        {
+          "element1": "HTML",
+          "element2": "BODY.bg-gray-50",
+          "overlapPercentage": "100.0"
+        },
+        {
+          "element1": "HTML",
+          "element2": "A.sr-only",
+          "overlapPercentage": "90.8"
+        },
+        {
+          "element1": "HTML",
+          "element2": "NAV.bg-white",
+          "overlapPercentage": "100.0"
+        },
+        {
+          "element1": "HTML",
+          "element2": "DIV.container",
+          "overlapPercentage": "100.0"
+        },
+        {
+          "element1": "HTML",
+          "element2": "DIV.flex",
+          "overlapPercentage": "100.0"
+        },
+        {
+          "element1": "HTML",
+          "element2": "DIV.flex",
+          "overlapPercentage": "100.0"
+        },
+        {
+          "element1": "HTML",
+          "element2": "SPAN.text-2xl",
+          "overlapPercentage": "100.0"
+        },
+        {
+          "element1": "HTML",
+          "element2": "H1.text-lg",
+          "overlapPercentage": "100.0"
+        },
+        {
+          "element1": "HTML",
+          "element2": "DIV.flex",
+          "overlapPercentage": "100.0"
+        },
+        {
+          "element1": "HTML",
+          "element2": "BUTTON.btn",
+          "overlapPercentage": "100.0"
+        }
+      ],
+      "screenshotTaken": true
+    }
+  },
+  "colorPalette": {
+    "textColors": [
+      "rgb(17, 24, 39)",
+      "rgb(255, 255, 255)",
+      "rgb(59, 130, 246)",
+      "color(srgb 0.44 0.456471 0.491765)",
+      "color(srgb 0.626667 0.637647 0.661177)",
+      "rgb(16, 185, 129)",
+      "rgb(239, 68, 68)"
+    ],
+    "backgroundColors": [
+      "rgb(249, 250, 251)",
+      "rgb(59, 130, 246)",
+      "rgb(255, 255, 255)",
+      "rgb(17, 24, 39)",
+      "rgb(52, 211, 153)",
+      "rgb(254, 226, 226)",
+      "rgb(96, 165, 250)"
+    ],
+    "borderColors": [
+      "rgb(229, 231, 235)",
+      "rgb(209, 213, 219)",
+      "rgb(59, 130, 246) rgb(229, 231, 235) rgb(229, 231, 235)",
+      "rgb(16, 185, 129)",
+      "rgb(239, 68, 68)",
+      "rgb(59, 130, 246)",
+      "rgb(255, 255, 255)"
+    ],
+    "totalUniqueColors": 14
+  },
+  "functionality": {
+    "tests": [
+      {
+        "test": "Main sections visibility",
+        "passed": true,
+        "details": "Found 5 main sections, 3 visible"
+      },
+      {
+        "test": "Forms present and interactable",
+        "passed": true,
+        "details": "Found 3 forms"
+      },
+      {
+        "test": "Interactive buttons present",
+        "passed": true,
+        "details": "Found 12 buttons"
+      },
+      {
+        "test": "No JavaScript errors",
+        "passed": true,
+        "details": "No errors detected"
+      }
+    ]
+  },
+  "issues": []
+}
