@@ -40,6 +40,25 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     
     <style>
+        /* Streamlined header styles */
+        nav.bg-white {
+            height: 48px;
+        }
+        
+        nav .container {
+            height: 100%;
+        }
+        
+        #logout-btn {
+            padding: 4px 12px;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+        
+        #logout-btn:hover {
+            background-color: #f3f4f6;
+        }
+        
         /* Custom loading animations */
         .loading-gradient {
             background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
@@ -291,22 +310,18 @@
     <!-- Skip Navigation Link for Accessibility -->
     <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-blue-600 text-white px-4 py-2 rounded z-50">Skip to main content</a>
 
-    <!-- Navigation Header -->
+    <!-- Navigation Header - Streamlined Design -->
     <nav class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-40" role="navigation" aria-label="Main navigation">
         <div class="container mx-auto px-4">
-            <div class="flex items-center justify-between h-16">
-                <div class="flex items-center gap-2 sm:gap-lg min-w-0">
-                    <span class="text-2xl font-bold text-blue-600 flex-shrink-0">StarterPackApp</span>
-                    <h1 class="text-lg font-bold text-gray-900 mobile-hidden truncate">ROI Finder</h1>
+            <div class="flex items-center justify-between h-12">
+                <!-- Logo only on left -->
+                <div class="flex items-center">
+                    <span class="text-xl font-bold text-blue-600">StarterPackApp</span>
                 </div>
-                <div class="flex items-center gap-2 sm:gap-md flex-shrink-0">
-                    <button id="mobile-menu-toggle" aria-label="Open mobile menu" class="mobile-only p-2 text-gray-600">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
-                        </svg>
-                    </button>
-                    <span id="user-email" class="text-sm text-gray-600 mobile-hidden truncate max-w-xs"></span>
-                    <button id="logout-btn" class="btn btn-secondary btn-sm whitespace-nowrap">Logout</button>
+                <!-- Email and logout on right -->
+                <div class="flex items-center gap-3">
+                    <span id="user-email" class="text-sm text-gray-600 truncate max-w-xs hidden sm:block"></span>
+                    <button id="logout-btn" class="text-sm text-gray-600 hover:text-gray-900 font-medium">Logout</button>
                 </div>
             </div>
         </div>
