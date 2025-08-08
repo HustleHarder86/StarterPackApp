@@ -1,0 +1,536 @@
+/* =========================================
+   Property Confirmation - Optimized Single Screen Design
+   Purple gradient background with rounded modern cards
+   ========================================= */
+
+/* Overlay with purple gradient background - No scroll */
+.property-confirmation-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100vw;
+    height: 100vh;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    padding: 20px;
+    overflow: hidden;
+    animation: fadeIn 0.3s ease;
+}
+
+/* Container - Optimized sizing */
+.property-confirmation-container {
+    max-width: 640px;
+    width: 100%;
+    height: auto;
+    max-height: calc(100vh - 40px);
+}
+
+/* Main Card - Rounded corners on all sides */
+.property-confirmation-main-card {
+    background: white;
+    border-radius: 14px;
+    box-shadow: 0 16px 32px rgba(0, 0, 0, 0.12);
+    overflow: hidden;
+    animation: slideUp 0.4s ease;
+}
+
+/* Header - Compact */
+.property-confirmation-header {
+    background: white;
+    padding: 18px 20px 14px 20px;
+    text-align: center;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.property-confirmation-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-bottom: 3px;
+    line-height: 1;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.property-confirmation-subtitle {
+    font-size: 12px;
+    color: #666666;
+    line-height: 1.2;
+}
+
+/* Content - Compact padding */
+.property-confirmation-content {
+    padding: 18px 20px 20px 20px;
+}
+
+/* Property Details Card - Smaller */
+.property-details-card {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    border-radius: 8px;
+    padding: 14px;
+    margin-bottom: 16px;
+    position: relative;
+}
+
+.property-badge {
+    position: absolute;
+    top: -7px;
+    left: 14px;
+    background: #667eea;
+    color: white;
+    padding: 3px 10px;
+    border-radius: 10px;
+    font-size: 8px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.property-details-content {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+}
+
+/* Property Image - Smaller */
+.property-image-section {
+    width: 85px;
+    height: 65px;
+    background: white;
+    border-radius: 5px;
+    flex-shrink: 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.property-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.property-no-image {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f0f0f0;
+    color: #999;
+    font-size: 10px;
+}
+
+/* Property Info - Compact */
+.property-info-section {
+    flex: 1;
+}
+
+.property-address {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-bottom: 2px;
+    line-height: 1.1;
+}
+
+.property-location {
+    font-size: 11px;
+    color: #666666;
+    margin-bottom: 8px;
+    line-height: 1.2;
+}
+
+/* Property Stats Grid - 3 column layout */
+.property-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px 12px;
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.stat-label {
+    font-size: 8px;
+    color: #999999;
+    text-transform: uppercase;
+    letter-spacing: 0.2px;
+    margin-bottom: 1px;
+    line-height: 1;
+}
+
+.stat-value {
+    font-size: 11px;
+    font-weight: 600;
+    color: #1a1a1a;
+    white-space: nowrap;
+    line-height: 1.1;
+}
+
+.stat-value.price {
+    font-size: 16px;
+    color: #667eea;
+}
+
+/* Analysis Section - Compact */
+.analysis-section-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.section-icon {
+    font-size: 14px;
+}
+
+/* Analysis Cards Grid - Smaller gap */
+.analysis-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+/* Analysis Card - Compact */
+.analysis-card {
+    background: white;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 12px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.analysis-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: #667eea;
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+}
+
+.analysis-card:hover {
+    border-color: #667eea;
+    box-shadow: 0 3px 12px rgba(102, 126, 234, 0.1);
+    transform: translateY(-1px);
+}
+
+.analysis-card:hover::before {
+    transform: scaleX(1);
+}
+
+.analysis-card.selected {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-color: #667eea;
+    color: white;
+}
+
+.analysis-card.selected .card-title,
+.analysis-card.selected .card-description,
+.analysis-card.selected .card-features,
+.analysis-card.selected .feature-item {
+    color: white;
+}
+
+.analysis-card.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.analysis-card.disabled:hover {
+    transform: none;
+    box-shadow: none;
+}
+
+/* Card Content - Smaller */
+.card-icon {
+    width: 28px;
+    height: 28px;
+    background: #f5f7fa;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    margin-bottom: 6px;
+}
+
+.analysis-card.selected .card-icon {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.card-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-bottom: 3px;
+    line-height: 1.1;
+}
+
+.card-description {
+    font-size: 10px;
+    color: #666666;
+    line-height: 1.2;
+    margin-bottom: 6px;
+}
+
+.card-features {
+    font-size: 9px;
+    color: #999999;
+}
+
+.feature-item {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    margin-bottom: 2px;
+    color: #999999;
+    line-height: 1.2;
+}
+
+.feature-item:last-child {
+    margin-bottom: 0;
+}
+
+.feature-check {
+    color: #10b981;
+    font-weight: bold;
+    font-size: 10px;
+}
+
+.analysis-card.selected .feature-check {
+    color: white;
+}
+
+/* Recommended Ribbon - Smaller */
+.recommended-ribbon {
+    position: absolute;
+    top: 8px;
+    right: -22px;
+    background: #10b981;
+    color: white;
+    padding: 1px 24px;
+    transform: rotate(45deg);
+    font-size: 7px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+/* Radio buttons - hidden */
+.analysis-radio {
+    display: none;
+}
+
+/* Action Area - Compact */
+.action-area {
+    text-align: center;
+}
+
+.continue-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 9px 28px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 3px 12px rgba(102, 126, 234, 0.2);
+    transition: all 0.3s ease;
+}
+
+.continue-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 5px 16px rgba(102, 126, 234, 0.3);
+}
+
+.trial-notice {
+    margin-top: 6px;
+    font-size: 10px;
+    color: #666666;
+    line-height: 1.2;
+}
+
+.trial-count {
+    font-weight: 600;
+    color: #667eea;
+}
+
+.admin-badge {
+    color: #10b981;
+    font-weight: 600;
+    font-size: 10px;
+}
+
+.cancel-link {
+    background: none;
+    border: none;
+    color: #999999;
+    font-size: 10px;
+    cursor: pointer;
+    margin-top: 6px;
+    text-decoration: underline;
+    transition: color 0.2s ease;
+    display: inline-block;
+    line-height: 1.2;
+}
+
+.cancel-link:hover {
+    color: #666666;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Hide all scrollbars */
+* {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+*::-webkit-scrollbar {
+    display: none;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .property-confirmation-overlay {
+        padding: 15px;
+    }
+    
+    .property-confirmation-main-card {
+        border-radius: 12px;
+    }
+    
+    .property-confirmation-header {
+        padding: 16px 18px 12px 18px;
+    }
+    
+    .property-confirmation-title {
+        font-size: 18px;
+    }
+    
+    .property-confirmation-content {
+        padding: 16px 18px;
+    }
+    
+    .property-details-card {
+        padding: 12px;
+        margin-bottom: 14px;
+    }
+    
+    .property-details-content {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .property-image-section {
+        width: 100%;
+        height: 80px;
+    }
+    
+    .property-stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .analysis-cards-grid {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+    
+    .continue-btn {
+        width: 100%;
+        padding: 10px 24px;
+    }
+}
+
+/* Very small screens */
+@media (max-width: 375px) {
+    .property-confirmation-title {
+        font-size: 16px;
+    }
+    
+    .property-confirmation-subtitle {
+        font-size: 11px;
+    }
+    
+    .property-address {
+        font-size: 13px;
+    }
+    
+    .stat-value.price {
+        font-size: 14px;
+    }
+}
+
+/* For very small screen heights */
+@media (max-height: 650px) {
+    .property-confirmation-header {
+        padding: 14px 18px 12px 18px;
+    }
+    
+    .property-confirmation-title {
+        font-size: 18px;
+    }
+    
+    .property-confirmation-content {
+        padding: 14px 18px 16px 18px;
+    }
+    
+    .property-details-card {
+        padding: 12px;
+        margin-bottom: 14px;
+    }
+    
+    .analysis-cards-grid {
+        margin-bottom: 14px;
+    }
+    
+    .analysis-card {
+        padding: 10px;
+    }
+    
+    .card-icon {
+        width: 24px;
+        height: 24px;
+        font-size: 14px;
+    }
+}
