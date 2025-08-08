@@ -23,9 +23,9 @@
     width: 64px;
 }
 
-/* Header Section */
+/* Header Section - Compact */
 .sidebar-header {
-    padding: 16px;
+    padding: 8px 12px;
     border-bottom: 1px solid #e5e7eb;
 }
 
@@ -36,13 +36,13 @@
 }
 
 .sidebar-logo {
-    font-size: 18px;
+    font-size: 14px;
     font-weight: 600;
     color: #111827;
     text-decoration: none;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
 }
 
 .app-sidebar.collapsed .logo-text {
@@ -50,12 +50,12 @@
 }
 
 .logo-icon {
-    font-size: 24px;
+    font-size: 20px;
 }
 
 .sidebar-toggle-btn {
-    padding: 8px;
-    border-radius: 8px;
+    padding: 6px;
+    border-radius: 6px;
     background: transparent;
     border: none;
     cursor: pointer;
@@ -67,26 +67,26 @@
 }
 
 .sidebar-toggle-btn svg {
-    width: 20px;
-    height: 20px;
+    width: 16px;
+    height: 16px;
     color: #6b7280;
 }
 
-/* Navigation Menu */
+/* Navigation Menu - Ultra Compact */
 .sidebar-nav {
     flex: 1;
-    padding: 16px 0;
+    padding: 8px 0;
     overflow-y: auto;
 }
 
 .nav-category {
-    margin-bottom: 16px;
+    margin-bottom: 8px;
 }
 
 .nav-category-title {
-    padding: 0 16px;
-    margin-bottom: 8px;
-    font-size: 11px;
+    padding: 0 12px;
+    margin-bottom: 4px;
+    font-size: 9px;
     font-weight: 500;
     color: #9ca3af;
     text-transform: uppercase;
@@ -98,16 +98,16 @@
 }
 
 .nav-items {
-    padding: 0 8px;
+    padding: 0 6px;
 }
 
 .nav-item {
     width: 100%;
     display: flex;
     align-items: center;
-    padding: 8px;
-    margin-bottom: 4px;
-    border-radius: 12px;
+    padding: 4px 6px;
+    margin-bottom: 1px;
+    border-radius: 8px;
     background: transparent;
     border: none;
     cursor: pointer;
@@ -132,12 +132,12 @@
 }
 
 .nav-item-icon-wrapper {
-    width: 40px;
-    height: 40px;
+    width: 24px;
+    height: 24px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 8px;
+    border-radius: 4px;
     background: #f3f4f6;
     transition: all 0.2s;
     flex-shrink: 0;
@@ -152,11 +152,11 @@
 }
 
 .nav-icon {
-    font-size: 18px;
+    font-size: 14px;
 }
 
 .nav-content {
-    margin-left: 12px;
+    margin-left: 8px;
     flex: 1;
     text-align: left;
 }
@@ -166,61 +166,63 @@
 }
 
 .nav-label {
-    font-size: 14px;
+    font-size: 12px;
     font-weight: 500;
     display: block;
+    line-height: 1.2;
 }
 
 .nav-description {
-    font-size: 12px;
+    font-size: 10px;
     color: #9ca3af;
-    margin-top: 2px;
+    margin-top: 0px;
+    line-height: 1.2;
 }
 
 /* Active indicator */
 .nav-item.active::before {
     content: '';
     position: absolute;
-    left: -8px;
+    left: -6px;
     top: 50%;
     transform: translateY(-50%);
-    width: 4px;
-    height: 24px;
+    width: 3px;
+    height: 16px;
     background: #2563eb;
-    border-radius: 0 4px 4px 0;
+    border-radius: 0 3px 3px 0;
 }
 
-/* Footer Section */
+/* Footer Section - Ultra Compact */
 .sidebar-footer {
-    padding: 16px;
+    padding: 8px;
     border-top: 1px solid #e5e7eb;
 }
 
 .user-section {
     display: flex;
     align-items: center;
-    gap: 12px;
-    margin-bottom: 12px;
-    padding: 8px;
-    border-radius: 8px;
+    gap: 8px;
+    margin-bottom: 6px;
+    padding: 4px;
+    border-radius: 4px;
     background: #f9fafb;
 }
 
 .app-sidebar.collapsed .user-section {
     justify-content: center;
-    padding: 4px;
+    padding: 3px;
 }
 
 .user-avatar {
-    width: 32px;
-    height: 32px;
+    width: 24px;
+    height: 24px;
     border-radius: 50%;
     background: linear-gradient(135deg, #667eea, #764ba2);
     display: flex;
     align-items: center;
     justify-content: center;
     color: white;
-    font-size: 14px;
+    font-size: 10px;
     font-weight: 600;
     flex-shrink: 0;
 }
@@ -234,35 +236,37 @@
 }
 
 .user-email-display {
-    font-size: 13px;
+    font-size: 11px;
     color: #111827;
     font-weight: 500;
     display: block;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    line-height: 1.2;
 }
 
 .user-role {
-    font-size: 11px;
+    font-size: 9px;
     color: #6b7280;
+    line-height: 1.2;
 }
 
 .sidebar-logout-btn {
     width: 100%;
-    padding: 8px 12px;
+    padding: 5px 8px;
     background: white;
     color: #6b7280;
     border: 1px solid #e5e7eb;
-    border-radius: 8px;
+    border-radius: 4px;
     cursor: pointer;
-    font-size: 13px;
+    font-size: 11px;
     font-weight: 500;
     transition: all 0.2s;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
+    gap: 6px;
 }
 
 .app-sidebar.collapsed .sidebar-logout-btn {
