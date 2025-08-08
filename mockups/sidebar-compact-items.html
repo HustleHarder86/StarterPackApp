@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compact Sidebar Items - Mockup</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            background: #f9fafb;
+        }
+
+        /* Comparison Container */
+        .comparison {
+            display: flex;
+            width: 100%;
+            height: 100vh;
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .version {
+            flex: 1;
+            position: relative;
+        }
+
+        .label {
+            position: absolute;
+            top: -15px;
+            left: 10px;
+            background: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            font-weight: 600;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            z-index: 10;
+        }
+
+        .label.current {
+            background: #ef4444;
+            color: white;
+        }
+
+        .label.fixed {
+            background: #10b981;
+            color: white;
+        }
+
+        /* Current Sidebar (Too Large) */
+        .sidebar-current {
+            width: 256px;
+            background: linear-gradient(to bottom, #f9fafb, #ffffff);
+            border-right: 1px solid #e5e7eb;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        /* Fixed Sidebar (Compact) */
+        .sidebar-fixed {
+            width: 256px;
+            background: linear-gradient(to bottom, #f9fafb, #ffffff);
+            border-right: 1px solid #e5e7eb;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        /* Header - Same for both */
+        .sidebar-header {
+            padding: 12px 14px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .logo {
+            font-size: 16px;
+            font-weight: 600;
+            color: #111827;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* CURRENT: Large Navigation */
+        .nav-menu-large {
+            flex: 1;
+            padding: 16px 0;
+            overflow-y: auto;
+        }
+
+        .nav-category-large {
+            margin-bottom: 16px;
+        }
+
+        .nav-title-large {
+            padding: 0 16px;
+            margin-bottom: 8px;
+            font-size: 11px;
+            font-weight: 500;
+            color: #9ca3af;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .nav-item-large {
+            display: flex;
+            align-items: center;
+            padding: 8px;
+            margin: 0 8px 4px 8px;
+            border-radius: 12px;
+            color: #6b7280;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .nav-icon-wrapper-large {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            background: #f3f4f6;
+            margin-right: 12px;
+            font-size: 18px;
+        }
+
+        /* FIXED: Compact Navigation */
+        .nav-menu-compact {
+            flex: 1;
+            padding: 12px 0;
+            overflow-y: auto;
+        }
+
+        .nav-category-compact {
+            margin-bottom: 12px;
+        }
+
+        .nav-title-compact {
+            padding: 0 14px;
+            margin-bottom: 6px;
+            font-size: 10px;
+            font-weight: 500;
+            color: #9ca3af;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .nav-item-compact {
+            display: flex;
+            align-items: center;
+            padding: 6px;
+            margin: 0 6px 2px 6px;
+            border-radius: 10px;
+            color: #6b7280;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .nav-item-compact:hover {
+            background: #f9fafb;
+        }
+
+        .nav-item-compact.active {
+            background: #dbeafe;
+            color: #2563eb;
+        }
+
+        .nav-icon-wrapper-compact {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            background: #f3f4f6;
+            margin-right: 10px;
+            font-size: 16px;
+        }
+
+        .nav-content {
+            flex: 1;
+        }
+
+        .nav-label-large {
+            font-size: 14px;
+            font-weight: 500;
+            display: block;
+        }
+
+        .nav-desc-large {
+            font-size: 12px;
+            color: #9ca3af;
+        }
+
+        .nav-label-compact {
+            font-size: 13px;
+            font-weight: 500;
+            display: block;
+        }
+
+        .nav-desc-compact {
+            font-size: 11px;
+            color: #9ca3af;
+        }
+
+        /* Footer - Current */
+        .sidebar-footer-large {
+            padding: 16px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .user-section-large {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+            padding: 8px;
+            border-radius: 8px;
+            background: #f9fafb;
+        }
+
+        /* Footer - Compact */
+        .sidebar-footer-compact {
+            padding: 12px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .user-section-compact {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            padding: 6px;
+            border-radius: 6px;
+            background: #f9fafb;
+        }
+
+        .user-avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .logout-btn {
+            width: 100%;
+            padding: 6px 10px;
+            background: white;
+            color: #6b7280;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        /* Cut-off indicator */
+        .cutoff-line {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: red;
+            z-index: 100;
+        }
+
+        .cutoff-area {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 50px;
+            background: rgba(255, 0, 0, 0.1);
+            border-top: 2px dashed red;
+            z-index: 99;
+            pointer-events: none;
+        }
+
+        .cutoff-label {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: red;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="comparison">
+        <!-- Current Version (Too Large) -->
+        <div class="version">
+            <div class="label current">❌ CURRENT - Items Cut Off</div>
+            <div class="sidebar-current">
+                <div class="sidebar-header">
+                    <div class="logo">
+                        <span>📊</span>
+                        <span>StarterPackApp</span>
+                    </div>
+                </div>
+                <nav class="nav-menu-large">
+                    <!-- Main Section -->
+                    <div class="nav-category-large">
+                        <div class="nav-title-large">MAIN</div>
+                        <div class="nav-item-large active">
+                            <div class="nav-icon-wrapper-large">🏠</div>
+                            <div class="nav-content">
+                                <span class="nav-label-large">ROI Finder</span>
+                                <span class="nav-desc-large">Property analysis</span>
+                            </div>
+                        </div>
+                        <div class="nav-item-large">
+                            <div class="nav-icon-wrapper-large">📈</div>
+                            <div class="nav-content">
+                                <span class="nav-label-large">Portfolio</span>
+                                <span class="nav-desc-large">Your properties</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Analysis Section -->
+                    <div class="nav-category-large">
+                        <div class="nav-title-large">ANALYSIS</div>
+                        <div class="nav-item-large">
+                            <div class="nav-icon-wrapper-large">💰</div>
+                            <div class="nav-content">
+                                <span class="nav-label-large">Financials</span>
+                                <span class="nav-desc-large">ROI & cash flow</span>
+                            </div>
+                        </div>
+                        <div class="nav-item-large">
+                            <div class="nav-icon-wrapper-large">🏘️</div>
+                            <div class="nav-content">
+                                <span class="nav-label-large">Market</span>
+                                <span class="nav-desc-large">Local insights</span>
+                            </div>
+                        </div>
+                        <div class="nav-item-large">
+                            <div class="nav-icon-wrapper-large">📊</div>
+                            <div class="nav-content">
+                                <span class="nav-label-large">Reports</span>
+                                <span class="nav-desc-large">PDF exports</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Settings Section -->
+                    <div class="nav-category-large">
+                        <div class="nav-title-large">SETTINGS</div>
+                        <div class="nav-item-large">
+                            <div class="nav-icon-wrapper-large">⚙️</div>
+                            <div class="nav-content">
+                                <span class="nav-label-large">Preferences</span>
+                                <span class="nav-desc-large">App settings</span>
+                            </div>
+                        </div>
+                    </div>
+                </nav>
+                <div class="sidebar-footer-large">
+                    <div class="user-section-large">
+                        <div class="user-avatar">A</div>
+                        <div>
+                            <div style="font-size: 13px; font-weight: 500;">amy@email.com</div>
+                            <div style="font-size: 11px; color: #6b7280;">Admin Account</div>
+                        </div>
+                    </div>
+                    <button class="logout-btn">Logout</button>
+                </div>
+                <div class="cutoff-area">
+                    <div class="cutoff-label">CUT OFF</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Fixed Version (Compact) -->
+        <div class="version">
+            <div class="label fixed">✅ FIXED - All Items Fit</div>
+            <div class="sidebar-fixed">
+                <div class="sidebar-header">
+                    <div class="logo">
+                        <span>📊</span>
+                        <span>StarterPackApp</span>
+                    </div>
+                </div>
+                <nav class="nav-menu-compact">
+                    <!-- Main Section -->
+                    <div class="nav-category-compact">
+                        <div class="nav-title-compact">MAIN</div>
+                        <div class="nav-item-compact active">
+                            <div class="nav-icon-wrapper-compact">🏠</div>
+                            <div class="nav-content">
+                                <span class="nav-label-compact">ROI Finder</span>
+                                <span class="nav-desc-compact">Property analysis</span>
+                            </div>
+                        </div>
+                        <div class="nav-item-compact">
+                            <div class="nav-icon-wrapper-compact">📈</div>
+                            <div class="nav-content">
+                                <span class="nav-label-compact">Portfolio</span>
+                                <span class="nav-desc-compact">Your properties</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Analysis Section -->
+                    <div class="nav-category-compact">
+                        <div class="nav-title-compact">ANALYSIS</div>
+                        <div class="nav-item-compact">
+                            <div class="nav-icon-wrapper-compact">💰</div>
+                            <div class="nav-content">
+                                <span class="nav-label-compact">Financials</span>
+                                <span class="nav-desc-compact">ROI & cash flow</span>
+                            </div>
+                        </div>
+                        <div class="nav-item-compact">
+                            <div class="nav-icon-wrapper-compact">🏘️</div>
+                            <div class="nav-content">
+                                <span class="nav-label-compact">Market</span>
+                                <span class="nav-desc-compact">Local insights</span>
+                            </div>
+                        </div>
+                        <div class="nav-item-compact">
+                            <div class="nav-icon-wrapper-compact">📊</div>
+                            <div class="nav-content">
+                                <span class="nav-label-compact">Reports</span>
+                                <span class="nav-desc-compact">PDF exports</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Settings Section -->
+                    <div class="nav-category-compact">
+                        <div class="nav-title-compact">SETTINGS</div>
+                        <div class="nav-item-compact">
+                            <div class="nav-icon-wrapper-compact">⚙️</div>
+                            <div class="nav-content">
+                                <span class="nav-label-compact">Preferences</span>
+                                <span class="nav-desc-compact">App settings</span>
+                            </div>
+                        </div>
+                    </div>
+                </nav>
+                <div class="sidebar-footer-compact">
+                    <div class="user-section-compact">
+                        <div class="user-avatar">A</div>
+                        <div>
+                            <div style="font-size: 12px; font-weight: 500;">amy@email.com</div>
+                            <div style="font-size: 10px; color: #6b7280;">Admin Account</div>
+                        </div>
+                    </div>
+                    <button class="logout-btn">Logout</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: white; padding: 15px 30px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); text-align: center;">
+        <h3 style="margin: 0 0 10px 0; font-size: 16px;">Size Reductions Applied:</h3>
+        <ul style="text-align: left; margin: 0; padding-left: 20px; font-size: 13px;">
+            <li>Icon boxes: 40px → 32px</li>
+            <li>Nav item padding: 8px → 6px</li>
+            <li>Section margins: 16px → 12px</li>
+            <li>Font sizes: reduced by 1px</li>
+            <li>Footer padding: 16px → 12px</li>
+            <li>User avatar: 32px → 28px</li>
+        </ul>
+    </div>
+</body>
+</html>

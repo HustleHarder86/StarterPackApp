@@ -1,287 +1,211 @@
 const puppeteer = require('puppeteer');
-const fs = require('fs');
+const fs = require('fs').promises;
 const path = require('path');
 
-async function testSidebarAndTextFixes() {
-    const screenshotDir = path.join(__dirname, 'test-screenshots', `sidebar-test-${Date.now()}`);
-    if (!fs.existsSync(screenshotDir)) {
-        fs.mkdirSync(screenshotDir, { recursive: true });
-    }
+async function simpleSidebarTest() {
+  console.log('🚀 Starting simple sidebar test...');
+  
+  const browser = await puppeteer.launch({
+    headless: false,
+    defaultViewport: null,
+    args: ['--start-maximized', '--disable-dev-shm-usage', '--no-sandbox']
+  });
 
-    console.log('🚀 Starting Sidebar and Text Color Test');
-    console.log(`📁 Screenshots will be saved to: ${screenshotDir}`);
+  const page = await browser.newPage();
+  await page.setViewport({ width: 1366, height: 768 });
 
-    const browser = await puppeteer.launch({
-        headless: true,
-        args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage']
+  const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
+  const screenshotDir = path.join(__dirname, `simple-test-${timestamp}`);
+  await fs.mkdir(screenshotDir, { recursive: true });
+
+  try {
+    console.log('🌐 Opening http://localhost:3000/roi-finder.html...');
+    
+    // Use a more lenient approach
+    await page.goto('http://localhost:3000/roi-finder.html', { 
+      waitUntil: 'domcontentloaded',
+      timeout: 30000
     });
 
-    const page = await browser.newPage();
-    await page.setViewport({ width: 1920, height: 1080 });
+    // Wait for page to settle
+    console.log('⏳ Waiting for page to load...');
+    await new Promise(resolve => setTimeout(resolve, 8000));
 
-    try {
-        // Navigate to the application
-        console.log('📂 Navigating to application...');
-        await page.goto('http://localhost:3000/roi-finder.html', { 
-            waitUntil: 'domcontentloaded',
-            timeout: 10000
+    // Check if page loaded
+    const url = await page.url();
+    const title = await page.title();
+    console.log(`📄 Page loaded: ${title} at ${url}`);
+
+    // Take screenshots immediately
+    console.log('📸 Taking screenshots...');
+    
+    await page.screenshot({ 
+      path: path.join(screenshotDir, '01-initial-load.png'),
+      fullPage: false
+    });
+    
+    await page.screenshot({ 
+      path: path.join(screenshotDir, '02-full-page.png'),
+      fullPage: true 
+    });
+
+    // Quick sidebar check
+    const sidebarCheck = await page.evaluate(() => {
+      const sidebar = document.querySelector('#app-sidebar') || 
+                     document.querySelector('.app-sidebar') || 
+                     document.querySelector('aside');
+      
+      if (!sidebar) return { found: false };
+
+      const rect = sidebar.getBoundingClientRect();
+      const style = window.getComputedStyle(sidebar);
+      
+      // Get all navigation items
+      const navItems = Array.from(sidebar.querySelectorAll('.nav-item, .nav-link, a, button'))
+        .filter(item => item.textContent && item.textContent.trim())
+        .map(item => {
+          const itemRect = item.getBoundingClientRect();
+          return {
+            text: item.textContent.trim(),
+            visible: itemRect.top >= 0 && itemRect.bottom <= window.innerHeight,
+            position: {
+              top: itemRect.top,
+              bottom: itemRect.bottom,
+              height: itemRect.height
+            },
+            className: item.className
+          };
         });
 
-        // Wait a bit for any dynamic content to load
-        await page.waitForTimeout(2000);
+      // Check for specific sections
+      const sections = ['Main', 'Analysis', 'Settings'];
+      const sectionsFound = sections.map(section => {
+        const found = sidebar.textContent.includes(section);
+        return { section, found };
+      });
 
-        // Take initial screenshot
-        console.log('📸 Taking initial screenshot...');
-        await page.screenshot({ 
-            path: path.join(screenshotDir, '01-initial-state.png'), 
-            fullPage: true 
-        });
+      return {
+        found: true,
+        position: { top: rect.top, left: rect.left, width: rect.width, height: rect.height },
+        styles: { display: style.display, position: style.position },
+        navItems: navItems,
+        sectionsFound: sectionsFound,
+        viewportHeight: window.innerHeight,
+        sidebarScrollable: sidebar.scrollHeight > sidebar.clientHeight
+      };
+    });
 
-        // Test 1: Check for text color improvements
-        console.log('🎨 Testing text color improvements...');
+    console.log('🔍 Sidebar Analysis:');
+    if (sidebarCheck.found) {
+      console.log(`✅ Sidebar found at position: ${sidebarCheck.position.left}x${sidebarCheck.position.top}`);
+      console.log(`📐 Sidebar size: ${sidebarCheck.position.width}x${sidebarCheck.position.height}`);
+      console.log(`📱 Viewport height: ${sidebarCheck.viewportHeight}`);
+      console.log(`📜 Sidebar scrollable: ${sidebarCheck.sidebarScrollable}`);
+      console.log();
+
+      console.log('📋 Sections found:');
+      sidebarCheck.sectionsFound.forEach(s => {
+        console.log(`  ${s.found ? '✅' : '❌'} ${s.section}`);
+      });
+      console.log();
+
+      console.log('🧭 Navigation items:');
+      sidebarCheck.navItems.forEach((item, i) => {
+        const status = item.visible ? '✅ VISIBLE' : '❌ CUT OFF';
+        console.log(`${i + 1}. ${status} "${item.text}"`);
+        console.log(`   Position: top=${item.position.top}, bottom=${item.position.bottom}, height=${item.position.height}`);
+        if (item.className) console.log(`   Class: ${item.className}`);
+        console.log();
+      });
+
+      // Summary
+      const allVisible = sidebarCheck.navItems.every(item => item.visible);
+      const hasSettings = sidebarCheck.navItems.some(item => 
+        item.text.toLowerCase().includes('settings') || 
+        item.text.toLowerCase().includes('preferences')
+      );
+
+      console.log('🎯 COMPACT SIDEBAR TEST RESULTS:');
+      console.log('='.repeat(50));
+      console.log(`✅ Sidebar found: YES`);
+      console.log(`✅ All nav items visible: ${allVisible ? 'YES' : 'NO'}`);
+      console.log(`✅ Settings section visible: ${hasSettings ? 'YES' : 'NO'}`);
+      console.log(`✅ Fits in viewport: ${!sidebarCheck.sidebarScrollable ? 'YES' : 'NO'}`);
+      console.log(`📊 Total navigation items: ${sidebarCheck.navItems.length}`);
+      console.log(`📁 Screenshots saved to: ${screenshotDir}`);
+      console.log('='.repeat(50));
+
+      // Check specific compact sizing
+      const sizingCheck = await page.evaluate(() => {
+        const sidebar = document.querySelector('#app-sidebar') || document.querySelector('.app-sidebar');
+        if (!sidebar) return null;
+
+        const iconElements = sidebar.querySelectorAll('.nav-icon, [class*="icon"]');
+        const navItemElements = sidebar.querySelectorAll('.nav-item');
         
-        const textElements = await page.evaluate(() => {
-            const results = [];
-            // Look for all text elements that might have been updated
-            const elements = document.querySelectorAll('*');
-            
-            elements.forEach(el => {
-                const styles = window.getComputedStyle(el);
-                const color = styles.color;
-                const text = el.textContent?.trim();
-                
-                // Check if this element has the new color (#4b5563 = rgb(75, 85, 99))
-                if (color === 'rgb(75, 85, 99)' && text && text.length > 0 && text.length < 200) {
-                    results.push({
-                        tag: el.tagName,
-                        class: el.className,
-                        text: text.substring(0, 100),
-                        color: color
-                    });
-                }
-                
-                // Also check for old problematic colors that should have been fixed
-                if (color === 'rgb(153, 153, 153)' && text && text.length > 0 && text.length < 200) {
-                    results.push({
-                        tag: el.tagName,
-                        class: el.className,
-                        text: text.substring(0, 100),
-                        color: color,
-                        issue: 'OLD_LIGHT_COLOR'
-                    });
-                }
-            });
-            
-            return results;
+        const iconSizes = Array.from(iconElements).map(icon => {
+          const rect = icon.getBoundingClientRect();
+          const style = window.getComputedStyle(icon);
+          return {
+            actualSize: `${Math.round(rect.width)}x${Math.round(rect.height)}`,
+            cssSize: `${style.width} x ${style.height}`,
+            fontSize: style.fontSize
+          };
         });
 
-        console.log(`   Found ${textElements.filter(el => !el.issue).length} elements with improved color`);
-        console.log(`   Found ${textElements.filter(el => el.issue).length} elements with old problematic color`);
+        const navPadding = Array.from(navItemElements).map(item => {
+          const style = window.getComputedStyle(item);
+          return {
+            padding: style.padding,
+            fontSize: style.fontSize,
+            height: item.getBoundingClientRect().height
+          };
+        });
 
-        // Test 2: Check sidebar functionality
-        console.log('📱 Testing sidebar functionality...');
+        return { iconSizes, navPadding };
+      });
+
+      if (sizingCheck) {
+        console.log('📏 SIZING ANALYSIS:');
+        console.log('Icon sizes (should be ~32px):');
+        sizingCheck.iconSizes.forEach((icon, i) => {
+          console.log(`  ${i + 1}. ${icon.actualSize} (CSS: ${icon.cssSize}, Font: ${icon.fontSize})`);
+        });
         
-        // Find the sidebar toggle button
-        const sidebarToggle = await page.$('#sidebarToggle');
-        if (!sidebarToggle) {
-            console.log('⚠️  Sidebar toggle button not found, checking for alternative selectors...');
-            
-            // Try alternative selectors
-            const alternatives = [
-                'button[data-toggle="sidebar"]',
-                '.sidebar-toggle',
-                '.toggle-sidebar',
-                '[data-action="toggle-sidebar"]'
-            ];
-            
-            let found = false;
-            for (const selector of alternatives) {
-                const alt = await page.$(selector);
-                if (alt) {
-                    console.log(`✅ Found sidebar toggle with selector: ${selector}`);
-                    found = true;
-                    break;
-                }
-            }
-            
-            if (!found) {
-                console.log('❌ No sidebar toggle button found');
-            }
-        }
-
-        // Get initial sidebar measurements
-        const initialState = await page.evaluate(() => {
-            const sidebar = document.getElementById('sidebar') || document.querySelector('.sidebar');
-            const mainContent = document.querySelector('.main-content, #mainContent, .content');
-            
-            if (!sidebar) {
-                return { error: 'Sidebar not found' };
-            }
-            
-            const sidebarRect = sidebar.getBoundingClientRect();
-            const contentRect = mainContent ? mainContent.getBoundingClientRect() : null;
-            
-            return {
-                sidebar: {
-                    width: sidebarRect.width,
-                    left: sidebarRect.left,
-                    visible: !sidebar.classList.contains('hidden')
-                },
-                content: contentRect ? {
-                    left: contentRect.left,
-                    width: contentRect.width
-                } : null,
-                viewportWidth: window.innerWidth
-            };
+        console.log('Nav item padding:');
+        sizingCheck.navPadding.slice(0, 3).forEach((item, i) => {
+          console.log(`  ${i + 1}. Padding: ${item.padding}, Font: ${item.fontSize}, Height: ${Math.round(item.height)}px`);
         });
+      }
 
-        console.log('   Initial state:', JSON.stringify(initialState, null, 2));
-
-        if (initialState.error) {
-            console.log('❌ Sidebar element not found');
-        } else {
-            // Test sidebar collapse if toggle exists
-            if (sidebarToggle) {
-                console.log('🔽 Testing sidebar collapse...');
-                
-                // Click to collapse
-                await sidebarToggle.click();
-                await page.waitForTimeout(1000); // Wait for animation
-                
-                // Take screenshot after collapse
-                await page.screenshot({ 
-                    path: path.join(screenshotDir, '02-sidebar-collapsed.png'), 
-                    fullPage: true 
-                });
-                
-                // Get collapsed measurements
-                const collapsedState = await page.evaluate(() => {
-                    const sidebar = document.getElementById('sidebar') || document.querySelector('.sidebar');
-                    const mainContent = document.querySelector('.main-content, #mainContent, .content');
-                    
-                    const sidebarRect = sidebar.getBoundingClientRect();
-                    const contentRect = mainContent ? mainContent.getBoundingClientRect() : null;
-                    
-                    return {
-                        sidebar: {
-                            width: sidebarRect.width,
-                            left: sidebarRect.left,
-                            visible: !sidebar.classList.contains('hidden')
-                        },
-                        content: contentRect ? {
-                            left: contentRect.left,
-                            width: contentRect.width
-                        } : null,
-                        viewportWidth: window.innerWidth
-                    };
-                });
-
-                console.log('   Collapsed state:', JSON.stringify(collapsedState, null, 2));
-                
-                // Check for white space issue
-                const hasWhiteSpaceIssue = collapsedState.content && collapsedState.content.left > 50;
-                console.log(`   White space issue: ${hasWhiteSpaceIssue ? 'YES - Content left: ' + collapsedState.content.left + 'px' : 'NO'}`);
-                
-                // Test expand
-                console.log('🔼 Testing sidebar expand...');
-                await sidebarToggle.click();
-                await page.waitForTimeout(1000);
-                
-                // Take screenshot after expand
-                await page.screenshot({ 
-                    path: path.join(screenshotDir, '03-sidebar-expanded.png'), 
-                    fullPage: true 
-                });
-                
-                const expandedState = await page.evaluate(() => {
-                    const sidebar = document.getElementById('sidebar') || document.querySelector('.sidebar');
-                    const mainContent = document.querySelector('.main-content, #mainContent, .content');
-                    
-                    const sidebarRect = sidebar.getBoundingClientRect();
-                    const contentRect = mainContent ? mainContent.getBoundingClientRect() : null;
-                    
-                    return {
-                        sidebar: {
-                            width: sidebarRect.width,
-                            left: sidebarRect.left,
-                            visible: !sidebar.classList.contains('hidden')
-                        },
-                        content: contentRect ? {
-                            left: contentRect.left,
-                            width: contentRect.width
-                        } : null,
-                        viewportWidth: window.innerWidth
-                    };
-                });
-
-                console.log('   Expanded state:', JSON.stringify(expandedState, null, 2));
-                
-                // Summary
-                console.log('\n📊 TEST RESULTS SUMMARY:');
-                console.log('=' .repeat(50));
-                
-                // Text color results
-                const improvedTextElements = textElements.filter(el => !el.issue);
-                const problematicTextElements = textElements.filter(el => el.issue);
-                
-                console.log(`\n🎨 Text Color Improvements:`);
-                console.log(`   ✅ Elements with improved color (#4b5563): ${improvedTextElements.length}`);
-                console.log(`   ${problematicTextElements.length === 0 ? '✅' : '⚠️'} Elements with old color (#999999): ${problematicTextElements.length}`);
-                
-                if (improvedTextElements.length > 0) {
-                    console.log('   📝 Sample improved elements:');
-                    improvedTextElements.slice(0, 3).forEach(el => {
-                        console.log(`      • ${el.tag}.${el.class}: "${el.text.substring(0, 50)}..."`);
-                    });
-                }
-                
-                if (problematicTextElements.length > 0) {
-                    console.log('   ⚠️  Elements still using old color:');
-                    problematicTextElements.forEach(el => {
-                        console.log(`      • ${el.tag}.${el.class}: "${el.text.substring(0, 50)}..."`);
-                    });
-                }
-                
-                // Sidebar results
-                console.log(`\n📱 Sidebar Functionality:`);
-                console.log(`   ✅ Sidebar toggle button: Found`);
-                console.log(`   ${hasWhiteSpaceIssue ? '⚠️' : '✅'} White space when collapsed: ${hasWhiteSpaceIssue ? 'ISSUE DETECTED' : 'NO ISSUES'}`);
-                console.log(`   ✅ Collapse/Expand animation: Working`);
-                
-                // Overall assessment
-                const textIssues = problematicTextElements.length > 0;
-                const sidebarIssues = hasWhiteSpaceIssue;
-                const allGood = !textIssues && !sidebarIssues;
-                
-                console.log(`\n🎯 OVERALL ASSESSMENT: ${allGood ? '✅ ALL FIXES WORKING PROPERLY' : '⚠️ ISSUES DETECTED'}`);
-                
-                if (!allGood) {
-                    console.log('🔧 Issues to address:');
-                    if (textIssues) console.log('   • Some text elements still using old light gray color');
-                    if (sidebarIssues) console.log('   • White space visible when sidebar collapsed');
-                }
-                
-                console.log(`\n📸 Screenshots saved to: ${screenshotDir}`);
-                console.log('   • 01-initial-state.png - Initial page load');
-                console.log('   • 02-sidebar-collapsed.png - Sidebar collapsed');
-                console.log('   • 03-sidebar-expanded.png - Sidebar expanded');
-                
-            } else {
-                console.log('⚠️  Sidebar toggle not found, skipping collapse/expand tests');
-            }
-        }
-
-    } catch (error) {
-        console.error('❌ Test failed:', error.message);
-    } finally {
-        await browser.close();
+    } else {
+      console.log('❌ No sidebar found');
     }
+
+    // Save report
+    const report = {
+      timestamp: new Date().toISOString(),
+      url: url,
+      title: title,
+      sidebarCheck: sidebarCheck,
+      sizingCheck: sizingCheck || null,
+      screenshotDir: screenshotDir
+    };
+
+    await fs.writeFile(
+      path.join(screenshotDir, 'report.json'),
+      JSON.stringify(report, null, 2)
+    );
+
+  } catch (error) {
+    console.error('❌ Error:', error);
+    try {
+      await page.screenshot({ path: path.join(screenshotDir, 'error.png') });
+    } catch (e) {}
+  } finally {
+    await browser.close();
+    console.log('🏁 Test completed');
+  }
 }
 
-// Run the test
-testSidebarAndTextFixes().then(() => {
-    console.log('\n✅ Test completed');
-}).catch(error => {
-    console.error('❌ Test execution failed:', error);
-    process.exit(1);
-});
+simpleSidebarTest().catch(console.error);

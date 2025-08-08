@@ -1,0 +1,1265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STR Analysis Redesign Mockup V2</title>
+    <style>
+        /* Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: #F9FAFB;
+            color: #1F2937;
+            line-height: 1.6;
+        }
+        
+        /* Design System Colors */
+        :root {
+            --primary-blue: #3B82F6;
+            --success-green: #10B981;
+            --danger-red: #EF4444;
+            --warning-amber: #F59E0B;
+            --gray-50: #F9FAFB;
+            --gray-100: #F3F4F6;
+            --gray-200: #E5E7EB;
+            --gray-300: #D1D5DB;
+            --gray-400: #9CA3AF;
+            --gray-500: #6B7280;
+            --gray-600: #4B5563;
+            --gray-700: #374151;
+            --gray-800: #1F2937;
+            --gray-900: #111827;
+        }
+        
+        /* Typography Scale */
+        .h1 { font-size: 32px; font-weight: 700; line-height: 1.2; color: var(--gray-900); }
+        .h2 { font-size: 24px; font-weight: 600; line-height: 1.3; color: var(--gray-800); }
+        .h3 { font-size: 18px; font-weight: 500; line-height: 1.4; color: var(--gray-800); }
+        .body { font-size: 16px; font-weight: 400; line-height: 1.6; color: var(--gray-700); }
+        .small { font-size: 14px; font-weight: 400; line-height: 1.5; color: var(--gray-600); }
+        .metric { font-size: 36px; font-weight: 700; line-height: 1; }
+        
+        /* Layout Container */
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+        
+        /* Header */
+        .header {
+            background: white;
+            border-bottom: 1px solid var(--gray-200);
+            padding: 20px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .toggle-btn {
+            padding: 10px 20px;
+            background: var(--primary-blue);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        
+        .toggle-btn:hover {
+            background: #2563EB;
+            transform: translateY(-1px);
+        }
+        
+        /* Main Content */
+        .main-content {
+            padding: 32px 0;
+        }
+        
+        /* Cards */
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 24px;
+            transition: all 0.3s;
+        }
+        
+        .card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        /* Property Hero Section */
+        .property-hero {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 32px;
+            align-items: center;
+            margin-bottom: 32px;
+        }
+        
+        .property-image {
+            width: 100%;
+            height: 200px;
+            border-radius: 12px;
+            object-fit: cover;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .property-details {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        
+        .property-address {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .property-address svg {
+            width: 24px;
+            height: 24px;
+            color: var(--gray-500);
+        }
+        
+        /* Metric Cards */
+        .metric-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-top: 16px;
+        }
+        
+        .metric-card {
+            background: var(--gray-50);
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+            padding: 16px;
+            transition: all 0.2s;
+        }
+        
+        .metric-card:hover {
+            background: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+        }
+        
+        .metric-card-label {
+            font-size: 12px;
+            color: var(--gray-500);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+        
+        .metric-card-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--gray-900);
+        }
+        
+        .metric-card-value.positive {
+            color: var(--success-green);
+        }
+        
+        .metric-card-value.negative {
+            color: var(--danger-red);
+        }
+        
+        /* Comparable Listings */
+        .comparables-section {
+            margin-bottom: 32px;
+        }
+        
+        .comparables-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 24px;
+            margin-top: 20px;
+        }
+        
+        .comparable-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .comparable-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+        }
+        
+        .comparable-image {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            position: relative;
+        }
+        
+        .comparable-price {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            background: white;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 18px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .comparable-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: white;
+        }
+        
+        .badge-top {
+            background: var(--success-green);
+        }
+        
+        .badge-similar {
+            background: var(--primary-blue);
+        }
+        
+        .badge-value {
+            background: var(--warning-amber);
+        }
+        
+        .comparable-details {
+            padding: 16px;
+        }
+        
+        .comparable-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: 8px;
+        }
+        
+        .comparable-stats {
+            display: flex;
+            gap: 16px;
+            margin: 12px 0;
+        }
+        
+        .comparable-stat {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 14px;
+            color: var(--gray-600);
+        }
+        
+        .comparable-rating {
+            color: var(--warning-amber);
+            font-weight: 600;
+        }
+        
+        .comparable-revenue {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 12px;
+            border-top: 1px solid var(--gray-100);
+        }
+        
+        .revenue-label {
+            font-size: 12px;
+            color: var(--gray-500);
+            text-transform: uppercase;
+        }
+        
+        .revenue-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--success-green);
+        }
+        
+        .view-btn {
+            width: 100%;
+            padding: 10px;
+            background: var(--primary-blue);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            margin-top: 12px;
+            transition: all 0.2s;
+        }
+        
+        .view-btn:hover {
+            background: #2563EB;
+        }
+        
+        /* STR Revenue Calculator */
+        .calculator-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+        
+        .calculator-inputs {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .input-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--gray-700);
+        }
+        
+        .input-slider {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: var(--gray-200);
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+        
+        .input-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary-blue);
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .input-value {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--gray-900);
+        }
+        
+        .calculator-results {
+            background: linear-gradient(135deg, var(--gray-50) 0%, white 100%);
+            border: 2px solid var(--gray-200);
+            border-radius: 12px;
+            padding: 24px;
+        }
+        
+        .result-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--gray-800);
+            margin-bottom: 20px;
+        }
+        
+        .result-value {
+            font-size: 48px;
+            font-weight: 700;
+            color: var(--success-green);
+            margin-bottom: 12px;
+        }
+        
+        .result-subtitle {
+            font-size: 14px;
+            color: var(--gray-600);
+        }
+        
+        /* Cash Flow Comparison */
+        .cashflow-comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+        
+        .cashflow-card {
+            border: 2px solid var(--gray-200);
+            border-radius: 12px;
+            padding: 20px;
+            background: white;
+        }
+        
+        .cashflow-card.str {
+            border-color: var(--success-green);
+            background: linear-gradient(to bottom, #10B98110, white);
+        }
+        
+        .cashflow-card.ltr {
+            border-color: var(--gray-400);
+        }
+        
+        .cashflow-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .cashflow-title {
+            font-size: 18px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .cashflow-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .badge-recommended {
+            background: var(--success-green);
+            color: white;
+        }
+        
+        .cashflow-breakdown {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .cashflow-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--gray-100);
+        }
+        
+        .cashflow-item:last-child {
+            border-bottom: none;
+            padding-top: 12px;
+            margin-top: 4px;
+            border-top: 2px solid var(--gray-200);
+        }
+        
+        .cashflow-label {
+            font-size: 14px;
+            color: var(--gray-600);
+        }
+        
+        .cashflow-value {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--gray-900);
+        }
+        
+        .cashflow-value.positive {
+            color: var(--success-green);
+        }
+        
+        .cashflow-value.negative {
+            color: var(--danger-red);
+        }
+        
+        .cashflow-total {
+            font-size: 24px;
+            font-weight: 700;
+        }
+        
+        /* Info Tooltips */
+        .info-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--gray-300);
+            color: var(--gray-600);
+            font-size: 10px;
+            cursor: help;
+            margin-left: 4px;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .property-hero {
+                grid-template-columns: 1fr;
+            }
+            
+            .calculator-section {
+                grid-template-columns: 1fr;
+            }
+            
+            .cashflow-comparison {
+                grid-template-columns: 1fr;
+            }
+            
+            .comparables-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .metric-cards {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        
+        /* Version Toggle */
+        .version-badge {
+            padding: 6px 12px;
+            background: var(--warning-amber);
+            color: white;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header with Toggle -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div>
+                    <h1 class="h2">STR Analysis UX Redesign Mockup V2</h1>
+                    <p class="small">Airbnb listings moved to top, enhanced calculator interactivity</p>
+                </div>
+                <div style="display: flex; align-items: center; gap: 16px;">
+                    <span class="version-badge">NEW LAYOUT</span>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <!-- 1. Property Hero Section (stays at top) -->
+            <div class="card">
+                <div class="property-hero">
+                    <img src="https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=600&h=400&fit=crop" 
+                         alt="Property" 
+                         class="property-image">
+                    <div class="property-details">
+                        <div class="property-address">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            </svg>
+                            <div>
+                                <h1 class="h1">1514 - 150 East Liberty Street</h1>
+                                <p class="body">Toronto, Ontario M6K 3R5</p>
+                            </div>
+                        </div>
+                        <div class="metric-cards">
+                            <div class="metric-card">
+                                <div class="metric-card-label">Monthly Revenue</div>
+                                <div class="metric-card-value positive">$5,240</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-card-label">Net Cash Flow</div>
+                                <div class="metric-card-value positive">+$2,150</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-card-label">ROI</div>
+                                <div class="metric-card-value">12.3%</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-card-label">Occupancy Rate</div>
+                                <div class="metric-card-value">78%</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 2. Live Airbnb Comparables (moved up) -->
+            <section class="comparables-section">
+                <div class="card">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <h2 class="h2" style="display: inline-flex; align-items: center; gap: 12px;">
+                                Live Airbnb Market Data
+                                <span style="display: inline-flex; align-items: center; gap: 4px; color: var(--success-green); font-size: 14px; font-weight: 500;">
+                                    <span style="font-size: 10px;">●</span> 20 active listings found
+                                </span>
+                            </h2>
+                            <p class="body" style="margin-top: 8px; color: var(--gray-600);">Similar properties in your area performing well on Airbnb</p>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <span class="small" style="color: var(--gray-500);">Updated 3 minutes ago</span>
+                            <span style="padding: 6px 12px; background: linear-gradient(135deg, #EF4444, #F59E0B); color: white; border-radius: 6px; font-size: 11px; font-weight: 700; text-transform: uppercase;">
+                                ● REAL MARKET DATA
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="comparables-grid">
+                    <!-- Comparable 1 -->
+                    <div class="comparable-card">
+                        <div style="position: relative;">
+                            <img src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=600&h=400&fit=crop" 
+                                 alt="Comparable 1" 
+                                 class="comparable-image">
+                            <div class="comparable-price">$209/night</div>
+                            <span class="comparable-badge badge-top">Top Performer</span>
+                        </div>
+                        <div class="comparable-details">
+                            <h3 class="comparable-title">Luxury 2BR Condo • King West</h3>
+                            <div class="comparable-stats">
+                                <span class="comparable-stat comparable-rating">★ 4.92</span>
+                                <span class="comparable-stat">156 reviews</span>
+                                <span class="comparable-stat">85% booked</span>
+                            </div>
+                            <div class="comparable-revenue">
+                                <div>
+                                    <div class="revenue-label">Monthly Revenue</div>
+                                    <div class="revenue-value">$6,850</div>
+                                </div>
+                            </div>
+                            <button class="view-btn">View on Airbnb →</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Comparable 2 -->
+                    <div class="comparable-card">
+                        <div style="position: relative;">
+                            <img src="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=600&h=400&fit=crop" 
+                                 alt="Comparable 2" 
+                                 class="comparable-image">
+                            <div class="comparable-price">$175/night</div>
+                            <span class="comparable-badge badge-similar">Most Similar</span>
+                        </div>
+                        <div class="comparable-details">
+                            <h3 class="comparable-title">Modern 1BR+Den • Liberty Village</h3>
+                            <div class="comparable-stats">
+                                <span class="comparable-stat comparable-rating">★ 4.85</span>
+                                <span class="comparable-stat">89 reviews</span>
+                                <span class="comparable-stat">78% booked</span>
+                            </div>
+                            <div class="comparable-revenue">
+                                <div>
+                                    <div class="revenue-label">Monthly Revenue</div>
+                                    <div class="revenue-value">$5,100</div>
+                                </div>
+                            </div>
+                            <button class="view-btn">View on Airbnb →</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Comparable 3 -->
+                    <div class="comparable-card">
+                        <div style="position: relative;">
+                            <img src="https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=600&h=400&fit=crop" 
+                                 alt="Comparable 3" 
+                                 class="comparable-image">
+                            <div class="comparable-price">$165/night</div>
+                            <span class="comparable-badge badge-value">Best Value</span>
+                        </div>
+                        <div class="comparable-details">
+                            <h3 class="comparable-title">Cozy 1BR • Entertainment District</h3>
+                            <div class="comparable-stats">
+                                <span class="comparable-stat comparable-rating">★ 4.78</span>
+                                <span class="comparable-stat">234 reviews</span>
+                                <span class="comparable-stat">82% booked</span>
+                            </div>
+                            <div class="comparable-revenue">
+                                <div>
+                                    <div class="revenue-label">Monthly Revenue</div>
+                                    <div class="revenue-value">$4,950</div>
+                                </div>
+                            </div>
+                            <button class="view-btn">View on Airbnb →</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Airbnb Market Statistics -->
+                <div class="card" style="background: linear-gradient(135deg, #F3F4F6, white); margin-top: 24px;">
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px;">
+                        <!-- Average Nightly Rate -->
+                        <div style="text-align: center;">
+                            <div class="metric" style="font-size: 42px; font-weight: 700; color: var(--gray-900); margin-bottom: 8px;">
+                                $447
+                            </div>
+                            <div class="small" style="color: var(--gray-600); font-weight: 500;">
+                                Average nightly rate
+                            </div>
+                        </div>
+                        
+                        <!-- Average Occupancy -->
+                        <div style="text-align: center;">
+                            <div class="metric" style="font-size: 42px; font-weight: 700; color: var(--primary-blue); margin-bottom: 8px;">
+                                70%
+                            </div>
+                            <div class="small" style="color: var(--gray-600); font-weight: 500;">
+                                Average occupancy
+                            </div>
+                        </div>
+                        
+                        <!-- Projected Advantage -->
+                        <div style="text-align: center;">
+                            <div style="font-size: 14px; color: var(--gray-500); margin-bottom: 4px;">
+                                Projected Advantage
+                            </div>
+                            <div class="metric" style="font-size: 32px; font-weight: 700; color: var(--success-green); margin-bottom: 4px;">
+                                +$6,369/mo
+                            </div>
+                            <div class="small" style="color: var(--gray-600); font-weight: 500;">
+                                over long-term rental
+                            </div>
+                        </div>
+                        
+                        <!-- Average Rating -->
+                        <div style="text-align: center;">
+                            <div class="metric" style="font-size: 42px; font-weight: 700; color: var(--gray-900); margin-bottom: 8px;">
+                                4.5★
+                            </div>
+                            <div class="small" style="color: var(--gray-600); font-weight: 500;">
+                                Average rating
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- View All Button -->
+                    <div style="text-align: center; margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--gray-200);">
+                        <button style="padding: 10px 24px; background: white; border: 1px solid var(--gray-300); border-radius: 8px; color: var(--gray-700); font-weight: 500; cursor: pointer; transition: all 0.2s;">
+                            View All Comparable Listings <span style="color: var(--gray-500); font-size: 12px;">(20 total)</span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- 3. STR Revenue Calculator -->
+            <section class="calculator-section">
+                <div class="card">
+                    <h2 class="h3" style="margin-bottom: 20px;">
+                        STR Revenue Calculator
+                        <span class="info-icon" title="Adjust values to see revenue projections">?</span>
+                    </h2>
+                    <div class="calculator-inputs">
+                        <div class="input-group">
+                            <label class="input-label">Nightly Rate</label>
+                            <input type="range" class="input-slider" id="nightlyRate" min="50" max="500" value="185">
+                            <span class="input-value" id="nightlyRateValue">$185/night</span>
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">Occupancy Rate</label>
+                            <input type="range" class="input-slider" id="occupancyRate" min="0" max="100" value="78">
+                            <span class="input-value" id="occupancyRateValue">78%</span>
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">Cleaning Fee</label>
+                            <input type="range" class="input-slider" id="cleaningFee" min="0" max="200" value="75">
+                            <span class="input-value" id="cleaningFeeValue">$75</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="calculator-results">
+                    <h3 class="result-title">Projected Monthly Revenue</h3>
+                    <div class="result-value" id="monthlyRevenueResult">$5,240</div>
+                    <p class="result-subtitle" id="nightsBookedText">Based on 23 nights booked per month</p>
+                    <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--gray-200);">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+                            <span class="small">Annual Revenue</span>
+                            <span class="h3" style="color: var(--success-green);" id="annualRevenue">$62,880</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span class="small">vs. Long-term Rental</span>
+                            <span class="h3" style="color: var(--success-green);" id="vsLTR">+68%</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- 4. Cash Flow Comparison -->
+            <section class="cashflow-comparison">
+                <div class="cashflow-card str">
+                    <div class="cashflow-header">
+                        <h3 class="cashflow-title">
+                            <svg width="20" height="20" fill="currentColor" style="color: var(--success-green);">
+                                <path d="M10 2a8 8 0 100 16 8 8 0 000-16z"/>
+                            </svg>
+                            Short-Term Rental
+                        </h3>
+                        <span class="cashflow-badge badge-recommended">Recommended</span>
+                    </div>
+                    <div class="cashflow-breakdown">
+                        <div class="cashflow-item">
+                            <span class="cashflow-label">Monthly Revenue</span>
+                            <span class="cashflow-value positive" id="strRevenue">+$5,240</span>
+                        </div>
+                        <div class="cashflow-item">
+                            <span class="cashflow-label">Mortgage Payment</span>
+                            <span class="cashflow-value negative">-$1,850</span>
+                        </div>
+                        <div class="cashflow-item">
+                            <span class="cashflow-label">Operating Expenses</span>
+                            <span class="cashflow-value negative" id="strExpenses">-$1,240</span>
+                        </div>
+                        <div class="cashflow-item">
+                            <span class="cashflow-label">Net Cash Flow</span>
+                            <span class="cashflow-value cashflow-total positive" id="strCashFlow">+$2,150</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="cashflow-card ltr">
+                    <div class="cashflow-header">
+                        <h3 class="cashflow-title">
+                            <svg width="20" height="20" fill="currentColor" style="color: var(--gray-500);">
+                                <path d="M10 2a8 8 0 100 16 8 8 0 000-16z"/>
+                            </svg>
+                            Long-Term Rental
+                        </h3>
+                    </div>
+                    <div class="cashflow-breakdown">
+                        <div class="cashflow-item">
+                            <span class="cashflow-label">Monthly Rent</span>
+                            <span class="cashflow-value positive">+$3,100</span>
+                        </div>
+                        <div class="cashflow-item">
+                            <span class="cashflow-label">Mortgage Payment</span>
+                            <span class="cashflow-value negative">-$1,850</span>
+                        </div>
+                        <div class="cashflow-item">
+                            <span class="cashflow-label">Operating Expenses</span>
+                            <span class="cashflow-value negative">-$650</span>
+                        </div>
+                        <div class="cashflow-item">
+                            <span class="cashflow-label">Net Cash Flow</span>
+                            <span class="cashflow-value cashflow-total positive">+$600</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- 5. Financial Analysis Calculator -->
+            <section class="financial-calculator-section">
+                <div class="card">
+                    <h2 class="h2" style="margin-bottom: 24px;">Financial Analysis Calculator</h2>
+                    
+                    <!-- Two Column Layout -->
+                    <div style="display: grid; grid-template-columns: 1fr 1.2fr; gap: 32px;">
+                        <!-- Left Column: Cash Flow Chart -->
+                        <div style="background: var(--gray-50); border-radius: 12px; padding: 20px;">
+                            <h3 class="h3" style="margin-bottom: 16px;">Monthly Cash Flow Comparison</h3>
+                            <div style="position: relative; height: 300px; background: white; border-radius: 8px; padding: 20px;">
+                                <!-- Bar Chart Visualization -->
+                                <svg viewBox="0 0 400 280" style="width: 100%; height: 100%;">
+                                    <!-- Grid lines -->
+                                    <line x1="60" y1="50" x2="340" y2="50" stroke="#E5E7EB" stroke-width="1" stroke-dasharray="2,2"/>
+                                    <line x1="60" y1="100" x2="340" y2="100" stroke="#E5E7EB" stroke-width="1" stroke-dasharray="2,2"/>
+                                    <line x1="60" y1="150" x2="340" y2="150" stroke="#E5E7EB" stroke-width="1" stroke-dasharray="2,2"/>
+                                    <line x1="60" y1="200" x2="340" y2="200" stroke="#E5E7EB" stroke-width="1" stroke-dasharray="2,2"/>
+                                    
+                                    <!-- STR Bar (will be updated dynamically) -->
+                                    <rect id="strBar" x="80" y="80" width="80" height="170" fill="#10b981" rx="4"/>
+                                    <text x="120" y="70" text-anchor="middle" font-size="14" font-weight="600" fill="#374151">STR</text>
+                                    <text id="strBarValue" x="120" y="270" text-anchor="middle" font-size="18" font-weight="700" fill="#10b981">$2,150</text>
+                                    
+                                    <!-- LTR Bar (will be updated dynamically) -->
+                                    <rect id="ltrBar" x="240" y="180" width="80" height="70" fill="#6b7280" rx="4"/>
+                                    <text x="280" y="70" text-anchor="middle" font-size="14" font-weight="600" fill="#374151">LTR</text>
+                                    <text id="ltrBarValue" x="280" y="270" text-anchor="middle" font-size="18" font-weight="700" fill="#6b7280">$600</text>
+                                    
+                                    <!-- Y-axis -->
+                                    <line x1="60" y1="250" x2="60" y2="50" stroke="#374151" stroke-width="2"/>
+                                    <text x="45" y="255" text-anchor="end" font-size="12" fill="#6B7280">$0</text>
+                                    <text x="45" y="205" text-anchor="end" font-size="12" fill="#6B7280">$500</text>
+                                    <text x="45" y="155" text-anchor="end" font-size="12" fill="#6B7280">$1k</text>
+                                    <text x="45" y="105" text-anchor="end" font-size="12" fill="#6B7280">$1.5k</text>
+                                    <text x="45" y="55" text-anchor="end" font-size="12" fill="#6B7280">$2k+</text>
+                                    
+                                    <!-- X-axis -->
+                                    <line x1="60" y1="250" x2="340" y2="250" stroke="#374151" stroke-width="2"/>
+                                </svg>
+                            </div>
+                            
+                            <!-- Key Metrics Below Chart -->
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 20px;">
+                                <div style="background: white; padding: 12px; border-radius: 8px;">
+                                    <div class="small" style="color: var(--gray-600);">STR Advantage</div>
+                                    <div class="h3" style="color: var(--success-green);" id="strAdvantage">+$1,550/mo</div>
+                                </div>
+                                <div style="background: white; padding: 12px; border-radius: 8px;">
+                                    <div class="small" style="color: var(--gray-600);">Annual Difference</div>
+                                    <div class="h3" style="color: var(--success-green);" id="annualDifference">+$18,600/yr</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Right Column: Adjustable Assumptions -->
+                        <div style="background: white; border: 1px solid var(--gray-200); border-radius: 12px; padding: 20px;">
+                            <h3 class="h3" style="margin-bottom: 20px;">
+                                Financial Assumptions 
+                                <span class="info-icon" title="Adjust these values to see how changes affect your returns">?</span>
+                            </h3>
+                            
+                            <div style="display: flex; flex-direction: column; gap: 24px;">
+                                <!-- Revenue Assumptions -->
+                                <div>
+                                    <h4 style="font-size: 14px; font-weight: 600; color: var(--gray-700); margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--gray-200);">
+                                        📊 Revenue Assumptions
+                                    </h4>
+                                    
+                                    <div style="display: flex; flex-direction: column; gap: 16px;">
+                                        <div>
+                                            <label class="small" style="display: block; margin-bottom: 4px;">STR Nightly Rate</label>
+                                            <div style="display: flex; align-items: center; gap: 12px;">
+                                                <span style="color: var(--gray-500);">$</span>
+                                                <input type="number" id="strNightlyInput" value="185" style="width: 80px; padding: 6px; border: 1px solid var(--gray-300); border-radius: 6px;">
+                                                <input type="range" id="strNightlySlider" min="100" max="400" value="185" style="flex: 1;">
+                                                <span class="small" style="color: var(--gray-600);">/night</span>
+                                            </div>
+                                        </div>
+                                        
+                                        <div>
+                                            <label class="small" style="display: block; margin-bottom: 4px;">STR Occupancy Rate</label>
+                                            <div style="display: flex; align-items: center; gap: 12px;">
+                                                <input type="range" id="strOccupancySlider" min="50" max="95" value="78" style="flex: 1;">
+                                                <span id="strOccupancyValue" style="min-width: 40px; text-align: right; font-weight: 600;">78%</span>
+                                            </div>
+                                        </div>
+                                        
+                                        <div>
+                                            <label class="small" style="display: block; margin-bottom: 4px;">Long-term Monthly Rent</label>
+                                            <div style="display: flex; align-items: center; gap: 12px;">
+                                                <span style="color: var(--gray-500);">$</span>
+                                                <input type="number" id="ltrRentInput" value="3100" style="width: 80px; padding: 6px; border: 1px solid var(--gray-300); border-radius: 6px;">
+                                                <span class="small" style="color: var(--gray-600);">/month</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Expense Assumptions -->
+                                <div>
+                                    <h4 style="font-size: 14px; font-weight: 600; color: var(--gray-700); margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--gray-200);">
+                                        💰 Expense Assumptions
+                                    </h4>
+                                    
+                                    <div style="display: flex; flex-direction: column; gap: 16px;">
+                                        <div>
+                                            <label class="small" style="display: block; margin-bottom: 4px;">Property Management Fee</label>
+                                            <div style="display: flex; align-items: center; gap: 12px;">
+                                                <input type="range" id="mgmtFeeSlider" min="0" max="30" value="20" style="flex: 1;">
+                                                <span id="mgmtFeeValue" style="min-width: 40px; text-align: right; font-weight: 600;">20%</span>
+                                            </div>
+                                        </div>
+                                        
+                                        <div>
+                                            <label class="small" style="display: block; margin-bottom: 4px;">Cleaning Fee per Stay</label>
+                                            <div style="display: flex; align-items: center; gap: 12px;">
+                                                <span style="color: var(--gray-500);">$</span>
+                                                <input type="number" id="cleaningFeeInput" value="75" style="width: 80px; padding: 6px; border: 1px solid var(--gray-300); border-radius: 6px;">
+                                                <span class="small" style="color: var(--gray-600);">/cleaning</span>
+                                            </div>
+                                        </div>
+                                        
+                                        <div>
+                                            <label class="small" style="display: block; margin-bottom: 4px;">Annual Maintenance</label>
+                                            <div style="display: flex; align-items: center; gap: 12px;">
+                                                <span style="color: var(--gray-500);">$</span>
+                                                <input type="number" id="maintenanceInput" value="3600" style="width: 80px; padding: 6px; border: 1px solid var(--gray-300); border-radius: 6px;">
+                                                <span class="small" style="color: var(--gray-600);">/year</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Financing Assumptions -->
+                                <div>
+                                    <h4 style="font-size: 14px; font-weight: 600; color: var(--gray-700); margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--gray-200);">
+                                        🏦 Financing Assumptions
+                                    </h4>
+                                    
+                                    <div style="display: flex; flex-direction: column; gap: 16px;">
+                                        <div>
+                                            <label class="small" style="display: block; margin-bottom: 4px;">Down Payment</label>
+                                            <div style="display: flex; align-items: center; gap: 12px;">
+                                                <input type="range" id="downPaymentSlider" min="5" max="30" value="20" style="flex: 1;">
+                                                <span id="downPaymentValue" style="min-width: 40px; text-align: right; font-weight: 600;">20%</span>
+                                            </div>
+                                        </div>
+                                        
+                                        <div>
+                                            <label class="small" style="display: block; margin-bottom: 4px;">Interest Rate</label>
+                                            <div style="display: flex; align-items: center; gap: 12px;">
+                                                <input type="range" id="interestRateSlider" min="3" max="8" value="5.5" step="0.1" style="flex: 1;">
+                                                <span id="interestRateValue" style="min-width: 40px; text-align: right; font-weight: 600;">5.5%</span>
+                                            </div>
+                                        </div>
+                                        
+                                        <div>
+                                            <label class="small" style="display: block; margin-bottom: 4px;">Loan Term</label>
+                                            <div style="display: flex; align-items: center; gap: 12px;">
+                                                <input type="number" id="loanTermInput" value="30" style="width: 60px; padding: 6px; border: 1px solid var(--gray-300); border-radius: 6px;">
+                                                <span class="small" style="color: var(--gray-600);">years</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Action Buttons -->
+                                <div style="display: flex; gap: 12px; padding-top: 12px; border-top: 1px solid var(--gray-200);">
+                                    <button id="resetBtn" style="flex: 1; padding: 10px; background: var(--gray-100); color: var(--gray-700); border: 1px solid var(--gray-300); border-radius: 8px; font-weight: 500; cursor: pointer;">
+                                        Reset to Defaults
+                                    </button>
+                                    <button id="recalcBtn" style="flex: 1; padding: 10px; background: var(--primary-blue); color: white; border: none; border-radius: 8px; font-weight: 500; cursor: pointer;">
+                                        Recalculate
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Summary Metrics Bar -->
+                    <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; margin-top: 24px; padding: 20px; background: linear-gradient(to right, var(--gray-50), white); border-radius: 12px;">
+                        <div style="text-align: center;">
+                            <div class="small" style="color: var(--gray-600); margin-bottom: 4px;">Annual Revenue</div>
+                            <div class="h3" style="color: var(--gray-900);" id="annualRevenueSum">$62,880</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div class="small" style="color: var(--gray-600); margin-bottom: 4px;">Annual Expenses</div>
+                            <div class="h3" style="color: var(--danger-red);" id="annualExpenses">$37,080</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div class="small" style="color: var(--gray-600); margin-bottom: 4px;">Net Annual Income</div>
+                            <div class="h3" style="color: var(--success-green);" id="netAnnualIncome">$25,800</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div class="small" style="color: var(--gray-600); margin-bottom: 4px;">Cash-on-Cash</div>
+                            <div class="h3" style="color: var(--primary-blue);" id="cashOnCash">12.3%</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div class="small" style="color: var(--gray-600); margin-bottom: 4px;">Cap Rate</div>
+                            <div class="h3" style="color: var(--primary-blue);" id="capRate">5.8%</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+    
+    <script>
+        // Enhanced calculator functionality
+        const LTR_RENT = 3100;
+        const MORTGAGE = 1850;
+        
+        function updateCalculations() {
+            // Get values from simple calculator
+            const nightlyRate = parseFloat(document.getElementById('nightlyRate').value);
+            const occupancyRate = parseFloat(document.getElementById('occupancyRate').value) / 100;
+            const cleaningFee = parseFloat(document.getElementById('cleaningFee').value);
+            
+            // Calculate monthly revenue
+            const nightsBooked = Math.round(30.4 * occupancyRate);
+            const monthlyRevenue = Math.round((nightlyRate * nightsBooked) + (cleaningFee * 4));
+            const annualRevenue = monthlyRevenue * 12;
+            
+            // Update simple calculator display
+            document.getElementById('nightlyRateValue').textContent = `$${nightlyRate}/night`;
+            document.getElementById('occupancyRateValue').textContent = `${Math.round(occupancyRate * 100)}%`;
+            document.getElementById('cleaningFeeValue').textContent = `$${cleaningFee}`;
+            document.getElementById('monthlyRevenueResult').textContent = `$${monthlyRevenue.toLocaleString()}`;
+            document.getElementById('nightsBookedText').textContent = `Based on ${nightsBooked} nights booked per month`;
+            document.getElementById('annualRevenue').textContent = `$${annualRevenue.toLocaleString()}`;
+            
+            const vsLTR = Math.round(((monthlyRevenue - LTR_RENT) / LTR_RENT) * 100);
+            document.getElementById('vsLTR').textContent = vsLTR > 0 ? `+${vsLTR}%` : `${vsLTR}%`;
+            
+            // Update cash flow comparison
+            document.getElementById('strRevenue').textContent = `+$${monthlyRevenue.toLocaleString()}`;
+            const strExpenses = Math.round(monthlyRevenue * 0.25); // Simplified expenses
+            document.getElementById('strExpenses').textContent = `-$${strExpenses.toLocaleString()}`;
+            const strCashFlow = monthlyRevenue - MORTGAGE - strExpenses;
+            document.getElementById('strCashFlow').textContent = `+$${strCashFlow.toLocaleString()}`;
+            
+            // Sync with financial calculator
+            document.getElementById('strNightlyInput').value = nightlyRate;
+            document.getElementById('strNightlySlider').value = nightlyRate;
+            document.getElementById('strOccupancySlider').value = Math.round(occupancyRate * 100);
+            document.getElementById('strOccupancyValue').textContent = `${Math.round(occupancyRate * 100)}%`;
+            
+            updateFinancialCalculator();
+        }
+        
+        function updateFinancialCalculator() {
+            // Get all financial assumptions
+            const nightlyRate = parseFloat(document.getElementById('strNightlyInput').value) || 185;
+            const occupancyRate = parseFloat(document.getElementById('strOccupancySlider').value) / 100 || 0.78;
+            const ltrRent = parseFloat(document.getElementById('ltrRentInput').value) || 3100;
+            const mgmtFee = parseFloat(document.getElementById('mgmtFeeSlider').value) / 100 || 0.20;
+            const cleaningFee = parseFloat(document.getElementById('cleaningFeeInput').value) || 75;
+            const annualMaintenance = parseFloat(document.getElementById('maintenanceInput').value) || 3600;
+            const downPaymentPercent = parseFloat(document.getElementById('downPaymentSlider').value) / 100 || 0.20;
+            const interestRate = parseFloat(document.getElementById('interestRateSlider').value) / 100 || 0.055;
+            
+            // Calculate STR revenue and expenses
+            const nightsBooked = Math.round(30.4 * occupancyRate);
+            const monthlyRevenue = Math.round((nightlyRate * nightsBooked) + (cleaningFee * 4));
+            const monthlyMgmtFee = monthlyRevenue * mgmtFee;
+            const monthlyMaintenance = annualMaintenance / 12;
+            const totalMonthlyExpenses = monthlyMgmtFee + monthlyMaintenance + 500; // + utilities/insurance
+            const strNetCashFlow = monthlyRevenue - MORTGAGE - totalMonthlyExpenses;
+            
+            // Calculate LTR cash flow
+            const ltrExpenses = 650;
+            const ltrNetCashFlow = ltrRent - MORTGAGE - ltrExpenses;
+            
+            // Update STR bar chart
+            const maxCashFlow = 2500;
+            const strBarHeight = Math.max(10, Math.min(170, Math.abs(strNetCashFlow / maxCashFlow) * 170));
+            const strBarY = strNetCashFlow >= 0 ? (250 - strBarHeight) : 250;
+            document.getElementById('strBar').setAttribute('height', strBarHeight);
+            document.getElementById('strBar').setAttribute('y', strBarY);
+            document.getElementById('strBar').setAttribute('fill', strNetCashFlow >= 0 ? '#10b981' : '#ef4444');
+            document.getElementById('strBarValue').textContent = `$${Math.round(strNetCashFlow).toLocaleString()}`;
+            
+            // Update LTR bar chart
+            const ltrBarHeight = Math.max(10, Math.min(170, Math.abs(ltrNetCashFlow / maxCashFlow) * 170));
+            const ltrBarY = ltrNetCashFlow >= 0 ? (250 - ltrBarHeight) : 250;
+            document.getElementById('ltrBar').setAttribute('height', ltrBarHeight);
+            document.getElementById('ltrBar').setAttribute('y', ltrBarY);
+            document.getElementById('ltrBar').setAttribute('fill', ltrNetCashFlow >= 0 ? '#6b7280' : '#ef4444');
+            document.getElementById('ltrBarValue').textContent = `$${Math.round(ltrNetCashFlow).toLocaleString()}`;
+            
+            // Update metrics
+            const strAdvantage = strNetCashFlow - ltrNetCashFlow;
+            document.getElementById('strAdvantage').textContent = strAdvantage >= 0 ? `+$${Math.round(strAdvantage).toLocaleString()}/mo` : `-$${Math.abs(Math.round(strAdvantage)).toLocaleString()}/mo`;
+            document.getElementById('annualDifference').textContent = strAdvantage >= 0 ? `+$${Math.round(strAdvantage * 12).toLocaleString()}/yr` : `-$${Math.abs(Math.round(strAdvantage * 12)).toLocaleString()}/yr`;
+            
+            // Update display values for all sliders
+            document.getElementById('strOccupancyValue').textContent = `${Math.round(occupancyRate * 100)}%`;
+            document.getElementById('mgmtFeeValue').textContent = `${Math.round(mgmtFee * 100)}%`;
+            document.getElementById('downPaymentValue').textContent = `${Math.round(downPaymentPercent * 100)}%`;
+            document.getElementById('interestRateValue').textContent = `${(interestRate * 100).toFixed(1)}%`;
+            
+            // Update summary metrics
+            const annualRevenue = monthlyRevenue * 12;
+            const annualExpenses = (MORTGAGE + totalMonthlyExpenses) * 12;
+            const netAnnualIncome = annualRevenue - annualExpenses;
+            
+            document.getElementById('annualRevenueSum').textContent = `$${annualRevenue.toLocaleString()}`;
+            document.getElementById('annualExpenses').textContent = `$${Math.round(annualExpenses).toLocaleString()}`;
+            document.getElementById('netAnnualIncome').textContent = netAnnualIncome >= 0 ? `$${Math.round(netAnnualIncome).toLocaleString()}` : `-$${Math.abs(Math.round(netAnnualIncome)).toLocaleString()}`;
+            
+            // Calculate returns (simplified)
+            const propertyValue = 650000;
+            const downPayment = propertyValue * downPaymentPercent;
+            const cashOnCash = downPayment > 0 ? (netAnnualIncome / downPayment) * 100 : 0;
+            const capRate = (netAnnualIncome / propertyValue) * 100;
+            
+            document.getElementById('cashOnCash').textContent = `${cashOnCash.toFixed(1)}%`;
+            document.getElementById('capRate').textContent = `${capRate.toFixed(1)}%`;
+        }
+        
+        // Event listeners for simple calculator
+        document.getElementById('nightlyRate').addEventListener('input', updateCalculations);
+        document.getElementById('occupancyRate').addEventListener('input', updateCalculations);
+        document.getElementById('cleaningFee').addEventListener('input', updateCalculations);
+        
+        // Event listeners for financial calculator
+        document.getElementById('strNightlyInput').addEventListener('input', function() {
+            document.getElementById('strNightlySlider').value = this.value;
+            updateFinancialCalculator();
+        });
+        
+        document.getElementById('strNightlySlider').addEventListener('input', function() {
+            document.getElementById('strNightlyInput').value = this.value;
+            updateFinancialCalculator();
+        });
+        
+        document.getElementById('strOccupancySlider').addEventListener('input', function() {
+            document.getElementById('strOccupancyValue').textContent = `${this.value}%`;
+            updateFinancialCalculator();
+        });
+        
+        document.getElementById('ltrRentInput').addEventListener('input', updateFinancialCalculator);
+        
+        document.getElementById('mgmtFeeSlider').addEventListener('input', function() {
+            document.getElementById('mgmtFeeValue').textContent = `${this.value}%`;
+            updateFinancialCalculator();
+        });
+        
+        document.getElementById('cleaningFeeInput').addEventListener('input', updateFinancialCalculator);
+        document.getElementById('maintenanceInput').addEventListener('input', updateFinancialCalculator);
+        
+        document.getElementById('downPaymentSlider').addEventListener('input', function() {
+            document.getElementById('downPaymentValue').textContent = `${this.value}%`;
+            updateFinancialCalculator();
+        });
+        
+        document.getElementById('interestRateSlider').addEventListener('input', function() {
+            document.getElementById('interestRateValue').textContent = `${this.value}%`;
+            updateFinancialCalculator();
+        });
+        
+        document.getElementById('loanTermInput').addEventListener('input', updateFinancialCalculator);
+        
+        // Reset button
+        document.getElementById('resetBtn').addEventListener('click', function() {
+            // Reset simple calculator
+            document.getElementById('nightlyRate').value = 185;
+            document.getElementById('occupancyRate').value = 78;
+            document.getElementById('cleaningFee').value = 75;
+            
+            // Reset financial calculator
+            document.getElementById('strNightlyInput').value = 185;
+            document.getElementById('strNightlySlider').value = 185;
+            document.getElementById('strOccupancySlider').value = 78;
+            document.getElementById('strOccupancyValue').textContent = '78%';
+            document.getElementById('ltrRentInput').value = 3100;
+            document.getElementById('mgmtFeeSlider').value = 20;
+            document.getElementById('mgmtFeeValue').textContent = '20%';
+            document.getElementById('cleaningFeeInput').value = 75;
+            document.getElementById('maintenanceInput').value = 3600;
+            document.getElementById('downPaymentSlider').value = 20;
+            document.getElementById('downPaymentValue').textContent = '20%';
+            document.getElementById('interestRateSlider').value = 5.5;
+            document.getElementById('interestRateValue').textContent = '5.5%';
+            document.getElementById('loanTermInput').value = 30;
+            
+            updateCalculations();
+        });
+        
+        // Recalculate button
+        document.getElementById('recalcBtn').addEventListener('click', updateFinancialCalculator);
+        
+        // Initialize on load
+        updateCalculations();
+    </script>
+</body>
+</html>

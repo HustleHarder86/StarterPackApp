@@ -104,7 +104,8 @@ class ComponentLoader {
         appreciationModule,
         strCalculatorModule,
         enhancedFinancialCalcModule,
-        strCashFlowModule
+        strCashFlowModule,
+        financialCalculatorModule
       ] = await Promise.all([
         this.loadComponent('components/analysis/InvestmentVerdict.js'),
         this.loadComponent('components/analysis/AirbnbListings.js'),
@@ -119,7 +120,8 @@ class ComponentLoader {
         this.loadComponent('components/analysis/PropertyAppreciationChart.js'),
         this.loadComponent('components/calculator/STRRevenueCalculator.js'),
         this.loadComponent('components/calculator/EnhancedFinancialCalculator.js'),
-        this.loadComponent('components/analysis/STRCashFlowCard.js')
+        this.loadComponent('components/analysis/STRCashFlowCard.js'),
+        this.loadComponent('components/analysis/FinancialCalculator.js')
       ]);
 
       // Generate component HTML with real data
@@ -543,6 +545,24 @@ class ComponentLoader {
                   <!-- STR Content -->
                   <div id="str-content" class="section-content">
                     
+                    <!-- Airbnb Listings at Top (Position #2 after property header) -->
+                    ${airbnbHtml}
+                    
+                    <!-- Financial Calculator Section -->
+                    ${strData && financialCalculatorModule?.FinancialCalculator ? financialCalculatorModule.FinancialCalculator({
+                      strData: strData,
+                      ltrData: ltrAnalysis,
+                      propertyData: propertyData
+                    }) : ''}
+                    
+                    <!-- STR Cash Flow Card -->
+                    ${strData && strCashFlowModule?.STRCashFlowCard ? strCashFlowModule.STRCashFlowCard({
+                      monthlyRevenue: strData.monthly_revenue || strData.monthlyRevenue || 0,
+                      totalExpenses: ((strData.expenses?.monthly?.total || 0) + (analysisData.monthlyExpenses?.mortgage || 0)) || 2000,
+                      mortgagePayment: analysisData.monthlyExpenses?.mortgage || 0,
+                      operatingExpenses: strData.expenses?.monthly?.total || 0
+                    }) : ''}
+                    
                     <!-- 2-Column Layout for Revenue Chart and STR Calculator -->
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
                       <!-- Revenue Comparison Chart -->
@@ -559,17 +579,6 @@ class ComponentLoader {
                         ltrMonthlyRent: ltrAnalysis.monthly_rent || ltrAnalysis.monthlyRent || 3000
                       }) : ''}
                     </div>
-                    
-                    <!-- STR Cash Flow Card -->
-                    ${strData && strCashFlowModule?.STRCashFlowCard ? strCashFlowModule.STRCashFlowCard({
-                      monthlyRevenue: strData.monthly_revenue || strData.monthlyRevenue || 0,
-                      totalExpenses: ((strData.expenses?.monthly?.total || 0) + (analysisData.monthlyExpenses?.mortgage || 0)) || 2000,
-                      mortgagePayment: analysisData.monthlyExpenses?.mortgage || 0,
-                      operatingExpenses: strData.expenses?.monthly?.total || 0
-                    }) : ''}
-                    
-                    <!-- Airbnb Listings -->
-                    ${airbnbHtml}
                   </div>
                   
                   <!-- LTR Content -->
