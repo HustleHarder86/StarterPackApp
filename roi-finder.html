@@ -334,12 +334,15 @@
             const sidebar = document.getElementById('app-sidebar');
             const mainContent = document.querySelector('.main-content-with-sidebar');
             const toggleIcon = document.getElementById('toggle-icon');
+            const body = document.body;
             
             if (sidebar) {
                 sidebar.classList.toggle('collapsed');
                 
                 if (mainContent) {
                     mainContent.classList.toggle('expanded');
+                    // Also toggle on body for overlay adjustments
+                    body.classList.toggle('sidebar-collapsed', sidebar.classList.contains('collapsed'));
                 }
                 
                 if (toggleIcon) {
@@ -362,12 +365,14 @@
                 const sidebar = document.getElementById('app-sidebar');
                 const mainContent = document.querySelector('.main-content-with-sidebar');
                 const toggleIcon = document.getElementById('toggle-icon');
+                const body = document.body;
                 
                 if (sidebar) {
                     sidebar.classList.add('collapsed');
                 }
                 if (mainContent) {
                     mainContent.classList.add('expanded');
+                    body.classList.add('sidebar-collapsed');
                 }
                 if (toggleIcon) {
                     toggleIcon.setAttribute('d', 'M13 5l7 7-7 7');

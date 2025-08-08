@@ -284,6 +284,7 @@
     margin-left: 256px;
     min-height: 100vh;
     transition: margin-left 0.3s ease;
+    background: #f9fafb; /* Match body background to avoid white space */
 }
 
 .main-content-with-sidebar.expanded {
@@ -322,8 +323,19 @@
     transition: left 0.3s ease;
 }
 
-.with-sidebar.sidebar-collapsed .property-confirmation-overlay {
+/* When sidebar is collapsed, adjust overlay */
+.with-sidebar.expanded .property-confirmation-overlay {
     left: 64px;
+}
+
+/* Alternative: when sidebar has collapsed class */
+body:has(.app-sidebar.collapsed) .property-confirmation-overlay {
+    left: 64px;
+}
+
+/* When body has sidebar-collapsed class */
+body.sidebar-collapsed .property-confirmation-overlay {
+    left: 64px !important;
 }
 
 /* Mobile Responsive */
