@@ -21,6 +21,7 @@
     <link rel="stylesheet" href="styles/design-tokens-consolidated.css">
     <link rel="stylesheet" href="styles/design-system.css">
     <link rel="stylesheet" href="styles/property-confirmation-card.css">
+    <link rel="stylesheet" href="styles/sidebar-layout.css">
     <link rel="stylesheet" href="styles/mobile-fixes.css">
     <link rel="stylesheet" href="styles/mobile-overlap-fix.css">
     <link rel="stylesheet" href="styles/color-override-final.css">
@@ -40,23 +41,44 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     
     <style>
-        /* Streamlined header styles */
+        /* Compact sticky header styles */
         nav.bg-white {
-            height: 48px;
+            height: 40px !important;
+            position: fixed !important;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 9998 !important; /* Just below modal at 9999 */
         }
         
         nav .container {
             height: 100%;
         }
         
+        /* Add padding to body to account for fixed header */
+        body {
+            padding-top: 40px;
+        }
+        
         #logout-btn {
-            padding: 4px 12px;
+            padding: 2px 10px;
             border-radius: 4px;
             transition: all 0.2s ease;
+            font-size: 13px;
         }
         
         #logout-btn:hover {
             background-color: #f3f4f6;
+        }
+        
+        #user-email {
+            font-size: 13px;
+        }
+        
+        /* Ensure header is visible even with modal */
+        .property-confirmation-overlay {
+            top: 40px !important; /* Account for header height */
+            height: calc(100vh - 40px) !important;
         }
         
         /* Custom loading animations */
@@ -305,30 +327,177 @@
             overflow-y: auto;
         }
     </style>
+    
+    <script>
+        // Define toggleSidebar function immediately so it's available for onclick
+        function toggleSidebar() {
+            const sidebar = document.getElementById('app-sidebar');
+            const mainContent = document.querySelector('.main-content-with-sidebar');
+            const toggleIcon = document.getElementById('toggle-icon');
+            
+            if (sidebar) {
+                sidebar.classList.toggle('collapsed');
+                
+                if (mainContent) {
+                    mainContent.classList.toggle('expanded');
+                }
+                
+                if (toggleIcon) {
+                    if (sidebar.classList.contains('collapsed')) {
+                        toggleIcon.setAttribute('d', 'M13 5l7 7-7 7');
+                    } else {
+                        toggleIcon.setAttribute('d', 'M11 19l-7-7 7-7');
+                    }
+                }
+                
+                // Save state to localStorage
+                localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed'));
+            }
+        }
+        
+        // Restore sidebar state on load
+        document.addEventListener('DOMContentLoaded', function() {
+            const collapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+            if (collapsed) {
+                const sidebar = document.getElementById('app-sidebar');
+                const mainContent = document.querySelector('.main-content-with-sidebar');
+                const toggleIcon = document.getElementById('toggle-icon');
+                
+                if (sidebar) {
+                    sidebar.classList.add('collapsed');
+                }
+                if (mainContent) {
+                    mainContent.classList.add('expanded');
+                }
+                if (toggleIcon) {
+                    toggleIcon.setAttribute('d', 'M13 5l7 7-7 7');
+                }
+            }
+        });
+    </script>
 </head>
-<body class="bg-gray-50 min-h-screen">
+<body class="bg-gray-50 min-h-screen has-sidebar">
     <!-- Skip Navigation Link for Accessibility -->
     <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-blue-600 text-white px-4 py-2 rounded z-50">Skip to main content</a>
 
-    <!-- Navigation Header - Streamlined Design -->
-    <nav class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-40" role="navigation" aria-label="Main navigation">
-        <div class="container mx-auto px-4">
-            <div class="flex items-center justify-between h-12">
-                <!-- Logo only on left -->
-                <div class="flex items-center">
-                    <span class="text-xl font-bold text-blue-600">StarterPackApp</span>
-                </div>
-                <!-- Email and logout on right -->
-                <div class="flex items-center gap-3">
-                    <span id="user-email" class="text-sm text-gray-600 truncate max-w-xs hidden sm:block"></span>
-                    <button id="logout-btn" class="text-sm text-gray-600 hover:text-gray-900 font-medium">Logout</button>
-                </div>
+    <!-- Sidebar Navigation -->
+    <aside class="app-sidebar" id="app-sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-header-content">
+                <a href="#" class="sidebar-logo">
+                    <span class="logo-icon">📊</span>
+                    <span class="logo-text">StarterPackApp</span>
+                </a>
+                <button class="sidebar-toggle-btn" onclick="toggleSidebar()">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7" id="toggle-icon"/>
+                    </svg>
+                </button>
             </div>
         </div>
-    </nav>
+
+        <nav class="sidebar-nav">
+            <!-- Main Navigation -->
+            <div class="nav-category">
+                <div class="nav-category-title">Main</div>
+                <div class="nav-items">
+                    <button class="nav-item active">
+                        <div class="nav-item-icon-wrapper">
+                            <span class="nav-icon">🏠</span>
+                        </div>
+                        <div class="nav-content">
+                            <span class="nav-label">ROI Finder</span>
+                            <span class="nav-description">Property analysis</span>
+                        </div>
+                        <span class="nav-tooltip">ROI Finder</span>
+                    </button>
+                    <button class="nav-item">
+                        <div class="nav-item-icon-wrapper">
+                            <span class="nav-icon">📈</span>
+                        </div>
+                        <div class="nav-content">
+                            <span class="nav-label">Portfolio</span>
+                            <span class="nav-description">Your properties</span>
+                        </div>
+                        <span class="nav-tooltip">Portfolio</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Analysis Tools -->
+            <div class="nav-category">
+                <div class="nav-category-title">Analysis</div>
+                <div class="nav-items">
+                    <button class="nav-item">
+                        <div class="nav-item-icon-wrapper">
+                            <span class="nav-icon">💰</span>
+                        </div>
+                        <div class="nav-content">
+                            <span class="nav-label">Financials</span>
+                            <span class="nav-description">ROI & cash flow</span>
+                        </div>
+                        <span class="nav-tooltip">Financials</span>
+                    </button>
+                    <button class="nav-item">
+                        <div class="nav-item-icon-wrapper">
+                            <span class="nav-icon">🏘️</span>
+                        </div>
+                        <div class="nav-content">
+                            <span class="nav-label">Market</span>
+                            <span class="nav-description">Local insights</span>
+                        </div>
+                        <span class="nav-tooltip">Market Analysis</span>
+                    </button>
+                    <button class="nav-item">
+                        <div class="nav-item-icon-wrapper">
+                            <span class="nav-icon">📊</span>
+                        </div>
+                        <div class="nav-content">
+                            <span class="nav-label">Reports</span>
+                            <span class="nav-description">PDF exports</span>
+                        </div>
+                        <span class="nav-tooltip">Reports</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Settings -->
+            <div class="nav-category">
+                <div class="nav-category-title">Settings</div>
+                <div class="nav-items">
+                    <button class="nav-item">
+                        <div class="nav-item-icon-wrapper">
+                            <span class="nav-icon">⚙️</span>
+                        </div>
+                        <div class="nav-content">
+                            <span class="nav-label">Preferences</span>
+                            <span class="nav-description">App settings</span>
+                        </div>
+                        <span class="nav-tooltip">Preferences</span>
+                    </button>
+                </div>
+            </div>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="user-section">
+                <div class="user-avatar">A</div>
+                <div class="user-info">
+                    <span id="user-email-sidebar" class="user-email-display"></span>
+                    <span class="user-role">Admin Account</span>
+                </div>
+            </div>
+            <button id="sidebar-logout-btn" class="sidebar-logout-btn">
+                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                </svg>
+                <span class="logout-text">Logout</span>
+            </button>
+        </div>
+    </aside>
 
     <!-- Main Content Area -->
-    <main id="main-content" class="min-h-screen" role="main" aria-label="Property investment analysis tool">
+    <main id="main-content" class="main-content-with-sidebar with-sidebar" role="main" aria-label="Property investment analysis tool">
         
         <!-- Loading State -->
         <div id="loading-state" class="container mx-auto p-xl">
@@ -806,7 +975,9 @@
                     };
                     
                     // Update UI
-                    document.getElementById('user-email').textContent = 'test@e2e.com';
+                    // Update sidebar user email
+                    const sidebarEmail = document.getElementById('user-email-sidebar');
+                    if (sidebarEmail) sidebarEmail.textContent = 'test@e2e.com';
                     
                     // Handle extension data if present
                     if (urlParams.get('fromExtension') === 'true' && urlParams.get('autoAnalyze') === 'true') {
@@ -829,7 +1000,16 @@
                 auth.onAuthStateChanged(async (user) => {
                     if (user) {
                         window.appState.currentUser = user;
-                        document.getElementById('user-email').textContent = user.email;
+                        // Update sidebar user email
+                        const sidebarEmail = document.getElementById('user-email-sidebar');
+                        if (sidebarEmail) {
+                            sidebarEmail.textContent = user.email;
+                            // Update avatar with first letter of email
+                            const avatar = document.querySelector('.user-avatar');
+                            if (avatar) {
+                                avatar.textContent = user.email ? user.email[0].toUpperCase() : 'U';
+                            }
+                        }
                         await this.loadUserData();
                         
                         // If coming from extension with autoAnalyze, handle it
@@ -848,6 +1028,23 @@
                         }
                         // Allow access without authentication - show property input instead of login
                         console.log('No authenticated user, proceeding without auth');
+                        
+                        // Update sidebar for non-authenticated user
+                        const sidebarEmail = document.getElementById('user-email-sidebar');
+                        if (sidebarEmail) {
+                            sidebarEmail.textContent = 'Guest User';
+                            // Update avatar with G for Guest
+                            const avatar = document.querySelector('.user-avatar');
+                            if (avatar) {
+                                avatar.textContent = 'G';
+                            }
+                            // Update role text
+                            const roleText = document.querySelector('.user-role');
+                            if (roleText) {
+                                roleText.textContent = 'Sign in for full access';
+                            }
+                        }
+                        
                         this.showPropertyInput();
                     }
                 });
@@ -1942,10 +2139,24 @@
                     }
                 });
                 
-                // Logout button
-                document.getElementById('logout-btn').addEventListener('click', () => {
-                    auth.signOut();
-                });
+                // Logout button (both old header and new sidebar)
+                const oldLogoutBtn = document.getElementById('logout-btn');
+                if (oldLogoutBtn) {
+                    oldLogoutBtn.addEventListener('click', () => {
+                        auth.signOut();
+                    });
+                }
+                
+                // Sidebar logout button
+                const sidebarLogoutBtn = document.getElementById('sidebar-logout-btn');
+                if (sidebarLogoutBtn) {
+                    sidebarLogoutBtn.addEventListener('click', () => {
+                        auth.signOut();
+                    });
+                }
+                
+                // Add has-sidebar class to body
+                document.body.classList.add('has-sidebar');
                 
                 // Global retry function
                 window.retryAnalysis = () => {

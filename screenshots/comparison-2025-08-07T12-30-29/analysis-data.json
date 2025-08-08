@@ -1,0 +1,400 @@
+{
+  "timestamp": "2025-08-07T12-30-29",
+  "viewports": [],
+  "pages": [],
+  "screenshots": [
+    {
+      "page": "mockup",
+      "viewport": "mockup-mobile-viewport.png",
+      "fullPage": "mockup-mobile-full.png",
+      "hover": "mockup-mobile-hover.png",
+      "styles": {
+        "body": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgb(102, 126, 234) 0%, rgb(118, 75, 162) 100%) repeat scroll 0% 0% / auto padding-box border-box",
+          "borderRadius": "0px",
+          "boxShadow": "none",
+          "fontSize": "16px",
+          "fontWeight": "400",
+          "padding": "20px",
+          "margin": "0px",
+          "width": "375px",
+          "height": "1784.38px"
+        },
+        "mainContainer": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "background": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+          "borderRadius": "0px",
+          "boxShadow": "none",
+          "fontSize": "16px",
+          "fontWeight": "400",
+          "padding": "0px",
+          "margin": "0px",
+          "width": "335px",
+          "height": "1744.38px"
+        },
+        "cards": null,
+        "buttons": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgb(102, 126, 234) 0%, rgb(118, 75, 162) 100%) repeat scroll 0% 0% / auto padding-box border-box",
+          "borderRadius": "12px",
+          "boxShadow": "rgba(102, 126, 234, 0.3) 0px 10px 30px 0px",
+          "fontSize": "16px",
+          "fontWeight": "600",
+          "padding": "18px 48px",
+          "margin": "0px",
+          "width": "255px",
+          "height": "72px"
+        },
+        "titles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "background": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+          "borderRadius": "0px",
+          "boxShadow": "none",
+          "fontSize": "32px",
+          "fontWeight": "600",
+          "padding": "0px",
+          "margin": "0px 0px 8px",
+          "width": "255px",
+          "height": "111px"
+        },
+        "text": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "background": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+          "borderRadius": "0px",
+          "boxShadow": "none",
+          "fontSize": "16px",
+          "fontWeight": "400",
+          "padding": "0px",
+          "margin": "0px",
+          "width": "255px",
+          "height": "36px"
+        }
+      },
+      "url": "http://localhost:3000/mockups/property-analysis-mockup-4-cards.html",
+      "title": "Option 4 Mockup"
+    },
+    {
+      "page": "implementation",
+      "viewport": "implementation-mobile-viewport.png",
+      "fullPage": "implementation-mobile-full.png",
+      "hover": "implementation-mobile-hover.png",
+      "styles": {
+        "body": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "background": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+          "borderRadius": "0px",
+          "boxShadow": "none",
+          "fontSize": "16px",
+          "fontWeight": "400",
+          "padding": "0px",
+          "margin": "0px",
+          "width": "375px",
+          "height": "812px"
+        },
+        "mainContainer": null,
+        "cards": null,
+        "buttons": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgb(102, 126, 234) 0%, rgb(118, 75, 162) 100%) repeat scroll 0% 0% / auto padding-box border-box",
+          "borderRadius": "12px",
+          "boxShadow": "rgba(102, 126, 234, 0.3) 0px 10px 30px 0px",
+          "fontSize": "16px",
+          "fontWeight": "600",
+          "padding": "16px 32px",
+          "margin": "0px",
+          "width": "315px",
+          "height": "50px"
+        },
+        "titles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "background": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+          "borderRadius": "0px",
+          "boxShadow": "none",
+          "fontSize": "20px",
+          "fontWeight": "600",
+          "padding": "0px",
+          "margin": "13.4px 0px 8px",
+          "width": "307px",
+          "height": "23px"
+        },
+        "text": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "background": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+          "borderRadius": "0px",
+          "boxShadow": "none",
+          "fontSize": "14px",
+          "fontWeight": "400",
+          "padding": "0px",
+          "margin": "14px 0px",
+          "width": "307px",
+          "height": "16px"
+        }
+      },
+      "url": "http://localhost:3000/test-property-confirmation.html",
+      "title": "Current Implementation"
+    },
+    {
+      "page": "mockup",
+      "viewport": "mockup-tablet-viewport.png",
+      "fullPage": "mockup-tablet-full.png",
+      "hover": "mockup-tablet-hover.png",
+      "styles": {
+        "body": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgb(102, 126, 234) 0%, rgb(118, 75, 162) 100%) repeat scroll 0% 0% / auto padding-box border-box",
+          "borderRadius": "0px",
+          "boxShadow": "none",
+          "fontSize": "16px",
+          "fontWeight": "400",
+          "padding": "20px",
+          "margin": "0px",
+          "width": "768px",
+          "height": "1024px"
+        },
+        "mainContainer": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "background": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+          "borderRadius": "0px",
+          "boxShadow": "none",
+          "fontSize": "16px",
+          "fontWeight": "400",
+          "padding": "0px",
+          "margin": "0px",
+          "width": "728px",
+          "height": "977.594px"
+        },
+        "cards": null,
+        "buttons": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgb(102, 126, 234) 0%, rgb(118, 75, 162) 100%) repeat scroll 0% 0% / auto padding-box border-box",
+          "borderRadius": "12px",
+          "boxShadow": "rgba(102, 126, 234, 0.3) 0px 10px 30px 0px",
+          "fontSize": "16px",
+          "fontWeight": "600",
+          "padding": "18px 48px",
+          "margin": "0px",
+          "width": "348.766px",
+          "height": "54px"
+        },
+        "titles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "background": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+          "borderRadius": "0px",
+          "boxShadow": "none",
+          "fontSize": "32px",
+          "fontWeight": "600",
+          "padding": "0px",
+          "margin": "0px 0px 8px",
+          "width": "648px",
+          "height": "37px"
+        },
+        "text": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "background": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+          "borderRadius": "0px",
+          "boxShadow": "none",
+          "fontSize": "16px",
+          "fontWeight": "400",
+          "padding": "0px",
+          "margin": "0px",
+          "width": "648px",
+          "height": "18px"
+        }
+      },
+      "url": "http://localhost:3000/mockups/property-analysis-mockup-4-cards.html",
+      "title": "Option 4 Mockup"
+    },
+    {
+      "page": "implementation",
+      "viewport": "implementation-tablet-viewport.png",
+      "fullPage": "implementation-tablet-full.png",
+      "hover": "implementation-tablet-hover.png",
+      "styles": {
+        "body": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "background": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+          "borderRadius": "0px",
+          "boxShadow": "none",
+          "fontSize": "16px",
+          "fontWeight": "400",
+          "padding": "0px",
+          "margin": "0px",
+          "width": "768px",
+          "height": "1024px"
+        },
+        "mainContainer": null,
+        "cards": null,
+        "buttons": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgb(102, 126, 234) 0%, rgb(118, 75, 162) 100%) repeat scroll 0% 0% / auto padding-box border-box",
+          "borderRadius": "12px",
+          "boxShadow": "rgba(102, 126, 234, 0.3) 0px 10px 30px 0px",
+          "fontSize": "16px",
+          "fontWeight": "600",
+          "padding": "16px 32px",
+          "margin": "0px",
+          "width": "708px",
+          "height": "50px"
+        },
+        "titles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "background": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+          "borderRadius": "0px",
+          "boxShadow": "none",
+          "fontSize": "24px",
+          "fontWeight": "600",
+          "padding": "0px",
+          "margin": "16.08px 0px 8px",
+          "width": "700px",
+          "height": "28px"
+        },
+        "text": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "background": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+          "borderRadius": "0px",
+          "boxShadow": "none",
+          "fontSize": "16px",
+          "fontWeight": "400",
+          "padding": "0px",
+          "margin": "16px 0px",
+          "width": "700px",
+          "height": "18px"
+        }
+      },
+      "url": "http://localhost:3000/test-property-confirmation.html",
+      "title": "Current Implementation"
+    },
+    {
+      "page": "mockup",
+      "viewport": "mockup-desktop-viewport.png",
+      "fullPage": "mockup-desktop-full.png",
+      "hover": "mockup-desktop-hover.png",
+      "styles": {
+        "body": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgb(102, 126, 234) 0%, rgb(118, 75, 162) 100%) repeat scroll 0% 0% / auto padding-box border-box",
+          "borderRadius": "0px",
+          "boxShadow": "none",
+          "fontSize": "16px",
+          "fontWeight": "400",
+          "padding": "20px",
+          "margin": "0px",
+          "width": "1280px",
+          "height": "996.594px"
+        },
+        "mainContainer": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "background": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+          "borderRadius": "0px",
+          "boxShadow": "none",
+          "fontSize": "16px",
+          "fontWeight": "400",
+          "padding": "0px",
+          "margin": "0px",
+          "width": "900px",
+          "height": "956.594px"
+        },
+        "cards": null,
+        "buttons": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgb(102, 126, 234) 0%, rgb(118, 75, 162) 100%) repeat scroll 0% 0% / auto padding-box border-box",
+          "borderRadius": "12px",
+          "boxShadow": "rgba(102, 126, 234, 0.3) 0px 10px 30px 0px",
+          "fontSize": "16px",
+          "fontWeight": "600",
+          "padding": "18px 48px",
+          "margin": "0px",
+          "width": "348.766px",
+          "height": "54px"
+        },
+        "titles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "background": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+          "borderRadius": "0px",
+          "boxShadow": "none",
+          "fontSize": "32px",
+          "fontWeight": "600",
+          "padding": "0px",
+          "margin": "0px 0px 8px",
+          "width": "820px",
+          "height": "37px"
+        },
+        "text": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "background": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+          "borderRadius": "0px",
+          "boxShadow": "none",
+          "fontSize": "16px",
+          "fontWeight": "400",
+          "padding": "0px",
+          "margin": "0px",
+          "width": "820px",
+          "height": "18px"
+        }
+      },
+      "url": "http://localhost:3000/mockups/property-analysis-mockup-4-cards.html",
+      "title": "Option 4 Mockup"
+    },
+    {
+      "page": "implementation",
+      "viewport": "implementation-desktop-viewport.png",
+      "fullPage": "implementation-desktop-full.png",
+      "hover": "implementation-desktop-hover.png",
+      "styles": {
+        "body": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "background": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+          "borderRadius": "0px",
+          "boxShadow": "none",
+          "fontSize": "16px",
+          "fontWeight": "400",
+          "padding": "0px",
+          "margin": "0px",
+          "width": "1280px",
+          "height": "800px"
+        },
+        "mainContainer": null,
+        "cards": null,
+        "buttons": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgb(102, 126, 234) 0%, rgb(118, 75, 162) 100%) repeat scroll 0% 0% / auto padding-box border-box",
+          "borderRadius": "12px",
+          "boxShadow": "rgba(102, 126, 234, 0.3) 0px 10px 30px 0px",
+          "fontSize": "16px",
+          "fontWeight": "600",
+          "padding": "18px 48px",
+          "margin": "0px",
+          "width": "304.312px",
+          "height": "54px"
+        },
+        "titles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "background": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+          "borderRadius": "0px",
+          "boxShadow": "none",
+          "fontSize": "32px",
+          "fontWeight": "600",
+          "padding": "0px",
+          "margin": "21.44px 0px 8px",
+          "width": "820px",
+          "height": "37px"
+        },
+        "text": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "background": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+          "borderRadius": "0px",
+          "boxShadow": "none",
+          "fontSize": "16px",
+          "fontWeight": "400",
+          "padding": "0px",
+          "margin": "16px 0px",
+          "width": "820px",
+          "height": "18px"
+        }
+      },
+      "url": "http://localhost:3000/test-property-confirmation.html",
+      "title": "Current Implementation"
+    }
+  ]
+}

@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Property Confirmation Live Test</title>
+    
+    <!-- All the required styles -->
+    <link rel="stylesheet" href="styles/design-tokens-consolidated.css">
+    <link rel="stylesheet" href="styles/design-system.css">
+    <link rel="stylesheet" href="styles/property-confirmation-card.css">
+    <link rel="stylesheet" href="styles/mobile-fixes.css">
+    <link rel="stylesheet" href="styles/mobile-overlap-fix.css">
+    <link rel="stylesheet" href="styles/color-override-final.css">
+    
+    <style>
+        /* Test controls */
+        .test-controls {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            z-index: 10000;
+            max-width: 300px;
+        }
+        
+        .test-controls h3 {
+            margin: 0 0 16px 0;
+            font-size: 18px;
+            color: #333;
+        }
+        
+        .test-controls button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+        
+        .test-controls button:hover {
+            background: #5a67d8;
+        }
+        
+        .test-controls .divider {
+            border-top: 1px solid #e5e7eb;
+            margin: 16px 0;
+        }
+        
+        .test-controls label {
+            display: block;
+            margin: 8px 0;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .test-controls input[type="number"] {
+            width: 100%;
+            padding: 6px;
+            border: 1px solid #e5e7eb;
+            border-radius: 4px;
+            margin-top: 4px;
+        }
+        
+        .test-controls select {
+            width: 100%;
+            padding: 6px;
+            border: 1px solid #e5e7eb;
+            border-radius: 4px;
+            margin-top: 4px;
+        }
+        
+        .status {
+            padding: 8px;
+            margin-top: 16px;
+            background: #f0f9ff;
+            border: 1px solid #3b82f6;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #1e40af;
+        }
+    </style>
+</head>
+<body>
+    <!-- Property Confirmation will be rendered here -->
+    <div id="property-confirmation-container"></div>
+    
+    <!-- Test Controls -->
+    <div class="test-controls">
+        <h3>Test Controls</h3>
+        
+        <button onclick="showPropertyConfirmation()">Show Property Confirmation</button>
+        <button onclick="hidePropertyConfirmation()">Hide Property Confirmation</button>
+        
+        <div class="divider"></div>
+        
+        <label>
+            User Type:
+            <select id="userType" onchange="updateUserType()">
+                <option value="free">Free User (5 trials)</option>
+                <option value="used">Free User (2 trials used)</option>
+                <option value="expired">Free User (No trials left)</option>
+                <option value="premium">Premium User</option>
+                <option value="admin">Admin User</option>
+            </select>
+        </label>
+        
+        <label>
+            Property Price:
+            <input type="number" id="price" value="489000" onchange="updateProperty()">
+        </label>
+        
+        <label>
+            Bedrooms:
+            <input type="number" id="bedrooms" value="1" onchange="updateProperty()">
+        </label>
+        
+        <label>
+            Bathrooms:
+            <input type="number" id="bathrooms" value="1" onchange="updateProperty()">
+        </label>
+        
+        <div class="divider"></div>
+        
+        <button onclick="testMobileView()">Test Mobile (375px)</button>
+        <button onclick="testTabletView()">Test Tablet (768px)</button>
+        <button onclick="testDesktopView()">Test Desktop (Full)</button>
+        
+        <div class="status" id="status">
+            Ready to test
+        </div>
+    </div>
+    
+    <script type="module">
+        import { PropertyConfirmation } from './components/PropertyConfirmation.js';
+        
+        // Global property data
+        window.propertyData = {
+            address: '1514 - 150 East Liberty Street',
+            city: 'Toronto',
+            state: 'Ontario',
+            postal: 'M6K 3R5',
+            price: 489000,
+            propertyType: 'Apartment',
+            bedrooms: 1,
+            bathrooms: 1,
+            sqft: 650,
+            propertyTaxes: 2548,
+            condoFees: 554,
+            imageUrl: 'https://via.placeholder.com/320x240/667eea/ffffff?text=Property+Image'
+        };
+        
+        // Global user data
+        window.userData = {
+            isPremium: false,
+            strTrialUsed: 0,
+            role: 'user'
+        };
+        
+        // Show property confirmation
+        window.showPropertyConfirmation = function() {
+            const container = document.getElementById('property-confirmation-container');
+            const component = PropertyConfirmation(
+                window.propertyData,
+                (type) => {
+                    document.getElementById('status').innerHTML = `✅ Selected: ${type === 'both' ? 'Full Analysis' : 'Long-Term Only'}`;
+                    console.log('Analysis type selected:', type);
+                },
+                () => {
+                    document.getElementById('status').innerHTML = '❌ Cancelled';
+                    hidePropertyConfirmation();
+                }
+            );
+            
+            container.innerHTML = component.html;
+            component.setup(window.userData);
+            document.getElementById('status').innerHTML = '🔵 Property confirmation shown';
+        };
+        
+        // Hide property confirmation
+        window.hidePropertyConfirmation = function() {
+            document.getElementById('property-confirmation-container').innerHTML = '';
+            document.getElementById('status').innerHTML = '⚪ Property confirmation hidden';
+        };
+        
+        // Update user type
+        window.updateUserType = function() {
+            const userType = document.getElementById('userType').value;
+            
+            switch(userType) {
+                case 'free':
+                    window.userData = { isPremium: false, strTrialUsed: 0, role: 'user' };
+                    break;
+                case 'used':
+                    window.userData = { isPremium: false, strTrialUsed: 3, role: 'user' };
+                    break;
+                case 'expired':
+                    window.userData = { isPremium: false, strTrialUsed: 5, role: 'user' };
+                    break;
+                case 'premium':
+                    window.userData = { isPremium: true, strTrialUsed: 0, role: 'user', subscriptionTier: 'premium' };
+                    break;
+                case 'admin':
+                    window.userData = { isPremium: false, strTrialUsed: 0, role: 'admin', isAdmin: true };
+                    break;
+            }
+            
+            // Re-render if visible
+            if (document.querySelector('.property-confirmation-overlay')) {
+                showPropertyConfirmation();
+            }
+        };
+        
+        // Update property data
+        window.updateProperty = function() {
+            window.propertyData.price = parseInt(document.getElementById('price').value) || 0;
+            window.propertyData.bedrooms = parseInt(document.getElementById('bedrooms').value) || 1;
+            window.propertyData.bathrooms = parseInt(document.getElementById('bathrooms').value) || 1;
+            
+            // Re-render if visible
+            if (document.querySelector('.property-confirmation-overlay')) {
+                showPropertyConfirmation();
+            }
+        };
+        
+        // Viewport tests
+        window.testMobileView = function() {
+            document.body.style.maxWidth = '375px';
+            document.body.style.margin = '0 auto';
+            document.getElementById('status').innerHTML = '📱 Mobile view (375px)';
+        };
+        
+        window.testTabletView = function() {
+            document.body.style.maxWidth = '768px';
+            document.body.style.margin = '0 auto';
+            document.getElementById('status').innerHTML = '📱 Tablet view (768px)';
+        };
+        
+        window.testDesktopView = function() {
+            document.body.style.maxWidth = '100%';
+            document.body.style.margin = '0';
+            document.getElementById('status').innerHTML = '🖥️ Desktop view (Full width)';
+        };
+        
+        // Auto-show on load
+        window.addEventListener('load', () => {
+            showPropertyConfirmation();
+        });
+    </script>
+</body>
+</html>

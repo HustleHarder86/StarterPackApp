@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Property Confirmation Test - Comparing with Mockup</title>
+    <link rel="stylesheet" href="styles/design-tokens-consolidated.css">
+    <link rel="stylesheet" href="styles/design-system.css">
+    <link rel="stylesheet" href="styles/property-confirmation-card.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        .test-container {
+            display: flex;
+            height: 100vh;
+        }
+        
+        .test-panel {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .test-panel iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        
+        .test-label {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 600;
+            z-index: 10;
+        }
+        
+        .divider {
+            width: 2px;
+            background: #333;
+            position: relative;
+            cursor: col-resize;
+        }
+        
+        .divider::after {
+            content: '↔';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            border: 2px solid #333;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+        
+        #property-confirmation-test {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .controls {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: white;
+            padding: 16px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+        }
+        
+        .controls button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            margin: 0 4px;
+            cursor: pointer;
+        }
+        
+        .controls button:hover {
+            background: #5a67d8;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <!-- Mockup Panel -->
+        <div class="test-panel">
+            <div class="test-label">MOCKUP (Option 4)</div>
+            <iframe src="mockups/property-analysis-mockup-4-cards.html"></iframe>
+        </div>
+        
+        <!-- Divider -->
+        <div class="divider"></div>
+        
+        <!-- Actual Implementation Panel -->
+        <div class="test-panel">
+            <div class="test-label">ACTUAL IMPLEMENTATION</div>
+            <div id="property-confirmation-test"></div>
+        </div>
+    </div>
+    
+    <!-- Controls -->
+    <div class="controls">
+        <button onclick="testMobile()">Mobile View (375px)</button>
+        <button onclick="testTablet()">Tablet View (768px)</button>
+        <button onclick="testDesktop()">Desktop View (1280px)</button>
+        <button onclick="takeScreenshot()">Take Screenshot</button>
+    </div>
+    
+    <script type="module">
+        import { PropertyConfirmation } from './components/PropertyConfirmation.js';
+        
+        // Test data matching the mockup
+        const testPropertyData = {
+            address: '1514 - 150 East Liberty Street',
+            city: 'Toronto',
+            state: 'Ontario',
+            postal: 'M6K 3R5',
+            price: 489000,
+            propertyType: 'Apartment',
+            bedrooms: 1,
+            bathrooms: 1,
+            sqft: 650,
+            propertyTaxes: 2548,
+            condoFees: 554,
+            imageUrl: null // Testing without image
+        };
+        
+        // Test user data
+        const testUserData = {
+            isPremium: false,
+            strTrialUsed: 0,
+            role: 'user'
+        };
+        
+        // Render the component
+        const container = document.getElementById('property-confirmation-test');
+        const component = PropertyConfirmation(
+            testPropertyData,
+            (type) => {
+                console.log('Analysis type selected:', type);
+                alert('Analysis type selected: ' + type);
+            },
+            () => {
+                console.log('Cancelled');
+                alert('Cancelled');
+            }
+        );
+        
+        container.innerHTML = component.html;
+        component.setup(testUserData);
+        
+        // Test functions
+        window.testMobile = function() {
+            document.querySelectorAll('iframe').forEach(frame => {
+                frame.style.width = '375px';
+                frame.style.margin = '0 auto';
+            });
+            document.getElementById('property-confirmation-test').style.maxWidth = '375px';
+            document.getElementById('property-confirmation-test').style.margin = '0 auto';
+        };
+        
+        window.testTablet = function() {
+            document.querySelectorAll('iframe').forEach(frame => {
+                frame.style.width = '768px';
+                frame.style.margin = '0 auto';
+            });
+            document.getElementById('property-confirmation-test').style.maxWidth = '768px';
+            document.getElementById('property-confirmation-test').style.margin = '0 auto';
+        };
+        
+        window.testDesktop = function() {
+            document.querySelectorAll('iframe').forEach(frame => {
+                frame.style.width = '100%';
+                frame.style.margin = '0';
+            });
+            document.getElementById('property-confirmation-test').style.maxWidth = '100%';
+            document.getElementById('property-confirmation-test').style.margin = '0';
+        };
+        
+        window.takeScreenshot = function() {
+            alert('Screenshot functionality would be implemented with a backend service or browser extension');
+        };
+    </script>
+</body>
+</html>

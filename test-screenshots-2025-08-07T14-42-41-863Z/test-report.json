@@ -1,0 +1,133 @@
+{
+  "testSuite": "Property Confirmation Page UI Testing",
+  "timestamp": "2025-08-07T14:42:58.385Z",
+  "summary": {
+    "totalScreenshots": 15,
+    "issuesFound": 0,
+    "testsPassededed": 7,
+    "screenshotDirectory": "/home/amy/StarterPackApp/test-screenshots-2025-08-07T14-42-41-863Z"
+  },
+  "screenshots": [
+    {
+      "name": "01-full-page-100-zoom",
+      "description": "Full page at 100% zoom showing header area",
+      "path": "/home/amy/StarterPackApp/test-screenshots-2025-08-07T14-42-41-863Z/01-full-page-100-zoom.png",
+      "timestamp": "2025-08-07T14:42:44.691Z"
+    },
+    {
+      "name": "02-property-details-card",
+      "description": "Property details card focused view",
+      "path": "/home/amy/StarterPackApp/test-screenshots-2025-08-07T14-42-41-863Z/02-property-details-card.png",
+      "timestamp": "2025-08-07T14:42:44.919Z"
+    },
+    {
+      "name": "03-initial-selection",
+      "description": "Initial state with Full Analysis selected",
+      "path": "/home/amy/StarterPackApp/test-screenshots-2025-08-07T14-42-41-863Z/03-initial-selection.png",
+      "timestamp": "2025-08-07T14:42:45.640Z"
+    },
+    {
+      "name": "04-ltr-selected",
+      "description": "Long-Term Only card selected",
+      "path": "/home/amy/StarterPackApp/test-screenshots-2025-08-07T14-42-41-863Z/04-ltr-selected.png",
+      "timestamp": "2025-08-07T14:42:46.872Z"
+    },
+    {
+      "name": "05-full-reselected",
+      "description": "Full Analysis re-selected",
+      "path": "/home/amy/StarterPackApp/test-screenshots-2025-08-07T14-42-41-863Z/05-full-reselected.png",
+      "timestamp": "2025-08-07T14:42:48.025Z"
+    },
+    {
+      "name": "06-admin-view",
+      "description": "Admin view activated",
+      "path": "/home/amy/StarterPackApp/test-screenshots-2025-08-07T14-42-41-863Z/06-admin-view.png",
+      "timestamp": "2025-08-07T14:42:49.044Z"
+    },
+    {
+      "name": "07-free-user-view",
+      "description": "Free user view activated",
+      "path": "/home/amy/StarterPackApp/test-screenshots-2025-08-07T14-42-41-863Z/07-free-user-view.png",
+      "timestamp": "2025-08-07T14:42:50.004Z"
+    },
+    {
+      "name": "08-no-trials-view",
+      "description": "No trials left view activated",
+      "path": "/home/amy/StarterPackApp/test-screenshots-2025-08-07T14-42-41-863Z/08-no-trials-view.png",
+      "timestamp": "2025-08-07T14:42:50.906Z"
+    },
+    {
+      "name": "09-responsive-desktop",
+      "description": "Responsive design at 1920x1080",
+      "path": "/home/amy/StarterPackApp/test-screenshots-2025-08-07T14-42-41-863Z/09-responsive-desktop.png",
+      "timestamp": "2025-08-07T14:42:51.942Z"
+    },
+    {
+      "name": "09-responsive-tablet",
+      "description": "Responsive design at 768x1024",
+      "path": "/home/amy/StarterPackApp/test-screenshots-2025-08-07T14-42-41-863Z/09-responsive-tablet.png",
+      "timestamp": "2025-08-07T14:42:52.715Z"
+    },
+    {
+      "name": "09-responsive-mobile",
+      "description": "Responsive design at 375x667",
+      "path": "/home/amy/StarterPackApp/test-screenshots-2025-08-07T14-42-41-863Z/09-responsive-mobile.png",
+      "timestamp": "2025-08-07T14:42:53.339Z"
+    },
+    {
+      "name": "10-after-reload",
+      "description": "Page after reload showing animations",
+      "path": "/home/amy/StarterPackApp/test-screenshots-2025-08-07T14-42-41-863Z/10-after-reload.png",
+      "timestamp": "2025-08-07T14:42:55.607Z"
+    },
+    {
+      "name": "11-card-hover-0",
+      "description": "Card 1 hover state",
+      "path": "/home/amy/StarterPackApp/test-screenshots-2025-08-07T14-42-41-863Z/11-card-hover-0.png",
+      "timestamp": "2025-08-07T14:42:56.538Z"
+    },
+    {
+      "name": "11-card-hover-1",
+      "description": "Card 2 hover state",
+      "path": "/home/amy/StarterPackApp/test-screenshots-2025-08-07T14-42-41-863Z/11-card-hover-1.png",
+      "timestamp": "2025-08-07T14:42:57.471Z"
+    },
+    {
+      "name": "12-button-hover",
+      "description": "Continue button hover state",
+      "path": "/home/amy/StarterPackApp/test-screenshots-2025-08-07T14-42-41-863Z/12-button-hover.png",
+      "timestamp": "2025-08-07T14:42:58.384Z"
+    }
+  ],
+  "issues": [],
+  "passes": [
+    {
+      "test": "Header Title Visibility",
+      "result": "Title is fully visible, positioned at Y: 88"
+    },
+    {
+      "test": "Header Subtitle Visibility",
+      "result": "Subtitle is fully visible, positioned at Y: 125.1875"
+    },
+    {
+      "test": "Property Details Card Position",
+      "result": "Card is well-positioned at Y: 197.78125"
+    },
+    {
+      "test": "Initial Card Selection",
+      "result": "Full Analysis card is properly selected by default"
+    },
+    {
+      "test": "Card Selection Toggle",
+      "result": "Card selection properly toggles between options"
+    },
+    {
+      "test": "Button Text Update",
+      "result": "Continue button text updates correctly: Continue with Long-Term Analysis"
+    },
+    {
+      "test": "Trial Restriction",
+      "result": "Full Analysis card properly disabled when no trials left"
+    }
+  ]
+}

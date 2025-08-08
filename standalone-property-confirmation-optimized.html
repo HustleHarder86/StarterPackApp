@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Property Confirmation - Optimized for 100% Zoom</title>
+    
+    <!-- Optimized CSS for better 100% zoom experience -->
+    <style>
+        /* Design tokens */
+        :root {
+            --color-primary: #3b82f6;
+            --color-primary-dark: #2563eb;
+            --color-primary-light: #dbeafe;
+            --color-neutral-dark: #111827;
+            --color-neutral-light: #f9fafb;
+            --color-success: #10b981;
+            --color-success-light: #d1fae5;
+            --color-error: #ef4444;
+            --color-error-light: #fee2e2;
+            --color-warning: #f59e0b;
+            --color-white: #ffffff;
+            --color-border: #e5e7eb;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        /* Property Confirmation Card Styles - OPTIMIZED SIZING */
+        .property-confirmation-overlay {
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            padding: 20px;
+            overflow-y: auto;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .property-confirmation-container {
+            max-width: 780px; /* Reduced from 900px */
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .property-confirmation-main-card {
+            background: white;
+            border-radius: 20px; /* Slightly smaller radius */
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15); /* Lighter shadow */
+            overflow: hidden;
+            animation: slideUp 0.4s ease;
+        }
+
+        .property-confirmation-header {
+            background: white;
+            padding: 32px; /* Reduced from 40px */
+            text-align: center;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .property-confirmation-title {
+            font-size: 28px; /* Reduced from 32px */
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 6px;
+        }
+
+        .property-confirmation-subtitle {
+            font-size: 15px; /* Reduced from 16px */
+            color: #666666;
+        }
+
+        .property-confirmation-content {
+            padding: 32px; /* Reduced from 40px */
+        }
+
+        .property-details-card {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 14px; /* Slightly smaller */
+            padding: 24px; /* Reduced from 32px */
+            margin-bottom: 32px; /* Reduced from 40px */
+            position: relative;
+        }
+
+        .property-badge {
+            position: absolute;
+            top: -10px; /* Adjusted */
+            left: 24px; /* Adjusted */
+            background: #667eea;
+            color: white;
+            padding: 6px 16px; /* Smaller padding */
+            border-radius: 16px;
+            font-size: 11px; /* Smaller */
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+
+        .property-details-content {
+            display: flex;
+            gap: 24px; /* Reduced from 32px */
+            align-items: center;
+        }
+
+        .property-image-section {
+            width: 140px; /* Reduced from 160px */
+            height: 105px; /* Reduced from 120px */
+            background: white;
+            border-radius: 10px;
+            flex-shrink: 0;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            font-size: 13px;
+        }
+
+        .property-info-section {
+            flex: 1;
+        }
+
+        .property-address {
+            font-size: 20px; /* Reduced from 22px */
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 6px;
+        }
+
+        .property-location {
+            font-size: 14px; /* Reduced from 16px */
+            color: #666666;
+            margin-bottom: 16px; /* Reduced from 20px */
+        }
+
+        .property-stats-grid {
+            display: flex;
+            gap: 24px; /* Reduced from 32px */
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .stat-label {
+            font-size: 11px; /* Reduced from 12px */
+            color: #999999;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            margin-bottom: 3px;
+        }
+
+        .stat-value {
+            font-size: 16px; /* Reduced from 18px */
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .stat-value.price {
+            font-size: 24px; /* Reduced from 28px */
+            color: #667eea;
+        }
+
+        .analysis-section-title {
+            font-size: 17px; /* Reduced from 18px */
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 20px; /* Reduced from 24px */
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .analysis-cards-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px; /* Reduced from 20px */
+            margin-bottom: 32px; /* Reduced from 40px */
+        }
+
+        .analysis-card {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 14px; /* Reduced from 16px */
+            padding: 22px; /* Reduced from 28px */
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .analysis-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.12);
+            transform: translateY(-3px);
+        }
+
+        .analysis-card.selected {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-color: #667eea;
+            color: white;
+        }
+
+        .analysis-card.selected .card-title,
+        .analysis-card.selected .card-description,
+        .analysis-card.selected .feature-item {
+            color: white;
+        }
+
+        .recommended-ribbon {
+            position: absolute;
+            top: 14px;
+            right: -28px;
+            background: #10b981;
+            color: white;
+            padding: 3px 36px; /* Smaller */
+            transform: rotate(45deg);
+            font-size: 10px; /* Smaller */
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .card-icon {
+            width: 42px; /* Reduced from 48px */
+            height: 42px;
+            background: #f5f7fa;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px; /* Reduced from 24px */
+            margin-bottom: 14px;
+        }
+
+        .analysis-card.selected .card-icon {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .card-title {
+            font-size: 18px; /* Reduced from 20px */
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 6px;
+        }
+
+        .card-description {
+            font-size: 13px; /* Reduced from 14px */
+            color: #666666;
+            line-height: 1.5;
+            margin-bottom: 14px;
+        }
+
+        .card-features {
+            font-size: 12px; /* Reduced from 13px */
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 6px;
+            color: #999999;
+        }
+
+        .feature-check {
+            color: #10b981;
+            font-weight: bold;
+        }
+
+        .analysis-card.selected .feature-check {
+            color: white;
+        }
+
+        .action-area {
+            text-align: center;
+        }
+
+        .continue-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 14px 40px; /* Reduced from 18px 48px */
+            border-radius: 10px;
+            font-size: 15px; /* Reduced from 16px */
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.25);
+            transition: all 0.3s ease;
+        }
+
+        .continue-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 35px rgba(102, 126, 234, 0.35);
+        }
+
+        .admin-badge {
+            margin-top: 14px;
+            font-size: 13px; /* Reduced from 14px */
+            color: #10b981;
+            font-weight: 600;
+        }
+
+        .cancel-link {
+            background: none;
+            border: none;
+            color: #999999;
+            font-size: 13px; /* Reduced from 14px */
+            cursor: pointer;
+            margin-top: 14px;
+            text-decoration: underline;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Control panel */
+        .control-panel {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 16px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 10000;
+        }
+
+        .control-panel h3 {
+            font-size: 14px;
+            margin-bottom: 12px;
+            color: #333;
+        }
+
+        .control-panel button {
+            padding: 6px 12px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 3px;
+            font-size: 12px;
+        }
+
+        .control-panel button:hover {
+            background: #5a67d8;
+        }
+
+        /* Mobile responsive adjustments */
+        @media (max-width: 768px) {
+            .property-confirmation-header {
+                padding: 24px;
+            }
+            
+            .property-confirmation-content {
+                padding: 24px;
+            }
+            
+            .property-details-content {
+                flex-direction: column;
+                gap: 16px;
+            }
+            
+            .property-image-section {
+                width: 100%;
+                height: 140px;
+            }
+            
+            .analysis-cards-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Property Confirmation HTML with Optimized Sizing -->
+    <div class="property-confirmation-overlay">
+        <div class="property-confirmation-container">
+            <div class="property-confirmation-main-card">
+                <div class="property-confirmation-header">
+                    <h1 class="property-confirmation-title">Property Investment Analysis</h1>
+                    <p class="property-confirmation-subtitle">Confirm details and choose your analysis type</p>
+                </div>
+                
+                <div class="property-confirmation-content">
+                    <div class="property-details-card">
+                        <div class="property-badge">Property Details</div>
+                        <div class="property-details-content">
+                            <div class="property-image-section">
+                                Property Image
+                            </div>
+                            
+                            <div class="property-info-section">
+                                <div class="property-address">1514 - 150 East Liberty Street</div>
+                                <div class="property-location">Toronto, Ontario M6K 3R5</div>
+                                
+                                <div class="property-stats-grid">
+                                    <div class="stat-item">
+                                        <span class="stat-label">List Price</span>
+                                        <span class="stat-value price">$489,000</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-label">Type</span>
+                                        <span class="stat-value">Apartment</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-label">Size</span>
+                                        <span class="stat-value">1 Bed • 1 Bath</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-label">Area</span>
+                                        <span class="stat-value">650 sq ft</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-label">Property Tax</span>
+                                        <span class="stat-value">$2,548/yr</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-label">Condo Fee</span>
+                                        <span class="stat-value">$554/mo</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <h2 class="analysis-section-title">
+                        <span>📊</span>
+                        Choose Your Analysis Type
+                    </h2>
+                    
+                    <div class="analysis-cards-grid">
+                        <div class="analysis-card selected" id="full-analysis">
+                            <div class="recommended-ribbon">Best</div>
+                            <div class="card-icon">🚀</div>
+                            <div class="card-title">Full Analysis</div>
+                            <div class="card-description">
+                                Get comprehensive insights with both rental strategies
+                            </div>
+                            <div class="card-features">
+                                <div class="feature-item">
+                                    <span class="feature-check">✓</span>
+                                    <span>Short-Term Rental (Airbnb)</span>
+                                </div>
+                                <div class="feature-item">
+                                    <span class="feature-check">✓</span>
+                                    <span>Long-Term Rental</span>
+                                </div>
+                                <div class="feature-item">
+                                    <span class="feature-check">✓</span>
+                                    <span>Side-by-side comparison</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="analysis-card" id="ltr-only">
+                            <div class="card-icon">🏠</div>
+                            <div class="card-title">Long-Term Only</div>
+                            <div class="card-description">
+                                Traditional rental analysis with market projections
+                            </div>
+                            <div class="card-features">
+                                <div class="feature-item">
+                                    <span class="feature-check">✓</span>
+                                    <span>Market rent analysis</span>
+                                </div>
+                                <div class="feature-item">
+                                    <span class="feature-check">✓</span>
+                                    <span>Cash flow projections</span>
+                                </div>
+                                <div class="feature-item">
+                                    <span class="feature-check">✓</span>
+                                    <span>10-year forecast</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="action-area">
+                        <button class="continue-btn">Continue with Full Analysis</button>
+                        <div class="admin-badge" id="admin-badge">✓ Admin - Unlimited Access</div>
+                        <button class="cancel-link" onclick="alert('Cancel clicked')">Cancel and go back</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Control Panel -->
+    <div class="control-panel">
+        <h3>View Options</h3>
+        <button onclick="showAsAdmin()">Admin View</button>
+        <button onclick="showAsFreeUser()">Free User</button>
+        <button onclick="showAsExpiredUser()">No Trials Left</button>
+        <br><br>
+        <h3>Size Comparison</h3>
+        <button onclick="window.open('standalone-property-confirmation-demo.html', '_blank')">Original Size</button>
+    </div>
+
+    <script>
+        // Handle card selection
+        const cards = document.querySelectorAll('.analysis-card');
+        const continueBtn = document.querySelector('.continue-btn');
+        
+        cards.forEach(card => {
+            card.addEventListener('click', () => {
+                cards.forEach(c => c.classList.remove('selected'));
+                card.classList.add('selected');
+                
+                if (card.id === 'full-analysis') {
+                    continueBtn.textContent = 'Continue with Full Analysis';
+                } else {
+                    continueBtn.textContent = 'Continue with Long-Term Analysis';
+                }
+            });
+        });
+
+        // Control functions
+        function showAsAdmin() {
+            document.getElementById('admin-badge').style.display = 'block';
+            document.getElementById('admin-badge').innerHTML = '✓ Admin - Unlimited Access';
+            document.getElementById('admin-badge').style.color = '#10b981';
+            cards.forEach(card => {
+                card.style.opacity = '1';
+                card.style.pointerEvents = 'auto';
+            });
+        }
+
+        function showAsFreeUser() {
+            document.getElementById('admin-badge').style.display = 'block';
+            document.getElementById('admin-badge').innerHTML = 'You have 5 free STR analyses remaining';
+            document.getElementById('admin-badge').style.color = '#667eea';
+            cards.forEach(card => {
+                card.style.opacity = '1';
+                card.style.pointerEvents = 'auto';
+            });
+        }
+
+        function showAsExpiredUser() {
+            document.getElementById('admin-badge').style.display = 'block';
+            document.getElementById('admin-badge').innerHTML = '❌ No free trials left - Upgrade to continue';
+            document.getElementById('admin-badge').style.color = '#ef4444';
+            document.getElementById('full-analysis').style.opacity = '0.5';
+            document.getElementById('full-analysis').style.pointerEvents = 'none';
+            document.getElementById('ltr-only').click();
+        }
+
+        // Show as admin by default
+        showAsAdmin();
+    </script>
+</body>
+</html>

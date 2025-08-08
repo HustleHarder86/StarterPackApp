@@ -1,0 +1,49 @@
+{
+  "timestamp": "2025-08-07T12-29-57",
+  "viewports": [],
+  "pages": [],
+  "screenshots": [
+    {
+      "page": "mockup",
+      "viewport": "mobile",
+      "error": "page.waitForTimeout is not a function",
+      "url": "http://localhost:3000/mockups/property-analysis-mockup-4-cards.html",
+      "title": "Option 4 Mockup"
+    },
+    {
+      "page": "implementation",
+      "viewport": "mobile",
+      "error": "page.waitForTimeout is not a function",
+      "url": "http://localhost:3000/test-property-confirmation.html",
+      "title": "Current Implementation"
+    },
+    {
+      "page": "mockup",
+      "viewport": "tablet",
+      "error": "page.waitForTimeout is not a function",
+      "url": "http://localhost:3000/mockups/property-analysis-mockup-4-cards.html",
+      "title": "Option 4 Mockup"
+    },
+    {
+      "page": "implementation",
+      "viewport": "tablet",
+      "error": "page.waitForTimeout is not a function",
+      "url": "http://localhost:3000/test-property-confirmation.html",
+      "title": "Current Implementation"
+    },
+    {
+      "page": "mockup",
+      "viewport": "desktop",
+      "error": "page.waitForTimeout is not a function",
+      "url": "http://localhost:3000/mockups/property-analysis-mockup-4-cards.html",
+      "title": "Option 4 Mockup"
+    },
+    {
+      "page": "implementation",
+      "viewport": "desktop",
+      "error": "page.waitForTimeout is not a function",
+      "url": "http://localhost:3000/test-property-confirmation.html",
+      "title": "Current Implementation"
+    }
+  ]
+}

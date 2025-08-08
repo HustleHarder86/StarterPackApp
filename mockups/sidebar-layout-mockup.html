@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sidebar Layout - Property Confirmation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 250px;
+            background: #1a1f2e;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Compact Sidebar Option */
+        .sidebar.compact {
+            width: 60px;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            background: #141824;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar.compact .sidebar-header {
+            padding: 15px 10px;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: bold;
+            color: #667eea;
+            text-decoration: none;
+            display: block;
+            white-space: nowrap;
+        }
+
+        .sidebar.compact .logo-text {
+            display: none;
+        }
+
+        .sidebar.compact .logo-icon {
+            display: block;
+            text-align: center;
+            font-size: 24px;
+        }
+
+        .logo-icon {
+            display: none;
+        }
+
+        /* Navigation Menu */
+        .nav-menu {
+            flex: 1;
+            padding: 20px 0;
+            overflow-y: auto;
+        }
+
+        .nav-item {
+            display: block;
+            padding: 12px 20px;
+            color: #9ca3af;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .sidebar.compact .nav-item {
+            padding: 12px;
+            justify-content: center;
+        }
+
+        .nav-item:hover {
+            background: rgba(102, 126, 234, 0.1);
+            color: #667eea;
+        }
+
+        .nav-item.active {
+            background: rgba(102, 126, 234, 0.2);
+            color: #667eea;
+            border-left: 3px solid #667eea;
+        }
+
+        .nav-icon {
+            font-size: 20px;
+            min-width: 20px;
+        }
+
+        .nav-text {
+            font-size: 14px;
+        }
+
+        .sidebar.compact .nav-text {
+            display: none;
+        }
+
+        /* User Section at Bottom */
+        .sidebar-footer {
+            padding: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            background: #141824;
+        }
+
+        .sidebar.compact .sidebar-footer {
+            padding: 10px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #667eea;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .user-details {
+            flex: 1;
+        }
+
+        .sidebar.compact .user-details {
+            display: none;
+        }
+
+        .user-email {
+            font-size: 13px;
+            color: #9ca3af;
+            display: block;
+            margin-bottom: 2px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .user-role {
+            font-size: 11px;
+            color: #6b7280;
+        }
+
+        .logout-btn {
+            width: 100%;
+            padding: 8px;
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar.compact .logout-btn {
+            padding: 8px 4px;
+            font-size: 18px;
+        }
+
+        .sidebar.compact .logout-text {
+            display: none;
+        }
+
+        .logout-btn:hover {
+            background: rgba(239, 68, 68, 0.2);
+        }
+
+        /* Main Content Area */
+        .main-content {
+            margin-left: 250px;
+            flex: 1;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .main-content.expanded {
+            margin-left: 60px;
+        }
+
+        /* Toggle Button */
+        .sidebar-toggle {
+            position: absolute;
+            right: -15px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 30px;
+            height: 60px;
+            background: #1a1f2e;
+            border-radius: 0 8px 8px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: white;
+            font-size: 12px;
+            z-index: 1001;
+        }
+
+        /* Property Confirmation Modal */
+        .property-confirmation-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .property-confirmation-container {
+            max-width: 640px;
+            width: 100%;
+        }
+
+        .property-confirmation-card {
+            background: white;
+            border-radius: 14px;
+            box-shadow: 0 16px 32px rgba(0, 0, 0, 0.12);
+            overflow: hidden;
+        }
+
+        .confirmation-header {
+            padding: 18px 20px 14px;
+            text-align: center;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .confirmation-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 3px;
+        }
+
+        .confirmation-subtitle {
+            font-size: 12px;
+            color: #666666;
+        }
+
+        .confirmation-content {
+            padding: 18px 20px 20px;
+        }
+
+        .property-details {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 8px;
+            padding: 14px;
+            margin-bottom: 16px;
+            position: relative;
+        }
+
+        .property-badge {
+            position: absolute;
+            top: -7px;
+            left: 14px;
+            background: #667eea;
+            color: white;
+            padding: 3px 10px;
+            border-radius: 10px;
+            font-size: 8px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .analysis-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .analysis-card {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .analysis-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 3px 12px rgba(102, 126, 234, 0.1);
+        }
+
+        .analysis-card.selected {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-color: #667eea;
+            color: white;
+        }
+
+        .continue-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 9px 28px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 60px;
+            }
+
+            .main-content {
+                margin-left: 60px;
+            }
+
+            .sidebar-header {
+                padding: 15px 10px;
+            }
+
+            .logo-text {
+                display: none;
+            }
+
+            .logo-icon {
+                display: block;
+            }
+
+            .nav-text {
+                display: none;
+            }
+
+            .nav-item {
+                justify-content: center;
+                padding: 12px;
+            }
+
+            .user-details {
+                display: none;
+            }
+
+            .logout-text {
+                display: none;
+            }
+
+            .sidebar-toggle {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <a href="#" class="logo">
+                <span class="logo-icon">📊</span>
+                <span class="logo-text">StarterPackApp</span>
+            </a>
+        </div>
+
+        <nav class="nav-menu">
+            <a href="#" class="nav-item active">
+                <span class="nav-icon">🏠</span>
+                <span class="nav-text">ROI Finder</span>
+            </a>
+            <a href="#" class="nav-item">
+                <span class="nav-icon">📈</span>
+                <span class="nav-text">Portfolio</span>
+            </a>
+            <a href="#" class="nav-item">
+                <span class="nav-icon">📊</span>
+                <span class="nav-text">Analytics</span>
+            </a>
+            <a href="#" class="nav-item">
+                <span class="nav-icon">🏢</span>
+                <span class="nav-text">Properties</span>
+            </a>
+            <a href="#" class="nav-item">
+                <span class="nav-icon">📄</span>
+                <span class="nav-text">Reports</span>
+            </a>
+            <a href="#" class="nav-item">
+                <span class="nav-icon">⚙️</span>
+                <span class="nav-text">Settings</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="user-info">
+                <div class="user-avatar">A</div>
+                <div class="user-details">
+                    <span class="user-email">amy_ali@hotmail.com</span>
+                    <span class="user-role">Admin Account</span>
+                </div>
+            </div>
+            <button class="logout-btn">
+                <span class="logout-icon">🚪</span>
+                <span class="logout-text">Logout</span>
+            </button>
+        </div>
+
+        <!-- Toggle Button -->
+        <div class="sidebar-toggle" onclick="toggleSidebar()">
+            <span id="toggle-icon">◀</span>
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content" id="main-content">
+        <!-- Property Confirmation Overlay -->
+        <div class="property-confirmation-overlay">
+            <div class="property-confirmation-container">
+                <div class="property-confirmation-card">
+                    <div class="confirmation-header">
+                        <h1 class="confirmation-title">Property Investment Analysis</h1>
+                        <p class="confirmation-subtitle">Confirm details and choose your analysis type</p>
+                    </div>
+                    
+                    <div class="confirmation-content">
+                        <div class="property-details">
+                            <div class="property-badge">Property Details</div>
+                            <div style="display: flex; gap: 14px; align-items: center;">
+                                <div style="width: 85px; height: 65px; background: white; border-radius: 5px; display: flex; align-items: center; justify-content: center; color: #999; font-size: 10px;">
+                                    Property Image
+                                </div>
+                                <div style="flex: 1;">
+                                    <div style="font-size: 14px; font-weight: 600; color: #1a1a1a; margin-bottom: 2px;">
+                                        1514 - 150 East Liberty Street
+                                    </div>
+                                    <div style="font-size: 11px; color: #666666; margin-bottom: 8px;">
+                                        Toronto, Ontario M6K 3R5
+                                    </div>
+                                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px 12px;">
+                                        <div>
+                                            <div style="font-size: 8px; color: #999; text-transform: uppercase;">List Price</div>
+                                            <div style="font-size: 16px; font-weight: 600; color: #667eea;">$489,000</div>
+                                        </div>
+                                        <div>
+                                            <div style="font-size: 8px; color: #999; text-transform: uppercase;">Type</div>
+                                            <div style="font-size: 11px; font-weight: 600;">Apartment</div>
+                                        </div>
+                                        <div>
+                                            <div style="font-size: 8px; color: #999; text-transform: uppercase;">Size</div>
+                                            <div style="font-size: 11px; font-weight: 600;">1 Bed • 1 Bath</div>
+                                        </div>
+                                        <div>
+                                            <div style="font-size: 8px; color: #999; text-transform: uppercase;">Area</div>
+                                            <div style="font-size: 11px; font-weight: 600;">650 sq ft</div>
+                                        </div>
+                                        <div>
+                                            <div style="font-size: 8px; color: #999; text-transform: uppercase;">Property Tax</div>
+                                            <div style="font-size: 11px; font-weight: 600;">$2,548/yr</div>
+                                        </div>
+                                        <div>
+                                            <div style="font-size: 8px; color: #999; text-transform: uppercase;">Condo Fee</div>
+                                            <div style="font-size: 11px; font-weight: 600;">$554/mo</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <h2 style="font-size: 13px; font-weight: 600; margin-bottom: 12px; display: flex; align-items: center; gap: 5px;">
+                            <span style="font-size: 14px;">📊</span>
+                            Choose Your Analysis Type
+                        </h2>
+                        
+                        <div class="analysis-options">
+                            <div class="analysis-card selected">
+                                <div style="position: absolute; top: 8px; right: -22px; background: #10b981; color: white; padding: 1px 24px; transform: rotate(45deg); font-size: 7px; font-weight: 600; text-transform: uppercase;">Best</div>
+                                <div style="font-size: 16px; margin-bottom: 6px;">🚀</div>
+                                <div style="font-size: 13px; font-weight: 600; margin-bottom: 3px;">Full Analysis</div>
+                                <div style="font-size: 10px; line-height: 1.2; margin-bottom: 6px;">Get comprehensive insights with both rental strategies</div>
+                                <div style="font-size: 9px; color: #999;">
+                                    <div style="margin-bottom: 2px;">✓ Short-Term Rental (Airbnb)</div>
+                                    <div style="margin-bottom: 2px;">✓ Long-Term Rental</div>
+                                    <div>✓ Side-by-side comparison</div>
+                                </div>
+                            </div>
+                            
+                            <div class="analysis-card">
+                                <div style="font-size: 16px; margin-bottom: 6px;">🏠</div>
+                                <div style="font-size: 13px; font-weight: 600; margin-bottom: 3px;">Long-Term Only</div>
+                                <div style="font-size: 10px; line-height: 1.2; margin-bottom: 6px;">Traditional rental analysis with market projections</div>
+                                <div style="font-size: 9px; color: #999;">
+                                    <div style="margin-bottom: 2px;">✓ Market rent analysis</div>
+                                    <div style="margin-bottom: 2px;">✓ Cash flow projections</div>
+                                    <div>✓ 10-year forecast</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div style="text-align: center;">
+                            <button class="continue-btn">Continue with Full Analysis</button>
+                            <div style="margin-top: 6px; font-size: 10px; color: #10b981; font-weight: 600;">
+                                ✓ Admin - Unlimited Access
+                            </div>
+                            <button style="background: none; border: none; color: #999; font-size: 10px; cursor: pointer; margin-top: 6px; text-decoration: underline;">
+                                Cancel and go back
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('main-content');
+            const toggleIcon = document.getElementById('toggle-icon');
+            
+            sidebar.classList.toggle('compact');
+            mainContent.classList.toggle('expanded');
+            
+            if (sidebar.classList.contains('compact')) {
+                toggleIcon.textContent = '▶';
+            } else {
+                toggleIcon.textContent = '◀';
+            }
+        }
+
+        // Handle card selection
+        document.querySelectorAll('.analysis-card').forEach(card => {
+            card.addEventListener('click', function() {
+                document.querySelectorAll('.analysis-card').forEach(c => c.classList.remove('selected'));
+                this.classList.add('selected');
+                
+                const btn = document.querySelector('.continue-btn');
+                if (this.querySelector('.card-title')) {
+                    const title = this.querySelector('.card-title').textContent;
+                    btn.textContent = title.includes('Full') ? 'Continue with Full Analysis' : 'Continue with Long-Term Analysis';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

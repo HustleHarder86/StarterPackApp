@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sidebar Layout - Matching Analysis Page</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            background: #f9fafb;
+        }
+
+        /* Sidebar Styles - Matching Analysis Page Light Theme */
+        .sidebar {
+            width: 256px;
+            background: linear-gradient(to bottom, #f9fafb, #ffffff);
+            border-right: 1px solid #e5e7eb;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        /* Compact Sidebar Option */
+        .sidebar.collapsed {
+            width: 64px;
+        }
+
+        /* Header Section */
+        .sidebar-header {
+            padding: 16px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .sidebar-header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            font-size: 18px;
+            font-weight: 600;
+            color: #111827;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sidebar.collapsed .logo-text {
+            display: none;
+        }
+
+        .logo-icon {
+            font-size: 24px;
+        }
+
+        .toggle-btn {
+            padding: 8px;
+            border-radius: 8px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .toggle-btn:hover {
+            background: #f3f4f6;
+        }
+
+        .toggle-btn svg {
+            width: 20px;
+            height: 20px;
+            color: #6b7280;
+        }
+
+        /* Navigation Menu */
+        .nav-menu {
+            flex: 1;
+            padding: 16px 0;
+            overflow-y: auto;
+        }
+
+        .nav-category {
+            margin-bottom: 16px;
+        }
+
+        .nav-category-title {
+            padding: 0 16px;
+            margin-bottom: 8px;
+            font-size: 11px;
+            font-weight: 500;
+            color: #9ca3af;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .sidebar.collapsed .nav-category-title {
+            display: none;
+        }
+
+        .nav-items {
+            padding: 0 8px;
+        }
+
+        .nav-item {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            padding: 8px;
+            margin-bottom: 4px;
+            border-radius: 12px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            position: relative;
+            color: #6b7280;
+        }
+
+        .sidebar.collapsed .nav-item {
+            justify-content: center;
+        }
+
+        .nav-item:hover {
+            background: #f9fafb;
+            color: #111827;
+        }
+
+        .nav-item.active {
+            background: #dbeafe;
+            color: #2563eb;
+        }
+
+        .nav-item-icon-wrapper {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            background: #f3f4f6;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        .nav-item.active .nav-item-icon-wrapper {
+            background: #bfdbfe;
+        }
+
+        .nav-item:hover .nav-item-icon-wrapper {
+            background: #e5e7eb;
+        }
+
+        .nav-icon {
+            font-size: 18px;
+        }
+
+        .nav-content {
+            margin-left: 12px;
+            flex: 1;
+            text-align: left;
+        }
+
+        .sidebar.collapsed .nav-content {
+            display: none;
+        }
+
+        .nav-label {
+            font-size: 14px;
+            font-weight: 500;
+            display: block;
+        }
+
+        .nav-description {
+            font-size: 12px;
+            color: #9ca3af;
+            margin-top: 2px;
+        }
+
+        /* Active indicator */
+        .nav-item.active::before {
+            content: '';
+            position: absolute;
+            left: -8px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 24px;
+            background: #2563eb;
+            border-radius: 0 4px 4px 0;
+        }
+
+        /* Footer Section */
+        .sidebar-footer {
+            padding: 16px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .user-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+            padding: 8px;
+            border-radius: 8px;
+            background: #f9fafb;
+        }
+
+        .sidebar.collapsed .user-section {
+            justify-content: center;
+            padding: 4px;
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .user-info {
+            flex: 1;
+        }
+
+        .sidebar.collapsed .user-info {
+            display: none;
+        }
+
+        .user-email {
+            font-size: 13px;
+            color: #111827;
+            font-weight: 500;
+            display: block;
+        }
+
+        .user-role {
+            font-size: 11px;
+            color: #6b7280;
+        }
+
+        .logout-btn {
+            width: 100%;
+            padding: 8px 12px;
+            background: white;
+            color: #6b7280;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .sidebar.collapsed .logout-btn {
+            padding: 8px;
+        }
+
+        .sidebar.collapsed .logout-text {
+            display: none;
+        }
+
+        .logout-btn:hover {
+            background: #fef2f2;
+            color: #dc2626;
+            border-color: #fca5a5;
+        }
+
+        /* Main Content Area */
+        .main-content {
+            margin-left: 256px;
+            flex: 1;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+            transition: margin-left 0.3s ease;
+        }
+
+        .main-content.expanded {
+            margin-left: 64px;
+        }
+
+        /* Property Confirmation Modal */
+        .property-confirmation-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .property-confirmation-container {
+            max-width: 640px;
+            width: 100%;
+        }
+
+        .property-confirmation-card {
+            background: white;
+            border-radius: 14px;
+            box-shadow: 0 16px 32px rgba(0, 0, 0, 0.12);
+            overflow: hidden;
+        }
+
+        .confirmation-header {
+            padding: 18px 20px 14px;
+            text-align: center;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .confirmation-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 3px;
+        }
+
+        .confirmation-subtitle {
+            font-size: 12px;
+            color: #666666;
+        }
+
+        .confirmation-content {
+            padding: 18px 20px 20px;
+        }
+
+        .property-details {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 8px;
+            padding: 14px;
+            margin-bottom: 16px;
+            position: relative;
+        }
+
+        .property-badge {
+            position: absolute;
+            top: -7px;
+            left: 14px;
+            background: #667eea;
+            color: white;
+            padding: 3px 10px;
+            border-radius: 10px;
+            font-size: 8px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .analysis-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .analysis-card {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .analysis-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 3px 12px rgba(102, 126, 234, 0.1);
+        }
+
+        .analysis-card.selected {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-color: #667eea;
+            color: white;
+        }
+
+        /* Fix for text readability on selected card */
+        .analysis-card.selected .card-title,
+        .analysis-card.selected .card-description,
+        .analysis-card.selected .feature-item {
+            color: white !important;
+        }
+
+        .card-title {
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 3px;
+            color: #1a1a1a;
+        }
+
+        .card-description {
+            font-size: 10px;
+            line-height: 1.2;
+            margin-bottom: 6px;
+            color: #666666;
+        }
+
+        .feature-item {
+            font-size: 9px;
+            color: #4b5563;
+            margin-bottom: 2px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .feature-check {
+            color: #10b981;
+            font-weight: bold;
+        }
+
+        .analysis-card.selected .feature-check {
+            color: white;
+        }
+
+        .recommended-ribbon {
+            position: absolute;
+            top: 8px;
+            right: -22px;
+            background: #10b981;
+            color: white;
+            padding: 1px 24px;
+            transform: rotate(45deg);
+            font-size: 7px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .continue-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 9px 28px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+
+        .continue-btn:hover {
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        /* Tooltip for collapsed sidebar */
+        .tooltip {
+            position: absolute;
+            left: 100%;
+            margin-left: 8px;
+            padding: 4px 8px;
+            background: #1f2937;
+            color: white;
+            font-size: 12px;
+            border-radius: 6px;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s;
+            z-index: 1001;
+        }
+
+        .sidebar.collapsed .nav-item:hover .tooltip {
+            opacity: 1;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 64px;
+            }
+
+            .main-content {
+                margin-left: 64px;
+            }
+
+            .logo-text,
+            .nav-category-title,
+            .nav-content,
+            .user-info,
+            .logout-text {
+                display: none;
+            }
+
+            .nav-item {
+                justify-content: center;
+            }
+
+            .user-section {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar Navigation - Light Theme Matching Analysis Page -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-header-content">
+                <a href="#" class="logo">
+                    <span class="logo-icon">📊</span>
+                    <span class="logo-text">StarterPackApp</span>
+                </a>
+                <button class="toggle-btn" onclick="toggleSidebar()">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7" id="toggle-icon"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <nav class="nav-menu">
+            <!-- Main Navigation -->
+            <div class="nav-category">
+                <div class="nav-category-title">Main</div>
+                <div class="nav-items">
+                    <button class="nav-item active">
+                        <div class="nav-item-icon-wrapper">
+                            <span class="nav-icon">🏠</span>
+                        </div>
+                        <div class="nav-content">
+                            <span class="nav-label">ROI Finder</span>
+                            <span class="nav-description">Property analysis</span>
+                        </div>
+                        <span class="tooltip">ROI Finder</span>
+                    </button>
+                    <button class="nav-item">
+                        <div class="nav-item-icon-wrapper">
+                            <span class="nav-icon">📈</span>
+                        </div>
+                        <div class="nav-content">
+                            <span class="nav-label">Portfolio</span>
+                            <span class="nav-description">Your properties</span>
+                        </div>
+                        <span class="tooltip">Portfolio</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Analysis Tools -->
+            <div class="nav-category">
+                <div class="nav-category-title">Analysis</div>
+                <div class="nav-items">
+                    <button class="nav-item">
+                        <div class="nav-item-icon-wrapper">
+                            <span class="nav-icon">💰</span>
+                        </div>
+                        <div class="nav-content">
+                            <span class="nav-label">Financials</span>
+                            <span class="nav-description">ROI & cash flow</span>
+                        </div>
+                        <span class="tooltip">Financials</span>
+                    </button>
+                    <button class="nav-item">
+                        <div class="nav-item-icon-wrapper">
+                            <span class="nav-icon">🏘️</span>
+                        </div>
+                        <div class="nav-content">
+                            <span class="nav-label">Market</span>
+                            <span class="nav-description">Local insights</span>
+                        </div>
+                        <span class="tooltip">Market Analysis</span>
+                    </button>
+                    <button class="nav-item">
+                        <div class="nav-item-icon-wrapper">
+                            <span class="nav-icon">📊</span>
+                        </div>
+                        <div class="nav-content">
+                            <span class="nav-label">Reports</span>
+                            <span class="nav-description">PDF exports</span>
+                        </div>
+                        <span class="tooltip">Reports</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Settings -->
+            <div class="nav-category">
+                <div class="nav-category-title">Settings</div>
+                <div class="nav-items">
+                    <button class="nav-item">
+                        <div class="nav-item-icon-wrapper">
+                            <span class="nav-icon">⚙️</span>
+                        </div>
+                        <div class="nav-content">
+                            <span class="nav-label">Preferences</span>
+                            <span class="nav-description">App settings</span>
+                        </div>
+                        <span class="tooltip">Preferences</span>
+                    </button>
+                </div>
+            </div>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="user-section">
+                <div class="user-avatar">A</div>
+                <div class="user-info">
+                    <span class="user-email">amy_ali@hotmail.com</span>
+                    <span class="user-role">Admin Account</span>
+                </div>
+            </div>
+            <button class="logout-btn">
+                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                </svg>
+                <span class="logout-text">Logout</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content" id="main-content">
+        <!-- Property Confirmation Overlay -->
+        <div class="property-confirmation-overlay">
+            <div class="property-confirmation-container">
+                <div class="property-confirmation-card">
+                    <div class="confirmation-header">
+                        <h1 class="confirmation-title">Property Investment Analysis</h1>
+                        <p class="confirmation-subtitle">Confirm details and choose your analysis type</p>
+                    </div>
+                    
+                    <div class="confirmation-content">
+                        <div class="property-details">
+                            <div class="property-badge">Property Details</div>
+                            <div style="display: flex; gap: 14px; align-items: center;">
+                                <div style="width: 85px; height: 65px; background: white; border-radius: 5px; display: flex; align-items: center; justify-content: center; color: #999; font-size: 10px;">
+                                    Property Image
+                                </div>
+                                <div style="flex: 1;">
+                                    <div style="font-size: 14px; font-weight: 600; color: #1a1a1a; margin-bottom: 2px;">
+                                        1514 - 150 East Liberty Street
+                                    </div>
+                                    <div style="font-size: 11px; color: #666666; margin-bottom: 8px;">
+                                        Toronto, Ontario M6K 3R5
+                                    </div>
+                                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px 12px;">
+                                        <div>
+                                            <div style="font-size: 8px; color: #999; text-transform: uppercase;">List Price</div>
+                                            <div style="font-size: 16px; font-weight: 600; color: #667eea;">$489,000</div>
+                                        </div>
+                                        <div>
+                                            <div style="font-size: 8px; color: #999; text-transform: uppercase;">Type</div>
+                                            <div style="font-size: 11px; font-weight: 600;">Apartment</div>
+                                        </div>
+                                        <div>
+                                            <div style="font-size: 8px; color: #999; text-transform: uppercase;">Size</div>
+                                            <div style="font-size: 11px; font-weight: 600;">1 Bed • 1 Bath</div>
+                                        </div>
+                                        <div>
+                                            <div style="font-size: 8px; color: #999; text-transform: uppercase;">Area</div>
+                                            <div style="font-size: 11px; font-weight: 600;">650 sq ft</div>
+                                        </div>
+                                        <div>
+                                            <div style="font-size: 8px; color: #999; text-transform: uppercase;">Property Tax</div>
+                                            <div style="font-size: 11px; font-weight: 600;">$2,548/yr</div>
+                                        </div>
+                                        <div>
+                                            <div style="font-size: 8px; color: #999; text-transform: uppercase;">Condo Fee</div>
+                                            <div style="font-size: 11px; font-weight: 600;">$554/mo</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <h2 style="font-size: 13px; font-weight: 600; margin-bottom: 12px; display: flex; align-items: center; gap: 5px;">
+                            <span style="font-size: 14px;">📊</span>
+                            Choose Your Analysis Type
+                        </h2>
+                        
+                        <div class="analysis-options">
+                            <div class="analysis-card selected" id="full-analysis">
+                                <div class="recommended-ribbon">Best</div>
+                                <div style="font-size: 16px; margin-bottom: 6px;">🚀</div>
+                                <div class="card-title">Full Analysis</div>
+                                <div class="card-description">Get comprehensive insights with both rental strategies</div>
+                                <div class="feature-item">
+                                    <span class="feature-check">✓</span>
+                                    <span>Short-Term Rental (Airbnb)</span>
+                                </div>
+                                <div class="feature-item">
+                                    <span class="feature-check">✓</span>
+                                    <span>Long-Term Rental</span>
+                                </div>
+                                <div class="feature-item">
+                                    <span class="feature-check">✓</span>
+                                    <span>Side-by-side comparison</span>
+                                </div>
+                            </div>
+                            
+                            <div class="analysis-card" id="ltr-only">
+                                <div style="font-size: 16px; margin-bottom: 6px;">🏠</div>
+                                <div class="card-title">Long-Term Only</div>
+                                <div class="card-description">Traditional rental analysis with market projections</div>
+                                <div class="feature-item">
+                                    <span class="feature-check">✓</span>
+                                    <span>Market rent analysis</span>
+                                </div>
+                                <div class="feature-item">
+                                    <span class="feature-check">✓</span>
+                                    <span>Cash flow projections</span>
+                                </div>
+                                <div class="feature-item">
+                                    <span class="feature-check">✓</span>
+                                    <span>10-year forecast</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div style="text-align: center;">
+                            <button class="continue-btn">Continue with Full Analysis</button>
+                            <div style="margin-top: 6px; font-size: 10px; color: #10b981; font-weight: 600;">
+                                ✓ Admin - Unlimited Access
+                            </div>
+                            <button style="background: none; border: none; color: #999; font-size: 10px; cursor: pointer; margin-top: 6px; text-decoration: underline;">
+                                Cancel and go back
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('main-content');
+            const toggleIcon = document.getElementById('toggle-icon');
+            
+            sidebar.classList.toggle('collapsed');
+            mainContent.classList.toggle('expanded');
+            
+            if (sidebar.classList.contains('collapsed')) {
+                toggleIcon.setAttribute('d', 'M13 5l7 7-7 7');
+            } else {
+                toggleIcon.setAttribute('d', 'M11 19l-7-7 7-7');
+            }
+        }
+
+        // Handle card selection
+        document.querySelectorAll('.analysis-card').forEach(card => {
+            card.addEventListener('click', function() {
+                document.querySelectorAll('.analysis-card').forEach(c => c.classList.remove('selected'));
+                this.classList.add('selected');
+                
+                const btn = document.querySelector('.continue-btn');
+                const title = this.querySelector('.card-title').textContent;
+                btn.textContent = title.includes('Full') ? 'Continue with Full Analysis' : 'Continue with Long-Term Analysis';
+            });
+        });
+    </script>
+</body>
+</html>
