@@ -49,69 +49,65 @@ export class AnalysisLoadingState {
     const estimatedRemaining = this.getEstimatedRemaining();
     
     return `
-      <div class="min-h-screen flex items-center justify-center p-4">
-        <div class="max-w-3xl w-full">
+      <div class="flex items-center justify-center p-3" style="height: calc(100vh - 40px); max-height: 860px;">
+        <div class="max-w-2xl w-full">
           <!-- Main Loading Card -->
-          <div class="glass-card backdrop-blur-lg bg-white/90 rounded-3xl shadow-2xl overflow-hidden">
-            <!-- Header with Progress -->
-            <div class="bg-gradient-to-r from-indigo-600 to-purple-600 p-8 text-white">
-              <div class="flex items-center justify-between mb-4">
-                <h1 class="text-2xl font-bold">Analyzing Your Property</h1>
+          <div class="glass-card backdrop-blur-lg bg-white/90 rounded-2xl shadow-2xl overflow-hidden">
+            <!-- Header with Progress - Compact -->
+            <div class="bg-gradient-to-r from-indigo-600 to-purple-600 p-4 text-white">
+              <div class="flex items-center justify-between mb-2">
+                <h1 class="text-lg font-bold">Analyzing Your Property</h1>
                 <div class="text-right">
-                  <div class="text-3xl font-bold">${Math.round(this.progress)}%</div>
-                  <div class="text-sm opacity-80">Complete</div>
+                  <div class="text-2xl font-bold">${Math.round(this.progress)}%</div>
+                  <div class="text-xs opacity-80">Complete</div>
                 </div>
               </div>
               
               <!-- Overall Progress Bar -->
-              <div class="h-3 bg-white/20 rounded-full overflow-hidden">
+              <div class="h-2 bg-white/20 rounded-full overflow-hidden">
                 <div class="h-full bg-white rounded-full transition-all duration-500 ease-out" 
                      style="width: ${this.progress}%"></div>
               </div>
               
             </div>
             
-            <!-- Steps Progress -->
-            <div class="p-8">
-              <div class="space-y-4 mb-8">
+            <!-- Steps Progress - Ultra Compact -->
+            <div class="p-3">
+              <div class="space-y-1 mb-3">
                 ${this.steps.map((step, index) => this.getStepHTML(step, index)).join('')}
               </div>
               
-              <!-- Info Box -->
-              <div class="glass-card backdrop-blur-sm bg-white/50 rounded-xl p-6 mb-6">
-                <div class="flex items-start gap-3">
-                  <div class="flex-shrink-0">
-                    <svg class="w-5 h-5 text-blue-600 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                      <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
-                    </svg>
-                  </div>
+              <!-- Info Box - Ultra Compact -->
+              <div class="glass-card backdrop-blur-sm bg-white/50 rounded-lg p-2 mb-2">
+                <div class="flex items-start gap-2">
+                  <svg class="w-3 h-3 text-blue-600 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                  </svg>
                   <div class="flex-1">
-                    <h3 class="font-semibold text-blue-900 mb-1">What's happening?</h3>
-                    <p class="text-sm text-blue-700" id="analysis-info">
-                      We're analyzing over 50 data points including local rental rates, seasonal trends, 
-                      and comparable properties to provide you with accurate investment insights.
+                    <p class="text-xs text-blue-700" id="analysis-info">
+                      <strong class="text-blue-900">What's happening?</strong> We're analyzing over 50 data points to provide accurate investment insights.
                     </p>
                   </div>
                 </div>
               </div>
               
-              <!-- Action Buttons -->
-              <div class="flex gap-3 justify-center">
+              <!-- Action Buttons - Compact -->
+              <div class="flex gap-2 justify-center">
                 <button id="cancel-analysis-btn" 
-                        class="px-6 py-3 glass backdrop-blur-sm bg-white/50 hover:bg-white/70 text-gray-700 font-medium rounded-lg transition-colors duration-200">
+                        class="px-4 py-2 glass backdrop-blur-sm bg-white/50 hover:bg-white/70 text-gray-700 text-sm font-medium rounded-lg transition-colors duration-200">
                   Cancel Analysis
                 </button>
                 <button id="retry-analysis-btn" 
-                        class="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg transition-colors duration-200 hidden">
+                        class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg transition-colors duration-200 hidden">
                   Retry Analysis
                 </button>
               </div>
             </div>
           </div>
           
-          <!-- Help Text -->
-          <div class="text-center mt-6">
-            <p class="text-gray-600 text-sm">
+          <!-- Help Text - Compact -->
+          <div class="text-center mt-3">
+            <p class="text-gray-600 text-xs">
               Having issues? 
               <a href="#" onclick="showAnalysisHelp()" class="text-indigo-600 hover:text-indigo-700 font-medium">
                 Get help
@@ -147,16 +143,16 @@ export class AnalysisLoadingState {
     }
     
     return `
-      <div class="flex items-center gap-4 ${isPending ? 'opacity-50' : ''}">
-        <div class="flex-shrink-0 w-12 h-12 ${iconBgClass} rounded-full flex items-center justify-center text-xl transition-all duration-300">
+      <div class="flex items-center gap-2 ${isPending ? 'opacity-50' : ''}">
+        <div class="flex-shrink-0 w-6 h-6 ${iconBgClass} rounded-full flex items-center justify-center text-xs transition-all duration-300">
           ${isCompleted ? '✓' : step.icon}
         </div>
         <div class="flex-1">
-          <div class="flex justify-between items-center mb-1">
-            <span class="font-medium ${statusClass} transition-colors duration-300">${step.name}</span>
+          <div class="flex justify-between items-center">
+            <span class="text-xs ${statusClass} transition-colors duration-300">${step.name}</span>
             ${isActive ? `<span class="text-xs text-gray-500">${Math.round(this.getStepProgress(index))}%</span>` : ''}
           </div>
-          <div class="h-2 bg-white/30 backdrop-blur-sm rounded-full overflow-hidden">
+          <div class="h-1 bg-white/30 backdrop-blur-sm rounded-full overflow-hidden mt-0.5">
             <div class="h-full bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full transition-all duration-500"
                  style="width: ${progressWidth}"></div>
           </div>
@@ -257,7 +253,7 @@ export class AnalysisLoadingState {
   }
   
   updateStepDisplay() {
-    const stepsContainer = this.container.querySelector('.space-y-4');
+    const stepsContainer = this.container.querySelector('.space-y-1');
     if (stepsContainer) {
       stepsContainer.innerHTML = this.steps.map((step, index) => this.getStepHTML(step, index)).join('');
     }
