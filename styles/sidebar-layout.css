@@ -324,6 +324,7 @@
     right: 0;
     bottom: 0;
     width: auto;
+    padding: 15px !important; /* Ensure consistent padding */
     transition: left 0.3s ease;
 }
 
