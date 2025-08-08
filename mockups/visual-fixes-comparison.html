@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visual Fixes Comparison</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .panel {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        h2 {
+            margin: 0 0 20px 0;
+            font-size: 18px;
+            color: #333;
+        }
+        .issue {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        .fix {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        .demo-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 8px;
+            padding: 15px;
+            color: white;
+            margin: 10px 0;
+        }
+        .demo-card-unselected {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 15px;
+            color: #333;
+            margin: 10px 0;
+        }
+        .white-container {
+            background: white;
+            padding: 20px;
+            margin: 10px 0;
+        }
+        .rounded-all {
+            border-radius: 14px;
+        }
+        .rounded-top-only {
+            border-radius: 14px 14px 0 0;
+        }
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+    <h1 style="text-align: center; color: #333; margin-bottom: 30px;">Property Confirmation Visual Fixes</h1>
+    
+    <div class="comparison">
+        <!-- Current Issues -->
+        <div class="panel">
+            <h2>❌ Current Issues (From Screenshot)</h2>
+            
+            <div class="issue">
+                <strong>Issue 1: Poor Text Contrast</strong>
+                <div class="demo-card">
+                    <div style="font-weight: 600; margin-bottom: 8px;">Full Analysis (Selected)</div>
+                    <div style="color: #4b5563; font-size: 12px; margin-bottom: 4px;">✓ Short-Term Rental ← Hard to read!</div>
+                    <div style="color: #4b5563; font-size: 12px; margin-bottom: 4px;">✓ Long-Term Rental ← Dark grey on purple</div>
+                    <div style="color: #4b5563; font-size: 12px;">✓ Side-by-side comparison ← Poor contrast</div>
+                </div>
+                <p style="margin-top: 10px; font-size: 13px;">Feature text is <code>#4b5563</code> (dark grey) on purple gradient background</p>
+            </div>
+            
+            <div class="issue">
+                <strong>Issue 2: Missing Bottom Rounded Corners</strong>
+                <div class="white-container rounded-top-only" style="box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+                    <div style="text-align: center; padding: 20px; color: #666;">
+                        White card has square bottom corners
+                    </div>
+                </div>
+                <p style="margin-top: 10px; font-size: 13px;">Card only has <code>border-radius</code> on top corners</p>
+            </div>
+        </div>
+        
+        <!-- Fixed Version -->
+        <div class="panel">
+            <h2>✅ Fixed Version</h2>
+            
+            <div class="fix">
+                <strong>Fix 1: White Text on Selected Cards</strong>
+                <div class="demo-card">
+                    <div style="font-weight: 600; margin-bottom: 8px;">Full Analysis (Selected)</div>
+                    <div style="color: white; font-size: 12px; margin-bottom: 4px;">✓ Short-Term Rental ← White text!</div>
+                    <div style="color: white; font-size: 12px; margin-bottom: 4px;">✓ Long-Term Rental ← Easy to read</div>
+                    <div style="color: white; font-size: 12px;">✓ Side-by-side comparison ← High contrast</div>
+                </div>
+                <div class="demo-card-unselected">
+                    <div style="font-weight: 600; margin-bottom: 8px; color: #1a1a1a;">Long-Term Only (Unselected)</div>
+                    <div style="color: #4b5563; font-size: 12px; margin-bottom: 4px;">✓ Market rent analysis</div>
+                    <div style="color: #4b5563; font-size: 12px;">✓ Cash flow projections</div>
+                </div>
+                <p style="margin-top: 10px; font-size: 13px;">Selected: <code>color: white !important</code><br>Unselected: <code>color: #4b5563</code></p>
+            </div>
+            
+            <div class="fix">
+                <strong>Fix 2: Rounded Corners on All Sides</strong>
+                <div class="white-container rounded-all" style="box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+                    <div style="text-align: center; padding: 20px; color: #666;">
+                        Card has 14px rounded corners on all sides
+                    </div>
+                </div>
+                <p style="margin-top: 10px; font-size: 13px;">Applied <code>border-radius: 14px</code> to all corners</p>
+            </div>
+        </div>
+    </div>
+    
+    <div style="max-width: 1400px; margin: 30px auto;">
+        <div class="panel">
+            <h2>📝 CSS Changes Summary</h2>
+            <pre style="background: #f8f9fa; padding: 15px; border-radius: 8px; overflow-x: auto;">
+/* Fix 1: White text for selected cards */
+.analysis-card.selected .feature-item {
+    color: white !important;
+}
+
+.analysis-card.selected .feature-check {
+    color: white !important;
+}
+
+.analysis-card.selected .card-title,
+.analysis-card.selected .card-description {
+    color: white !important;
+}
+
+/* Fix 2: Rounded corners on all sides */
+.property-confirmation-main-card {
+    border-radius: 14px; /* All corners, not just top */
+    overflow: hidden;
+}
+            </pre>
+        </div>
+    </div>
+</body>
+</html>

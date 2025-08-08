@@ -30,12 +30,12 @@
     max-height: calc(100vh - 80px); /* Account for header (40px) and padding */
 }
 
-/* Main Card - Rounded corners on all sides */
+/* Main Card - Rounded corners on ALL sides including bottom */
 .property-confirmation-main-card {
     background: white;
-    border-radius: 14px;
+    border-radius: 14px !important; /* Ensure all corners are rounded */
     box-shadow: 0 16px 32px rgba(0, 0, 0, 0.12);
-    overflow: hidden;
+    overflow: hidden; /* This ensures content respects the rounded corners */
     animation: slideUp 0.4s ease;
 }
 
@@ -246,9 +246,17 @@
 
 .analysis-card.selected .card-title,
 .analysis-card.selected .card-description,
-.analysis-card.selected .card-features,
+.analysis-card.selected .card-features {
+    color: white !important;
+}
+
+/* FIX: Ensure feature items are white in selected cards */
 .analysis-card.selected .feature-item {
-    color: white;
+    color: white !important;
+}
+
+.analysis-card.selected .feature-item span {
+    color: white !important;
 }
 
 .analysis-card.disabled {
@@ -303,10 +311,14 @@
     align-items: center;
     gap: 3px;
     margin-bottom: 2px;
-    color: #4b5563; /* Changed from #999999 to darker grey for better readability */
+    color: #4b5563; /* Darker grey for unselected cards */
     line-height: 1.2;
     font-size: 11px;
     font-weight: 500;
+}
+
+.feature-item span:not(.feature-check) {
+    color: inherit; /* Inherit color from parent */
 }
 
 .feature-item:last-child {
@@ -320,7 +332,7 @@
 }
 
 .analysis-card.selected .feature-check {
-    color: white;
+    color: white !important;
 }
 
 /* Recommended Ribbon - Smaller */
