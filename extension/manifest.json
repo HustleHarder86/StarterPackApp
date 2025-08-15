@@ -11,7 +11,9 @@
   "host_permissions": [
     "https://*.realtor.ca/*",
     "http://localhost:3000/*",
-    "https://starter-pack-app.vercel.app/*"
+    "http://localhost:3002/*",
+    "https://starter-pack-app.vercel.app/*",
+    "https://starterpackapp.com/*"
   ],
   "background": {
     "service_worker": "src/background.js"
@@ -24,7 +26,7 @@
       "run_at": "document_idle"
     },
     {
-      "matches": ["https://starter-pack-app.vercel.app/*"],
+      "matches": ["https://starter-pack-app.vercel.app/*", "https://starterpackapp.com/*"],
       "js": ["src/app-content.js"],
       "run_at": "document_idle"
     }

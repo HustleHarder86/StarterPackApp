@@ -4,7 +4,7 @@ console.log('[StarterPack Extension] Background service worker starting...');
 // Configuration
 const API_ENDPOINTS = {
   development: 'http://localhost:3000/api/properties/ingest-simple',
-  production: 'https://starter-pack-app.vercel.app/api/properties/ingest-simple'
+  production: 'https://starterpackapp.com/api/properties/ingest-simple'
 };
 
 // Get current environment - check if extension ID matches production
@@ -43,42 +43,43 @@ async function handlePropertyAnalysis(propertyData) {
     console.log('[StarterPack] Processing property data:', propertyData);
     console.log('[StarterPack] Image URL:', propertyData.mainImage);
     
-    // Build analysis URL with property data
-    const queryParams = new URLSearchParams();
+    // Build property data object for the new unified entry point
+    const cleanPropertyData = {
+      source: 'realtor.ca',
+      url: propertyData.url,
+      extractedAt: propertyData.extractedAt,
+      
+      // Address (ensure it's in the right format)
+      address: typeof propertyData.address === 'string' 
+        ? propertyData.address 
+        : (propertyData.address?.full || 
+           `${propertyData.address?.street || ''}, ${propertyData.address?.city || ''}, ${propertyData.address?.province || ''} ${propertyData.address?.postalCode || ''}`.trim()),
+      
+      // Property details
+      price: propertyData.price,
+      bedrooms: propertyData.bedrooms,
+      bathrooms: propertyData.bathrooms,
+      sqft: propertyData.sqft,
+      propertyType: propertyData.propertyType,
+      yearBuilt: propertyData.yearBuilt,
+      propertyTaxes: propertyData.propertyTaxes,
+      condoFees: propertyData.condoFees,
+      mlsNumber: propertyData.mlsNumber,
+      mainImage: propertyData.mainImage
+    };
     
-    // Add address components
-    if (propertyData.address) {
-      if (propertyData.address.street) queryParams.set('street', propertyData.address.street);
-      if (propertyData.address.city) queryParams.set('city', propertyData.address.city);
-      if (propertyData.address.province) queryParams.set('state', propertyData.address.province);
-      if (propertyData.address.country) queryParams.set('country', propertyData.address.country);
-      if (propertyData.address.postalCode) queryParams.set('postal', propertyData.address.postalCode);
-    }
+    // Use the new property analysis entry point
+    const baseUrl = isDevelopment 
+      ? 'http://localhost:3002/property-analysis.html' 
+      : 'https://starterpackapp.com/property-analysis.html';
+      
+    const encodedData = encodeURIComponent(JSON.stringify(cleanPropertyData));
+    const analysisUrl = `${baseUrl}?fromExtension=true&propertyData=${encodedData}`;
     
-    // Add property details
-    if (propertyData.price) queryParams.set('price', propertyData.price);
-    if (propertyData.mlsNumber) queryParams.set('mlsNumber', propertyData.mlsNumber);
-    if (propertyData.bedrooms) queryParams.set('bedrooms', propertyData.bedrooms);
-    if (propertyData.bathrooms) queryParams.set('bathrooms', propertyData.bathrooms);
-    if (propertyData.sqft) queryParams.set('sqft', propertyData.sqft);
-    if (propertyData.propertyType) queryParams.set('propertyType', propertyData.propertyType);
-    if (propertyData.yearBuilt) queryParams.set('yearBuilt', propertyData.yearBuilt);
-    if (propertyData.propertyTaxes) queryParams.set('taxes', propertyData.propertyTaxes);
-    if (propertyData.condoFees) queryParams.set('condoFees', propertyData.condoFees);
-    if (propertyData.mainImage) {
-      console.log('[StarterPack] Encoding image URL, length:', propertyData.mainImage.length);
-      // Don't encode - URLSearchParams will handle it
-      queryParams.set('image', propertyData.mainImage);
-    }
-    
-    queryParams.set('fromExtension', 'true');
-    queryParams.set('autoAnalyze', 'true');
-    
-    const analysisUrl = `https://starter-pack-app.vercel.app/roi-finder.html?${queryParams.toString()}`;
-    
-    console.log('[StarterPack] Opening analysis URL:', analysisUrl);
-    console.log('[StarterPack] URL params include image?', queryParams.has('image'));
+    console.log('[StarterPack] Opening analysis URL:', analysisUrl.substring(0, 100) + '...');
+    console.log('[StarterPack] Property data includes image?', !!cleanPropertyData.mainImage);
     console.log('[StarterPack] Full URL length:', analysisUrl.length);
+    console.log('[StarterPack] Property data size:', JSON.stringify(cleanPropertyData).length);
     
     // Open analysis in new tab
     chrome.tabs.create({ url: analysisUrl });
@@ -98,7 +99,7 @@ chrome.runtime.onInstalled.addListener((details) => {
     // Open welcome page on install
     console.log('[StarterPack Extension] Opening welcome page...');
     chrome.tabs.create({
-      url: 'https://starter-pack-app.vercel.app/extension-welcome.html'
+      url: 'https://starterpackapp.com/extension-welcome.html'
     }).catch(error => {
       console.error('[StarterPack Extension] Failed to open welcome page:', error);
       // Store flag to show welcome message in popup instead
