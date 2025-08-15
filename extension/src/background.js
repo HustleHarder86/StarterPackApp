@@ -99,7 +99,7 @@ chrome.runtime.onInstalled.addListener((details) => {
     // Open welcome page on install
     console.log('[StarterPack Extension] Opening welcome page...');
     chrome.tabs.create({
-      url: 'http://localhost:3002/roi-finder.html'
+      url: 'http://localhost:3002/extension-welcome.html'
     }).catch(error => {
       console.error('[StarterPack Extension] Failed to open welcome page:', error);
       // Store flag to show welcome message in popup instead
