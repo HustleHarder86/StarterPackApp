@@ -1,54 +1,47 @@
-<svg width="420" height="100" viewBox="0 0 420 100" xmlns="http://www.w3.org/2000/svg">
+<svg width="360" height="80" viewBox="0 0 360 80" xmlns="http://www.w3.org/2000/svg">
   <!-- House Icon -->
   <g id="logo-icon">
-    <!-- House outline -->
-    <path d="M 20 55 L 50 25 L 80 55 L 80 75 L 20 75 Z" 
+    <!-- House outline - simple triangular roof and rectangle base -->
+    <path d="M 15 40 L 35 20 L 55 40 L 55 55 L 15 55 Z" 
           fill="none" 
-          stroke="#1F2937" 
-          stroke-width="4" 
-          stroke-linejoin="round"/>
-    
-    <!-- Magnifying glass circle -->
-    <circle cx="50" cy="50" r="18" 
-            fill="none" 
-            stroke="url(#purpleGradient)" 
-            stroke-width="4"/>
-    
-    <!-- Magnifying glass handle -->
-    <line x1="62" y1="62" x2="72" y2="72" 
-          stroke="url(#purpleGradient)" 
-          stroke-width="4" 
+          stroke="#2D3748" 
+          stroke-width="3" 
+          stroke-linejoin="round" 
           stroke-linecap="round"/>
     
-    <!-- Upward arrow inside magnifying glass -->
-    <path d="M 45 55 L 50 45 L 55 55 M 50 45 L 50 58" 
-          stroke="url(#purpleGradient)" 
+    <!-- Magnifying glass circle positioned at bottom-right of house -->
+    <circle cx="48" cy="52" r="12" 
+            fill="none" 
+            stroke="#8B5CF6" 
+            stroke-width="3"/>
+    
+    <!-- Magnifying glass handle -->
+    <line x1="57" y1="61" x2="64" y2="68" 
+          stroke="#8B5CF6" 
           stroke-width="3" 
-          stroke-linecap="round" 
-          stroke-linejoin="round"
-          fill="none"/>
+          stroke-linecap="round"/>
   </g>
   
   <!-- Text: Property -->
-  <text x="100" y="35" 
-        font-family="Arial, sans-serif" 
-        font-size="32" 
-        font-weight="bold" 
-        fill="#1F2937">Property</text>
+  <text x="85" y="30" 
+        font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif" 
+        font-size="24" 
+        font-weight="600" 
+        fill="#2D3748">Property</text>
   
   <!-- Text: Profit (in purple) -->
-  <text x="100" y="65" 
-        font-family="Arial, sans-serif" 
-        font-size="32" 
-        font-weight="bold" 
-        fill="url(#purpleGradient)">Profit</text>
+  <text x="85" y="55" 
+        font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif" 
+        font-size="24" 
+        font-weight="600" 
+        fill="#8B5CF6">Profit</text>
   
-  <!-- Text: Finder -->
-  <text x="200" y="65" 
-        font-family="Arial, sans-serif" 
-        font-size="32" 
-        font-weight="bold" 
-        fill="#1F2937">Finder</text>
+  <!-- Text: Finder (continuation of ProfitFinder) -->
+  <text x="145" y="55" 
+        font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif" 
+        font-size="24" 
+        font-weight="600" 
+        fill="#2D3748">Finder</text>
   
   <!-- Gradient definition -->
   <defs>
