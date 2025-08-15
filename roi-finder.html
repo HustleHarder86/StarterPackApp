@@ -391,7 +391,7 @@
             <div class="sidebar-header-content">
                 <a href="#" class="sidebar-logo">
                     <span class="logo-icon">📊</span>
-                    <span class="logo-text">StarterPackApp</span>
+                    <span class="logo-text">PropertyProfitFinder</span>
                 </a>
                 <button class="sidebar-toggle-btn" onclick="toggleSidebar()">
                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -657,7 +657,7 @@
                             <li>Open Chrome/Edge and go to <code class="bg-gray-100 px-2 py-1 rounded">chrome://extensions</code></li>
                             <li>Enable "Developer mode" in the top right</li>
                             <li>Click "Load unpacked" and select the extension folder</li>
-                            <li>Visit any REALTOR.ca listing and click "Analyze with StarterPackApp"</li>
+                            <li>Visit any REALTOR.ca listing and click "Analyze with PropertyProfitFinder"</li>
                         </ol>
                     </div>
                 </div>
@@ -1671,8 +1671,11 @@
                     // Create an AbortController for cancellation
                     window.appState.currentAnalysisController = new AbortController();
                     
-                    // Use Vercel API endpoint which will proxy to Railway
-                    const apiUrl = '/api/analyze-property';
+                    // Use Railway API directly in development, Vercel proxy in production
+                    const isLocalDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+                    const apiUrl = isLocalDev 
+                        ? 'http://localhost:3001/api/analysis/property'
+                        : '/api/analyze-property';
                     
                     // Check if in E2E test mode
                     const urlParams = new URLSearchParams(window.location.search);
