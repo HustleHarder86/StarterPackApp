@@ -1,53 +1,23 @@
-<svg width="360" height="80" viewBox="0 0 360 80" xmlns="http://www.w3.org/2000/svg">
-  <!-- House Icon -->
-  <g id="logo-icon">
-    <!-- House outline - simple triangular roof and rectangle base -->
-    <path d="M 15 40 L 35 20 L 55 40 L 55 55 L 15 55 Z" 
-          fill="none" 
-          stroke="#2D3748" 
-          stroke-width="3" 
-          stroke-linejoin="round" 
-          stroke-linecap="round"/>
-    
-    <!-- Magnifying glass circle positioned at bottom-right of house -->
-    <circle cx="48" cy="52" r="12" 
-            fill="none" 
-            stroke="#8B5CF6" 
-            stroke-width="3"/>
-    
-    <!-- Magnifying glass handle -->
-    <line x1="57" y1="61" x2="64" y2="68" 
-          stroke="#8B5CF6" 
-          stroke-width="3" 
-          stroke-linecap="round"/>
-  </g>
-  
-  <!-- Text: Property -->
-  <text x="85" y="30" 
-        font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif" 
-        font-size="24" 
-        font-weight="600" 
-        fill="#2D3748">Property</text>
-  
-  <!-- Text: Profit (in purple) -->
-  <text x="85" y="55" 
-        font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif" 
-        font-size="24" 
-        font-weight="600" 
-        fill="#8B5CF6">Profit</text>
-  
-  <!-- Text: Finder (continuation of ProfitFinder) -->
-  <text x="145" y="55" 
-        font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif" 
-        font-size="24" 
-        font-weight="600" 
-        fill="#2D3748">Finder</text>
-  
-  <!-- Gradient definition -->
+<svg width="500" height="120" viewBox="0 0 500 120" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <linearGradient id="purpleGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#8B5CF6;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#7C3AED;stop-opacity:1" />
+    <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#6C3EF4;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#C948F4;stop-opacity:1" />
     </linearGradient>
   </defs>
+  
+  <!-- Icon: simplified house + magnifier + arrow -->
+  <g transform="translate(10, 15) scale(0.35)">
+    <path d="M 50 100 L 150 20 L 250 100 V 200 H 180 V 140 H 120 V 200 H 50 Z" fill="none" stroke="url(#grad1)" stroke-width="20"/>
+    <circle cx="150" cy="150" r="40" stroke="url(#grad1)" stroke-width="20" fill="none"/>
+    <line x1="180" y1="180" x2="230" y2="230" stroke="url(#grad1)" stroke-width="20"/>
+    <path d="M145 145 L155 155 M155 145 L145 155" stroke="url(#grad1)" stroke-width="10"/>
+  </g>
+
+  <!-- Text: Property Profit Finder -->
+  <g transform="translate(120, 35)" font-family="Arial" font-size="26" font-weight="bold">
+    <text x="0" y="0" fill="black">Property</text>
+    <text x="0" y="30" fill="url(#grad1)">Profit</text>
+    <text x="0" y="60" fill="black">Finder</text>
+  </g>
 </svg>

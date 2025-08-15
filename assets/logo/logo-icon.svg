@@ -1,21 +1,16 @@
-<svg width="70" height="70" viewBox="0 0 70 70" xmlns="http://www.w3.org/2000/svg">
-  <!-- House outline - simple triangular roof and rectangle base -->
-  <path d="M 15 40 L 35 20 L 55 40 L 55 55 L 15 55 Z" 
-        fill="none" 
-        stroke="#2D3748" 
-        stroke-width="3" 
-        stroke-linejoin="round" 
-        stroke-linecap="round"/>
+<svg width="90" height="90" viewBox="0 0 90 90" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#6C3EF4;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#C948F4;stop-opacity:1" />
+    </linearGradient>
+  </defs>
   
-  <!-- Magnifying glass circle positioned at bottom-right of house -->
-  <circle cx="48" cy="52" r="12" 
-          fill="none" 
-          stroke="#8B5CF6" 
-          stroke-width="3"/>
-  
-  <!-- Magnifying glass handle -->
-  <line x1="57" y1="61" x2="64" y2="68" 
-        stroke="#8B5CF6" 
-        stroke-width="3" 
-        stroke-linecap="round"/>
+  <!-- Icon: simplified house + magnifier + arrow -->
+  <g transform="translate(10, 10) scale(0.25)">
+    <path d="M 50 100 L 150 20 L 250 100 V 200 H 180 V 140 H 120 V 200 H 50 Z" fill="none" stroke="url(#grad1)" stroke-width="20"/>
+    <circle cx="150" cy="150" r="40" stroke="url(#grad1)" stroke-width="20" fill="none"/>
+    <line x1="180" y1="180" x2="230" y2="230" stroke="url(#grad1)" stroke-width="20"/>
+    <path d="M145 145 L155 155 M155 145 L145 155" stroke="url(#grad1)" stroke-width="10"/>
+  </g>
 </svg>
