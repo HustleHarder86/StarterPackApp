@@ -670,14 +670,19 @@
         .testimonials-section {
             padding: 80px 0;
             background: var(--gray-50);
+            overflow: hidden;
         }
         
-        .testimonials-grid {
+        .testimonials-carousel-container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 0 20px;
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            position: relative;
+        }
+        
+        .testimonials-carousel {
+            display: flex;
+            transition: transform 0.5s ease;
             gap: 32px;
         }
         
@@ -686,6 +691,13 @@
             padding: 32px;
             border-radius: var(--radius-xl);
             box-shadow: var(--shadow-md);
+            flex: 0 0 calc(50% - 16px);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .testimonial-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-xl);
         }
         
         .testimonial-content {
@@ -694,6 +706,7 @@
             line-height: 1.6;
             margin-bottom: 24px;
             font-style: italic;
+            min-height: 120px;
         }
         
         .testimonial-author {
@@ -703,8 +716,8 @@
         }
         
         .author-avatar {
-            width: 48px;
-            height: 48px;
+            width: 56px;
+            height: 56px;
             background: var(--gradient-primary);
             border-radius: 50%;
             display: flex;
@@ -714,7 +727,7 @@
             font-weight: 600;
             font-size: 18px;
             overflow: hidden;
-            border: 2px solid white;
+            border: 3px solid white;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
         
@@ -732,6 +745,7 @@
             font-weight: 600;
             color: var(--gray-900);
             margin-bottom: 4px;
+            font-size: 16px;
         }
         
         .author-role {
@@ -742,6 +756,68 @@
         .testimonial-rating {
             color: var(--warning-yellow);
             font-size: 14px;
+        }
+        
+        /* Carousel Controls */
+        .carousel-controls {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin-top: 40px;
+        }
+        
+        .carousel-btn {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: white;
+            border: 2px solid var(--gray-300);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            color: var(--gray-600);
+            font-size: 20px;
+        }
+        
+        .carousel-btn:hover {
+            background: var(--gradient-primary);
+            border-color: transparent;
+            color: white;
+            transform: scale(1.1);
+        }
+        
+        .carousel-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .carousel-indicators {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        
+        .carousel-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--gray-300);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .carousel-dot.active {
+            width: 24px;
+            border-radius: 12px;
+            background: var(--gradient-primary);
+        }
+        
+        @media (max-width: 768px) {
+            .testimonial-card {
+                flex: 0 0 100%;
+            }
         }
         
         /* CTA Section */
@@ -1194,57 +1270,121 @@
     <section id="testimonials" class="testimonials-section">
         <div class="section-header">
             <div class="section-badge">Success Stories</div>
-            <h2 class="section-title">Investors Love PropertyProfitFinder</h2>
-            <p class="section-subtitle">Join thousands of successful real estate investors</p>
+            <h2 class="section-title">Real Estate Professionals Love PropertyProfitFinder</h2>
+            <p class="section-subtitle">Join thousands of agents and investors making data-driven decisions</p>
         </div>
         
-        <div class="testimonials-grid">
-            <div class="testimonial-card">
-                <div class="testimonial-content">
-                    "This tool saved me from a bad investment. The STR analysis showed the area had new regulations that would've killed my returns. Worth every penny!"
+        <div class="testimonials-carousel-container">
+            <div class="testimonials-carousel" id="testimonials-carousel">
+                <!-- First slide - Real Estate Agents (Primary Target) -->
+                <div class="testimonial-card">
+                    <div class="testimonial-content">
+                        "PropertyProfitFinder has transformed my investor presentations. I can show clients real ROI numbers in minutes. Closed 3 investment deals last month alone!"
+                    </div>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">
+                            <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?w=96&h=96&fit=crop&crop=faces" alt="Jennifer Martinez">
+                        </div>
+                        <div class="author-info">
+                            <div class="author-name">Jennifer Martinez</div>
+                            <div class="author-role">RE/MAX Elite Agent</div>
+                        </div>
+                        <div class="testimonial-rating">⭐⭐⭐⭐⭐</div>
+                    </div>
                 </div>
-                <div class="testimonial-author">
-                    <div class="author-avatar">
-                        <img src="https://ui-avatars.com/api/?name=Michael+Kim&background=667EEA&color=fff&size=96" alt="Michael Kim">
+                
+                <div class="testimonial-card">
+                    <div class="testimonial-content">
+                        "My investor clients expect data, not opinions. This tool gives me credibility and helps me compete with larger brokerages. It's my secret weapon!"
                     </div>
-                    <div class="author-info">
-                        <div class="author-name">Michael Kim</div>
-                        <div class="author-role">Real Estate Investor</div>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">
+                            <img src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=96&h=96&fit=crop&crop=faces" alt="Robert Chen">
+                        </div>
+                        <div class="author-info">
+                            <div class="author-name">Robert Chen</div>
+                            <div class="author-role">Century 21 Real Estate Agent</div>
+                        </div>
+                        <div class="testimonial-rating">⭐⭐⭐⭐⭐</div>
                     </div>
-                    <div class="testimonial-rating">⭐⭐⭐⭐⭐</div>
+                </div>
+                
+                <!-- Second slide - Mix of Agent and Investor -->
+                <div class="testimonial-card">
+                    <div class="testimonial-content">
+                        "As an agent who also invests, this tool is invaluable. I use it for my own portfolio and to help clients. The STR analysis alone has saved me thousands."
+                    </div>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">
+                            <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=96&h=96&fit=crop&crop=faces" alt="Sarah Patel">
+                        </div>
+                        <div class="author-info">
+                            <div class="author-name">Sarah Patel</div>
+                            <div class="author-role">Royal LePage Agent & Investor</div>
+                        </div>
+                        <div class="testimonial-rating">⭐⭐⭐⭐⭐</div>
+                    </div>
+                </div>
+                
+                <div class="testimonial-card">
+                    <div class="testimonial-content">
+                        "This tool saved me from a bad investment. The STR analysis showed the area had new regulations that would've killed my returns. Worth every penny!"
+                    </div>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">
+                            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=96&h=96&fit=crop&crop=faces" alt="Michael Kim">
+                        </div>
+                        <div class="author-info">
+                            <div class="author-name">Michael Kim</div>
+                            <div class="author-role">Real Estate Investor</div>
+                        </div>
+                        <div class="testimonial-rating">⭐⭐⭐⭐⭐</div>
+                    </div>
+                </div>
+                
+                <!-- Third slide - More testimonials -->
+                <div class="testimonial-card">
+                    <div class="testimonial-content">
+                        "I specialize in investment properties. This tool helps me identify the best opportunities for my clients instantly. My closing rate has increased by 40%!"
+                    </div>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">
+                            <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=96&h=96&fit=crop&crop=faces" alt="David Thompson">
+                        </div>
+                        <div class="author-info">
+                            <div class="author-name">David Thompson</div>
+                            <div class="author-role">Keller Williams Investment Specialist</div>
+                        </div>
+                        <div class="testimonial-rating">⭐⭐⭐⭐⭐</div>
+                    </div>
+                </div>
+                
+                <div class="testimonial-card">
+                    <div class="testimonial-content">
+                        "The Chrome extension is a game-changer. I can analyze properties while browsing REALTOR.ca. It's like having an analyst on my team 24/7."
+                    </div>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">
+                            <img src="https://images.unsplash.com/photo-1556157382-97eda2d62296?w=96&h=96&fit=crop&crop=faces" alt="James Davidson">
+                        </div>
+                        <div class="author-info">
+                            <div class="author-name">James Davidson</div>
+                            <div class="author-role">Property Developer</div>
+                        </div>
+                        <div class="testimonial-rating">⭐⭐⭐⭐⭐</div>
+                    </div>
                 </div>
             </div>
             
-            <div class="testimonial-card">
-                <div class="testimonial-content">
-                    "I've analyzed over 50 properties in 2 months. The speed and accuracy are incredible. Found 3 great deals that I would've missed otherwise."
+            <!-- Carousel Controls -->
+            <div class="carousel-controls">
+                <button class="carousel-btn" id="prevBtn">❮</button>
+                <div class="carousel-indicators" id="carousel-indicators">
+                    <span class="carousel-dot active"></span>
+                    <span class="carousel-dot"></span>
+                    <span class="carousel-dot"></span>
                 </div>
-                <div class="testimonial-author">
-                    <div class="author-avatar">
-                        <img src="https://ui-avatars.com/api/?name=Sarah+Patel&background=764ba2&color=fff&size=96" alt="Sarah Patel">
-                    </div>
-                    <div class="author-info">
-                        <div class="author-name">Sarah Patel</div>
-                        <div class="author-role">Portfolio Manager</div>
-                    </div>
-                    <div class="testimonial-rating">⭐⭐⭐⭐⭐</div>
-                </div>
-            </div>
-            
-            <div class="testimonial-card">
-                <div class="testimonial-content">
-                    "The Chrome extension is a game-changer. I can analyze properties while browsing REALTOR.ca. It's like having an analyst on my team 24/7."
-                </div>
-                <div class="testimonial-author">
-                    <div class="author-avatar">
-                        <img src="https://ui-avatars.com/api/?name=James+Davidson&background=3B82F6&color=fff&size=96" alt="James Davidson">
-                    </div>
-                    <div class="author-info">
-                        <div class="author-name">James Davidson</div>
-                        <div class="author-role">Property Developer</div>
-                    </div>
-                    <div class="testimonial-rating">⭐⭐⭐⭐⭐</div>
-                </div>
+                <button class="carousel-btn" id="nextBtn">❯</button>
             </div>
         </div>
     </section>
@@ -1387,6 +1527,59 @@
         const trustBar = document.querySelector('.trust-bar');
         if (trustBar) {
             observer.observe(trustBar);
+        }
+        
+        // Testimonial Carousel functionality
+        let currentTestimonialSlide = 0;
+        const testimonialCarousel = document.getElementById('testimonials-carousel');
+        const totalSlides = 3; // We have 6 testimonials, 2 per slide = 3 slides
+        
+        function updateCarousel() {
+            const slideWidth = window.innerWidth <= 768 ? 100 : 50;
+            const offset = -currentTestimonialSlide * slideWidth * 2;
+            if (testimonialCarousel) {
+                testimonialCarousel.style.transform = `translateX(${offset}%)`;
+            }
+            
+            // Update dots
+            const dots = document.querySelectorAll('#carousel-indicators .carousel-dot');
+            dots.forEach((dot, index) => {
+                dot.classList.toggle('active', index === currentTestimonialSlide);
+            });
+        }
+        
+        function changeSlide(direction) {
+            currentTestimonialSlide = (currentTestimonialSlide + direction + totalSlides) % totalSlides;
+            updateCarousel();
+        }
+        
+        function goToSlide(slideIndex) {
+            currentTestimonialSlide = slideIndex;
+            updateCarousel();
+        }
+        
+        // Set up carousel event listeners
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        
+        if (prevBtn) {
+            prevBtn.addEventListener('click', () => changeSlide(-1));
+        }
+        if (nextBtn) {
+            nextBtn.addEventListener('click', () => changeSlide(1));
+        }
+        
+        // Set up dot indicators
+        const dots = document.querySelectorAll('#carousel-indicators .carousel-dot');
+        dots.forEach((dot, index) => {
+            dot.addEventListener('click', () => goToSlide(index));
+        });
+        
+        // Auto-rotate testimonials every 5 seconds
+        if (testimonialCarousel) {
+            setInterval(() => {
+                changeSlide(1);
+            }, 5000);
         }
         
         // Add scroll effect to header
