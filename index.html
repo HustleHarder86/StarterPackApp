@@ -4,11 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PropertyProfitFinder - Smart Real Estate Investment Analysis</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <style>
         :root {
-            /* Using existing design system colors */
-            --primary-blue: #3B82F6;
-            --primary-dark: #2563eb;
+            /* Primary colors from logo */
+            --primary-purple: #8B5CF6;
+            --primary-purple-dark: #7C3AED;
+            --primary-blue: #8B5CF6;  /* Changed to purple for consistency */
+            --primary-dark: #7C3AED;
             --secondary-purple: #764ba2;
             --success-green: #10B981;
             --danger-red: #EF4444;
@@ -24,9 +27,9 @@
             --gray-800: #1F2937;
             --gray-900: #111827;
             
-            /* Gradients */
-            --gradient-primary: linear-gradient(135deg, #667EEA 0%, #764BA2 100%);
-            --gradient-hero: linear-gradient(135deg, #667EEA 0%, #764BA2 100%);
+            /* Gradients - Updated to match logo purple */
+            --gradient-primary: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%);
+            --gradient-hero: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%);
             --gradient-success: linear-gradient(135deg, #10B981 0%, #065F46 100%);
             
             /* Shadows */
@@ -1032,8 +1035,7 @@
     <header class="nav-header">
         <div class="nav-container">
             <a href="#" class="logo">
-                <div class="logo-icon">📊</div>
-                <span>PropertyProfitFinder</span>
+                <img src="assets/logo/logo-full.svg" alt="PropertyProfitFinder" style="height: 40px; width: auto;">
             </a>
             
             <nav class="nav-links">
@@ -1410,8 +1412,7 @@
         <div class="footer-container">
             <div class="footer-about">
                 <div class="footer-brand">
-                    <div class="logo-icon" style="background: white; color: var(--primary-blue);">📊</div>
-                    <div class="footer-logo">PropertyProfitFinder</div>
+                    <img src="assets/logo/logo-full.svg" alt="PropertyProfitFinder" style="height: 48px; width: auto; background: white; border-radius: 8px; padding: 8px;">
                 </div>
                 <p class="footer-description">
                     Professional real estate investment analysis powered by AI and live market data. Make confident investment decisions with comprehensive insights.
