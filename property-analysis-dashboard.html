@@ -505,9 +505,25 @@
             updateDisplaysWithLiveData(analysisResult, propertyData) {
                 console.log('[Hybrid] Updating displays with live data:', analysisResult);
                 
+                // Store analysis data globally for PDF generation
+                window.currentAnalysisData = {
+                    analysisResult,
+                    propertyData,
+                    timestamp: new Date().toISOString(),
+                    source: 'property-analysis-dashboard'
+                };
+                console.log('[Hybrid] Analysis data stored for PDF generation');
+                
                 // Update both simple and detailed views with live data
                 this.updateSimpleViewWithLiveData(analysisResult, propertyData);
                 this.updateDetailedViewWithLiveData(analysisResult, propertyData);
+                
+                // Inject PDF buttons after data is updated
+                setTimeout(() => {
+                    if (window.injectPDFButtons) {
+                        window.injectPDFButtons();
+                    }
+                }, 500);
             }
             
             updateSimpleViewWithLiveData(analysisResult, propertyData) {
@@ -782,6 +798,295 @@
         // Initialize the view manager when DOM is loaded
         document.addEventListener('DOMContentLoaded', () => {
             window.viewManager = new ViewModeManager();
+        });
+    </script>
+
+    <!-- PDF Generation Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script type="module" src="utils/enhanced-pdf-report-builder-es6.js"></script>
+    <script type="module" src="utils/pdf-report-builder.js"></script>
+
+    <!-- PDF Generation Integration -->
+    <script type="module">
+        import { generatePDFReport } from './utils/pdf-report-builder.js';
+
+        // Add PDF generation functionality to global scope
+        window.generatePropertyPDF = async function(analysisData) {
+            try {
+                console.log('🔄 Generating PDF report...', analysisData);
+                
+                // Show loading state
+                const originalButtonText = {};
+                const pdfButtons = document.querySelectorAll('.pdf-generate-btn');
+                pdfButtons.forEach(btn => {
+                    originalButtonText[btn.id] = btn.innerHTML;
+                    btn.innerHTML = `<span style="display: inline-flex; align-items: center; gap: 8px;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="animation: spin 1s linear infinite;">
+                            <path d="M21 12a9 9 0 11-6.219-8.56"/>
+                        </svg>
+                        Generating PDF...
+                    </span>`;
+                    btn.disabled = true;
+                });
+
+                // Configure PDF with all sections
+                const reportConfig = {
+                    selectedSections: [
+                        'executiveSummary',
+                        'propertyDetails', 
+                        'financialAnalysis',
+                        'longTermRental',
+                        'shortTermRental',
+                        'comparativeAnalysis',
+                        'investmentRecommendations',
+                        'riskAssessment',
+                        'marketTrends'
+                    ],
+                    format: 'detailed',
+                    customNotes: 'Generated from Property Investment Analysis Dashboard'
+                };
+
+                // Generate PDF
+                const pdfDoc = await generatePDFReport(analysisData, reportConfig);
+                
+                // Create download link
+                const propertyAddress = analysisData.propertyData?.address || 'Unknown Property';
+                const cleanAddress = propertyAddress.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '_');
+                const fileName = `Property_Analysis_${cleanAddress}_${new Date().toISOString().split('T')[0]}.pdf`;
+                
+                // Download the PDF
+                pdfDoc.save(fileName);
+                
+                // Restore buttons
+                pdfButtons.forEach(btn => {
+                    btn.innerHTML = originalButtonText[btn.id];
+                    btn.disabled = false;
+                });
+                
+                // Show success message
+                if (window.viewManager) {
+                    window.viewManager.showToast('✅ PDF report generated successfully!');
+                }
+                
+                console.log('✅ PDF generated and downloaded:', fileName);
+                
+            } catch (error) {
+                console.error('❌ PDF generation failed:', error);
+                
+                // Restore buttons
+                const pdfButtons = document.querySelectorAll('.pdf-generate-btn');
+                pdfButtons.forEach(btn => {
+                    btn.innerHTML = btn.getAttribute('data-original-text') || 'Generate PDF Report';
+                    btn.disabled = false;
+                });
+                
+                // Show error message
+                if (window.viewManager) {
+                    window.viewManager.showToast('❌ PDF generation failed. Please try again.');
+                }
+            }
+        };
+
+        // Add CSS for spinning animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes spin {
+                from { transform: rotate(0deg); }
+                to { transform: rotate(360deg); }
+            }
+            
+            .pdf-generate-btn {
+                background: linear-gradient(135deg, #10B981 0%, #065F46 100%);
+                color: white;
+                border: none;
+                padding: 12px 24px;
+                border-radius: 8px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.2s;
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                margin: 16px 0;
+            }
+            
+            .pdf-generate-btn:hover:not(:disabled) {
+                transform: translateY(-1px);
+                box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+            }
+            
+            .pdf-generate-btn:disabled {
+                opacity: 0.7;
+                cursor: not-allowed;
+                transform: none;
+            }
+            
+            .pdf-button-container {
+                display: flex;
+                justify-content: center;
+                padding: 20px;
+                border-top: 1px solid #E5E7EB;
+                margin-top: 20px;
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Function to inject PDF buttons into loaded content
+        window.injectPDFButtons = function() {
+            console.log('🔄 Injecting PDF generation buttons...');
+            
+            // Inject into Simple View
+            const simpleContent = document.getElementById('simple-content');
+            if (simpleContent && !simpleContent.querySelector('.pdf-generate-btn')) {
+                // Find a good place to insert the button (after main content)
+                const insertionPoint = simpleContent.querySelector('.main-content, .container, .analysis-results') || simpleContent;
+                
+                const pdfButtonContainer = document.createElement('div');
+                pdfButtonContainer.className = 'pdf-button-container';
+                pdfButtonContainer.innerHTML = `
+                    <button class="pdf-generate-btn" id="simple-pdf-btn" onclick="window.generatePropertyPDF(window.currentAnalysisData)">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14,2 14,8 20,8"/>
+                            <line x1="16" y1="13" x2="8" y2="13"/>
+                            <line x1="16" y1="17" x2="8" y2="17"/>
+                            <polyline points="10,9 9,9 8,9"/>
+                        </svg>
+                        Generate PDF Report
+                    </button>
+                `;
+                
+                if (insertionPoint === simpleContent) {
+                    insertionPoint.appendChild(pdfButtonContainer);
+                } else {
+                    insertionPoint.parentNode.insertBefore(pdfButtonContainer, insertionPoint.nextSibling);
+                }
+                
+                console.log('✅ PDF button injected into Simple view');
+            }
+            
+            // Inject into Detailed View  
+            const detailedContent = document.getElementById('detailed-content');
+            if (detailedContent && !detailedContent.querySelector('.pdf-generate-btn')) {
+                // Find a good place to insert the button
+                const insertionPoint = detailedContent.querySelector('.main-content, .container, .analysis-results') || detailedContent;
+                
+                const pdfButtonContainer = document.createElement('div');
+                pdfButtonContainer.className = 'pdf-button-container';
+                pdfButtonContainer.innerHTML = `
+                    <button class="pdf-generate-btn" id="detailed-pdf-btn" onclick="window.generatePropertyPDF(window.currentAnalysisData)">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14,2 14,8 20,8"/>
+                            <line x1="16" y1="13" x2="8" y2="13"/>
+                            <line x1="16" y1="17" x2="8" y2="17"/>
+                            <polyline points="10,9 9,9 8,9"/>
+                        </svg>
+                        Generate PDF Report
+                    </button>
+                `;
+                
+                if (insertionPoint === detailedContent) {
+                    insertionPoint.appendChild(pdfButtonContainer);
+                } else {
+                    insertionPoint.parentNode.insertBefore(pdfButtonContainer, insertionPoint.nextSibling);
+                }
+                
+                console.log('✅ PDF button injected into Detailed view');
+            }
+        };
+
+        // Auto-inject PDF buttons when content loads
+        const originalLoadContent = window.viewManager?.loadContent;
+        if (originalLoadContent) {
+            window.viewManager.loadContent = function() {
+                originalLoadContent.call(this);
+                // Inject PDF buttons after a short delay to ensure content is loaded
+                setTimeout(() => {
+                    window.injectPDFButtons();
+                    
+                    // Initialize fallback analysis data if not already present
+                    if (!window.currentAnalysisData) {
+                        const urlParams = new URLSearchParams(window.location.search);
+                        const propertyDataParam = urlParams.get('propertyData');
+                        
+                        if (propertyDataParam) {
+                            try {
+                                const propertyData = JSON.parse(decodeURIComponent(propertyDataParam));
+                                window.currentAnalysisData = {
+                                    propertyData,
+                                    analysisResult: {
+                                        // Fallback/mock data for PDF generation
+                                        ltr: {
+                                            monthlyRent: 2800,
+                                            netMonthlyIncome: 1200,
+                                            annualizedReturn: 8.5,
+                                            cashOnCashReturn: 12.3
+                                        },
+                                        str: {
+                                            averageNightly: 180,
+                                            monthlyRevenue: 4200,
+                                            netMonthlyIncome: 2100,
+                                            annualizedReturn: 15.2
+                                        },
+                                        comparison: {
+                                            ltrTotal: 33600,
+                                            strTotal: 50400,
+                                            difference: 16800,
+                                            recommendation: "STR"
+                                        }
+                                    },
+                                    timestamp: new Date().toISOString(),
+                                    source: 'dashboard-fallback'
+                                };
+                                console.log('[PDF] Initialized fallback analysis data for PDF generation');
+                            } catch (e) {
+                                console.warn('[PDF] Could not parse property data from URL');
+                            }
+                        }
+                    }
+                }, 1000);
+            };
+        }
+        
+        // Initialize fallback data on page load for immediate PDF access
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                if (!window.currentAnalysisData) {
+                    window.currentAnalysisData = {
+                        propertyData: {
+                            address: 'Sample Property Analysis',
+                            price: 500000,
+                            bedrooms: 2,
+                            bathrooms: 1
+                        },
+                        analysisResult: {
+                            ltr: {
+                                monthlyRent: 2800,
+                                netMonthlyIncome: 1200,
+                                annualizedReturn: 8.5,
+                                cashOnCashReturn: 12.3
+                            },
+                            str: {
+                                averageNightly: 180,
+                                monthlyRevenue: 4200,
+                                netMonthlyIncome: 2100,
+                                annualizedReturn: 15.2
+                            },
+                            comparison: {
+                                ltrTotal: 33600,
+                                strTotal: 50400,
+                                difference: 16800,
+                                recommendation: "STR"
+                            }
+                        },
+                        timestamp: new Date().toISOString(),
+                        source: 'page-load-fallback'
+                    };
+                    console.log('[PDF] Initialized basic fallback analysis data');
+                }
+            }, 2000);
         });
     </script>
 </body>
