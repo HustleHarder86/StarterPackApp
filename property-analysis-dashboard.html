@@ -463,43 +463,273 @@
             }
             
             showAnalysisLoading() {
-                // Show loading overlay on both views
-                const simpleContent = document.getElementById('simple-content');
-                const detailedContent = document.getElementById('detailed-content');
-                
-                const loadingHTML = `
-                    <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; 
-                                background: rgba(255,255,255,0.9); display: flex; 
-                                align-items: center; justify-content: center; z-index: 1000;">
-                        <div style="text-align: center; padding: 40px;">
-                            <div style="width: 40px; height: 40px; border: 4px solid #f3f3f3; 
-                                       border-top: 4px solid #3B82F6; border-radius: 50%; 
-                                       animation: spin 1s linear infinite; margin: 0 auto 16px;"></div>
-                            <p style="font-size: 16px; color: #666;">Loading live property analysis...</p>
+                // Create full-screen loading overlay with progress bars
+                const loadingOverlay = document.createElement('div');
+                loadingOverlay.id = 'analysis-loading-overlay';
+                loadingOverlay.innerHTML = `
+                    <div style="
+                        position: fixed;
+                        top: 0;
+                        left: 0;
+                        right: 0;
+                        bottom: 0;
+                        width: 100vw;
+                        height: 100vh;
+                        background: linear-gradient(135deg, rgba(102, 126, 234, 0.95) 0%, rgba(118, 75, 162, 0.95) 100%);
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        z-index: 99999;
+                        backdrop-filter: blur(8px);
+                        animation: fadeIn 0.3s ease;
+                    ">
+                        <div style="
+                            background: white;
+                            border-radius: 20px;
+                            padding: 40px;
+                            text-align: center;
+                            max-width: 400px;
+                            width: 90%;
+                            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+                            animation: slideUp 0.4s ease;
+                        ">
+                            <!-- Animated Logo/Icon -->
+                            <div style="
+                                width: 60px;
+                                height: 60px;
+                                margin: 0 auto 20px;
+                                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                                border-radius: 50%;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                animation: pulse 2s infinite;
+                            ">
+                                <span style="font-size: 24px;">🏠</span>
+                            </div>
+                            
+                            <!-- Title -->
+                            <h2 style="
+                                color: #1F2937;
+                                font-size: 24px;
+                                font-weight: 700;
+                                margin-bottom: 8px;
+                                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                            ">Analyzing Your Property</h2>
+                            
+                            <!-- Current Step -->
+                            <p id="loading-step" style="
+                                color: #6B7280;
+                                font-size: 14px;
+                                margin-bottom: 24px;
+                                min-height: 20px;
+                            ">Initializing analysis...</p>
+                            
+                            <!-- Progress Bar Container -->
+                            <div style="
+                                background: #F3F4F6;
+                                border-radius: 10px;
+                                height: 8px;
+                                margin-bottom: 20px;
+                                overflow: hidden;
+                            ">
+                                <div id="progress-bar" style="
+                                    background: linear-gradient(90deg, #10B981 0%, #059669 100%);
+                                    height: 100%;
+                                    width: 0%;
+                                    border-radius: 10px;
+                                    transition: width 0.5s ease;
+                                    animation: shimmer 2s infinite;
+                                "></div>
+                            </div>
+                            
+                            <!-- Progress Percentage -->
+                            <div style="
+                                display: flex;
+                                justify-content: space-between;
+                                align-items: center;
+                                margin-bottom: 20px;
+                            ">
+                                <span id="progress-percent" style="
+                                    color: #374151;
+                                    font-size: 14px;
+                                    font-weight: 600;
+                                ">0%</span>
+                                <span style="
+                                    color: #6B7280;
+                                    font-size: 12px;
+                                ">Est. 2-5 minutes</span>
+                            </div>
+                            
+                            <!-- Step Progress Indicators -->
+                            <div style="
+                                display: flex;
+                                justify-content: space-between;
+                                margin-bottom: 24px;
+                            ">
+                                <div class="step-indicator" data-step="1" style="
+                                    width: 12px;
+                                    height: 12px;
+                                    border-radius: 50%;
+                                    background: #10B981;
+                                    transition: all 0.3s ease;
+                                "></div>
+                                <div class="step-indicator" data-step="2" style="
+                                    width: 12px;
+                                    height: 12px;
+                                    border-radius: 50%;
+                                    background: #E5E7EB;
+                                    transition: all 0.3s ease;
+                                "></div>
+                                <div class="step-indicator" data-step="3" style="
+                                    width: 12px;
+                                    height: 12px;
+                                    border-radius: 50%;
+                                    background: #E5E7EB;
+                                    transition: all 0.3s ease;
+                                "></div>
+                                <div class="step-indicator" data-step="4" style="
+                                    width: 12px;
+                                    height: 12px;
+                                    border-radius: 50%;
+                                    background: #E5E7EB;
+                                    transition: all 0.3s ease;
+                                "></div>
+                                <div class="step-indicator" data-step="5" style="
+                                    width: 12px;
+                                    height: 12px;
+                                    border-radius: 50%;
+                                    background: #E5E7EB;
+                                    transition: all 0.3s ease;
+                                "></div>
+                            </div>
+                            
+                            <!-- Cancel Button -->
+                            <button onclick="window.location.href='./roi-finder.html'" style="
+                                background: none;
+                                border: 1px solid #D1D5DB;
+                                color: #6B7280;
+                                padding: 8px 16px;
+                                border-radius: 6px;
+                                font-size: 12px;
+                                cursor: pointer;
+                                transition: all 0.2s ease;
+                            " onmouseover="this.style.background='#F9FAFB'" onmouseout="this.style.background='none'">
+                                Cancel
+                            </button>
                         </div>
                     </div>
+                    
                     <style>
-                        @keyframes spin {
-                            0% { transform: rotate(0deg); }
-                            100% { transform: rotate(360deg); }
+                        @keyframes fadeIn {
+                            from { opacity: 0; }
+                            to { opacity: 1; }
+                        }
+                        
+                        @keyframes fadeOut {
+                            from { opacity: 1; }
+                            to { opacity: 0; }
+                        }
+                        
+                        @keyframes slideUp {
+                            from { 
+                                opacity: 0;
+                                transform: translateY(20px);
+                            }
+                            to { 
+                                opacity: 1;
+                                transform: translateY(0);
+                            }
+                        }
+                        
+                        @keyframes pulse {
+                            0%, 100% { transform: scale(1); }
+                            50% { transform: scale(1.05); }
+                        }
+                        
+                        @keyframes shimmer {
+                            0% { background-position: -200px 0; }
+                            100% { background-position: calc(200px + 100%) 0; }
+                        }
+                        
+                        #progress-bar {
+                            background: linear-gradient(90deg, #10B981 0%, #34D399 50%, #10B981 100%);
+                            background-size: 200px 100%;
                         }
                     </style>
                 `;
                 
-                if (simpleContent) {
-                    simpleContent.style.position = 'relative';
-                    simpleContent.insertAdjacentHTML('beforeend', loadingHTML);
-                }
-                if (detailedContent) {
-                    detailedContent.style.position = 'relative';
-                    detailedContent.insertAdjacentHTML('beforeend', loadingHTML);
-                }
+                // Add to document body
+                document.body.appendChild(loadingOverlay);
+                
+                // Start progress simulation
+                this.startProgressSimulation();
             }
             
             hideAnalysisLoading() {
-                // Remove loading overlays
-                const loadingOverlays = document.querySelectorAll('[style*="rgba(255,255,255,0.9)"]');
-                loadingOverlays.forEach(overlay => overlay.remove());
+                // Remove the full-screen loading overlay
+                const loadingOverlay = document.getElementById('analysis-loading-overlay');
+                if (loadingOverlay) {
+                    loadingOverlay.style.animation = 'fadeOut 0.3s ease';
+                    setTimeout(() => {
+                        loadingOverlay.remove();
+                    }, 300);
+                }
+                
+                // Also remove any legacy overlays
+                const legacyOverlays = document.querySelectorAll('[style*="rgba(255,255,255,0.9)"]');
+                legacyOverlays.forEach(overlay => overlay.remove());
+            }
+            
+            startProgressSimulation() {
+                const steps = [
+                    { text: "Initializing analysis...", progress: 5, duration: 1000 },
+                    { text: "Extracting property details...", progress: 15, duration: 2000 },
+                    { text: "Analyzing market data...", progress: 35, duration: 3000 },
+                    { text: "Calculating rental estimates...", progress: 55, duration: 4000 },
+                    { text: "Processing Airbnb comparables...", progress: 75, duration: 5000 },
+                    { text: "Finalizing analysis...", progress: 95, duration: 1000 }
+                ];
+                
+                let currentStep = 0;
+                const progressBar = document.getElementById('progress-bar');
+                const progressPercent = document.getElementById('progress-percent');
+                const loadingStep = document.getElementById('loading-step');
+                const stepIndicators = document.querySelectorAll('.step-indicator');
+                
+                const updateProgress = () => {
+                    if (currentStep < steps.length) {
+                        const step = steps[currentStep];
+                        
+                        // Update text
+                        if (loadingStep) {
+                            loadingStep.textContent = step.text;
+                        }
+                        
+                        // Update progress bar
+                        if (progressBar) {
+                            progressBar.style.width = `${step.progress}%`;
+                        }
+                        
+                        // Update percentage
+                        if (progressPercent) {
+                            progressPercent.textContent = `${step.progress}%`;
+                        }
+                        
+                        // Update step indicators
+                        if (stepIndicators[currentStep]) {
+                            stepIndicators[currentStep].style.background = '#10B981';
+                            stepIndicators[currentStep].style.transform = 'scale(1.2)';
+                        }
+                        
+                        currentStep++;
+                        
+                        setTimeout(updateProgress, step.duration);
+                    }
+                };
+                
+                // Start the simulation
+                setTimeout(updateProgress, 500);
             }
             
             updateDisplaysWithLiveData(analysisResult, propertyData) {
