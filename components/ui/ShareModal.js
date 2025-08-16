@@ -58,31 +58,52 @@ function shareAnalysis() {
   const analysisData = window.appState?.currentAnalysis || {};
   const propertyData = analysisData.property || {};
   
-  // Collect all current financial values
-  const financialData = {
-    // Property details
-    address: propertyData.address || '',
-    price: propertyData.price || 850000,
-    bedrooms: propertyData.bedrooms || 2,
-    bathrooms: propertyData.bathrooms || 2,
-    sqft: propertyData.sqft || 1200,
-    
-    // Financial values from calculator
-    monthlyRevenue: document.getElementById('monthlyRevenue')?.value || 5400,
-    propertyTax: document.getElementById('propertyTax')?.value || 708,
-    insurance: document.getElementById('insurance')?.value || 250,
-    hoaFees: document.getElementById('hoaFees')?.value || 450,
-    propertyMgmt: document.getElementById('propertyMgmt')?.value || 540,
-    utilities: document.getElementById('utilities')?.value || 200,
-    cleaning: document.getElementById('cleaning')?.value || 400,
-    maintenance: document.getElementById('maintenance')?.value || 300,
-    supplies: document.getElementById('supplies')?.value || 150,
-    platformFees: document.getElementById('platformFees')?.value || 162,
-    otherExpenses: document.getElementById('otherExpenses')?.value || 140,
-    
-    // Analysis ID if available
-    analysisId: analysisData.id || ''
-  };
+  // Collect all current financial values - only real data
+  const financialData = {};
+  
+  // Property details - only include if available
+  if (propertyData.address) financialData.address = propertyData.address;
+  if (propertyData.price) financialData.price = propertyData.price;
+  if (propertyData.bedrooms) financialData.bedrooms = propertyData.bedrooms;
+  if (propertyData.bathrooms) financialData.bathrooms = propertyData.bathrooms;
+  if (propertyData.sqft) financialData.sqft = propertyData.sqft;
+  
+  // Financial values from calculator - only include actual values
+  const monthlyRevenue = document.getElementById('monthlyRevenue')?.value;
+  if (monthlyRevenue) financialData.monthlyRevenue = monthlyRevenue;
+  
+  const propertyTax = document.getElementById('propertyTax')?.value;
+  if (propertyTax) financialData.propertyTax = propertyTax;
+  
+  const insurance = document.getElementById('insurance')?.value;
+  if (insurance) financialData.insurance = insurance;
+  
+  const hoaFees = document.getElementById('hoaFees')?.value;
+  if (hoaFees) financialData.hoaFees = hoaFees;
+  
+  const propertyMgmt = document.getElementById('propertyMgmt')?.value;
+  if (propertyMgmt) financialData.propertyMgmt = propertyMgmt;
+  
+  const utilities = document.getElementById('utilities')?.value;
+  if (utilities) financialData.utilities = utilities;
+  
+  const cleaning = document.getElementById('cleaning')?.value;
+  if (cleaning) financialData.cleaning = cleaning;
+  
+  const maintenance = document.getElementById('maintenance')?.value;
+  if (maintenance) financialData.maintenance = maintenance;
+  
+  const supplies = document.getElementById('supplies')?.value;
+  if (supplies) financialData.supplies = supplies;
+  
+  const platformFees = document.getElementById('platformFees')?.value;
+  if (platformFees) financialData.platformFees = platformFees;
+  
+  const otherExpenses = document.getElementById('otherExpenses')?.value;
+  if (otherExpenses) financialData.otherExpenses = otherExpenses;
+  
+  // Analysis ID if available
+  if (analysisData.id) financialData.analysisId = analysisData.id;
   
   // Encode data in URL
   const params = new URLSearchParams(financialData);

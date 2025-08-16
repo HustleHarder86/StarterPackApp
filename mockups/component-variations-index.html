@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Component Variations Index - StarterPackApp</title>
+    <style>
+        :root {
+            --primary-blue: #3B82F6;
+            --success-green: #10B981;
+            --warning-yellow: #F59E0B;
+            --danger-red: #EF4444;
+            --gray-50: #F9FAFB;
+            --gray-100: #F3F4F6;
+            --gray-200: #E5E7EB;
+            --gray-300: #D1D5DB;
+            --gray-500: #6B7280;
+            --gray-700: #374151;
+            --gray-900: #111827;
+            --gradient-primary: linear-gradient(135deg, #667EEA 0%, #764BA2 100%);
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #667EEA 0%, #764BA2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        .header h1 {
+            color: white;
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .status-banner {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 32px;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: var(--success-green);
+            color: white;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .status-badge svg {
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
+        }
+
+        .mockups-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-bottom: 48px;
+        }
+
+        .mockup-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .mockup-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
+        }
+
+        .mockup-card-header {
+            padding: 20px;
+            background: var(--gray-50);
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .mockup-card-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-primary);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 12px;
+        }
+
+        .mockup-card-icon svg {
+            width: 24px;
+            height: 24px;
+            fill: white;
+        }
+
+        .mockup-card h2 {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: 4px;
+        }
+
+        .mockup-card-subtitle {
+            color: var(--gray-500);
+            font-size: 14px;
+        }
+
+        .mockup-card-body {
+            padding: 20px;
+        }
+
+        .component-list {
+            list-style: none;
+            margin-bottom: 20px;
+        }
+
+        .component-list li {
+            padding: 8px 0;
+            color: var(--gray-700);
+            font-size: 14px;
+            position: relative;
+            padding-left: 24px;
+        }
+
+        .component-list li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: var(--success-green);
+            font-weight: 700;
+        }
+
+        .view-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            width: 100%;
+            padding: 12px 20px;
+            background: var(--primary-blue);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            text-align: center;
+            justify-content: center;
+        }
+
+        .view-button:hover {
+            background: #2563EB;
+            transform: translateX(4px);
+        }
+
+        .view-button svg {
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
+        }
+
+        .main-mockup-section {
+            background: white;
+            border-radius: 12px;
+            padding: 32px;
+            box-shadow: var(--shadow-lg);
+            margin-bottom: 48px;
+        }
+
+        .main-mockup-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--gray-200);
+        }
+
+        .main-mockup-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--gray-900);
+        }
+
+        .main-mockup-badge {
+            padding: 8px 16px;
+            background: var(--warning-yellow);
+            color: white;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .main-mockup-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 32px;
+            background: var(--gradient-primary);
+            color: white;
+            text-decoration: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            transition: all 0.3s;
+            box-shadow: var(--shadow-md);
+        }
+
+        .main-mockup-link:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .instructions {
+            background: linear-gradient(135deg, #F3F4F6, #E5E7EB);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 32px;
+        }
+
+        .instructions h3 {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .instructions ol {
+            margin-left: 24px;
+            color: var(--gray-700);
+            line-height: 1.8;
+        }
+
+        .instructions li {
+            margin-bottom: 8px;
+        }
+
+        .completed-badge {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: var(--success-green);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 32px;
+            }
+            
+            .mockups-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>Component Variations Index</h1>
+            <p>Comprehensive UI component variations for STR Analysis redesign - Pick your favorites!</p>
+        </div>
+
+        <!-- Status Banner -->
+        <div class="status-banner">
+            <div>
+                <h3 style="font-size: 24px; font-weight: 700; color: var(--gray-900); margin-bottom: 4px;">
+                    All Variations Complete
+                </h3>
+                <p style="color: var(--gray-600);">4 mockup pages • 16 components • 48 variations total</p>
+            </div>
+            <div class="status-badge">
+                <svg viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                </svg>
+                Ready for Review
+            </div>
+        </div>
+
+        <!-- Main Mockup Section -->
+        <div class="main-mockup-section">
+            <div class="main-mockup-header">
+                <h2 class="main-mockup-title">Main Application Mockup</h2>
+                <span class="main-mockup-badge">Current Version</span>
+            </div>
+            <p style="color: var(--gray-600); margin-bottom: 24px; font-size: 16px; line-height: 1.6;">
+                The complete STR Analysis redesign with all current components integrated. This is the working version with navigation, calculators, and comparison tools.
+            </p>
+            <a href="str-analysis-redesign-v5.html" class="main-mockup-link">
+                View Main Mockup
+                <svg viewBox="0 0 20 20" fill="currentColor" style="width: 24px; height: 24px;">
+                    <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                </svg>
+            </a>
+        </div>
+
+        <!-- Instructions -->
+        <div class="instructions">
+            <h3>
+                <svg width="24" height="24" fill="var(--primary-blue)" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                </svg>
+                How to Use These Mockups
+            </h3>
+            <ol>
+                <li>Open each variation page to see 3 different approaches for each component</li>
+                <li>Components are labeled as Variation A, B, and C for easy reference</li>
+                <li>Test interactive elements like sliders, toggles, and calculators</li>
+                <li>Note which variations you prefer for each component</li>
+                <li>We'll integrate your chosen variations into the final design</li>
+            </ol>
+        </div>
+
+        <!-- Mockups Grid -->
+        <div class="mockups-grid">
+            <!-- STR Analysis Variations -->
+            <div class="mockup-card">
+                <span class="completed-badge">Complete</span>
+                <div class="mockup-card-header">
+                    <div class="mockup-card-icon">
+                        <svg viewBox="0 0 20 20">
+                            <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z"></path>
+                        </svg>
+                    </div>
+                    <h2>STR Analysis Components</h2>
+                    <p class="mockup-card-subtitle">Short-term rental UI variations</p>
+                </div>
+                <div class="mockup-card-body">
+                    <ul class="component-list">
+                        <li>Live Airbnb Comparables (Grid, List, Carousel)</li>
+                        <li>Market Statistics (Grid, Circular, Cards)</li>
+                        <li>Revenue Calculator (Sliders, Inputs, Mixed)</li>
+                        <li>Cash Flow Comparison (Cards, Bars, Table)</li>
+                    </ul>
+                    <a href="str-analysis-variations.html" class="view-button">
+                        View STR Variations
+                        <svg viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+
+            <!-- LTR Analysis Variations -->
+            <div class="mockup-card">
+                <span class="completed-badge">Complete</span>
+                <div class="mockup-card-header">
+                    <div class="mockup-card-icon">
+                        <svg viewBox="0 0 20 20">
+                            <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path>
+                        </svg>
+                    </div>
+                    <h2>LTR Analysis Components</h2>
+                    <p class="mockup-card-subtitle">Long-term rental calculators</p>
+                </div>
+                <div class="mockup-card-body">
+                    <ul class="component-list">
+                        <li>Rental Income Settings (2-Column, Single, Tabs)</li>
+                        <li>Revenue Charts (Bar, Line, Donut)</li>
+                        <li>Vacancy Settings (Sliders, Dropdowns, Radio)</li>
+                        <li>Financial Summary (Cards, Table, Timeline)</li>
+                    </ul>
+                    <a href="ltr-analysis-variations.html" class="view-button">
+                        View LTR Variations
+                        <svg viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Comparison Variations -->
+            <div class="mockup-card">
+                <span class="completed-badge">Complete</span>
+                <div class="mockup-card-header">
+                    <div class="mockup-card-icon">
+                        <svg viewBox="0 0 20 20">
+                            <path d="M2 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1H3a1 1 0 01-1-1V4zM8 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1H9a1 1 0 01-1-1V4zM15 3a1 1 0 00-1 1v12a1 1 0 001 1h2a1 1 0 001-1V4a1 1 0 00-1-1h-2z"></path>
+                        </svg>
+                    </div>
+                    <h2>STR vs LTR Comparison</h2>
+                    <p class="mockup-card-subtitle">Decision-making interfaces</p>
+                </div>
+                <div class="mockup-card-body">
+                    <ul class="component-list">
+                        <li>Side-by-side Views (Split, Toggle, Overlay)</li>
+                        <li>Advantage Metrics (Bars, Gauges, Numbers)</li>
+                        <li>Break-even Analysis (Chart, Calculator, Timeline)</li>
+                        <li>Recommendations (Badge, Stars, Pros/Cons)</li>
+                    </ul>
+                    <a href="comparison-variations.html" class="view-button">
+                        View Comparison Variations
+                        <svg viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Financial Calculator Variations -->
+            <div class="mockup-card">
+                <span class="completed-badge">Complete</span>
+                <div class="mockup-card-header">
+                    <div class="mockup-card-icon">
+                        <svg viewBox="0 0 20 20">
+                            <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z"></path>
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z" clip-rule="evenodd"></path>
+                        </svg>
+                    </div>
+                    <h2>Financial Calculator</h2>
+                    <p class="mockup-card-subtitle">Investment modeling tools</p>
+                </div>
+                <div class="mockup-card-body">
+                    <ul class="component-list">
+                        <li>Mode Selector (Buttons, Dropdown, Tabs)</li>
+                        <li>Input Controls (Sliders, Numbers, Mixed)</li>
+                        <li>Results Display (Cards, Charts, Tables)</li>
+                        <li>Financing Options (Toggle, Checkbox, Accordion)</li>
+                    </ul>
+                    <a href="financial-calc-variations.html" class="view-button">
+                        View Calculator Variations
+                        <svg viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Summary -->
+        <div style="background: white; border-radius: 12px; padding: 32px; text-align: center; box-shadow: var(--shadow-lg);">
+            <h3 style="font-size: 24px; font-weight: 700; color: var(--gray-900); margin-bottom: 16px;">
+                Ready to Choose Your Favorites!
+            </h3>
+            <p style="color: var(--gray-600); font-size: 16px; line-height: 1.6; max-width: 600px; margin: 0 auto;">
+                All component variations have been created. Review each mockup page and select your preferred variations. 
+                Once you've made your selections, we'll integrate them into the final design.
+            </p>
+            <div style="margin-top: 24px; display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;">
+                <span style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; background: var(--gray-100); border-radius: 20px; font-size: 14px; color: var(--gray-700);">
+                    <svg width="16" height="16" fill="var(--success-green)" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                    </svg>
+                    4 Mockup Pages
+                </span>
+                <span style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; background: var(--gray-100); border-radius: 20px; font-size: 14px; color: var(--gray-700);">
+                    <svg width="16" height="16" fill="var(--primary-blue)" viewBox="0 0 20 20">
+                        <path d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4z"></path>
+                    </svg>
+                    16 Components
+                </span>
+                <span style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; background: var(--gray-100); border-radius: 20px; font-size: 14px; color: var(--gray-700);">
+                    <svg width="16" height="16" fill="var(--warning-yellow)" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd"></path>
+                    </svg>
+                    48 Total Variations
+                </span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

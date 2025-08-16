@@ -1,0 +1,11 @@
+# Ignore temporary files
+*.tmp
+*.bak
+*~
+.DS_Store
+
+# Ignore test files
+test-*.html
+
+# Keep only the main mockup
+# All versions are tracked in git history

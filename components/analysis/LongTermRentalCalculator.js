@@ -6,14 +6,32 @@
 import { Card } from '../ui/Card.js';
 
 export const LongTermRentalCalculator = ({
-  monthlyRevenue = 3100,
+  monthlyRevenue,
   expenses = {},
-  propertyPrice = 850000,
-  downPayment = 170000,
+  propertyPrice,
+  downPayment,
   propertyData = {},
   costs = {},
   className = ''
 }) => {
+  // Check for required data
+  if (!propertyPrice || !monthlyRevenue) {
+    return `
+      <div class="${className}">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <h3 class="text-lg font-bold text-gray-900 mb-4">Long-Term Rental Calculator</h3>
+          <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+            <p class="text-red-700 font-medium">⚠️ Unable to display calculator</p>
+            <p class="text-red-600 text-sm mt-2">Required data is not available.</p>
+            <ul class="text-red-600 text-sm mt-2 list-disc list-inside">
+              ${!propertyPrice ? '<li>Property price data missing</li>' : ''}
+              ${!monthlyRevenue ? '<li>Rental rate data missing</li>' : ''}
+            </ul>
+          </div>
+        </div>
+      </div>
+    `;
+  }
   // Ensure we have propertyData from any available source
   const actualPropertyData = propertyData || window.analysisData?.propertyData || {};
   const actualCosts = costs || window.analysisData?.costs || {};
@@ -37,10 +55,10 @@ export const LongTermRentalCalculator = ({
       } else if (actualCosts?.property_tax_annual) {
         return Math.round(actualCosts.property_tax_annual / 12);
       } else {
-        return expenses.propertyTax || 458;
+        return expenses.propertyTax || 0;
       }
     })(),
-    insurance: expenses.insurance || 200, // Lower for LTR
+    insurance: expenses.insurance || 0, // Only use real data
     hoaFees: (() => {
       if ('condoFees' in actualPropertyData) return actualPropertyData.condoFees;
       if ('condo_fees' in actualPropertyData) return actualPropertyData.condo_fees;
@@ -52,10 +70,10 @@ export const LongTermRentalCalculator = ({
       if (actualCosts?.maintenance_annual) {
         return Math.round(actualCosts.maintenance_annual / 12);
       }
-      return expenses.maintenance || 250; // Lower for LTR
+      return expenses.maintenance || 0; // Only use real data
     })(),
     vacancy: Math.round(monthlyRevenue * 0.05), // 5% vacancy allowance
-    otherExpenses: expenses.otherExpenses || 100
+    otherExpenses: expenses.otherExpenses || 0
   };
   
   // Determine data sources
@@ -193,8 +211,14 @@ function generateLTRExpenseRow(label, id, value, source, propertyData = {}, cost
 
   // Get calculation details for LTR expenses
   const getCalculationDetails = () => {
-    const propertyValue = propertyData?.price || 850000;
-    const monthlyRent = window.analysisData?.ltrMonthlyRent || 3100;
+    const propertyValue = propertyData?.price;
+    const monthlyRent = window.analysisData?.ltrMonthlyRent;
+    
+    // If critical data is missing, disable calculator
+    if (!propertyValue || !monthlyRent) {
+      console.error('[LTR Calculator] Cannot initialize - missing critical data');
+      return;
+    }
     
     switch(id) {
       case 'ltrMortgage':
@@ -327,7 +351,7 @@ function updateLTRCalculations() {
   const annualIncome = netCashFlow * 12;
 
   // Calculate cash-on-cash return
-  const downPayment = window.analysisData?.downPayment || 170000;
+  const downPayment = window.analysisData?.downPayment || (window.analysisData?.propertyData?.price ? Math.round(window.analysisData.propertyData.price * 0.20) : 0);
   const cashReturn = (annualIncome / downPayment) * 100;
 
   // Update display values
@@ -351,15 +375,19 @@ function updateLTRCalculations() {
 
 function resetLTRCalculator() {
   // Reset to default LTR values
-  document.getElementById('ltrMonthlyRevenue').value = 3100;
-  document.getElementById('ltrMortgage').value = 4200;
-  document.getElementById('ltrPropertyTax').value = 458;
-  document.getElementById('ltrInsurance').value = 200;
-  document.getElementById('ltrHoaFees').value = 0;
-  document.getElementById('ltrPropertyMgmt').value = 248;
-  document.getElementById('ltrMaintenance').value = 250;
-  document.getElementById('ltrVacancy').value = 155;
-  document.getElementById('ltrOtherExpenses').value = 100;
+  // Reset to actual data values or calculated defaults based on property data
+  const monthlyRent = window.analysisData?.ltrMonthlyRent || window.analysisData?.longTermRental?.monthlyRent || 0;
+  const propertyPrice = window.analysisData?.propertyData?.price || 0;
+  
+  document.getElementById('ltrMonthlyRevenue').value = monthlyRent;
+  document.getElementById('ltrMortgage').value = window.analysisData?.costs?.mortgage_payment || 0;
+  document.getElementById('ltrPropertyTax').value = window.analysisData?.costs?.property_tax_annual ? Math.round(window.analysisData.costs.property_tax_annual / 12) : 0;
+  document.getElementById('ltrInsurance').value = window.analysisData?.costs?.insurance || 0;
+  document.getElementById('ltrHoaFees').value = window.analysisData?.propertyData?.condoFees || 0;
+  document.getElementById('ltrPropertyMgmt').value = monthlyRent ? Math.round(monthlyRent * 0.08) : 0;
+  document.getElementById('ltrMaintenance').value = window.analysisData?.costs?.maintenance || 0;
+  document.getElementById('ltrVacancy').value = monthlyRent ? Math.round(monthlyRent * 0.05) : 0;
+  document.getElementById('ltrOtherExpenses').value = window.analysisData?.costs?.other || 0;
   
   updateLTRCalculations();
 }

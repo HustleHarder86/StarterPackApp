@@ -78,13 +78,13 @@ function analyzeSTRPotential(property, comparables, marketData = {}) {
  * @returns {Object} Detailed expense breakdown
  */
 function calculateDetailedSTRExpenses(annualRevenue, property) {
-  // Base operating costs as percentage of revenue
+  // Base operating costs as percentage of revenue - adjusted to be more realistic
   const revenueBased = {
-    management: annualRevenue * 0.20,      // 20% for professional management
-    cleaning: annualRevenue * 0.10,        // 10% for cleaning between guests
-    supplies: annualRevenue * 0.03,        // 3% for consumables
+    management: annualRevenue * 0.15,      // 15% for professional management (reduced from 20%)
+    cleaning: annualRevenue * 0.08,        // 8% for cleaning between guests (reduced from 10%)
+    supplies: annualRevenue * 0.02,        // 2% for consumables (reduced from 3%)
     platformFees: annualRevenue * 0.03,    // 3% Airbnb service fees
-    marketing: annualRevenue * 0.02        // 2% for additional marketing
+    marketing: annualRevenue * 0.01        // 1% for additional marketing (reduced from 2%)
   };
   
   // Fixed costs (not revenue-based)
@@ -98,9 +98,25 @@ function calculateDetailedSTRExpenses(annualRevenue, property) {
   };
   
   // Property-specific costs
+  // Check for property tax in multiple possible locations
+  const actualPropertyTax = property.propertyTaxes || 
+                           property.property_taxes || 
+                           property.propertyTax || 
+                           property.property_tax ||
+                           property.taxes ||
+                           0;
+  
+  // Log for debugging
+  console.log('[STR Calculator] Property tax calculation:', {
+    providedTax: actualPropertyTax,
+    propertyPrice: property.price,
+    estimatedTax: property.price ? property.price * 0.01 : 0,
+    propertyObject: property
+  });
+  
   const propertySpecific = {
-    propertyTax: property.propertyTaxes || (property.price * 0.01), // 1% if not provided
-    hoaFees: (property.condoFees || property.hoaFees || 0) * 12
+    property_tax: actualPropertyTax || (property.price ? property.price * 0.01 : 0), // Use actual or estimate 1%
+    hoa_fees: (property.condoFees || property.hoaFees || property.hoa_fees || 0) * 12
   };
   
   // Note: Mortgage is intentionally not included here as it's a financing cost, not an operating expense
@@ -141,9 +157,9 @@ function calculateDetailedSTRExpenses(annualRevenue, property) {
  * @returns {number} Annual utility cost
  */
 function calculateUtilities(property) {
-  const baseCost = 200; // Base monthly utility cost
-  const bedroomMultiplier = 1 + (property.bedrooms - 1) * 0.2; // 20% per additional bedroom
-  const strPremium = 1.5; // STRs use 50% more utilities on average
+  const baseCost = 150; // Base monthly utility cost (reduced from 200)
+  const bedroomMultiplier = 1 + ((property.bedrooms || 2) - 1) * 0.15; // 15% per additional bedroom
+  const strPremium = 1.3; // STRs use 30% more utilities (reduced from 50%)
   
   return baseCost * bedroomMultiplier * strPremium * 12;
 }
@@ -154,9 +170,9 @@ function calculateUtilities(property) {
  * @returns {number} Annual insurance cost
  */
 function calculateSTRInsurance(property) {
-  const baseHomeownersInsurance = property.price * 0.005; // 0.5% of property value
-  const strLiabilityPremium = 1000; // Additional liability coverage
-  const contentsCoverage = 500; // Additional contents coverage
+  const baseHomeownersInsurance = property.price * 0.004; // 0.4% of property value (reduced from 0.5%)
+  const strLiabilityPremium = 600; // Additional liability coverage (reduced from 1000)
+  const contentsCoverage = 300; // Additional contents coverage (reduced from 500)
   
   return baseHomeownersInsurance + strLiabilityPremium + contentsCoverage;
 }
@@ -167,8 +183,8 @@ function calculateSTRInsurance(property) {
  * @returns {number} Annual maintenance cost
  */
 function calculateMaintenance(property) {
-  const baseRate = property.price * 0.01; // 1% of property value
-  const strMultiplier = 1.5; // 50% higher maintenance for STR
+  const baseRate = property.price * 0.008; // 0.8% of property value (reduced from 1%)
+  const strMultiplier = 1.3; // 30% higher maintenance for STR (reduced from 50%)
   
   return baseRate * strMultiplier;
 }

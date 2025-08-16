@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" version="1.1">
+  <defs>
+    <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#6C3EF4;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#C948F4;stop-opacity:1" />
+    </linearGradient>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Icon: simplified house + magnifier + arrow -->
+  <g transform="translate(100, 300)" filter="url(#glow)">
+    <path d="M 50 100 L 150 20 L 250 100 V 200 H 180 V 140 H 120 V 200 H 50 Z" fill="none" stroke="url(#grad1)" stroke-width="20"/>
+    <circle cx="150" cy="150" r="40" stroke="url(#grad1)" stroke-width="20" fill="none"/>
+    <line x1="180" y1="180" x2="230" y2="230" stroke="url(#grad1)" stroke-width="20"/>
+    <path d="M145 145 L155 155 M155 145 L145 155" stroke="url(#grad1)" stroke-width="10"/>
+  </g>
+
+  <!-- Text: Property Profit Finder -->
+  <g transform="translate(400, 400)" font-family="Arial" font-size="100" font-weight="bold">
+    <text x="0" y="0" fill="black">Property</text>
+    <text x="0" y="120" fill="url(#grad1)">Profit</text>
+    <text x="0" y="240" fill="black">Finder</text>
+  </g>
+</svg>

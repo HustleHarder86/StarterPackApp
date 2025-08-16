@@ -673,9 +673,36 @@
                 </div>
                 
                 <div class="card card-lg max-w-2xl mx-auto" style="overflow-x: hidden;">
+                    <!-- Auth buttons for non-authenticated users -->
+                    <div id="guest-auth-prompt" class="hidden bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 rounded-lg p-4 mb-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h3 class="font-semibold text-gray-900">Get Full Access</h3>
+                                <p class="text-sm text-gray-600 mt-1">Sign in to save analyses, track properties, and get unlimited features</p>
+                            </div>
+                            <div class="flex gap-2">
+                                <button onclick="window.app.showLoginForm()" class="px-4 py-2 text-sm font-medium text-purple-700 bg-white border border-purple-300 rounded-lg hover:bg-purple-50 transition-colors">
+                                    Sign In
+                                </button>
+                                <button onclick="window.app.showSignupForm()" class="px-4 py-2 text-sm font-medium text-white bg-purple-600 rounded-lg hover:bg-purple-700 transition-colors">
+                                    Sign Up Free
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
                     <div class="text-center mb-xl">
                         <h2 class="text-3xl font-bold text-gray-900 mb-md">Analyze a Property</h2>
                         <p class="text-gray-600">Enter property details manually or use our browser extension</p>
+                        
+                        <!-- STR Trial Counter -->
+                        <div id="str-trial-counter" class="hidden mt-3 inline-flex items-center gap-2 px-3 py-1.5 bg-blue-50 text-blue-700 rounded-full text-sm font-medium">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                            </svg>
+                            <span id="str-trial-text">5 free STR analyses remaining</span>
+                        </div>
+                        
                         <button onclick="fillSampleData()" class="mt-md text-sm text-blue-600 hover:text-blue-700 font-medium inline-flex items-center gap-sm">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
@@ -961,10 +988,13 @@
             
             async init() {
                 this.attachEventListeners();
-                this.checkAuthState();
-                this.handleUrlParameters();
                 this.optimizeForMobile();
                 this.initializeFormValidation();
+                // Check URL parameters first to determine initial view
+                const urlParams = new URLSearchParams(window.location.search);
+                this.urlNeedsAuth = urlParams.get('plan') || urlParams.get('action') === 'login' || urlParams.get('action') === 'signup';
+                // Then check auth state
+                this.checkAuthState();
             }
             
             checkAuthState() {
@@ -998,7 +1028,11 @@
                     if (urlParams.get('fromExtension') === 'true' && urlParams.get('autoAnalyze') === 'true') {
                         setTimeout(() => this.handleExtensionData(), 100);
                     } else {
-                        this.showAppropriateView();
+                        // Call handleUrlParameters for test mode too
+                        this.handleUrlParameters();
+                        if (!urlParams.get('plan') && !urlParams.get('action') && !urlParams.get('analysis') && !urlParams.get('property')) {
+                            this.showAppropriateView();
+                        }
                     }
                     
                     return;
@@ -1007,7 +1041,7 @@
                 // Check if auth is available
                 if (!auth) {
                     console.log('Firebase auth not available, proceeding without authentication');
-                    this.showPropertyInput();
+                    this.handleUrlParameters();
                     return;
                 }
                 
@@ -1032,7 +1066,12 @@
                         if (urlParams.get('fromExtension') === 'true' && urlParams.get('autoAnalyze') === 'true') {
                             this.handleExtensionData();
                         } else {
-                            this.showAppropriateView();
+                            // Call handleUrlParameters to check for other params first
+                            this.handleUrlParameters();
+                            // Then show appropriate view if no special params
+                            if (!urlParams.get('plan') && !urlParams.get('action') && !urlParams.get('analysis') && !urlParams.get('property')) {
+                                this.showAppropriateView();
+                            }
                         }
                     } else {
                         // Check if user is coming from extension
@@ -1041,26 +1080,38 @@
                             // Store the current URL to redirect back after login
                             sessionStorage.setItem('redirectAfterLogin', window.location.href);
                         }
-                        // Allow access without authentication - show property input instead of login
-                        console.log('No authenticated user, proceeding without auth');
                         
-                        // Update sidebar for non-authenticated user
-                        const sidebarEmail = document.getElementById('user-email-sidebar');
-                        if (sidebarEmail) {
-                            sidebarEmail.textContent = 'Guest User';
-                            // Update avatar with G for Guest
-                            const avatar = document.querySelector('.user-avatar');
-                            if (avatar) {
-                                avatar.textContent = 'G';
+                        // Check if authentication is required based on URL params
+                        const plan = urlParams.get('plan');
+                        const action = urlParams.get('action');
+                        
+                        if (action === 'login' || action === 'signup' || plan) {
+                            // Show login form for these specific actions
+                            console.log('Authentication required based on URL parameters');
+                            this.handleUrlParameters();
+                        } else {
+                            // Allow access without authentication for general browsing
+                            console.log('No authenticated user, proceeding as guest');
+                            
+                            // Update sidebar for non-authenticated user
+                            const sidebarEmail = document.getElementById('user-email-sidebar');
+                            if (sidebarEmail) {
+                                sidebarEmail.textContent = 'Guest User';
+                                // Update avatar with G for Guest
+                                const avatar = document.querySelector('.user-avatar');
+                                if (avatar) {
+                                    avatar.textContent = 'G';
+                                }
+                                // Update role text
+                                const roleText = document.querySelector('.user-role');
+                                if (roleText) {
+                                    roleText.textContent = 'Sign in for full access';
+                                }
                             }
-                            // Update role text
-                            const roleText = document.querySelector('.user-role');
-                            if (roleText) {
-                                roleText.textContent = 'Sign in for full access';
-                            }
+                            
+                            // Now handle URL parameters which will show property input
+                            this.handleUrlParameters();
                         }
-                        
-                        this.showPropertyInput();
                     }
                 });
             }
@@ -1093,6 +1144,36 @@
                     // Pre-fill form after showing it
                     setTimeout(() => this.prefillFormFromUrlParams(), 100);
                     return;
+                }
+                
+                // Handle authentication-related parameters
+                const plan = urlParams.get('plan');
+                const action = urlParams.get('action');
+                
+                // Store plan for after authentication
+                if (plan) {
+                    sessionStorage.setItem('selectedPlan', plan);
+                }
+                
+                // Show login/signup forms based on URL params
+                if (action === 'login' || action === 'signup' || plan) {
+                    // If user is not authenticated, show login form
+                    if (!window.appState.currentUser) {
+                        this.showLoginForm();
+                        
+                        // If specific action requested, highlight that form
+                        if (action === 'signup' || plan) {
+                            // Visually emphasize the signup card
+                            setTimeout(() => {
+                                const signupCard = document.getElementById('signup-card');
+                                if (signupCard) {
+                                    signupCard.classList.add('ring-2', 'ring-primary', 'ring-opacity-50');
+                                    signupCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                }
+                            }, 100);
+                        }
+                        return;
+                    }
                 }
                 
                 const analysisId = urlParams.get('analysis');
@@ -1370,8 +1451,61 @@
                 document.getElementById('property-input-section').classList.remove('hidden');
                 window.appState.isLoading = false;
                 
+                // Show auth prompt for guest users
+                if (!window.appState.currentUser) {
+                    const authPrompt = document.getElementById('guest-auth-prompt');
+                    if (authPrompt) {
+                        authPrompt.classList.remove('hidden');
+                    }
+                }
+                
+                // Show STR trial counter
+                this.updateSTRTrialCounter();
+                
                 // Dispatch custom event for navigation protection
                 window.dispatchEvent(new Event('analysisClosed'));
+            }
+            
+            updateSTRTrialCounter() {
+                const counter = document.getElementById('str-trial-counter');
+                const text = document.getElementById('str-trial-text');
+                
+                if (!counter || !text) return;
+                
+                // Show counter for all users
+                const userData = window.appState.userData || {};
+                const strTrialUsed = userData.strTrialUsed || 0;
+                const isSubscribed = userData.subscriptionTier && userData.subscriptionTier !== 'free';
+                
+                if (isSubscribed) {
+                    // Subscribed users have unlimited STR
+                    counter.classList.add('hidden');
+                } else {
+                    // Free users have 5 trials
+                    const remaining = Math.max(0, 5 - strTrialUsed);
+                    
+                    if (remaining > 0) {
+                        text.textContent = `${remaining} free STR ${remaining === 1 ? 'analysis' : 'analyses'} remaining`;
+                        counter.classList.remove('hidden');
+                        counter.classList.remove('bg-red-50', 'text-red-700');
+                        counter.classList.add('bg-blue-50', 'text-blue-700');
+                    } else {
+                        text.textContent = 'STR trial limit reached - Upgrade for unlimited analyses';
+                        counter.classList.remove('hidden');
+                        counter.classList.remove('bg-blue-50', 'text-blue-700');
+                        counter.classList.add('bg-red-50', 'text-red-700');
+                        // Add click handler to show upgrade modal
+                        counter.style.cursor = 'pointer';
+                        counter.onclick = () => this.showUpgradeModal();
+                    }
+                }
+            }
+            
+            showUpgradeModal() {
+                const modal = document.getElementById('upgrade-modal');
+                if (modal) {
+                    modal.classList.remove('hidden');
+                }
             }
             
             showError(message, error = null) {
@@ -1409,6 +1543,19 @@
             showLoginForm() {
                 this.hideAllViews();
                 document.getElementById('login-section').classList.remove('hidden');
+            }
+            
+            showSignupForm() {
+                this.hideAllViews();
+                document.getElementById('login-section').classList.remove('hidden');
+                // Highlight signup card
+                setTimeout(() => {
+                    const signupCard = document.getElementById('signup-card');
+                    if (signupCard) {
+                        signupCard.classList.add('ring-2', 'ring-primary', 'ring-opacity-50');
+                        signupCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                }, 100);
             }
             
             hideAllViews() {
@@ -2055,6 +2202,14 @@
                         await auth.signInWithEmailAndPassword(email, password);
                         showAuthFeedback('success', 'Login successful! Redirecting...');
                         
+                        // Check if user selected a plan before login
+                        const selectedPlan = sessionStorage.getItem('selectedPlan');
+                        if (selectedPlan) {
+                            sessionStorage.removeItem('selectedPlan');
+                            // TODO: Handle plan selection/upgrade flow
+                            console.log('User selected plan:', selectedPlan);
+                        }
+                        
                         // Check if we need to redirect back to extension data
                         const redirectUrl = sessionStorage.getItem('redirectAfterLogin');
                         if (redirectUrl) {
@@ -2251,7 +2406,7 @@
             
             // Start the app regardless of Firebase status
             console.log('Starting ROI Finder App...');
-            window.roiFinderApp = new ROIFinderApp();
+            window.app = window.roiFinderApp = new ROIFinderApp();
         });
         
     </script>
@@ -2264,6 +2419,64 @@
     <script src="js/error-handler.js"></script>
     <!-- Form Validation -->
     <script src="js/form-validation.js"></script>
+    
+    <!-- Upgrade Modal -->
+    <div id="upgrade-modal" class="hidden fixed inset-0 z-50 overflow-y-auto">
+        <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+            <!-- Background overlay -->
+            <div class="fixed inset-0 transition-opacity" aria-hidden="true" onclick="document.getElementById('upgrade-modal').classList.add('hidden')">
+                <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+            </div>
+
+            <!-- Modal panel -->
+            <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                    <div class="sm:flex sm:items-start">
+                        <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-purple-100 sm:mx-0 sm:h-10 sm:w-10">
+                            <svg class="h-6 w-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                            </svg>
+                        </div>
+                        <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                            <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">
+                                Unlock Unlimited Analyses
+                            </h3>
+                            <div class="mt-2">
+                                <p class="text-sm text-gray-500" id="modal-description">
+                                    You've used all 5 free STR analyses. Upgrade to continue analyzing properties with unlimited access.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Pricing Options -->
+                <div class="px-6 py-4 bg-gray-50">
+                    <div class="grid grid-cols-1 gap-4">
+                        <div class="border border-purple-200 rounded-lg p-4 bg-purple-50">
+                            <h4 class="font-semibold text-purple-900">Professional Plan</h4>
+                            <p class="text-2xl font-bold text-purple-600">$29/month</p>
+                            <ul class="text-sm text-gray-600 mt-2 space-y-1">
+                                <li>✓ Unlimited property analyses</li>
+                                <li>✓ Unlimited STR market analysis</li>
+                                <li>✓ PDF report generation</li>
+                                <li>✓ Priority support</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                    <button onclick="window.location.href='roi-finder.html?plan=professional'" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-purple-600 text-base font-medium text-white hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 sm:ml-3 sm:w-auto sm:text-sm">
+                        Upgrade Now
+                    </button>
+                    <button onclick="document.getElementById('upgrade-modal').classList.add('hidden')" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                        Maybe Later
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
     
 </body>
 </html>

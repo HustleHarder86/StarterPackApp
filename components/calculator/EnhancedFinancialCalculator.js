@@ -57,18 +57,31 @@ export const EnhancedFinancialCalculator = ({ analysisData = {} }) => {
     isSTRSection = true;
   }
   
-  // Use section context to determine revenue source
+  // Use section context to determine revenue source - only real data
   const monthlyRevenue = isLTRSection && ltrData.monthlyRent
-    ? (ltrData.monthlyRent || ltrData.monthly_rent || 3100)
-    : (strData.monthlyRevenue || strData.monthly_revenue || 5400);
+    ? (ltrData.monthlyRent || ltrData.monthly_rent)
+    : (strData.monthlyRevenue || strData.monthly_revenue);
   
-  // Extract expense values with proper fallbacks - check monthly_expenses first
+  // If critical data is missing, show error state
+  if (!monthlyRevenue) {
+    return `
+      <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-6 lg:p-8 mt-8">
+        <h2 class="text-2xl font-bold text-gray-900 mb-4">Financial Calculator</h2>
+        <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+          <p class="text-red-700 font-medium">⚠️ Unable to display financial calculator</p>
+          <p class="text-red-600 text-sm mt-2">Revenue data is not available. Please ensure the property analysis has completed successfully.</p>
+        </div>
+      </div>
+    `;
+  }
+  
+  // Extract expense values - only real data, no fallbacks
   const monthlyMortgage = monthlyExpenses.mortgage || costs.mortgage || costs.mortgagePayment || 0;
-  const propertyTax = monthlyExpenses.property_tax || Math.round((propertyData.propertyTaxes || propertyData.property_taxes || costs.property_tax_annual || 6350) / 12);
-  const insurance = monthlyExpenses.insurance || costs.insurance || 132;
-  const hoaFees = propertyData.condoFees || propertyData.condo_fees || monthlyExpenses.hoa || 536;
-  const utilities = monthlyExpenses.utilities || costs.utilities || 150;
-  const maintenance = monthlyExpenses.maintenance || costs.maintenance || 265;
+  const propertyTax = monthlyExpenses.property_tax || (propertyData.propertyTaxes || propertyData.property_taxes || costs.property_tax_annual ? Math.round((propertyData.propertyTaxes || propertyData.property_taxes || costs.property_tax_annual) / 12) : 0);
+  const insurance = monthlyExpenses.insurance || costs.insurance || 0;
+  const hoaFees = propertyData.condoFees || propertyData.condo_fees || monthlyExpenses.hoa || 0;
+  const utilities = monthlyExpenses.utilities || costs.utilities || 0;
+  const maintenance = monthlyExpenses.maintenance || costs.maintenance || 0;
   
   // Debug final values
   console.log('[Financial Calculator] Calculated values:', {
@@ -82,11 +95,11 @@ export const EnhancedFinancialCalculator = ({ analysisData = {} }) => {
   
   // STR-specific expenses (show on STR section or when analysisType is str/both)
   const showSTRExpenses = isSTRSection || (analysisType === 'str') || (analysisType === 'both' && !isLTRSection);
-  const propertyMgmt = showSTRExpenses ? Math.round(monthlyRevenue * 0.10) : 0;
-  const cleaning = showSTRExpenses ? 400 : 0;
-  const supplies = showSTRExpenses ? Math.round(monthlyRevenue * 0.04) : 0;
-  const platformFees = showSTRExpenses ? Math.round(monthlyRevenue * 0.03) : 0;
-  const otherExpenses = costs.other || 150;
+  const propertyMgmt = showSTRExpenses && monthlyRevenue ? Math.round(monthlyRevenue * 0.10) : 0;
+  const cleaning = showSTRExpenses ? (strData.cleaning_cost || strData.cleaningCost || 0) : 0;
+  const supplies = showSTRExpenses && monthlyRevenue ? Math.round(monthlyRevenue * 0.04) : 0;
+  const platformFees = showSTRExpenses && monthlyRevenue ? Math.round(monthlyRevenue * 0.03) : 0;
+  const otherExpenses = costs.other || 0;
   
   // Calculate totals
   const totalExpenses = monthlyMortgage + propertyTax + insurance + hoaFees + 
@@ -98,7 +111,7 @@ export const EnhancedFinancialCalculator = ({ analysisData = {} }) => {
   const annualCashFlow = netCashFlow * 12;
   
   // Calculate metrics
-  const downPayment = propertyData.downPayment || Math.round((propertyData.price || 850000) * 0.20);
+  const downPayment = propertyData.downPayment || (propertyData.price ? Math.round(propertyData.price * 0.20) : 0);
   const cashOnCashReturn = downPayment > 0 ? ((annualCashFlow / downPayment) * 100).toFixed(1) : 0;
   const capRate = propertyData.price > 0 ? (((annualRevenue - annualExpenses + (monthlyMortgage * 12)) / propertyData.price) * 100).toFixed(1) : 0;
 
@@ -424,7 +437,7 @@ export const EnhancedFinancialCalculator = ({ analysisData = {} }) => {
             <li>• Down Payment: 20% of property price</li>
             <li>• Interest Rate: 5.5% (current market rate)</li>
             <li>• Amortization: 25 years</li>
-            <li>• ${monthlyMortgage > 0 ? `Loan Amount: $${((propertyData.price || 850000) * 0.8).toLocaleString()}` : 'Currently set to $0 (cash purchase)'}</li>
+            <li>• ${monthlyMortgage > 0 && propertyData.price ? `Loan Amount: $${(propertyData.price * 0.8).toLocaleString()}` : monthlyMortgage > 0 ? 'Loan amount data unavailable' : 'Currently set to $0 (cash purchase)'}</li>
           </ul>
         </div>
         

@@ -1,0 +1,7 @@
+# Add these to your ~/.bashrc for quick access everywhere:
+
+alias mockup='cd /home/amy/StarterPackApp/mockups/mockup-iterations'
+alias msave='cd /home/amy/StarterPackApp/mockups/mockup-iterations && git add . && git commit -m'
+alias mback='cd /home/amy/StarterPackApp/mockups/mockup-iterations && git reset --hard HEAD~1'
+alias mversions='cd /home/amy/StarterPackApp/mockups/mockup-iterations && git log --oneline -10'
+alias mstatus='cd /home/amy/StarterPackApp/mockups/mockup-iterations && git status -s'

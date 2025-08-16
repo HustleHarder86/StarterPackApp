@@ -1,0 +1,1080 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STR Analysis Components - Variations</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #111827;
+            background-color: #F9FAFB;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            color: #3B82F6;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #6B7280;
+            font-size: 1.1rem;
+        }
+
+        .component-section {
+            margin-bottom: 60px;
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            color: #111827;
+            margin-bottom: 30px;
+            text-align: center;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #E5E7EB;
+        }
+
+        .variations-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .variation {
+            border: 2px solid #E5E7EB;
+            border-radius: 12px;
+            padding: 20px;
+            background: #FAFBFC;
+        }
+
+        .variation-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #3B82F6;
+            margin-bottom: 20px;
+            text-align: center;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+        }
+
+        /* Airbnb Comparables Styles */
+        .comparables-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .comparable-card {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .comparable-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .comparable-card img {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 6px;
+            margin-bottom: 10px;
+        }
+
+        .comparable-price {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #10B981;
+        }
+
+        .comparable-details {
+            color: #6B7280;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+
+        .comparables-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .comparable-list-item {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            display: flex;
+            gap: 20px;
+        }
+
+        .comparable-list-item img {
+            width: 120px;
+            height: 90px;
+            object-fit: cover;
+            border-radius: 6px;
+            flex-shrink: 0;
+        }
+
+        .comparable-info {
+            flex: 1;
+        }
+
+        .comparable-carousel {
+            position: relative;
+            overflow: hidden;
+            border-radius: 8px;
+        }
+
+        .carousel-container {
+            display: flex;
+            transition: transform 0.3s ease;
+        }
+
+        .carousel-slide {
+            min-width: 100%;
+            background: white;
+            padding: 20px;
+            display: flex;
+            gap: 15px;
+        }
+
+        .carousel-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255,255,255,0.9);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            font-size: 18px;
+            color: #3B82F6;
+        }
+
+        .carousel-nav.prev {
+            left: 10px;
+        }
+
+        .carousel-nav.next {
+            right: 10px;
+        }
+
+        /* Market Statistics Styles */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #3B82F6;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #6B7280;
+            font-size: 0.9rem;
+        }
+
+        .stats-circular {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .circular-stat {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+
+        .progress-ring {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 15px;
+        }
+
+        .progress-ring__circle {
+            stroke: #E5E7EB;
+            stroke-width: 8;
+            fill: transparent;
+            r: 30;
+            cx: 40;
+            cy: 40;
+        }
+
+        .progress-ring__progress {
+            stroke: #3B82F6;
+            stroke-width: 8;
+            stroke-linecap: round;
+            stroke-dasharray: 188.5;
+            stroke-dashoffset: 47.1; /* 75% filled */
+            transform: rotate(-90deg);
+            transform-origin: 40px 40px;
+        }
+
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .stat-trend-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .trend-arrow {
+            font-size: 1.5rem;
+        }
+
+        .trend-up { color: #10B981; }
+        .trend-down { color: #EF4444; }
+
+        /* Revenue Calculator Styles */
+        .calculator-sliders {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+
+        .slider-group {
+            margin-bottom: 20px;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .slider {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #E5E7EB;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #3B82F6;
+            cursor: pointer;
+        }
+
+        .revenue-preview {
+            background: #F3F4F6;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .preview-amount {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #10B981;
+        }
+
+        .calculator-inputs {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .number-input-container {
+            display: flex;
+            align-items: center;
+            border: 1px solid #D1D5DB;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .input-button {
+            background: #F3F4F6;
+            border: none;
+            padding: 12px;
+            cursor: pointer;
+            color: #6B7280;
+            font-size: 18px;
+            width: 40px;
+        }
+
+        .input-button:hover {
+            background: #E5E7EB;
+        }
+
+        .number-input {
+            border: none;
+            padding: 12px;
+            text-align: center;
+            flex: 1;
+            font-size: 16px;
+        }
+
+        .calculator-combined {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+
+        .combined-input {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .combined-slider {
+            flex: 2;
+        }
+
+        .combined-number {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #D1D5DB;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        /* Cash Flow Comparison Styles */
+        .cashflow-cards {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .cashflow-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+
+        .cashflow-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #374151;
+        }
+
+        .cashflow-amount {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .positive { color: #10B981; }
+        .negative { color: #EF4444; }
+
+        .cashflow-details {
+            color: #6B7280;
+            font-size: 0.9rem;
+        }
+
+        .cashflow-bars {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+
+        .bar-item {
+            margin-bottom: 20px;
+        }
+
+        .bar-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .bar-container {
+            width: 100%;
+            height: 30px;
+            background: #F3F4F6;
+            border-radius: 6px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .bar-fill {
+            height: 100%;
+            border-radius: 6px;
+            transition: width 0.3s ease;
+        }
+
+        .str-bar { background: #3B82F6; }
+        .rental-bar { background: #10B981; }
+
+        .cashflow-table {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            overflow: hidden;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table th,
+        .table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #E5E7EB;
+        }
+
+        .table th {
+            background: #F9FAFB;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .table tr:hover {
+            background: #F9FAFB;
+        }
+
+        .highlight-row {
+            background: #EEF2FF !important;
+        }
+
+        @media (max-width: 768px) {
+            .variations-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .comparables-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .cashflow-cards {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>STR Analysis Components</h1>
+        <p>Three design variations for each Short-Term Rental analysis component</p>
+    </div>
+
+    <!-- 1. Live Airbnb Comparables Cards -->
+    <div class="component-section">
+        <h2 class="section-title">1. Live Airbnb Comparables Cards</h2>
+        
+        <div class="variations-container">
+            <!-- Variation A: Grid Layout -->
+            <div class="variation">
+                <h3 class="variation-title">Variation A: Grid Layout with Hover Effects</h3>
+                <div class="comparables-grid">
+                    <div class="comparable-card">
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23E5E7EB'/%3E%3Ctext x='50' y='50' font-family='Arial' font-size='12' fill='%236B7280' text-anchor='middle' dy='0.3em'%3EProperty 1%3C/text%3E%3C/svg%3E" alt="Property 1">
+                        <div class="comparable-price">$185/night</div>
+                        <div class="comparable-details">2 bed • 1 bath • 850 sqft</div>
+                        <div class="comparable-details">0.3 km away</div>
+                    </div>
+                    <div class="comparable-card">
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23E5E7EB'/%3E%3Ctext x='50' y='50' font-family='Arial' font-size='12' fill='%236B7280' text-anchor='middle' dy='0.3em'%3EProperty 2%3C/text%3E%3C/svg%3E" alt="Property 2">
+                        <div class="comparable-price">$210/night</div>
+                        <div class="comparable-details">3 bed • 2 bath • 1200 sqft</div>
+                        <div class="comparable-details">0.5 km away</div>
+                    </div>
+                    <div class="comparable-card">
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23E5E7EB'/%3E%3Ctext x='50' y='50' font-family='Arial' font-size='12' fill='%236B7280' text-anchor='middle' dy='0.3em'%3EProperty 3%3C/text%3E%3C/svg%3E" alt="Property 3">
+                        <div class="comparable-price">$165/night</div>
+                        <div class="comparable-details">1 bed • 1 bath • 600 sqft</div>
+                        <div class="comparable-details">0.7 km away</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Variation B: List View -->
+            <div class="variation">
+                <h3 class="variation-title">Variation B: List View with Expanded Details</h3>
+                <div class="comparables-list">
+                    <div class="comparable-list-item">
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='90' viewBox='0 0 120 90'%3E%3Crect width='120' height='90' fill='%23E5E7EB'/%3E%3Ctext x='60' y='45' font-family='Arial' font-size='10' fill='%236B7280' text-anchor='middle' dy='0.3em'%3EProperty 1%3C/text%3E%3C/svg%3E" alt="Property 1">
+                        <div class="comparable-info">
+                            <div class="comparable-price" style="margin-bottom: 8px;">$185/night</div>
+                            <div class="comparable-details">Cozy downtown apartment • 2 bed, 1 bath • 850 sqft</div>
+                            <div class="comparable-details">0.3 km away • 4.8★ (127 reviews)</div>
+                            <div class="comparable-details" style="margin-top: 8px; color: #10B981;">85% occupancy rate</div>
+                        </div>
+                    </div>
+                    <div class="comparable-list-item">
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='90' viewBox='0 0 120 90'%3E%3Crect width='120' height='90' fill='%23E5E7EB'/%3E%3Ctext x='60' y='45' font-family='Arial' font-size='10' fill='%236B7280' text-anchor='middle' dy='0.3em'%3EProperty 2%3C/text%3E%3C/svg%3E" alt="Property 2">
+                        <div class="comparable-info">
+                            <div class="comparable-price" style="margin-bottom: 8px;">$210/night</div>
+                            <div class="comparable-details">Modern family home • 3 bed, 2 bath • 1200 sqft</div>
+                            <div class="comparable-details">0.5 km away • 4.9★ (89 reviews)</div>
+                            <div class="comparable-details" style="margin-top: 8px; color: #10B981;">92% occupancy rate</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Variation C: Carousel -->
+            <div class="variation">
+                <h3 class="variation-title">Variation C: Carousel with Navigation</h3>
+                <div class="comparable-carousel" id="carousel">
+                    <div class="carousel-container">
+                        <div class="carousel-slide">
+                            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='120' viewBox='0 0 150 120'%3E%3Crect width='150' height='120' fill='%23E5E7EB'/%3E%3Ctext x='75' y='60' font-family='Arial' font-size='12' fill='%236B7280' text-anchor='middle' dy='0.3em'%3EProperty 1%3C/text%3E%3C/svg%3E" alt="Property 1">
+                            <div style="flex: 1;">
+                                <div class="comparable-price" style="margin-bottom: 10px;">$185/night</div>
+                                <div class="comparable-details">Cozy downtown apartment</div>
+                                <div class="comparable-details">2 bed • 1 bath • 850 sqft</div>
+                                <div class="comparable-details">0.3 km away • 4.8★</div>
+                            </div>
+                        </div>
+                        <div class="carousel-slide">
+                            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='120' viewBox='0 0 150 120'%3E%3Crect width='150' height='120' fill='%23E5E7EB'/%3E%3Ctext x='75' y='60' font-family='Arial' font-size='12' fill='%236B7280' text-anchor='middle' dy='0.3em'%3EProperty 2%3C/text%3E%3C/svg%3E" alt="Property 2">
+                            <div style="flex: 1;">
+                                <div class="comparable-price" style="margin-bottom: 10px;">$210/night</div>
+                                <div class="comparable-details">Modern family home</div>
+                                <div class="comparable-details">3 bed • 2 bath • 1200 sqft</div>
+                                <div class="comparable-details">0.5 km away • 4.9★</div>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="carousel-nav prev" onclick="prevSlide()">‹</button>
+                    <button class="carousel-nav next" onclick="nextSlide()">›</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. Market Statistics Display -->
+    <div class="component-section">
+        <h2 class="section-title">2. Market Statistics Display</h2>
+        
+        <div class="variations-container">
+            <!-- Variation A: 4-Column Grid -->
+            <div class="variation">
+                <h3 class="variation-title">Variation A: 4-Column Grid with Large Numbers</h3>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number">$195</div>
+                        <div class="stat-label">Avg Nightly Rate</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">78%</div>
+                        <div class="stat-label">Occupancy Rate</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">$4,680</div>
+                        <div class="stat-label">Monthly Revenue</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">4.7</div>
+                        <div class="stat-label">Avg Rating</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Variation B: Circular Progress -->
+            <div class="variation">
+                <h3 class="variation-title">Variation B: Circular Progress Indicators</h3>
+                <div class="stats-circular">
+                    <div class="circular-stat">
+                        <svg class="progress-ring">
+                            <circle class="progress-ring__circle"></circle>
+                            <circle class="progress-ring__progress" style="stroke-dashoffset: 47.1;"></circle>
+                        </svg>
+                        <div class="stat-number" style="font-size: 1.5rem;">78%</div>
+                        <div class="stat-label">Occupancy Rate</div>
+                    </div>
+                    <div class="circular-stat">
+                        <svg class="progress-ring">
+                            <circle class="progress-ring__circle"></circle>
+                            <circle class="progress-ring__progress" style="stroke-dashoffset: 37.7; stroke: #10B981;"></circle>
+                        </svg>
+                        <div class="stat-number" style="font-size: 1.5rem;">4.7★</div>
+                        <div class="stat-label">Avg Rating</div>
+                    </div>
+                    <div class="circular-stat">
+                        <svg class="progress-ring">
+                            <circle class="progress-ring__circle"></circle>
+                            <circle class="progress-ring__progress" style="stroke-dashoffset: 28.3; stroke: #EF4444;"></circle>
+                        </svg>
+                        <div class="stat-number" style="font-size: 1.5rem;">$195</div>
+                        <div class="stat-label">Nightly Rate</div>
+                    </div>
+                    <div class="circular-stat">
+                        <svg class="progress-ring">
+                            <circle class="progress-ring__circle"></circle>
+                            <circle class="progress-ring__progress" style="stroke-dashoffset: 18.9; stroke: #8B5CF6;"></circle>
+                        </svg>
+                        <div class="stat-number" style="font-size: 1.5rem;">$4.6K</div>
+                        <div class="stat-label">Monthly Rev</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Variation C: Card-based with Trends -->
+            <div class="variation">
+                <h3 class="variation-title">Variation C: Cards with Trend Arrows</h3>
+                <div class="stats-cards">
+                    <div class="stat-trend-card">
+                        <div>
+                            <div class="stat-number" style="font-size: 1.5rem;">$195</div>
+                            <div class="stat-label">Avg Nightly Rate</div>
+                            <div style="font-size: 0.8rem; color: #10B981;">+12% vs last month</div>
+                        </div>
+                        <div class="trend-arrow trend-up">↗</div>
+                    </div>
+                    <div class="stat-trend-card">
+                        <div>
+                            <div class="stat-number" style="font-size: 1.5rem;">78%</div>
+                            <div class="stat-label">Occupancy Rate</div>
+                            <div style="font-size: 0.8rem; color: #EF4444;">-3% vs last month</div>
+                        </div>
+                        <div class="trend-arrow trend-down">↘</div>
+                    </div>
+                    <div class="stat-trend-card">
+                        <div>
+                            <div class="stat-number" style="font-size: 1.5rem;">$4,680</div>
+                            <div class="stat-label">Monthly Revenue</div>
+                            <div style="font-size: 0.8rem; color: #10B981;">+8% vs last month</div>
+                        </div>
+                        <div class="trend-arrow trend-up">↗</div>
+                    </div>
+                    <div class="stat-trend-card">
+                        <div>
+                            <div class="stat-number" style="font-size: 1.5rem;">4.7★</div>
+                            <div class="stat-label">Average Rating</div>
+                            <div style="font-size: 0.8rem; color: #6B7280;">Same as last month</div>
+                        </div>
+                        <div class="trend-arrow" style="color: #6B7280;">→</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. Revenue Calculator -->
+    <div class="component-section">
+        <h2 class="section-title">3. Revenue Calculator</h2>
+        
+        <div class="variations-container">
+            <!-- Variation A: Sliders -->
+            <div class="variation">
+                <h3 class="variation-title">Variation A: Sliders with Live Preview</h3>
+                <div class="calculator-sliders">
+                    <div class="slider-group">
+                        <div class="slider-label">
+                            <span>Nightly Rate</span>
+                            <span id="nightlyRate">$185</span>
+                        </div>
+                        <input type="range" min="100" max="400" value="185" class="slider" id="nightlySlider" oninput="updateCalculator()">
+                    </div>
+                    
+                    <div class="slider-group">
+                        <div class="slider-label">
+                            <span>Occupancy Rate</span>
+                            <span id="occupancyRate">75%</span>
+                        </div>
+                        <input type="range" min="50" max="95" value="75" class="slider" id="occupancySlider" oninput="updateCalculator()">
+                    </div>
+                    
+                    <div class="slider-group">
+                        <div class="slider-label">
+                            <span>Cleaning Fee</span>
+                            <span id="cleaningFee">$85</span>
+                        </div>
+                        <input type="range" min="50" max="150" value="85" class="slider" id="cleaningSlider" oninput="updateCalculator()">
+                    </div>
+                    
+                    <div class="revenue-preview">
+                        <div style="color: #6B7280; margin-bottom: 5px;">Estimated Monthly Revenue</div>
+                        <div class="preview-amount" id="monthlyRevenue">$4,275</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Variation B: Number Inputs -->
+            <div class="variation">
+                <h3 class="variation-title">Variation B: Number Inputs with Buttons</h3>
+                <div class="calculator-inputs">
+                    <div class="input-group">
+                        <label class="input-label">Nightly Rate</label>
+                        <div class="number-input-container">
+                            <button class="input-button" onclick="decrementValue('nightlyInput')">-</button>
+                            <input type="number" value="185" class="number-input" id="nightlyInput" min="100" max="400">
+                            <button class="input-button" onclick="incrementValue('nightlyInput')">+</button>
+                        </div>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label class="input-label">Occupancy Rate (%)</label>
+                        <div class="number-input-container">
+                            <button class="input-button" onclick="decrementValue('occupancyInput')">-</button>
+                            <input type="number" value="75" class="number-input" id="occupancyInput" min="50" max="95">
+                            <button class="input-button" onclick="incrementValue('occupancyInput')">+</button>
+                        </div>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label class="input-label">Cleaning Fee</label>
+                        <div class="number-input-container">
+                            <button class="input-button" onclick="decrementValue('cleaningInput')">-</button>
+                            <input type="number" value="85" class="number-input" id="cleaningInput" min="50" max="150">
+                            <button class="input-button" onclick="incrementValue('cleaningInput')">+</button>
+                        </div>
+                    </div>
+                    
+                    <div class="revenue-preview">
+                        <div style="color: #6B7280; margin-bottom: 5px;">Estimated Monthly Revenue</div>
+                        <div class="preview-amount">$4,275</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Variation C: Combined -->
+            <div class="variation">
+                <h3 class="variation-title">Variation C: Combined Slider + Input Fields</h3>
+                <div class="calculator-combined">
+                    <div class="input-group">
+                        <label class="input-label">Nightly Rate</label>
+                        <div class="combined-input">
+                            <input type="range" min="100" max="400" value="185" class="slider combined-slider">
+                            <input type="number" value="185" class="combined-number" min="100" max="400">
+                        </div>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label class="input-label">Occupancy Rate (%)</label>
+                        <div class="combined-input">
+                            <input type="range" min="50" max="95" value="75" class="slider combined-slider">
+                            <input type="number" value="75" class="combined-number" min="50" max="95">
+                        </div>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label class="input-label">Cleaning Fee</label>
+                        <div class="combined-input">
+                            <input type="range" min="50" max="150" value="85" class="slider combined-slider">
+                            <input type="number" value="85" class="combined-number" min="50" max="150">
+                        </div>
+                    </div>
+                    
+                    <div class="revenue-preview">
+                        <div style="color: #6B7280; margin-bottom: 5px;">Estimated Monthly Revenue</div>
+                        <div class="preview-amount">$4,275</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. Cash Flow Comparison -->
+    <div class="component-section">
+        <h2 class="section-title">4. Cash Flow Comparison</h2>
+        
+        <div class="variations-container">
+            <!-- Variation A: Side-by-side Cards -->
+            <div class="variation">
+                <h3 class="variation-title">Variation A: Side-by-side Cards</h3>
+                <div class="cashflow-cards">
+                    <div class="cashflow-card">
+                        <div class="cashflow-title">Short-Term Rental</div>
+                        <div class="cashflow-amount positive">+$2,890</div>
+                        <div class="cashflow-details">
+                            <div>Revenue: $4,680</div>
+                            <div>Expenses: $1,790</div>
+                            <div style="margin-top: 10px; font-weight: 600; color: #10B981;">Net Cash Flow</div>
+                        </div>
+                    </div>
+                    <div class="cashflow-card">
+                        <div class="cashflow-title">Long-Term Rental</div>
+                        <div class="cashflow-amount positive">+$1,450</div>
+                        <div class="cashflow-details">
+                            <div>Rent: $2,200</div>
+                            <div>Expenses: $750</div>
+                            <div style="margin-top: 10px; font-weight: 600; color: #10B981;">Net Cash Flow</div>
+                        </div>
+                    </div>
+                </div>
+                <div style="text-align: center; margin-top: 20px; padding: 15px; background: #EEF2FF; border-radius: 8px;">
+                    <div style="font-weight: 600; color: #3B82F6;">STR Advantage: +$1,440/month</div>
+                    <div style="font-size: 0.9rem; color: #6B7280;">Short-term rental generates 99% more cash flow</div>
+                </div>
+            </div>
+
+            <!-- Variation B: Horizontal Bars -->
+            <div class="variation">
+                <h3 class="variation-title">Variation B: Stacked Horizontal Bars</h3>
+                <div class="cashflow-bars">
+                    <div class="bar-item">
+                        <div class="bar-label">
+                            <span>Short-Term Rental</span>
+                            <span style="color: #10B981; font-weight: 600;">+$2,890</span>
+                        </div>
+                        <div class="bar-container">
+                            <div class="bar-fill str-bar" style="width: 85%;"></div>
+                        </div>
+                        <div style="font-size: 0.8rem; color: #6B7280; margin-top: 5px;">
+                            Revenue: $4,680 • Expenses: $1,790
+                        </div>
+                    </div>
+                    
+                    <div class="bar-item">
+                        <div class="bar-label">
+                            <span>Long-Term Rental</span>
+                            <span style="color: #10B981; font-weight: 600;">+$1,450</span>
+                        </div>
+                        <div class="bar-container">
+                            <div class="bar-fill rental-bar" style="width: 50%;"></div>
+                        </div>
+                        <div style="font-size: 0.8rem; color: #6B7280; margin-top: 5px;">
+                            Rent: $2,200 • Expenses: $750
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 25px; padding: 15px; background: #F0FDF4; border-radius: 8px; border-left: 4px solid #10B981;">
+                        <div style="font-weight: 600; color: #065F46;">Monthly Difference: +$1,440</div>
+                        <div style="font-size: 0.9rem; color: #047857;">STR provides 99% higher returns</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Variation C: Detailed Table -->
+            <div class="variation">
+                <h3 class="variation-title">Variation C: Detailed Table Format</h3>
+                <div class="cashflow-table">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Metric</th>
+                                <th>Short-Term Rental</th>
+                                <th>Long-Term Rental</th>
+                                <th>Difference</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="font-weight: 600;">Gross Revenue</td>
+                                <td style="color: #10B981;">$4,680</td>
+                                <td style="color: #10B981;">$2,200</td>
+                                <td style="color: #3B82F6;">+$2,480</td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight: 600;">Operating Expenses</td>
+                                <td style="color: #EF4444;">$1,790</td>
+                                <td style="color: #EF4444;">$750</td>
+                                <td style="color: #EF4444;">+$1,040</td>
+                            </tr>
+                            <tr>
+                                <td style="padding-left: 20px; color: #6B7280;">- Cleaning</td>
+                                <td style="color: #6B7280;">$340</td>
+                                <td style="color: #6B7280;">$0</td>
+                                <td style="color: #6B7280;">+$340</td>
+                            </tr>
+                            <tr>
+                                <td style="padding-left: 20px; color: #6B7280;">- Utilities</td>
+                                <td style="color: #6B7280;">$280</td>
+                                <td style="color: #6B7280;">$0</td>
+                                <td style="color: #6B7280;">+$280</td>
+                            </tr>
+                            <tr>
+                                <td style="padding-left: 20px; color: #6B7280;">- Management</td>
+                                <td style="color: #6B7280;">$470</td>
+                                <td style="color: #6B7280;">$220</td>
+                                <td style="color: #6B7280;">+$250</td>
+                            </tr>
+                            <tr>
+                                <td style="padding-left: 20px; color: #6B7280;">- Insurance</td>
+                                <td style="color: #6B7280;">$180</td>
+                                <td style="color: #6B7280;">$130</td>
+                                <td style="color: #6B7280;">+$50</td>
+                            </tr>
+                            <tr>
+                                <td style="padding-left: 20px; color: #6B7280;">- Maintenance</td>
+                                <td style="color: #6B7280;">$520</td>
+                                <td style="color: #6B7280;">$400</td>
+                                <td style="color: #6B7280;">+$120</td>
+                            </tr>
+                            <tr class="highlight-row">
+                                <td style="font-weight: 700;">Net Cash Flow</td>
+                                <td style="color: #10B981; font-weight: 700;">+$2,890</td>
+                                <td style="color: #10B981; font-weight: 700;">+$1,450</td>
+                                <td style="color: #3B82F6; font-weight: 700;">+$1,440</td>
+                            </tr>
+                            <tr class="highlight-row">
+                                <td style="font-weight: 700;">ROI Improvement</td>
+                                <td style="font-weight: 700;">-</td>
+                                <td style="font-weight: 700;">-</td>
+                                <td style="color: #10B981; font-weight: 700;">+99%</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Carousel functionality
+        let currentSlide = 0;
+        const totalSlides = 2;
+
+        function nextSlide() {
+            currentSlide = (currentSlide + 1) % totalSlides;
+            updateCarousel();
+        }
+
+        function prevSlide() {
+            currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+            updateCarousel();
+        }
+
+        function updateCarousel() {
+            const container = document.querySelector('.carousel-container');
+            container.style.transform = `translateX(-${currentSlide * 100}%)`;
+        }
+
+        // Calculator functionality
+        function updateCalculator() {
+            const nightly = document.getElementById('nightlySlider').value;
+            const occupancy = document.getElementById('occupancySlider').value;
+            const cleaning = document.getElementById('cleaningSlider').value;
+            
+            document.getElementById('nightlyRate').textContent = `$${nightly}`;
+            document.getElementById('occupancyRate').textContent = `${occupancy}%`;
+            document.getElementById('cleaningFee').textContent = `$${cleaning}`;
+            
+            const monthlyRevenue = Math.round((nightly * 30 * (occupancy / 100)) + (parseInt(cleaning) * 8));
+            document.getElementById('monthlyRevenue').textContent = `$${monthlyRevenue.toLocaleString()}`;
+        }
+
+        // Number input functionality
+        function incrementValue(inputId) {
+            const input = document.getElementById(inputId);
+            const max = parseInt(input.max);
+            const current = parseInt(input.value);
+            if (current < max) {
+                input.value = current + 1;
+            }
+        }
+
+        function decrementValue(inputId) {
+            const input = document.getElementById(inputId);
+            const min = parseInt(input.min);
+            const current = parseInt(input.value);
+            if (current > min) {
+                input.value = current - 1;
+            }
+        }
+
+        // Sync combined slider and number inputs
+        document.addEventListener('DOMContentLoaded', function() {
+            const combinedInputs = document.querySelectorAll('.combined-input');
+            
+            combinedInputs.forEach(container => {
+                const slider = container.querySelector('.combined-slider');
+                const numberInput = container.querySelector('.combined-number');
+                
+                if (slider && numberInput) {
+                    slider.addEventListener('input', function() {
+                        numberInput.value = this.value;
+                    });
+                    
+                    numberInput.addEventListener('input', function() {
+                        slider.value = this.value;
+                    });
+                }
+            });
+        });
+
+        // Add some hover effects
+        document.querySelectorAll('.comparable-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-2px)';
+                this.style.boxShadow = '0 4px 6px rgba(0,0,0,0.1)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+                this.style.boxShadow = '0 1px 2px rgba(0,0,0,0.05)';
+            });
+        });
+    </script>
+</body>
+</html>

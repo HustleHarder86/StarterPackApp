@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financial Calculator Variations - StarterPackApp</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #111827;
+            background: #F9FAFB;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .header h1 {
+            color: #3B82F6;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #6B7280;
+            font-size: 1.1rem;
+        }
+
+        .section {
+            margin-bottom: 50px;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            color: #1F2937;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #3B82F6;
+            padding-bottom: 10px;
+        }
+
+        .variations-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .variation {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border: 2px solid #E5E7EB;
+            transition: all 0.3s ease;
+        }
+
+        .variation:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .variation-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #3B82F6;
+            margin-bottom: 20px;
+            text-align: center;
+            padding: 10px;
+            background: #F0F9FF;
+            border-radius: 8px;
+        }
+
+        /* Mode Selector Styles */
+        .mode-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .mode-btn {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #E5E7EB;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-weight: 500;
+        }
+
+        .mode-btn:hover {
+            border-color: #3B82F6;
+            background: #F0F9FF;
+        }
+
+        .mode-btn.active {
+            background: #3B82F6;
+            color: white;
+            border-color: #3B82F6;
+        }
+
+        .mode-dropdown {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #E5E7EB;
+            border-radius: 8px;
+            background: white;
+            font-size: 16px;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+
+        .mode-tabs {
+            display: flex;
+            border-bottom: 2px solid #E5E7EB;
+            margin-bottom: 20px;
+        }
+
+        .mode-tab {
+            flex: 1;
+            padding: 12px 16px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            position: relative;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .mode-tab.active {
+            color: #3B82F6;
+        }
+
+        .mode-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #3B82F6;
+            border-radius: 1px;
+        }
+
+        /* Input Controls Styles */
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #374151;
+            display: block;
+        }
+
+        .slider-container {
+            position: relative;
+        }
+
+        .slider {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #E5E7EB;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #3B82F6;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .slider-value {
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #3B82F6;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .number-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #E5E7EB;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .number-input:focus {
+            outline: none;
+            border-color: #3B82F6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .input-error {
+            border-color: #EF4444;
+        }
+
+        .error-message {
+            color: #EF4444;
+            font-size: 14px;
+            margin-top: 4px;
+        }
+
+        /* Results Display Styles */
+        .results-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+
+        .result-card {
+            background: #F9FAFB;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            border-left: 4px solid #3B82F6;
+        }
+
+        .result-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #3B82F6;
+            margin-bottom: 5px;
+        }
+
+        .result-label {
+            color: #6B7280;
+            font-size: 14px;
+        }
+
+        .chart-container {
+            height: 300px;
+            background: #F9FAFB;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .chart-placeholder {
+            color: #6B7280;
+            font-style: italic;
+        }
+
+        .breakdown-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .breakdown-table th,
+        .breakdown-table td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid #E5E7EB;
+        }
+
+        .breakdown-table th {
+            background: #F9FAFB;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .breakdown-table tr:hover {
+            background: #F9FAFB;
+        }
+
+        .expandable-row {
+            cursor: pointer;
+        }
+
+        .expandable-row:hover {
+            background: #F0F9FF;
+        }
+
+        /* Financing Toggle Styles */
+        .switch-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .switch {
+            position: relative;
+            width: 50px;
+            height: 28px;
+            background: #E5E7EB;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .switch.active {
+            background: #3B82F6;
+        }
+
+        .switch-thumb {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 24px;
+            height: 24px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .switch.active .switch-thumb {
+            transform: translateX(22px);
+        }
+
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .checkbox {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #E5E7EB;
+            border-radius: 4px;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .checkbox.checked {
+            background: #3B82F6;
+            border-color: #3B82F6;
+        }
+
+        .checkbox.checked::after {
+            content: '✓';
+            position: absolute;
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .accordion {
+            border: 2px solid #E5E7EB;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .accordion-header {
+            padding: 16px;
+            background: #F9FAFB;
+            cursor: pointer;
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+        }
+
+        .accordion-header:hover {
+            background: #F0F9FF;
+        }
+
+        .accordion-content {
+            padding: 20px;
+            background: white;
+            display: none;
+        }
+
+        .accordion.expanded .accordion-content {
+            display: block;
+        }
+
+        .financing-section {
+            background: #F9FAFB;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 15px;
+            display: none;
+        }
+
+        .financing-section.show {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                max-height: 0;
+            }
+            to {
+                opacity: 1;
+                max-height: 1000px;
+            }
+        }
+
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .metric-value {
+            font-weight: 600;
+        }
+
+        .positive {
+            color: #10B981;
+        }
+
+        .negative {
+            color: #EF4444;
+        }
+
+        .neutral {
+            color: #6B7280;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Financial Calculator Variations</h1>
+            <p>Comprehensive mockup showcasing 3 variations of each financial calculator component for StarterPackApp</p>
+        </div>
+
+        <!-- Mode Selector Section -->
+        <div class="section">
+            <h2 class="section-title">1. Mode Selector Components</h2>
+            <div class="variations-grid">
+                <!-- Variation A: Button Group -->
+                <div class="variation">
+                    <div class="variation-title">Variation A: Button Group with Icons</div>
+                    <div class="mode-buttons">
+                        <button class="mode-btn active" data-mode="str">
+                            <span>🏠</span> STR
+                        </button>
+                        <button class="mode-btn" data-mode="ltr">
+                            <span>📈</span> LTR
+                        </button>
+                        <button class="mode-btn" data-mode="compare">
+                            <span>⚖️</span> Compare
+                        </button>
+                    </div>
+                    <div class="current-mode">Current Mode: <strong>Short-Term Rental</strong></div>
+                </div>
+
+                <!-- Variation B: Dropdown -->
+                <div class="variation">
+                    <div class="variation-title">Variation B: Dropdown with Descriptions</div>
+                    <select class="mode-dropdown" id="modeDropdown">
+                        <option value="str">Short-Term Rental - Airbnb/VRBO Analysis</option>
+                        <option value="ltr">Long-Term Rental - Traditional Rental Analysis</option>
+                        <option value="compare">Compare Both - Side-by-side Comparison</option>
+                    </select>
+                    <div class="mode-description">
+                        <p><strong>Short-Term Rental:</strong> Analyze potential income from vacation rentals, including seasonality, occupancy rates, and platform fees.</p>
+                    </div>
+                </div>
+
+                <!-- Variation C: Tab Navigation -->
+                <div class="variation">
+                    <div class="variation-title">Variation C: Tab Navigation with Animation</div>
+                    <div class="mode-tabs">
+                        <button class="mode-tab active" data-tab="str">STR Analysis</button>
+                        <button class="mode-tab" data-tab="ltr">LTR Analysis</button>
+                        <button class="mode-tab" data-tab="compare">Compare</button>
+                    </div>
+                    <div class="tab-content">
+                        <p>Analyzing short-term rental potential with dynamic pricing and occupancy modeling.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Input Controls Section -->
+        <div class="section">
+            <h2 class="section-title">2. Input Controls Components</h2>
+            <div class="variations-grid">
+                <!-- Variation A: All Sliders -->
+                <div class="variation">
+                    <div class="variation-title">Variation A: Interactive Sliders</div>
+                    <div class="input-group">
+                        <label class="input-label">Purchase Price</label>
+                        <div class="slider-container">
+                            <input type="range" class="slider" min="200000" max="2000000" value="849900" id="priceSlider">
+                            <div class="slider-value" id="priceValue">$849,900</div>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">Down Payment</label>
+                        <div class="slider-container">
+                            <input type="range" class="slider" min="5" max="50" value="20" id="downSlider">
+                            <div class="slider-value" id="downValue">20% ($169,980)</div>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">Interest Rate</label>
+                        <div class="slider-container">
+                            <input type="range" class="slider" min="3" max="12" step="0.1" value="6.5" id="rateSlider">
+                            <div class="slider-value" id="rateValue">6.5%</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Variation B: Number Inputs -->
+                <div class="variation">
+                    <div class="variation-title">Variation B: Formatted Number Inputs</div>
+                    <div class="input-group">
+                        <label class="input-label">Purchase Price</label>
+                        <input type="text" class="number-input" value="$849,900" id="priceInput" placeholder="Enter purchase price">
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">Property Tax (Annual)</label>
+                        <input type="text" class="number-input" value="$5,490" id="taxInput" placeholder="Enter annual property tax">
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">Insurance (Annual)</label>
+                        <input type="text" class="number-input" value="$1,800" id="insuranceInput" placeholder="Enter annual insurance cost">
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">HOA/Condo Fees (Monthly)</label>
+                        <input type="text" class="number-input" value="$450" id="hoaInput" placeholder="Enter monthly HOA fees">
+                    </div>
+                </div>
+
+                <!-- Variation C: Mixed Inputs -->
+                <div class="variation">
+                    <div class="variation-title">Variation C: Mixed Input Types</div>
+                    <div class="input-group">
+                        <label class="input-label">Purchase Price</label>
+                        <input type="text" class="number-input" value="$849,900" placeholder="Enter purchase price">
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">Down Payment Percentage</label>
+                        <div class="slider-container">
+                            <input type="range" class="slider" min="5" max="50" value="20" id="mixedDownSlider">
+                            <div class="slider-value" id="mixedDownValue">20%</div>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">Management Fee</label>
+                        <div class="slider-container">
+                            <input type="range" class="slider" min="5" max="30" value="20" id="mgmtSlider">
+                            <div class="slider-value" id="mgmtValue">20%</div>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">Loan Term</label>
+                        <select class="mode-dropdown">
+                            <option value="15">15 years</option>
+                            <option value="20">20 years</option>
+                            <option value="25">25 years</option>
+                            <option value="30" selected>30 years</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Display Section -->
+        <div class="section">
+            <h2 class="section-title">3. Results Display Components</h2>
+            <div class="variations-grid">
+                <!-- Variation A: Cards -->
+                <div class="variation">
+                    <div class="variation-title">Variation A: Key Metrics Cards</div>
+                    <div class="results-cards">
+                        <div class="result-card">
+                            <div class="result-value positive">12.4%</div>
+                            <div class="result-label">Annual ROI</div>
+                        </div>
+                        <div class="result-card">
+                            <div class="result-value positive">$1,847</div>
+                            <div class="result-label">Monthly Cash Flow</div>
+                        </div>
+                        <div class="result-card">
+                            <div class="result-value neutral">2.3 yrs</div>
+                            <div class="result-label">Break-even</div>
+                        </div>
+                        <div class="result-card">
+                            <div class="result-value positive">$22,164</div>
+                            <div class="result-label">Annual Profit</div>
+                        </div>
+                        <div class="result-card">
+                            <div class="result-value neutral">73%</div>
+                            <div class="result-label">Avg Occupancy</div>
+                        </div>
+                        <div class="result-card">
+                            <div class="result-value positive">$247</div>
+                            <div class="result-label">Daily Rate</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Variation B: Charts -->
+                <div class="variation">
+                    <div class="variation-title">Variation B: Interactive Charts</div>
+                    <div class="chart-container">
+                        <div class="chart-placeholder">📊 Monthly Revenue vs Expenses Chart<br>
+                        <small>Revenue: $6,047 | Expenses: $4,200 | Net: $1,847</small></div>
+                    </div>
+                    <div class="results-cards">
+                        <div class="result-card">
+                            <div class="result-value positive">$6,047</div>
+                            <div class="result-label">Monthly Revenue</div>
+                        </div>
+                        <div class="result-card">
+                            <div class="result-value negative">$4,200</div>
+                            <div class="result-label">Monthly Expenses</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Variation C: Detailed Table -->
+                <div class="variation">
+                    <div class="variation-title">Variation C: Breakdown Table</div>
+                    <table class="breakdown-table">
+                        <thead>
+                            <tr>
+                                <th>Category</th>
+                                <th>Monthly</th>
+                                <th>Annual</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="expandable-row">
+                                <td><strong>📈 Revenue</strong></td>
+                                <td class="positive">$6,047</td>
+                                <td class="positive">$72,564</td>
+                            </tr>
+                            <tr>
+                                <td>🏠 Mortgage Payment</td>
+                                <td class="negative">$3,127</td>
+                                <td class="negative">$37,524</td>
+                            </tr>
+                            <tr>
+                                <td>🏛️ Property Tax</td>
+                                <td class="negative">$458</td>
+                                <td class="negative">$5,490</td>
+                            </tr>
+                            <tr>
+                                <td>🛡️ Insurance</td>
+                                <td class="negative">$150</td>
+                                <td class="negative">$1,800</td>
+                            </tr>
+                            <tr>
+                                <td>🏢 HOA Fees</td>
+                                <td class="negative">$450</td>
+                                <td class="negative">$5,400</td>
+                            </tr>
+                            <tr>
+                                <td><strong>💰 Net Cash Flow</strong></td>
+                                <td class="positive">$1,847</td>
+                                <td class="positive">$22,164</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Financing Toggle Section -->
+        <div class="section">
+            <h2 class="section-title">4. Financing Options Components</h2>
+            <div class="variations-grid">
+                <!-- Variation A: Switch Toggle -->
+                <div class="variation">
+                    <div class="variation-title">Variation A: Switch Toggle</div>
+                    <div class="switch-container">
+                        <span>Cash Purchase</span>
+                        <div class="switch active" id="financingSwitch">
+                            <div class="switch-thumb"></div>
+                        </div>
+                        <span>Financing</span>
+                    </div>
+                    <div class="financing-section show" id="financingSection">
+                        <h4 style="margin-bottom: 15px;">Financing Details</h4>
+                        <div class="metric">
+                            <span>Loan Amount:</span>
+                            <span class="metric-value">$679,920</span>
+                        </div>
+                        <div class="metric">
+                            <span>Monthly Payment:</span>
+                            <span class="metric-value negative">$4,209</span>
+                        </div>
+                        <div class="metric">
+                            <span>Total Interest:</span>
+                            <span class="metric-value negative">$835,240</span>
+                        </div>
+                        <div class="metric">
+                            <span>Debt-to-Income:</span>
+                            <span class="metric-value neutral">28%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Variation B: Checkbox with Animation -->
+                <div class="variation">
+                    <div class="variation-title">Variation B: Checkbox with Details</div>
+                    <div class="checkbox-container">
+                        <div class="checkbox checked" id="financingCheckbox"></div>
+                        <label>Include financing calculations</label>
+                    </div>
+                    <div class="financing-section show" id="checkboxFinancingSection">
+                        <div class="input-group">
+                            <label class="input-label">Interest Rate</label>
+                            <input type="text" class="number-input" value="6.5%" placeholder="Enter interest rate">
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">Loan Term</label>
+                            <select class="mode-dropdown">
+                                <option value="15">15 years</option>
+                                <option value="20">20 years</option>
+                                <option value="25">25 years</option>
+                                <option value="30" selected>30 years</option>
+                            </select>
+                        </div>
+                        <div class="results-cards">
+                            <div class="result-card">
+                                <div class="result-value negative">$4,209</div>
+                                <div class="result-label">Monthly Payment</div>
+                            </div>
+                            <div class="result-card">
+                                <div class="result-value neutral">$169,980</div>
+                                <div class="result-label">Down Payment</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Variation C: Accordion Style -->
+                <div class="variation">
+                    <div class="variation-title">Variation C: Accordion Scenarios</div>
+                    <div class="accordion expanded" id="scenario1">
+                        <div class="accordion-header">
+                            <span>💰 Scenario 1: 20% Down, 30-year</span>
+                            <span>▼</span>
+                        </div>
+                        <div class="accordion-content">
+                            <div class="metric">
+                                <span>Down Payment:</span>
+                                <span class="metric-value">$169,980 (20%)</span>
+                            </div>
+                            <div class="metric">
+                                <span>Monthly Payment:</span>
+                                <span class="metric-value negative">$4,209</span>
+                            </div>
+                            <div class="metric">
+                                <span>Cash-on-Cash ROI:</span>
+                                <span class="metric-value positive">13.1%</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion" id="scenario2">
+                        <div class="accordion-header">
+                            <span>🏦 Scenario 2: 10% Down, 30-year</span>
+                            <span>▶</span>
+                        </div>
+                        <div class="accordion-content">
+                            <div class="metric">
+                                <span>Down Payment:</span>
+                                <span class="metric-value">$84,990 (10%)</span>
+                            </div>
+                            <div class="metric">
+                                <span>Monthly Payment:</span>
+                                <span class="metric-value negative">$4,733</span>
+                            </div>
+                            <div class="metric">
+                                <span>Cash-on-Cash ROI:</span>
+                                <span class="metric-value positive">18.4%</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion" id="scenario3">
+                        <div class="accordion-header">
+                            <span>💎 Scenario 3: Cash Purchase</span>
+                            <span>▶</span>
+                        </div>
+                        <div class="accordion-content">
+                            <div class="metric">
+                                <span>Total Investment:</span>
+                                <span class="metric-value">$849,900</span>
+                            </div>
+                            <div class="metric">
+                                <span>Monthly Cash Flow:</span>
+                                <span class="metric-value positive">$2,947</span>
+                            </div>
+                            <div class="metric">
+                                <span>Annual ROI:</span>
+                                <span class="metric-value positive">4.2%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Mode Selector JavaScript
+        document.querySelectorAll('.mode-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                
+                const mode = this.dataset.mode;
+                const modeText = mode === 'str' ? 'Short-Term Rental' : 
+                                mode === 'ltr' ? 'Long-Term Rental' : 'Comparison Mode';
+                this.closest('.variation').querySelector('.current-mode strong').textContent = modeText;
+            });
+        });
+
+        document.querySelectorAll('.mode-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.mode-tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                
+                const tabContent = this.closest('.variation').querySelector('.tab-content p');
+                const descriptions = {
+                    'str': 'Analyzing short-term rental potential with dynamic pricing and occupancy modeling.',
+                    'ltr': 'Evaluating long-term rental income with market rent analysis and tenant stability.',
+                    'compare': 'Side-by-side comparison of STR vs LTR investment strategies.'
+                };
+                tabContent.textContent = descriptions[this.dataset.tab];
+            });
+        });
+
+        document.getElementById('modeDropdown').addEventListener('change', function() {
+            const descriptions = {
+                'str': 'Short-Term Rental: Analyze potential income from vacation rentals, including seasonality, occupancy rates, and platform fees.',
+                'ltr': 'Long-Term Rental: Calculate traditional rental income with market analysis and tenant considerations.',
+                'compare': 'Compare Both: Side-by-side analysis to determine the most profitable rental strategy.'
+            };
+            this.closest('.variation').querySelector('.mode-description p').innerHTML = `<strong>${this.options[this.selectedIndex].text.split(' - ')[0]}:</strong> ${descriptions[this.value].split(': ')[1]}`;
+        });
+
+        // Slider JavaScript with real-time calculations
+        function updateSlider(sliderId, valueId, formatter) {
+            const slider = document.getElementById(sliderId);
+            const valueDisplay = document.getElementById(valueId);
+            
+            if (slider && valueDisplay) {
+                slider.addEventListener('input', function() {
+                    const value = parseFloat(this.value);
+                    valueDisplay.textContent = formatter(value);
+                    
+                    // Position the value display
+                    const percent = (value - this.min) / (this.max - this.min) * 100;
+                    valueDisplay.style.left = `${Math.min(Math.max(percent, 10), 90)}%`;
+                });
+            }
+        }
+
+        // Format currency
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            }).format(amount);
+        }
+
+        // Initialize sliders
+        updateSlider('priceSlider', 'priceValue', value => formatCurrency(value));
+        
+        updateSlider('downSlider', 'downValue', value => {
+            const price = 849900;
+            const downAmount = price * (value / 100);
+            return `${value}% (${formatCurrency(downAmount)})`;
+        });
+        
+        updateSlider('rateSlider', 'rateValue', value => `${value}%`);
+        updateSlider('mixedDownSlider', 'mixedDownValue', value => `${value}%`);
+        updateSlider('mgmtSlider', 'mgmtValue', value => `${value}%`);
+
+        // Number input formatting
+        document.querySelectorAll('.number-input').forEach(input => {
+            input.addEventListener('blur', function() {
+                let value = this.value.replace(/[^0-9.]/g, '');
+                if (value && !isNaN(value)) {
+                    this.value = formatCurrency(parseFloat(value));
+                }
+            });
+        });
+
+        // Financing Toggle JavaScript
+        document.getElementById('financingSwitch').addEventListener('click', function() {
+            this.classList.toggle('active');
+            const section = document.getElementById('financingSection');
+            const labels = this.parentElement.querySelectorAll('span');
+            
+            if (this.classList.contains('active')) {
+                section.classList.add('show');
+                labels[0].style.fontWeight = 'normal';
+                labels[1].style.fontWeight = 'bold';
+            } else {
+                section.classList.remove('show');
+                labels[0].style.fontWeight = 'bold';
+                labels[1].style.fontWeight = 'normal';
+            }
+        });
+
+        document.getElementById('financingCheckbox').addEventListener('click', function() {
+            this.classList.toggle('checked');
+            const section = document.getElementById('checkboxFinancingSection');
+            
+            if (this.classList.contains('checked')) {
+                section.classList.add('show');
+            } else {
+                section.classList.remove('show');
+            }
+        });
+
+        // Accordion JavaScript
+        document.querySelectorAll('.accordion-header').forEach(header => {
+            header.addEventListener('click', function() {
+                const accordion = this.parentElement;
+                const isExpanded = accordion.classList.contains('expanded');
+                
+                // Close all accordions
+                document.querySelectorAll('.accordion').forEach(acc => {
+                    acc.classList.remove('expanded');
+                    acc.querySelector('.accordion-header span:last-child').textContent = '▶';
+                });
+                
+                // Open clicked accordion if it wasn't expanded
+                if (!isExpanded) {
+                    accordion.classList.add('expanded');
+                    this.querySelector('span:last-child').textContent = '▼';
+                }
+            });
+        });
+
+        // Real-time calculations for demonstration
+        function calculateMetrics() {
+            const price = 849900;
+            const downPercent = 20;
+            const rate = 6.5;
+            const term = 30;
+            
+            // Simple calculation examples
+            const downAmount = price * (downPercent / 100);
+            const loanAmount = price - downAmount;
+            const monthlyRate = rate / 100 / 12;
+            const numPayments = term * 12;
+            
+            const monthlyPayment = loanAmount * (monthlyRate * Math.pow(1 + monthlyRate, numPayments)) / 
+                                 (Math.pow(1 + monthlyRate, numPayments) - 1);
+            
+            // Update displays with calculated values
+            console.log('Calculated monthly payment:', formatCurrency(monthlyPayment));
+        }
+
+        // Initialize calculations
+        calculateMetrics();
+        
+        // Add some interactive hover effects
+        document.querySelectorAll('.result-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'scale(1.05)';
+                this.style.transition = 'transform 0.2s ease';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'scale(1)';
+            });
+        });
+    </script>
+</body>
+</html>

@@ -367,13 +367,27 @@ router.post('/property', optionalAuth, async (req, res, next) => {
             sqft: result.propertyDetails?.sqft || propertyData?.sqft,
             price: result.propertyDetails?.price || propertyData?.price || 0,
             monthlyRent: result.rental?.monthlyRent || 0,
-            estimatedRent: result.rental?.monthlyRent || 0
+            estimatedRent: result.rental?.monthlyRent || 0,
+            // Include property tax from various possible sources
+            propertyTaxes: propertyData?.propertyTaxes || propertyData?.property_taxes || propertyData?.propertyTax || result.expenses?.property_tax_annual || 0,
+            property_taxes: propertyData?.propertyTaxes || propertyData?.property_taxes || result.expenses?.property_tax_annual || 0,
+            propertyTax: propertyData?.propertyTaxes || propertyData?.propertyTax || result.expenses?.property_tax_annual || 0,
+            property_tax: propertyData?.property_tax || result.expenses?.property_tax_annual || 0,
+            taxes: propertyData?.taxes || result.expenses?.property_tax_annual || 0,
+            // Include HOA/condo fees
+            condoFees: propertyData?.condoFees || propertyData?.condo_fees || propertyData?.hoaFees || result.expenses?.hoa_monthly || 0,
+            hoaFees: propertyData?.hoaFees || propertyData?.hoa_fees || result.expenses?.hoa_monthly || 0,
+            hoa_fees: propertyData?.hoa_fees || result.expenses?.hoa_monthly || 0
           };
           
           logger.info('STR property data prepared', {
             bedrooms: strPropertyData.bedrooms,
             bathrooms: strPropertyData.bathrooms,
-            propertyType: strPropertyData.propertyType
+            propertyType: strPropertyData.propertyType,
+            propertyTaxes: strPropertyData.propertyTaxes,
+            propertyTaxesFromExpenses: result.expenses?.property_tax_annual,
+            propertyTaxesFromPropertyData: propertyData?.propertyTaxes,
+            price: strPropertyData.price
           });
           
           // Check cache first

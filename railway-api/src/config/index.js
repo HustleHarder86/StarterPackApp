@@ -43,6 +43,11 @@ const config = {
   cors: {
     origin: process.env.ALLOWED_ORIGINS?.split(',') || [
       'http://localhost:3000',
+      'http://localhost:3001',
+      'http://localhost:3005',  // Vercel dev server
+      'http://localhost:3006',  // Vercel dev server port 3006
+      'http://localhost:3007',  // Added for Vercel dev server
+      'http://127.0.0.1:3000',
       'http://localhost:5173',
       'https://starter-pack-app.vercel.app',
       'https://starterpackapp.com'

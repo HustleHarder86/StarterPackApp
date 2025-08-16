@@ -18,13 +18,13 @@ export const LongTermRentalAnalysis = ({
   // Property details for context
   const propertyData = analysis.propertyData || analysis.property_data || {};
   const address = propertyData.address || 'Property';
-  const bedrooms = propertyData.bedrooms || 3;
-  const bathrooms = propertyData.bathrooms || 2;
+  const bedrooms = propertyData.bedrooms;
+  const bathrooms = propertyData.bathrooms;
   const propertyType = propertyData.propertyType || propertyData.property_type || 'Property';
   const sqft = propertyData.squareFeet || propertyData.square_feet || 'N/A';
   
   // Key metrics
-  const monthlyRent = ltrData.monthlyRent || ltrData.monthly_rent || 3100;
+  const monthlyRent = ltrData.monthlyRent || ltrData.monthly_rent;
   const annualRent = ltrData.annualRent || ltrData.annual_rent || (monthlyRent * 12);
   const vacancyRate = ltrData.vacancyRate || ltrData.vacancy_rate || 2.1;
   const rentGrowth = marketInsights.rent_growth || marketInsights.rentGrowth || 5.2;
@@ -46,11 +46,30 @@ export const LongTermRentalAnalysis = ({
   // Extract city name and province for display
   const cityName = address.split(',')[1]?.trim() || 'this area';
   const province = address.split(',')[2]?.trim() || 'Ontario';
-  const propertyPrice = propertyData.price || 850000;
+  const propertyPrice = propertyData.price;
+  
+  // If critical data is missing, show error state
+  if (!propertyPrice || !monthlyRent) {
+    return `
+      <div class="${className}">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <h3 class="text-lg font-bold text-gray-900 mb-4">Long-Term Rental Analysis</h3>
+          <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+            <p class="text-red-700 font-medium">⚠️ Unable to display rental analysis</p>
+            <p class="text-red-600 text-sm mt-2">Required data is not available. Please ensure the property analysis has completed successfully.</p>
+            <ul class="text-red-600 text-sm mt-2 list-disc list-inside">
+              ${!propertyPrice ? '<li>Property price data missing</li>' : ''}
+              ${!monthlyRent ? '<li>Rental rate data missing</li>' : ''}
+            </ul>
+          </div>
+        </div>
+      </div>
+    `;
+  }
   
   // Calculate key metrics
   const capRate = metrics.capRate || ((annualRent - (operatingExpenses * 12)) / propertyPrice * 100).toFixed(1);
-  const totalROI = metrics.totalROI || 12.5;
+  const totalROI = metrics.totalROI;
   const occupancyRate = 100 - vacancyRate;
   
   // Determine rent control guidelines based on province
@@ -107,9 +126,9 @@ export const LongTermRentalAnalysis = ({
   const premiumPercentage = ((monthlyRent - areaAverage) / areaAverage * 100).toFixed(1);
   
   // STR comparison data
-  const strRevenue = analysis.shortTermRental?.monthlyRevenue || analysis.short_term_rental?.monthly_revenue || 5045;
-  const validStrRevenue = isNaN(strRevenue) ? 5045 : strRevenue;
-  const validMonthlyRent = isNaN(monthlyRent) ? 3100 : monthlyRent;
+  const strRevenue = analysis.shortTermRental?.monthlyRevenue || analysis.short_term_rental?.monthly_revenue;
+  const validStrRevenue = strRevenue && !isNaN(strRevenue) ? strRevenue : null;
+  const validMonthlyRent = monthlyRent && !isNaN(monthlyRent) ? monthlyRent : null;
   const revenueGap = validStrRevenue - validMonthlyRent;
   const strHigherPercentage = ((validStrRevenue - validMonthlyRent) / validMonthlyRent * 100).toFixed(0);
   

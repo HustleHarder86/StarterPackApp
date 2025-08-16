@@ -1,0 +1,98 @@
+{
+  "timestamp": "2025-08-11T18:14:37.860Z",
+  "summary": {
+    "passed": 15,
+    "failed": 0,
+    "warnings": 2,
+    "issues": 1
+  },
+  "details": {
+    "passed": [
+      {
+        "test": "mockup1-form",
+        "message": "Form inputs working correctly"
+      },
+      {
+        "test": "mockup1-str-revenue",
+        "message": "STR monthly revenue displays correctly: $9,912"
+      },
+      {
+        "test": "mockup1-str-calc",
+        "message": "STR calculator inputs functional"
+      },
+      {
+        "test": "mockup1-navigation",
+        "message": "Navigation with 5 buttons working"
+      },
+      {
+        "test": "mockup1-anchors",
+        "message": "3 anchor links found"
+      },
+      {
+        "test": "mockup1-str-calc-validation",
+        "message": "STR calculations are correct"
+      },
+      {
+        "test": "mockup1-ltr-calc-validation",
+        "message": "LTR calculations are correct"
+      },
+      {
+        "test": "mockup1-extension",
+        "message": "Extension data properly populated"
+      },
+      {
+        "test": "mockup2-form",
+        "message": "Form inputs working correctly"
+      },
+      {
+        "test": "mockup2-str-revenue",
+        "message": "STR monthly revenue displays correctly: $9,912"
+      },
+      {
+        "test": "mockup2-str-calc-validation",
+        "message": "STR calculations are correct"
+      },
+      {
+        "test": "mockup2-ltr-calc-validation",
+        "message": "LTR calculations are correct"
+      },
+      {
+        "test": "mockup2-extension",
+        "message": "Extension data properly populated"
+      },
+      {
+        "test": "mockup2-comparison",
+        "message": "Comparison shows: STR Restricted, LTR $1,200, Recommends: LTR"
+      },
+      {
+        "test": "mockup2-grade",
+        "message": "Investment grade: B+ - Strong LTR opportunity, STR restricted by regulations"
+      }
+    ],
+    "failed": [],
+    "warnings": [
+      {
+        "test": "mockup1-calculator",
+        "message": "Financial calculator may not be updating"
+      },
+      {
+        "test": "mockup2-navigation",
+        "message": "No navigation buttons found"
+      }
+    ]
+  },
+  "issues": [
+    {
+      "type": "console-error",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-08-11T18:14:10.881Z"
+    }
+  ],
+  "recommendations": [
+    {
+      "priority": "HIGH",
+      "issue": "1 JavaScript console errors",
+      "fix": "Review and fix JavaScript errors, check for missing functions and scope issues"
+    }
+  ]
+}

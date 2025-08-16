@@ -1,0 +1,17 @@
+{
+  "timestamp": "2025-08-13T11:46:47.381Z",
+  "mockup1": {
+    "apiCalls": [],
+    "dataDisplayed": {},
+    "errors": [
+      "net::ERR_CONNECTION_REFUSED at http://localhost:8080/mockups/mockup-iterations/base-mockup.html"
+    ]
+  },
+  "mockup2": {
+    "apiCalls": [],
+    "dataDisplayed": {},
+    "errors": [
+      "net::ERR_CONNECTION_REFUSED at http://localhost:8080/mockups/mockup-iterations/base-mockup2.html"
+    ]
+  }
+}

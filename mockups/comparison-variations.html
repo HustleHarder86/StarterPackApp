@@ -1,0 +1,1081 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STR vs LTR Comparison Variations</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #F9FAFB;
+            color: #111827;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        h1 {
+            text-align: center;
+            color: #1F2937;
+            margin-bottom: 1rem;
+            font-size: 2.5rem;
+        }
+
+        .intro {
+            text-align: center;
+            color: #6B7280;
+            margin-bottom: 3rem;
+            font-size: 1.1rem;
+        }
+
+        .section {
+            margin-bottom: 4rem;
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            color: #1F2937;
+            margin-bottom: 2rem;
+            text-align: center;
+            border-bottom: 2px solid #E5E7EB;
+            padding-bottom: 0.5rem;
+        }
+
+        .variations {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .variation {
+            border: 2px solid #E5E7EB;
+            border-radius: 8px;
+            padding: 1.5rem;
+            background: #FFFFFF;
+        }
+
+        .variation-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #3B82F6;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        /* Side-by-side Comparison Styles */
+        .split-view {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            height: 250px;
+        }
+
+        .str-side, .ltr-side {
+            padding: 1rem;
+            border-radius: 8px;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .str-side {
+            background: linear-gradient(135deg, #10B981, #059669);
+            border: 3px solid #10B981;
+        }
+
+        .ltr-side {
+            background: linear-gradient(135deg, #EF4444, #DC2626);
+            border: 3px solid #EF4444;
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        /* Toggle View Styles */
+        .toggle-container {
+            text-align: center;
+        }
+
+        .toggle-switch {
+            display: inline-flex;
+            align-items: center;
+            background: #E5E7EB;
+            border-radius: 25px;
+            padding: 4px;
+            margin-bottom: 1rem;
+        }
+
+        .toggle-option {
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .toggle-option.active {
+            background: #3B82F6;
+            color: white;
+        }
+
+        .toggle-content {
+            height: 200px;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            text-align: center;
+            color: white;
+            transition: all 0.5s ease;
+        }
+
+        .toggle-content.str {
+            background: linear-gradient(135deg, #10B981, #059669);
+        }
+
+        .toggle-content.ltr {
+            background: linear-gradient(135deg, #EF4444, #DC2626);
+        }
+
+        /* Overlay Comparison */
+        .overlay-container {
+            position: relative;
+            height: 250px;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .overlay-base {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #EF4444, #DC2626);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            text-align: center;
+            color: white;
+        }
+
+        .overlay-top {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 70%;
+            height: 100%;
+            background: linear-gradient(135deg, #10B981, #059669);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            text-align: center;
+            color: white;
+            transition: width 0.3s ease;
+        }
+
+        .slider-container {
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        .slider {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #E5E7EB;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #3B82F6;
+            cursor: pointer;
+        }
+
+        /* Progress Bar Styles */
+        .progress-metrics {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .progress-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .progress-label {
+            min-width: 120px;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .progress-bar {
+            flex: 1;
+            height: 8px;
+            background: #E5E7EB;
+            border-radius: 4px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.8s ease;
+        }
+
+        .progress-fill.str {
+            background: linear-gradient(90deg, #10B981, #059669);
+        }
+
+        .progress-fill.ltr {
+            background: linear-gradient(90deg, #EF4444, #DC2626);
+        }
+
+        .progress-value {
+            min-width: 80px;
+            text-align: right;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        /* Gauge Chart Styles */
+        .gauge-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .gauge {
+            text-align: center;
+        }
+
+        .gauge-circle {
+            width: 120px;
+            height: 60px;
+            margin: 0 auto 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .gauge-circle::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 120px;
+            height: 120px;
+            border: 12px solid #E5E7EB;
+            border-radius: 50%;
+            border-bottom-color: transparent;
+        }
+
+        .gauge-fill {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 120px;
+            height: 120px;
+            border: 12px solid transparent;
+            border-radius: 50%;
+            border-bottom-color: transparent;
+            transform: rotate(-90deg);
+            transition: all 0.8s ease;
+        }
+
+        .gauge-fill.str {
+            border-top-color: #10B981;
+            border-right-color: #10B981;
+            border-left-color: #10B981;
+        }
+
+        .gauge-fill.ltr {
+            border-top-color: #EF4444;
+            border-right-color: #EF4444;
+            border-left-color: #EF4444;
+        }
+
+        .gauge-value {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #1F2937;
+        }
+
+        .gauge-label {
+            font-size: 0.8rem;
+            color: #6B7280;
+        }
+
+        /* Numerical Indicators */
+        .numerical-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .numerical-item {
+            text-align: center;
+            padding: 1rem;
+            border-radius: 8px;
+            border: 2px solid #E5E7EB;
+        }
+
+        .numerical-item.winner {
+            border-color: #10B981;
+            background: #F0FDF4;
+        }
+
+        .numerical-item.loser {
+            border-color: #EF4444;
+            background: #FEF2F2;
+        }
+
+        .numerical-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .numerical-change {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            font-weight: 500;
+        }
+
+        .arrow {
+            font-size: 1.2rem;
+        }
+
+        .arrow.up {
+            color: #10B981;
+        }
+
+        .arrow.down {
+            color: #EF4444;
+        }
+
+        /* Break-even Analysis */
+        .chart-container {
+            height: 200px;
+            background: #F9FAFB;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .chart-line {
+            position: absolute;
+            height: 3px;
+            border-radius: 2px;
+            transition: all 0.8s ease;
+        }
+
+        .str-line {
+            background: linear-gradient(90deg, #10B981, #059669);
+            top: 60px;
+            left: 20px;
+            width: 200px;
+            transform: rotate(-10deg);
+        }
+
+        .ltr-line {
+            background: linear-gradient(90deg, #EF4444, #DC2626);
+            top: 120px;
+            left: 20px;
+            width: 200px;
+            transform: rotate(5deg);
+        }
+
+        .intersection-point {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: #F59E0B;
+            border-radius: 50%;
+            top: 85px;
+            left: 140px;
+            border: 3px solid white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .chart-label {
+            position: absolute;
+            font-size: 0.8rem;
+            font-weight: 500;
+            padding: 2px 6px;
+            border-radius: 4px;
+            background: rgba(255,255,255,0.9);
+        }
+
+        .str-label {
+            top: 40px;
+            left: 120px;
+            color: #059669;
+        }
+
+        .ltr-label {
+            bottom: 40px;
+            left: 120px;
+            color: #DC2626;
+        }
+
+        .breakeven-label {
+            top: 65px;
+            right: 80px;
+            background: #F59E0B;
+            color: white;
+        }
+
+        /* Calculator Style */
+        .calculator-container {
+            background: #1F2937;
+            border-radius: 8px;
+            padding: 1.5rem;
+            color: white;
+            text-align: center;
+        }
+
+        .calculator-display {
+            background: #374151;
+            border-radius: 6px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            font-family: 'Courier New', monospace;
+        }
+
+        .calculator-result {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #F59E0B;
+            margin-bottom: 0.5rem;
+        }
+
+        .calculator-label {
+            font-size: 0.9rem;
+            color: #D1D5DB;
+        }
+
+        /* Timeline */
+        .timeline-container {
+            position: relative;
+            padding: 2rem 0;
+        }
+
+        .timeline-line {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #EF4444, #F59E0B, #10B981);
+            border-radius: 2px;
+        }
+
+        .timeline-markers {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            z-index: 2;
+        }
+
+        .timeline-marker {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: white;
+            border: 4px solid;
+            position: relative;
+        }
+
+        .timeline-marker.start {
+            border-color: #EF4444;
+        }
+
+        .timeline-marker.breakeven {
+            border-color: #F59E0B;
+            transform: scale(1.2);
+        }
+
+        .timeline-marker.profitable {
+            border-color: #10B981;
+        }
+
+        .marker-label {
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.8rem;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        /* Recommendation Displays */
+        .winner-badge {
+            text-align: center;
+            padding: 2rem;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #10B981, #059669);
+            color: white;
+            position: relative;
+        }
+
+        .trophy-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .winner-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .winner-score {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .winner-subtitle {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        /* Star Ratings */
+        .rating-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .rating-item {
+            text-align: center;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 2px solid;
+        }
+
+        .rating-item.str {
+            border-color: #10B981;
+            background: #F0FDF4;
+        }
+
+        .rating-item.ltr {
+            border-color: #EF4444;
+            background: #FEF2F2;
+        }
+
+        .rating-stars {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .star {
+            color: #F59E0B;
+        }
+
+        .star.empty {
+            color: #D1D5DB;
+        }
+
+        .rating-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .rating-score {
+            font-size: 0.9rem;
+            color: #6B7280;
+        }
+
+        /* Pros/Cons List */
+        .pros-cons-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .pros-cons-item {
+            padding: 1.5rem;
+            border-radius: 8px;
+        }
+
+        .pros-cons-item.pros {
+            background: #F0FDF4;
+            border: 2px solid #10B981;
+        }
+
+        .pros-cons-item.cons {
+            background: #FEF2F2;
+            border: 2px solid #EF4444;
+        }
+
+        .pros-cons-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .pros-cons-title.pros {
+            color: #059669;
+        }
+
+        .pros-cons-title.cons {
+            color: #DC2626;
+        }
+
+        .pros-cons-list {
+            list-style: none;
+        }
+
+        .pros-cons-list li {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .check-icon {
+            color: #10B981;
+            font-weight: bold;
+        }
+
+        .x-icon {
+            color: #EF4444;
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            .variations {
+                grid-template-columns: 1fr;
+            }
+            
+            .split-view {
+                grid-template-columns: 1fr;
+                height: auto;
+            }
+            
+            .gauge-container,
+            .numerical-grid,
+            .rating-container,
+            .pros-cons-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>STR vs LTR Comparison Variations</h1>
+        <p class="intro">
+            Interactive mockups showcasing different approaches to visualizing Short-Term Rental vs Long-Term Rental comparisons.<br>
+            Each component type includes 3 distinct variations for maximum flexibility and user preference testing.
+        </p>
+
+        <!-- Section 1: Side-by-side Comparison -->
+        <div class="section">
+            <h2 class="section-title">1. Side-by-side Comparison Components</h2>
+            
+            <div class="variations">
+                <!-- Variation A: Split Screen -->
+                <div class="variation">
+                    <h3 class="variation-title">Variation A: Split Screen View</h3>
+                    <div class="split-view">
+                        <div class="str-side">
+                            <div class="metric-value">$11,044</div>
+                            <div class="metric-label">STR Monthly Revenue</div>
+                            <div class="metric-value">56.8%</div>
+                            <div class="metric-label">Annual ROI</div>
+                        </div>
+                        <div class="ltr-side">
+                            <div class="metric-value">$3,950</div>
+                            <div class="metric-label">LTR Monthly Revenue</div>
+                            <div class="metric-value">-6.6%</div>
+                            <div class="metric-label">Annual ROI</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Variation B: Toggle View -->
+                <div class="variation">
+                    <h3 class="variation-title">Variation B: Toggle/Switch View</h3>
+                    <div class="toggle-container">
+                        <div class="toggle-switch">
+                            <div class="toggle-option active" onclick="switchToggle('str', this)">STR</div>
+                            <div class="toggle-option" onclick="switchToggle('ltr', this)">LTR</div>
+                        </div>
+                        <div class="toggle-content str" id="toggleContent">
+                            <div class="metric-value">$11,044</div>
+                            <div class="metric-label">Monthly Revenue</div>
+                            <div class="metric-value">56.8%</div>
+                            <div class="metric-label">Annual ROI</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Variation C: Overlay Comparison -->
+                <div class="variation">
+                    <h3 class="variation-title">Variation C: Overlay with Transparency</h3>
+                    <div class="overlay-container">
+                        <div class="overlay-base">
+                            <div class="metric-value">$3,950</div>
+                            <div class="metric-label">LTR Monthly Revenue</div>
+                        </div>
+                        <div class="overlay-top" id="overlayTop">
+                            <div class="metric-value">$11,044</div>
+                            <div class="metric-label">STR Monthly Revenue</div>
+                        </div>
+                    </div>
+                    <div class="slider-container">
+                        <input type="range" min="0" max="100" value="70" class="slider" 
+                               oninput="updateOverlay(this.value)">
+                        <div style="font-size: 0.8rem; color: #6B7280; margin-top: 0.5rem;">
+                            Slide to adjust comparison view
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 2: Advantage Metrics -->
+        <div class="section">
+            <h2 class="section-title">2. Advantage Metrics Visualization</h2>
+            
+            <div class="variations">
+                <!-- Variation A: Progress Bars -->
+                <div class="variation">
+                    <h3 class="variation-title">Variation A: Horizontal Progress Bars</h3>
+                    <div class="progress-metrics">
+                        <div class="progress-item">
+                            <div class="progress-label">Monthly Revenue</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill str" style="width: 85%"></div>
+                            </div>
+                            <div class="progress-value">STR Wins</div>
+                        </div>
+                        <div class="progress-item">
+                            <div class="progress-label">Annual ROI</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill str" style="width: 90%"></div>
+                            </div>
+                            <div class="progress-value">STR Wins</div>
+                        </div>
+                        <div class="progress-item">
+                            <div class="progress-label">Cash Flow</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill str" style="width: 95%"></div>
+                            </div>
+                            <div class="progress-value">STR Wins</div>
+                        </div>
+                        <div class="progress-item">
+                            <div class="progress-label">Management</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill ltr" style="width: 70%"></div>
+                            </div>
+                            <div class="progress-value">LTR Wins</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Variation B: Gauge Charts -->
+                <div class="variation">
+                    <h3 class="variation-title">Variation B: Gauge Charts</h3>
+                    <div class="gauge-container">
+                        <div class="gauge">
+                            <div class="gauge-circle">
+                                <div class="gauge-fill str" style="transform: rotate(-90deg) rotate(140deg);"></div>
+                            </div>
+                            <div class="gauge-value">85%</div>
+                            <div class="gauge-label">STR Advantage</div>
+                        </div>
+                        <div class="gauge">
+                            <div class="gauge-circle">
+                                <div class="gauge-fill ltr" style="transform: rotate(-90deg) rotate(50deg);"></div>
+                            </div>
+                            <div class="gauge-value">28%</div>
+                            <div class="gauge-label">LTR Advantage</div>
+                        </div>
+                    </div>
+                    <div style="text-align: center; margin-top: 1rem; font-weight: 500; color: #10B981;">
+                        STR is clearly the winner
+                    </div>
+                </div>
+
+                <!-- Variation C: Numerical Indicators -->
+                <div class="variation">
+                    <h3 class="variation-title">Variation C: Numerical Indicators</h3>
+                    <div class="numerical-grid">
+                        <div class="numerical-item winner">
+                            <div class="numerical-value" style="color: #10B981;">$11,044</div>
+                            <div class="numerical-change">
+                                <span class="arrow up">↑</span>
+                                <span>179% higher</span>
+                            </div>
+                            <div style="margin-top: 0.5rem; font-weight: 500;">STR Revenue</div>
+                        </div>
+                        <div class="numerical-item loser">
+                            <div class="numerical-value" style="color: #EF4444;">$3,950</div>
+                            <div class="numerical-change">
+                                <span class="arrow down">↓</span>
+                                <span>64% lower</span>
+                            </div>
+                            <div style="margin-top: 0.5rem; font-weight: 500;">LTR Revenue</div>
+                        </div>
+                    </div>
+                    <div style="text-align: center; margin-top: 1rem; padding: 0.5rem; background: #F0FDF4; border-radius: 6px; color: #059669; font-weight: 500;">
+                        STR generates $7,094 more per month
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 3: Break-even Analysis -->
+        <div class="section">
+            <h2 class="section-title">3. Break-even Analysis Visualization</h2>
+            
+            <div class="variations">
+                <!-- Variation A: Line Chart -->
+                <div class="variation">
+                    <h3 class="variation-title">Variation A: Line Chart Intersection</h3>
+                    <div class="chart-container">
+                        <div class="chart-line str-line"></div>
+                        <div class="chart-line ltr-line"></div>
+                        <div class="intersection-point"></div>
+                        <div class="chart-label str-label">STR Growth</div>
+                        <div class="chart-label ltr-label">LTR Baseline</div>
+                        <div class="chart-label breakeven-label">Break-even: Month 1</div>
+                    </div>
+                    <div style="text-align: center; color: #6B7280; font-size: 0.9rem;">
+                        STR becomes profitable immediately due to higher cash flow
+                    </div>
+                </div>
+
+                <!-- Variation B: Calculator Style -->
+                <div class="variation">
+                    <h3 class="variation-title">Variation B: Calculator Display</h3>
+                    <div class="calculator-container">
+                        <div class="calculator-display">
+                            <div class="calculator-result">1</div>
+                            <div class="calculator-label">Months to Break-Even</div>
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; font-size: 0.9rem;">
+                            <div>
+                                <div style="color: #10B981;">STR Cash Flow</div>
+                                <div style="font-weight: bold;">+$4,014/mo</div>
+                            </div>
+                            <div>
+                                <div style="color: #EF4444;">LTR Cash Flow</div>
+                                <div style="font-weight: bold;">-$469/mo</div>
+                            </div>
+                        </div>
+                        <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #374151; font-size: 0.9rem;">
+                            STR advantage: <span style="color: #F59E0B; font-weight: bold;">$4,483/month</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Variation C: Timeline -->
+                <div class="variation">
+                    <h3 class="variation-title">Variation C: Visual Timeline</h3>
+                    <div class="timeline-container">
+                        <div class="timeline-line"></div>
+                        <div class="timeline-markers">
+                            <div class="timeline-marker start">
+                                <div class="marker-label" style="color: #EF4444;">Start</div>
+                            </div>
+                            <div class="timeline-marker breakeven">
+                                <div class="marker-label" style="color: #F59E0B;">Break-even<br>Month 1</div>
+                            </div>
+                            <div class="timeline-marker profitable">
+                                <div class="marker-label" style="color: #10B981;">Highly Profitable<br>Month 12+</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="text-align: center; margin-top: 2rem; font-size: 0.9rem; color: #6B7280;">
+                        Timeline shows immediate profitability with STR approach
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 4: Recommendation Display -->
+        <div class="section">
+            <h2 class="section-title">4. Recommendation Display Formats</h2>
+            
+            <div class="variations">
+                <!-- Variation A: Winner Badge -->
+                <div class="variation">
+                    <h3 class="variation-title">Variation A: Winner Badge</h3>
+                    <div class="winner-badge">
+                        <div class="trophy-icon">🏆</div>
+                        <div class="winner-title">STR is the Clear Winner!</div>
+                        <div class="winner-score">9.2/10</div>
+                        <div class="winner-subtitle">Based on financial analysis</div>
+                    </div>
+                    <div style="text-align: center; margin-top: 1rem; padding: 1rem; background: #F9FAFB; border-radius: 6px; font-size: 0.9rem; color: #6B7280;">
+                        STR outperforms LTR in revenue, ROI, and cash flow metrics
+                    </div>
+                </div>
+
+                <!-- Variation B: Star Ratings -->
+                <div class="variation">
+                    <h3 class="variation-title">Variation B: Star Rating System</h3>
+                    <div class="rating-container">
+                        <div class="rating-item str">
+                            <div class="rating-stars">
+                                <span class="star">★</span>
+                                <span class="star">★</span>
+                                <span class="star">★</span>
+                                <span class="star">★</span>
+                                <span class="star">★</span>
+                            </div>
+                            <div class="rating-title" style="color: #059669;">Short-Term Rental</div>
+                            <div class="rating-score">5/5 stars - Excellent choice</div>
+                        </div>
+                        <div class="rating-item ltr">
+                            <div class="rating-stars">
+                                <span class="star">★</span>
+                                <span class="star">★</span>
+                                <span class="star empty">★</span>
+                                <span class="star empty">★</span>
+                                <span class="star empty">★</span>
+                            </div>
+                            <div class="rating-title" style="color: #DC2626;">Long-Term Rental</div>
+                            <div class="rating-score">2/5 stars - Poor performance</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Variation C: Pros/Cons List -->
+                <div class="variation">
+                    <h3 class="variation-title">Variation C: Pros/Cons Format</h3>
+                    <div class="pros-cons-container">
+                        <div class="pros-cons-item pros">
+                            <h4 class="pros-cons-title pros">STR Advantages</h4>
+                            <ul class="pros-cons-list">
+                                <li><span class="check-icon">✓</span> 179% higher monthly revenue</li>
+                                <li><span class="check-icon">✓</span> Positive cash flow (+$4,014)</li>
+                                <li><span class="check-icon">✓</span> 56.8% annual ROI</li>
+                                <li><span class="check-icon">✓</span> Immediate profitability</li>
+                                <li><span class="check-icon">✓</span> Higher property appreciation</li>
+                            </ul>
+                        </div>
+                        <div class="pros-cons-item cons">
+                            <h4 class="pros-cons-title cons">LTR Disadvantages</h4>
+                            <ul class="pros-cons-list">
+                                <li><span class="x-icon">✗</span> Negative cash flow (-$469)</li>
+                                <li><span class="x-icon">✗</span> -6.6% annual ROI</li>
+                                <li><span class="x-icon">✗</span> 64% lower revenue</li>
+                                <li><span class="x-icon">✗</span> Slower wealth building</li>
+                                <li><span class="x-icon">✗</span> Limited income growth</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Toggle functionality
+        function switchToggle(type, element) {
+            const toggleContent = document.getElementById('toggleContent');
+            const toggleOptions = document.querySelectorAll('.toggle-option');
+            
+            // Update active toggle
+            toggleOptions.forEach(opt => opt.classList.remove('active'));
+            element.classList.add('active');
+            
+            // Update content
+            if (type === 'str') {
+                toggleContent.className = 'toggle-content str';
+                toggleContent.innerHTML = `
+                    <div class="metric-value">$11,044</div>
+                    <div class="metric-label">Monthly Revenue</div>
+                    <div class="metric-value">56.8%</div>
+                    <div class="metric-label">Annual ROI</div>
+                `;
+            } else {
+                toggleContent.className = 'toggle-content ltr';
+                toggleContent.innerHTML = `
+                    <div class="metric-value">$3,950</div>
+                    <div class="metric-label">Monthly Revenue</div>
+                    <div class="metric-value">-6.6%</div>
+                    <div class="metric-label">Annual ROI</div>
+                `;
+            }
+        }
+
+        // Overlay functionality
+        function updateOverlay(value) {
+            const overlayTop = document.getElementById('overlayTop');
+            overlayTop.style.width = value + '%';
+        }
+
+        // Initialize animations on page load
+        window.addEventListener('load', function() {
+            // Animate progress bars
+            const progressBars = document.querySelectorAll('.progress-fill');
+            progressBars.forEach(bar => {
+                const width = bar.style.width;
+                bar.style.width = '0%';
+                setTimeout(() => {
+                    bar.style.width = width;
+                }, 500);
+            });
+
+            // Animate gauge fills
+            const gaugeFills = document.querySelectorAll('.gauge-fill');
+            gaugeFills.forEach(gauge => {
+                const rotation = gauge.style.transform;
+                gauge.style.transform = 'rotate(-90deg)';
+                setTimeout(() => {
+                    gauge.style.transform = rotation;
+                }, 800);
+            });
+        });
+    </script>
+</body>
+</html>

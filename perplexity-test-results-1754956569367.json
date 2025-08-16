@@ -1,0 +1,320 @@
+[
+  {
+    "address": "456 Queen Street West, Toronto, ON",
+    "type": "mid-range",
+    "strategies": {
+      "current": {
+        "name": "Current Narrative",
+        "duration": 5390,
+        "success": true,
+        "averageRent": 3,
+        "medianRent": null,
+        "comparablesCount": 0,
+        "comparables": [],
+        "rawResponse": "Here are current rental rates for comparable properties to 456 Queen Street West, Toronto, ON, which is a **3-bedroom, 2-bathroom single-family home of about 1800 sq ft**:\n\n1. **456 Queen Street West, 2nd Floor** (3 bedrooms, 1 bathroom, parking, outdoor space) is listed for **$3,550/month**[2].\n\n2. A **3-bedroom, 1-bathroom unit in Alexandra Park** (nearby neighborhood) is listed for **$3,550/month**[2].\n\n3. Average rental rates for 3-bedroom units in downtown Toronto neighborhoods similar to Q..."
+      },
+      "json": {
+        "name": "Structured JSON",
+        "duration": 8509,
+        "success": true,
+        "averageRent": 3426,
+        "medianRent": 3426,
+        "comparablesCount": 5,
+        "comparables": [
+          {
+            "address": "88 Bathurst St, Toronto, ON M5V 0W8",
+            "monthly_rent": 3426,
+            "bedrooms": 3,
+            "bathrooms": 2,
+            "sqft": 1800,
+            "listed_date": "2025-08-10",
+            "source": "Zumper",
+            "similarity_score": 0.95
+          },
+          {
+            "address": "200 Redpath Ave, Toronto, ON M4P 0E6",
+            "monthly_rent": 3400,
+            "bedrooms": 3,
+            "bathrooms": 2,
+            "sqft": 1750,
+            "listed_date": "2025-08-10",
+            "source": "Zumper",
+            "similarity_score": 0.92
+          },
+          {
+            "address": "25 Ordnance St, Toronto, ON M6K 0E9",
+            "monthly_rent": 3500,
+            "bedrooms": 3,
+            "bathrooms": 2,
+            "sqft": 1850,
+            "listed_date": "2025-08-10",
+            "source": "Zumper",
+            "similarity_score": 0.93
+          },
+          {
+            "address": "1030 King St W, Toronto, ON M6K 0B4",
+            "monthly_rent": 3300,
+            "bedrooms": 3,
+            "bathrooms": 2,
+            "sqft": 1700,
+            "listed_date": "2025-05-25",
+            "source": "MLS",
+            "similarity_score": 0.9
+          },
+          {
+            "address": "456 College Street 602, Toronto, ON M6G 4A3",
+            "monthly_rent": 3200,
+            "bedrooms": 3,
+            "bathrooms": 2,
+            "sqft": 1600,
+            "listed_date": "2025-08-01",
+            "source": "RealTris",
+            "similarity_score": 0.88
+          }
+        ],
+        "rawResponse": "{\n  \"average_monthly_rent\": 3426,\n  \"median_monthly_rent\": 3426,\n  \"comparables_found\": 5,\n  \"comparables\": [\n    {\n      \"address\": \"88 Bathurst St, Toronto, ON M5V 0W8\",\n      \"monthly_rent\": 3426,\n      \"bedrooms\": 3,\n      \"bathrooms\": 2,\n      \"sqft\": 1800,\n      \"listed_date\": \"2025-08-10\",\n      \"source\": \"Zumper\",\n      \"similarity_score\": 0.95\n    },\n    {\n      \"address\": \"200 Redpath Ave, Toronto, ON M4P 0E6\",\n      \"monthly_rent\": 3400,\n      \"bedrooms\": 3,\n      \"bathrooms\": 2,\n    ..."
+      },
+      "table": {
+        "name": "Markdown Table",
+        "duration": 4738,
+        "success": true,
+        "averageRent": 3550,
+        "medianRent": 3550,
+        "comparablesCount": 1,
+        "comparables": [
+          {
+            "address": "456 Queen Street West #2nd Floor, Toronto, ON",
+            "monthly_rent": 3550
+          }
+        ],
+        "rawResponse": "## Summary\nAverage Rent: $3,550  \nMedian Rent: $3,550  \nComparables Found: 1  \n\n## Comparable Properties\n| Address                  | Rent/Month | Beds | Baths | SqFt  | Listed     | Source  |\n|--------------------------|------------|------|-------|-------|------------|---------|\n| 456 Queen Street West #2nd Floor, Toronto, ON | $3,550    | 3    | 1     | Not specified (loft) | 2025-08-11 | Zumper[1] |\n\n## Market Analysis\nThere is only one directly comparable rental listing found at 456 Queen St..."
+      }
+    }
+  },
+  {
+    "address": "1 Bloor Street East, Toronto, ON",
+    "type": "luxury",
+    "strategies": {
+      "current": {
+        "name": "Current Narrative",
+        "duration": 10685,
+        "success": true,
+        "averageRent": 2,
+        "medianRent": null,
+        "comparablesCount": 0,
+        "comparables": [],
+        "rawResponse": "For a **2-bedroom, 2-bathroom condo around 1200 sq ft near 1 Bloor Street East, Toronto**, current rental rates in 2024-2025 generally range from **approximately $3,200 to $3,600 per month**.\n\nHere are specific comparable rental listings in the same neighborhood:\n\n- **Unit #526 at 1 Bloor St E**: 2 beds, 2 baths, about 1000-1199 sq ft, listed for rent at **$3,400/month** (maint. fee $1,061) [1][4].\n\n- **Zillow listing at 1 Bloor St E**: 2 beds, 2 baths, 850 sq ft, rent listed around **$3,400 to ..."
+      },
+      "json": {
+        "name": "Structured JSON",
+        "duration": 9114,
+        "success": true,
+        "averageRent": 2750,
+        "medianRent": 2700,
+        "comparablesCount": 6,
+        "comparables": [
+          {
+            "address": "1 Bloor St E, Unit 1211, Toronto, ON",
+            "monthly_rent": 2750,
+            "bedrooms": 1,
+            "bathrooms": 1,
+            "sqft": 612,
+            "listed_date": "2025-08-01",
+            "source": "Strata",
+            "similarity_score": 0.65
+          },
+          {
+            "address": "1 Bloor St E, Unit 811, Toronto, ON",
+            "monthly_rent": 2700,
+            "bedrooms": 1,
+            "bathrooms": 1.5,
+            "sqft": 612,
+            "listed_date": "2025-08-01",
+            "source": "Strata",
+            "similarity_score": 0.65
+          },
+          {
+            "address": "1 Bloor St E, Unit 1805, Toronto, ON",
+            "monthly_rent": 2700,
+            "bedrooms": 1,
+            "bathrooms": 1.5,
+            "sqft": 653,
+            "listed_date": "2025-09-01",
+            "source": "Strata",
+            "similarity_score": 0.68
+          },
+          {
+            "address": "1 Bloor St E, Unit 3605, Toronto, ON",
+            "monthly_rent": 2900,
+            "bedrooms": 1,
+            "bathrooms": 1.5,
+            "sqft": 650,
+            "listed_date": "2025-09-01",
+            "source": "Strata",
+            "similarity_score": 0.68
+          },
+          {
+            "address": "1 Bloor St E, Unit 1302, Toronto, ON",
+            "monthly_rent": 2600,
+            "bedrooms": 1,
+            "bathrooms": 1,
+            "sqft": 533,
+            "listed_date": "2025-07-12",
+            "source": "Strata",
+            "similarity_score": 0.6
+          },
+          {
+            "address": "1 Bloor St E, Unit 1103, Toronto, ON",
+            "monthly_rent": 2680,
+            "bedrooms": 1,
+            "bathrooms": 1,
+            "sqft": 511,
+            "listed_date": "2025-08-03",
+            "source": "Strata",
+            "similarity_score": 0.58
+          }
+        ],
+        "rawResponse": "```json\n{\n  \"average_monthly_rent\": 2750,\n  \"median_monthly_rent\": 2700,\n  \"comparables_found\": 6,\n  \"comparables\": [\n    {\n      \"address\": \"1 Bloor St E, Unit 1211, Toronto, ON\",\n      \"monthly_rent\": 2750,\n      \"bedrooms\": 1,\n      \"bathrooms\": 1,\n      \"sqft\": 612,\n      \"listed_date\": \"2025-08-01\",\n      \"source\": \"Strata\",\n      \"similarity_score\": 0.65\n    },\n    {\n      \"address\": \"1 Bloor St E, Unit 811, Toronto, ON\",\n      \"monthly_rent\": 2700,\n      \"bedrooms\": 1,\n      \"bathrooms\": ..."
+      },
+      "table": {
+        "name": "Markdown Table",
+        "duration": 6163,
+        "success": true,
+        "averageRent": 4350,
+        "medianRent": 4300,
+        "comparablesCount": 6,
+        "comparables": [
+          {
+            "address": "1 Bloor St E, Unit 7206",
+            "monthly_rent": 4300
+          },
+          {
+            "address": "1 Bloor St E, Unit (Sky Collection)",
+            "monthly_rent": 4800
+          },
+          {
+            "address": "1 Bloor St E, Unit 326",
+            "monthly_rent": null
+          },
+          {
+            "address": "1 Bloor St E, Unit 5710",
+            "monthly_rent": null
+          },
+          {
+            "address": "1 Bloor St E, Unit 1701",
+            "monthly_rent": null
+          }
+        ],
+        "rawResponse": "## Summary\nAverage Rent: $4,350  \nMedian Rent: $4,300  \nComparables Found: 6  \n\n## Comparable Properties\n| Address           | Rent/Month | Beds | Baths | SqFt  | Listed     | Source    |\n|-------------------|------------|------|-------|-------|------------|-----------|\n| 1 Bloor St E, Unit 7206 | $4,300     | 2    | 2     | ~1200 | 51 days ago | CondoNow[5] |\n| 1 Bloor St E, Unit (Sky Collection) | $4,800     | 2    | 2     | ~1200 | Jul 10, 2025 | Apartments.com[4] |\n| 1 Bloor St E, Unit 326 |..."
+      }
+    }
+  },
+  {
+    "address": "789 Dundas Street West, Toronto, ON",
+    "type": "budget",
+    "strategies": {
+      "current": {
+        "name": "Current Narrative",
+        "duration": 7635,
+        "success": true,
+        "averageRent": 2700,
+        "medianRent": null,
+        "comparablesCount": 0,
+        "comparables": [],
+        "rawResponse": "For a **1-bedroom, 1-bathroom condo around 650 sq ft** near **789 Dundas Street West, Toronto**, current rental rates in 2024-2025 generally range from approximately **$2,275 to $3,700 per month**, with an average around **$2,700 to $2,900**.\n\nHere are specific comparable listings and market data:\n\n- **Junction Factory Apartments (3385 Dundas St W)**, close to 789 Dundas West:\n  - 1-bedroom units around 620-625 sq ft renting for **$2,290 to $2,395/month** (available now)[2].\n  - Slightly smaller..."
+      },
+      "json": {
+        "name": "Structured JSON",
+        "duration": 12051,
+        "success": true,
+        "averageRent": 2300,
+        "medianRent": 2300,
+        "comparablesCount": 5,
+        "comparables": [
+          {
+            "address": "750 Dundas Street West, Toronto, ON",
+            "monthly_rent": 2250,
+            "bedrooms": 1,
+            "bathrooms": 1,
+            "sqft": 620,
+            "listed_date": "2025-08-05",
+            "source": "MLS",
+            "similarity_score": 0.95
+          },
+          {
+            "address": "800 Dundas Street West, Toronto, ON",
+            "monthly_rent": 2400,
+            "bedrooms": 1,
+            "bathrooms": 1,
+            "sqft": 670,
+            "listed_date": "2025-08-07",
+            "source": "Rentals.ca",
+            "similarity_score": 0.92
+          },
+          {
+            "address": "780 Dundas Street West, Toronto, ON",
+            "monthly_rent": 2200,
+            "bedrooms": 1,
+            "bathrooms": 1,
+            "sqft": 640,
+            "listed_date": "2025-08-03",
+            "source": "Kijiji",
+            "similarity_score": 0.93
+          },
+          {
+            "address": "770 Dundas Street West, Toronto, ON",
+            "monthly_rent": 2300,
+            "bedrooms": 1,
+            "bathrooms": 1,
+            "sqft": 600,
+            "listed_date": "2025-08-06",
+            "source": "Facebook Marketplace",
+            "similarity_score": 0.9
+          },
+          {
+            "address": "760 Dundas Street West, Toronto, ON",
+            "monthly_rent": 2350,
+            "bedrooms": 1,
+            "bathrooms": 1,
+            "sqft": 680,
+            "listed_date": "2025-08-04",
+            "source": "MLS",
+            "similarity_score": 0.94
+          }
+        ],
+        "rawResponse": "{\n  \"average_monthly_rent\": 2300,\n  \"median_monthly_rent\": 2300,\n  \"comparables_found\": 5,\n  \"comparables\": [\n    {\n      \"address\": \"750 Dundas Street West, Toronto, ON\",\n      \"monthly_rent\": 2250,\n      \"bedrooms\": 1,\n      \"bathrooms\": 1,\n      \"sqft\": 620,\n      \"listed_date\": \"2025-08-05\",\n      \"source\": \"MLS\",\n      \"similarity_score\": 0.95\n    },\n    {\n      \"address\": \"800 Dundas Street West, Toronto, ON\",\n      \"monthly_rent\": 2400,\n      \"bedrooms\": 1,\n      \"bathrooms\": 1,\n      \"sq..."
+      },
+      "table": {
+        "name": "Markdown Table",
+        "duration": 7412,
+        "success": true,
+        "averageRent": 2400,
+        "medianRent": 2350,
+        "comparablesCount": 5,
+        "comparables": [
+          {
+            "address": "3385 Dundas St W (Junction Factory Apartments)",
+            "monthly_rent": 2270
+          },
+          {
+            "address": "3385 Dundas St W (Junction Factory Apartments)",
+            "monthly_rent": 2350
+          },
+          {
+            "address": "20 Edward St (Panda Condos)",
+            "monthly_rent": 2350
+          },
+          {
+            "address": "20 Edward St (Panda Condos)",
+            "monthly_rent": 2400
+          },
+          {
+            "address": "Near Dundas West Station (Various)",
+            "monthly_rent": 2500
+          }
+        ],
+        "rawResponse": "## Summary\nAverage Rent: $2,400  \nMedian Rent: $2,350  \nComparables Found: 5  \n\n## Comparable Properties\n| Address                     | Rent/Month | Beds | Baths | SqFt | Listed     | Source          |\n|-----------------------------|------------|------|-------|------|------------|-----------------|\n| 3385 Dundas St W (Junction Factory Apartments) | $2,270     | 1    | 1     | ~439-545 | 2025-08-09 | Apartments.com [1] |\n| 3385 Dundas St W (Junction Factory Apartments) | $2,350     | 1    | 1   ..."
+      }
+    }
+  }
+]

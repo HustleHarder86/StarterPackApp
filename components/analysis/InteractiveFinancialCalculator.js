@@ -7,15 +7,32 @@ import { Card } from '../ui/Card.js';
 import { Button } from '../ui/Button.js';
 
 export const InteractiveFinancialCalculator = ({
-  monthlyRevenue = 5400,
+  monthlyRevenue,
   expenses = {},
-  propertyPrice = 850000,
-  downPayment = 170000,
+  propertyPrice,
+  downPayment,
   propertyData = {},
   costs = {},
   onUpdate = () => {},
   className = ''
 }) => {
+  // Check for required data
+  if (!propertyPrice || !monthlyRevenue) {
+    return Card({
+      className,
+      children: `
+        <h3 class="text-lg font-bold text-gray-900 mb-4">Interactive Financial Calculator</h3>
+        <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+          <p class="text-red-700 font-medium">⚠️ Unable to display calculator</p>
+          <p class="text-red-600 text-sm mt-2">Required data is not available.</p>
+          <ul class="text-red-600 text-sm mt-2 list-disc list-inside">
+            ${!propertyPrice ? '<li>Property price data missing</li>' : ''}
+            ${!monthlyRevenue ? '<li>Revenue data missing</li>' : ''}
+          </ul>
+        </div>
+      `
+    });
+  }
   // Calculate initial values for sliders
   const downPaymentPercent = Math.round((downPayment / propertyPrice) * 100);
   const defaultInterestRate = 6.5; // Default interest rate
@@ -42,10 +59,10 @@ export const InteractiveFinancialCalculator = ({
       } else if (actualCosts?.property_tax_annual) {
         return Math.round(actualCosts.property_tax_annual / 12);
       } else {
-        return expenses.propertyTax || 708; // Fall back to provided or default
+        return expenses.propertyTax || 0; // Only use real data
       }
     })(),
-    insurance: expenses.insurance || 250,
+    insurance: expenses.insurance || 0, // Only use real data
     hoaFees: (() => {
       // Check if condoFees exists (including 0 value)
       if ('condoFees' in actualPropertyData) return actualPropertyData.condoFees;
@@ -54,17 +71,17 @@ export const InteractiveFinancialCalculator = ({
       return expenses.hoaFees || 0; // Default to 0, not 450
     })(),
     propertyMgmt: expenses.propertyMgmt || Math.round(monthlyRevenue * 0.10), // 10% of STR revenue
-    utilities: actualCosts?.utilities_monthly || expenses.utilities || 200,
-    cleaning: expenses.cleaning || 400,
+    utilities: actualCosts?.utilities_monthly || expenses.utilities || 0, // Only use real data
+    cleaning: expenses.cleaning || 0, // Only use real data
     maintenance: (() => {
       if (actualCosts?.maintenance_annual) {
         return Math.round(actualCosts.maintenance_annual / 12);
       }
-      return expenses.maintenance || 300;
+      return expenses.maintenance || 0; // Only use real data
     })(),
     supplies: expenses.supplies || Math.round(monthlyRevenue * 0.04), // 4% of revenue
     platformFees: expenses.platformFees || Math.round(monthlyRevenue * 0.03), // 3% of revenue
-    otherExpenses: expenses.otherExpenses || 140
+    otherExpenses: expenses.otherExpenses || 0 // Only use real data
   };
   
   // Determine data sources based on what's available

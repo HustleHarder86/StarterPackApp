@@ -451,11 +451,21 @@
             }
         }
 
-        // Scroll to section
+        // Scroll to section with offset for sticky header
         function scrollToSection(sectionId) {
             const section = document.getElementById(sectionId);
             if (section) {
-                section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                const yOffset = -100; // Offset for sticky header
+                const y = section.getBoundingClientRect().top + window.pageYOffset + yOffset;
+                window.scrollTo({ top: y, behavior: 'smooth' });
+                
+                // Update active button
+                document.querySelectorAll('aside nav button').forEach(btn => {
+                    btn.classList.remove('bg-blue-50', 'text-blue-600', 'font-semibold');
+                    if (btn.getAttribute('onclick').includes(sectionId)) {
+                        btn.classList.add('bg-blue-50', 'text-blue-600', 'font-semibold');
+                    }
+                });
             }
         }
 

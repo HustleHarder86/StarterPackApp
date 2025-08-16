@@ -18,7 +18,22 @@ export const AirbnbHeroSection = ({ analysis }) => {
   const sqft = propertyData.squareFeet || propertyData.square_feet || propertyData.sqft || 'N/A';
   const propertyImage = propertyData.imageUrl || propertyData.image_url || 
     'https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=800&h=600&fit=crop';
-  const purchasePrice = propertyData.purchase_price || propertyData.purchasePrice || propertyData.price || 849900;
+  const purchasePrice = propertyData.purchase_price || propertyData.purchasePrice || propertyData.price;
+  
+  // If critical data is missing, show error state
+  if (!purchasePrice) {
+    return `
+      <div class="max-w-7xl mx-auto px-4 lg:px-6 mt-6">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <h2 class="text-2xl font-bold text-gray-900 mb-4">Airbnb Market Analysis</h2>
+          <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+            <p class="text-red-700 font-medium">⚠️ Unable to display analysis</p>
+            <p class="text-red-600 text-sm mt-2">Property price data is not available. Please ensure the property analysis has completed successfully.</p>
+          </div>
+        </div>
+      </div>
+    `;
+  }
   
   // Extract financial data
   const monthlyRevenue = strData.monthly_revenue || strData.monthlyRevenue || 0;
@@ -29,17 +44,17 @@ export const AirbnbHeroSection = ({ analysis }) => {
   
   // Get LTR cash flow for comparison
   const ltrCashFlow = cashFlow.monthly || 0;
-  const ltrRent = ltrData.monthly_rent || ltrData.monthlyRent || 3100;
+  const ltrRent = ltrData.monthly_rent || ltrData.monthlyRent || 0;
   const ltrNetCashFlow = ltrRent - totalExpenses;
   
-  // Calculate stats from actual data or show N/A
+  // Calculate stats from actual data only
   const stats = {
-    avgRate: strData.avg_nightly_rate ? `$${strData.avg_nightly_rate}` : strData.avgNightlyRate ? `$${strData.avgNightlyRate}` : '$447',
-    avgOccupancy: strData.occupancy_rate ? `${Math.round(strData.occupancy_rate * 100)}%` : strData.avgOccupancy ? `${strData.avgOccupancy}%` : '70%',
-    netAdvantage: netCashFlow !== undefined && ltrNetCashFlow !== undefined 
+    avgRate: strData.avg_nightly_rate ? `$${strData.avg_nightly_rate}` : strData.avgNightlyRate ? `$${strData.avgNightlyRate}` : 'N/A',
+    avgOccupancy: strData.occupancy_rate ? `${Math.round(strData.occupancy_rate * 100)}%` : strData.avgOccupancy ? `${strData.avgOccupancy}%` : 'N/A',
+    netAdvantage: netCashFlow !== undefined && ltrNetCashFlow !== undefined && ltrRent > 0
       ? `${netCashFlow - ltrNetCashFlow >= 0 ? '+' : ''}$${Math.abs(netCashFlow - ltrNetCashFlow).toLocaleString()}/mo`
-      : '+$6,369/mo',
-    avgRating: strData.avgRating || (comparables.length > 0 && comparables[0].rating ? `${comparables[0].rating}★` : '4.5★')
+      : 'N/A',
+    avgRating: strData.avgRating || (comparables.length > 0 && comparables[0].rating ? `${comparables[0].rating}★` : 'N/A')
   };
 
   // Map comparables to display format
@@ -348,7 +363,7 @@ export const strCalculatorScript = `
     const strData = analysisData.strAnalysis || analysisData.short_term_rental || {};
     const ltrData = analysisData.longTermRental || analysisData.long_term_rental || {};
     const monthlyRevenue = strData.monthly_revenue || strData.monthlyRevenue || 0;
-    const ltrRent = ltrData.monthly_rent || ltrData.monthlyRent || 3100;
+    const ltrRent = ltrData.monthly_rent || ltrData.monthlyRent || 0;
     
     // Validate values to prevent NaN
     const validMonthlyRevenue = isNaN(monthlyRevenue) ? 0 : monthlyRevenue;

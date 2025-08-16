@@ -1,0 +1,32 @@
+{
+  "timestamp": "2025-08-15T16:14:46.210Z",
+  "testName": "Enhanced PDF Builder Unit Test",
+  "passed": true,
+  "results": {
+    "chartGeneration": true,
+    "pdfCreation": true,
+    "fileSize": 5834585,
+    "errors": []
+  },
+  "generationTime": "1176ms",
+  "pdfSize": "5697.84 KB",
+  "featuresImplemented": [
+    "Executive Dashboard with KPIs",
+    "Cash Flow Projection Charts",
+    "ROI Comparison Visualizations",
+    "Expense Breakdown Pie Charts",
+    "Investment Grade Gauge",
+    "Professional Typography",
+    "Enhanced Color Scheme",
+    "Gradient Backgrounds",
+    "Two-Column Layouts",
+    "Risk Assessment Matrix",
+    "Seasonal Occupancy Trends"
+  ],
+  "testData": {
+    "propertyAddress": "123 Main Street, Toronto, ON M5V 3G7",
+    "purchasePrice": 850000,
+    "ltrCashFlow": -1081,
+    "strCashFlow": 766
+  }
+}

@@ -1,7 +1,9 @@
 import admin from '../../utils/firebase-admin.js';
-
+import { PDFReportBuilder } from '../../utils/pdf-report-builder.js';
+import storageUploader from '../../utils/firebase-storage-uploader.js';
 import { applyCorsHeaders } from '../../utils/cors-config.js';
 import { apiLimits } from '../utils/rate-limiter.js';
+
 export default async function handler(req, res) {
   // Apply proper CORS headers
   applyCorsHeaders(req, res);
@@ -24,90 +26,142 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { userId, propertyId, reportType = 'summary', options = {} } = req.body;
+  const { userId, propertyId, analysisId, reportConfig = {} } = req.body;
 
-  if (!userId || !propertyId) {
+  if (!userId || (!propertyId && !analysisId)) {
     return res.status(400).json({ 
-      error: 'Missing required parameters: userId and propertyId' 
+      error: 'Missing required parameters: userId and either propertyId or analysisId' 
     });
   }
 
   try {
     const db = admin.firestore();
     
-    // Get property data
-    const propertyDoc = await db.collection('properties').doc(propertyId).get();
-    if (!propertyDoc.exists) {
-      return res.status(404).json({ error: 'Property not found' });
+    // Get analysis data
+    let analysis;
+    let analysisDocId;
+    
+    if (analysisId) {
+      // Use provided analysis ID
+      const analysisDoc = await db.collection('analyses').doc(analysisId).get();
+      if (!analysisDoc.exists) {
+        return res.status(404).json({ error: 'Analysis not found' });
+      }
+      analysis = analysisDoc.data();
+      analysisDocId = analysisId;
+      
+      // Verify analysis belongs to user
+      if (analysis.userId !== userId) {
+        return res.status(403).json({ error: 'Unauthorized to generate report for this analysis' });
+      }
+    } else {
+      // Get latest analysis for the property
+      const analysisSnapshot = await db.collection('analyses')
+        .where('propertyId', '==', propertyId)
+        .where('userId', '==', userId)
+        .orderBy('createdAt', 'desc')
+        .limit(1)
+        .get();
+      
+      if (analysisSnapshot.empty) {
+        return res.status(404).json({ error: 'No analysis found for this property' });
+      }
+      
+      analysis = analysisSnapshot.docs[0].data();
+      analysisDocId = analysisSnapshot.docs[0].id;
     }
     
-    const property = propertyDoc.data();
+    // Get user data for realtor info
+    const userDoc = await db.collection('users').doc(userId).get();
+    const userData = userDoc.exists ? userDoc.data() : {};
+    const realtorInfo = userData.realtorProfile || null;
     
-    // Verify property belongs to user
-    if (property.userId !== userId) {
-      return res.status(403).json({ error: 'Unauthorized to generate report for this property' });
-    }
+    // Generate unique file name
+    const fileName = storageUploader.generateReportFileName(userId, propertyId || analysisDocId);
     
-    // Get latest analysis for the property
-    const analysisSnapshot = await db.collection('analyses')
-      .where('propertyId', '==', propertyId)
-      .where('userId', '==', userId)
-      .orderBy('createdAt', 'desc')
-      .limit(1)
-      .get();
-    
-    if (analysisSnapshot.empty) {
-      return res.status(404).json({ error: 'No analysis found for this property' });
-    }
-    
-    const analysis = analysisSnapshot.docs[0].data();
-    
-    // Create report record
+    // Create report record first
     const reportData = {
       userId,
-      propertyId,
-      analysisId: analysisSnapshot.docs[0].id,
-      propertyAddress: property.address?.street || 'Unknown Property',
-      reportType,
-      options,
+      propertyId: propertyId || analysis.propertyId,
+      analysisId: analysisDocId,
+      propertyAddress: analysis.propertyAddress || 'Unknown Property',
+      reportConfig: {
+        selectedSections: reportConfig.selectedSections || [
+          'executiveSummary',
+          'propertyDetails',
+          'financialAnalysis',
+          'longTermRental',
+          'investmentRecommendations'
+        ],
+        format: reportConfig.format || 'detailed',
+        customNotes: reportConfig.customNotes || ''
+      },
+      realtorInfo: realtorInfo,
       status: 'generating',
-      createdAt: admin.firestore.FieldValue.serverTimestamp(),
-      expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) // 30 days
+      fileName: fileName,
+      createdAt: admin.firestore.FieldValue.serverTimestamp()
     };
     
     const reportRef = await db.collection('reports').add(reportData);
+    console.log(`Created report record ${reportRef.id} for analysis ${analysisDocId}`);
     
-    console.log(`Created report ${reportRef.id} for property ${propertyId}`);
-    
-    // In a production environment, this would trigger a background job
-    // to generate the PDF. For now, we'll simulate it with a delayed update
+    // Generate PDF asynchronously
     setTimeout(async () => {
       try {
-        // Simulate PDF generation
-        const mockPdfUrl = `https://firebasestorage.googleapis.com/v0/b/${process.env.FIREBASE_PROJECT_ID}.appspot.com/o/reports%2F${reportRef.id}.pdf?alt=media`;
+        console.log('Generating enhanced PDF report with charts...');
         
+        // Create PDF using PDFReportBuilder (now includes all enhanced features)
+        const pdfBuilder = new PDFReportBuilder(analysis, reportConfig, realtorInfo);
+        const pdfDoc = await pdfBuilder.generate();
+        
+        // Convert to buffer
+        const pdfBuffer = pdfDoc.output('arraybuffer');
+        const buffer = Buffer.from(pdfBuffer);
+        
+        console.log('Uploading PDF to Firebase Storage...');
+        
+        // Upload to Firebase Storage
+        const uploadResult = await storageUploader.uploadPDF(
+          buffer,
+          fileName,
+          {
+            reportId: reportRef.id,
+            userId: userId,
+            propertyId: propertyId || analysis.propertyId,
+            analysisId: analysisDocId
+          }
+        );
+        
+        console.log('PDF uploaded successfully:', uploadResult.fileUrl);
+        
+        // Update report record with file info
         await db.collection('reports').doc(reportRef.id).update({
           status: 'ready',
-          fileUrl: mockPdfUrl,
-          fileSize: 1024 * 512, // 512KB mock size
+          fileUrl: uploadResult.fileUrl,
+          fileSize: uploadResult.fileSize,
+          filePath: uploadResult.path,
           generatedAt: admin.firestore.FieldValue.serverTimestamp()
         });
         
-        console.log(`Report ${reportRef.id} marked as ready`);
+        console.log(`Report ${reportRef.id} completed successfully`);
+        
       } catch (error) {
-        console.error('Error updating report status:', error);
+        console.error('Error generating report:', error);
+        
+        // Update report status to failed
         await db.collection('reports').doc(reportRef.id).update({
           status: 'failed',
-          error: error.message
+          error: error.message,
+          failedAt: admin.firestore.FieldValue.serverTimestamp()
         });
       }
-    }, 5000); // 5 second delay to simulate generation
+    }, 2000); // Small delay to ensure response is sent first
     
     return res.status(200).json({ 
       success: true,
       reportId: reportRef.id,
       message: 'Report generation started',
-      estimatedTime: '5-10 seconds'
+      estimatedTime: '10-15 seconds'
     });
 
   } catch (error) {

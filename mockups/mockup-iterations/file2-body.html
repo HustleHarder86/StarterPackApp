@@ -1,0 +1,1788 @@
+<!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div>
+                    <h1 class="h1">Investment Property Analysis</h1>
+                    <p class="body">Professional investor presentation with grouped flow</p>
+                </div>
+                <div class="version-badge">Realtor Edition</div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Data Reception Area -->
+    <div id="data-reception-area" class="container" style="margin-bottom: 24px; display: none;">
+        <div class="card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; margin-bottom: 0;">
+            <div style="padding: 20px; text-align: center;">
+                <div id="loading-message" style="display: none;">
+                    <span style="font-size: 24px; animation: pulse 1.5s infinite;">⏳</span>
+                    <span style="margin-left: 12px; font-size: 18px; font-weight: 600;">Loading property data...</span>
+                </div>
+                <div id="property-loaded-message" style="display: none;">
+                    <span style="font-size: 24px;">✓</span>
+                    <span style="margin-left: 12px; font-size: 18px; font-weight: 600;">Property loaded: <span id="loaded-address"></span></span>
+                </div>
+                <div id="error-message" style="display: none;">
+                    <span style="font-size: 24px;">⚠️</span>
+                    <span style="margin-left: 12px; font-size: 18px; font-weight: 600;">No property data received</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Data Reception Logic for Integration Testing
+        (function() {
+            const reception = document.getElementById('data-reception-area');
+            const loadingMsg = document.getElementById('loading-message');
+            const loadedMsg = document.getElementById('property-loaded-message');
+            const errorMsg = document.getElementById('error-message');
+            const addressSpan = document.getElementById('loaded-address');
+            
+            // Check for property data from various sources
+            function checkForPropertyData() {
+                reception.style.display = 'block';
+                loadingMsg.style.display = 'block';
+                
+                // Check URL parameters
+                const urlParams = new URLSearchParams(window.location.search);
+                let propertyData = null;
+                
+                // Source 1: URL parameters
+                if (urlParams.has('propertyData')) {
+                    try {
+                        propertyData = JSON.parse(decodeURIComponent(urlParams.get('propertyData')));
+                        console.log('[Integration] Property data received from URL params:', propertyData);
+                    } catch (e) {
+                        console.error('[Integration] Failed to parse URL property data:', e);
+                    }
+                }
+                
+                // Source 2: SessionStorage
+                if (!propertyData && sessionStorage.getItem('propertyData')) {
+                    try {
+                        propertyData = JSON.parse(sessionStorage.getItem('propertyData'));
+                        console.log('[Integration] Property data received from sessionStorage:', propertyData);
+                    } catch (e) {
+                        console.error('[Integration] Failed to parse sessionStorage data:', e);
+                    }
+                }
+                
+                // Source 3: LocalStorage (for saved properties)
+                if (!propertyData && localStorage.getItem('currentPropertyData')) {
+                    try {
+                        propertyData = JSON.parse(localStorage.getItem('currentPropertyData'));
+                        console.log('[Integration] Property data received from localStorage:', propertyData);
+                    } catch (e) {
+                        console.error('[Integration] Failed to parse localStorage data:', e);
+                    }
+                }
+                
+                // Process received data
+                if (propertyData) {
+                    loadingMsg.style.display = 'none';
+                    loadedMsg.style.display = 'block';
+                    addressSpan.textContent = propertyData.address || 'Property loaded';
+                    
+                    // Trigger data population in the mockup
+                    setTimeout(async () => {
+                        // Check if we have the property API available
+                        if (window.propertyAPI && propertyData.address) {
+                            console.log('[Integration] Starting live API analysis for:', propertyData.address);
+                            
+                            try {
+                                // Show loading states for base mockup 2 sections
+                                const sections = ['hero-metrics', 'analysis-tabs', 'calculator-section'];
+                                sections.forEach(id => {
+                                    const elem = document.getElementById(id);
+                                    if (elem) {
+                                        elem.style.opacity = '0.5';
+                                        const originalContent = elem.innerHTML;
+                                        elem.dataset.originalContent = originalContent;
+                                        elem.innerHTML = `<div style="padding: 40px; text-align: center;">
+                                            <div style="display: inline-block; width: 50px; height: 50px; border: 4px solid #f3f3f3; border-top: 4px solid #10B981; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+                                            <p style="margin-top: 15px; color: #666; font-size: 16px;">Analyzing property with live data...</p>
+                                        </div>`;
+                                    }
+                                });
+                                
+                                // Add spinning animation CSS if not already present
+                                if (!document.getElementById('api-spinner-style')) {
+                                    const style = document.createElement('style');
+                                    style.id = 'api-spinner-style';
+                                    style.textContent = '@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }';
+                                    document.head.appendChild(style);
+                                }
+                                
+                                // Perform the actual API call
+                                const analysisType = urlParams.get('analysisType') || 'both';
+                                const result = await window.propertyAPI.analyzeProperty(
+                                    propertyData.address,
+                                    {
+                                        includeStr: analysisType === 'both' || analysisType === 'str',
+                                        analysisType: analysisType,
+                                        showLoading: false // We're handling loading states ourselves
+                                    }
+                                );
+                                
+                                console.log('[Integration] API analysis complete:', result);
+                                
+                                // Restore original content first
+                                sections.forEach(id => {
+                                    const elem = document.getElementById(id);
+                                    if (elem && elem.dataset.originalContent) {
+                                        elem.innerHTML = elem.dataset.originalContent;
+                                        elem.style.opacity = '1';
+                                        delete elem.dataset.originalContent;
+                                    }
+                                });
+                                
+                                // Update the mockup with real data
+                                if (result && result.data) {
+                                    const properData = {
+                                        property: result.data.property || {},
+                                        analysis: result.data.analysis || {},
+                                        strAnalysis: result.data.strAnalysis || {},
+                                        data: result.data.data || result.data
+                                    };
+                                    
+                                    // Update the mockup display
+                                    if (window.propertyAPI.updateMockup) {
+                                        window.propertyAPI.updateMockup(properData, 'base2');
+                                    }
+                                    
+                                    // Update specific elements with real data
+                                    updateMockup2WithRealData(result.data);
+                                    
+                                    // Store the results
+                                    sessionStorage.setItem('analysisResults', JSON.stringify(result));
+                                    
+                                    console.log('[Integration] Successfully updated with live API data');
+                                }
+                                
+                            } catch (error) {
+                                console.error('[Integration] API call failed:', error);
+                                // Restore sections with error message
+                                ['hero-metrics', 'analysis-tabs', 'calculator-section'].forEach(id => {
+                                    const elem = document.getElementById(id);
+                                    if (elem) {
+                                        if (elem.dataset.originalContent) {
+                                            elem.innerHTML = elem.dataset.originalContent;
+                                            delete elem.dataset.originalContent;
+                                        }
+                                        elem.style.opacity = '1';
+                                        // Add error banner
+                                        const errorBanner = document.createElement('div');
+                                        errorBanner.style.cssText = 'background: #FEE2E2; color: #991B1B; padding: 10px; border-radius: 8px; margin-bottom: 10px; text-align: center;';
+                                        errorBanner.innerHTML = `<strong>Note:</strong> Live data unavailable. Showing demo data. <small>(${error.message})</small>`;
+                                        elem.insertBefore(errorBanner, elem.firstChild);
+                                    }
+                                });
+                            }
+                        } else if (typeof populatePropertyData === 'function') {
+                            populatePropertyData(propertyData);
+                        } else {
+                            console.warn('[Integration] No API or populate function available');
+                        }
+                        
+                        // Hide the reception area after successful load
+                        setTimeout(() => {
+                            reception.style.display = 'none';
+                        }, 2000);
+                    }, 1000);
+                    
+                    // Helper function to update mockup 2 with real data
+                    function updateMockup2WithRealData(data) {
+                        // Update property price
+                        const priceElem = document.querySelector('.hero-price');
+                        if (priceElem && data.property?.price) {
+                            priceElem.textContent = `$${data.property.price.toLocaleString()}`;
+                        }
+                        
+                        // Update metrics
+                        if (data.analysis) {
+                            // Update Cash Flow
+                            const cashFlowElem = document.querySelector('.metric-card:nth-child(1) .metric-value');
+                            if (cashFlowElem && data.analysis.cashFlow) {
+                                cashFlowElem.textContent = `$${Math.round(data.analysis.cashFlow).toLocaleString()}/mo`;
+                            }
+                            
+                            // Update CAP Rate
+                            const capRateElem = document.querySelector('.metric-card:nth-child(2) .metric-value');
+                            if (capRateElem && data.analysis.capRate) {
+                                capRateElem.textContent = `${(data.analysis.capRate * 100).toFixed(2)}%`;
+                            }
+                            
+                            // Update ROI
+                            const roiElem = document.querySelector('.metric-card:nth-child(3) .metric-value');
+                            if (roiElem && data.analysis.roi) {
+                                roiElem.textContent = `${(data.analysis.roi * 100).toFixed(1)}%`;
+                            }
+                        }
+                        
+                        // Update STR data if available
+                        if (data.strAnalysis) {
+                            const strRevElem = document.querySelector('[data-str-revenue]');
+                            if (strRevElem && data.strAnalysis.annualRevenue) {
+                                strRevElem.textContent = `$${Math.round(data.strAnalysis.annualRevenue / 12).toLocaleString()}/mo`;
+                            }
+                        }
+                    }
+                } else {
+                    // No data found
+                    setTimeout(() => {
+                        loadingMsg.style.display = 'none';
+                        errorMsg.style.display = 'block';
+                        console.error('[Integration] No property data found in any source');
+                    }, 2000);
+                }
+            }
+            
+            // Check for data on page load
+            window.addEventListener('DOMContentLoaded', checkForPropertyData);
+            
+            // Also expose function globally for manual triggering
+            window.checkForPropertyData = checkForPropertyData;
+        })();
+    </script>
+
+    <!-- Main Content -->
+    <main>
+        <div class="container">
+            <div class="main-content">
+                <!-- Sidebar Navigation -->
+                <aside>
+                    <div class="sidebar-sticky">
+                        <div class="sidebar-card">
+                            <!-- Sidebar Header -->
+                            <div class="sidebar-header">
+                                <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 4px;">Analysis Navigation</h3>
+                                <p style="font-size: 12px; opacity: 0.9;">1514 - 150 East Liberty St</p>
+                            </div>
+                            
+                            <!-- Navigation Items -->
+                            <nav class="sidebar-nav">
+                                <button class="sidebar-nav-item active" onclick="scrollToSection('property-overview')">
+                                    <svg fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path>
+                                    </svg>
+                                    <span>Property Overview</span>
+                                </button>
+                                
+                                <button class="sidebar-nav-item" onclick="scrollToSection('investment-snapshot')">
+                                    <svg fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path>
+                                        <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 1 1 0 000 2H6a2 2 0 100 4h2a2 2 0 100-4h-.586l1.293-1.293a1 1 0 00-1.414-1.414l-3 3a1 1 0 000 1.414l3 3a1 1 0 001.414-1.414L10.414 7H14a2 2 0 110 4h-2a2 2 0 110 4h2a2 2 0 110 4H6a2 2 0 01-2-2V5z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    <span>Quick Comparison</span>
+                                </button>
+                                
+                                <button class="sidebar-nav-item" onclick="scrollToSection('str-analysis')">
+                                    <svg fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z"></path>
+                                    </svg>
+                                    <span>STR Analysis</span>
+                                    <span class="nav-badge">Restricted</span>
+                                </button>
+                                
+                                <button class="sidebar-nav-item" onclick="scrollToSection('ltr-analysis')">
+                                    <svg fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm3 1h6v4H7V5zm6 6H7v2h6v-2z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    <span>LTR Analysis</span>
+                                    <span class="nav-badge" style="background: var(--success-green);">Recommended</span>
+                                </button>
+                                
+                                <button class="sidebar-nav-item" onclick="scrollToSection('financial-calculator')">
+                                    <svg fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z"></path>
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    <span>Financial Calculator</span>
+                                </button>
+                                
+                                <button class="sidebar-nav-item" onclick="scrollToSection('final-comparison')">
+                                    <svg fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M2 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1H3a1 1 0 01-1-1V4zM8 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1H9a1 1 0 01-1-1V4zM15 3a1 1 0 00-1 1v12a1 1 0 001 1h2a1 1 0 001-1V4a1 1 0 00-1-1h-2z"></path>
+                                    </svg>
+                                    <span>Final Decision</span>
+                                </button>
+                            </nav>
+                            
+                            <!-- Quick Actions -->
+                            <div class="sidebar-actions">
+                                <button class="sidebar-btn sidebar-btn-primary">📄 Generate PDF Report</button>
+                                <button class="sidebar-btn sidebar-btn-secondary">🔗 Share Analysis</button>
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+
+                <!-- Content Area -->
+                <div class="content-area">
+                    
+                    <!-- Section 1: Property Overview -->
+                    <section id="property-overview" class="card">
+                        <div id="property-header">
+                        <div class="property-hero">
+                            <img src="https://images.unsplash.com/photo-1565538810643-b5bdb714032a?w=400&h=300&fit=crop" 
+                                 alt="Property" class="property-image">
+                            <div class="property-details">
+                                <div class="property-address">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                    </svg>
+                                    <div>
+                                        <h1 class="h1 property-address" data-field="address">1514 - 150 East Liberty Street</h1>
+                                        <p class="body" data-field="city">Toronto, Ontario M6K 3R5</p>
+                                        <p class="h3 property-price" data-field="price" style="color: var(--primary-blue); margin-top: 8px;">$849,900</p>
+                                    </div>
+                                </div>
+                                <div class="metric-cards">
+                                    <div class="metric-card">
+                                        <div class="metric-card-label">Bedrooms</div>
+                                        <div class="metric-card-value" data-field="bedrooms" style="font-size: 16px;">2BR</div>
+                                    </div>
+                                    <div class="metric-card">
+                                        <div class="metric-card-label">Bathrooms</div>
+                                        <div class="metric-card-value" data-field="bathrooms" style="font-size: 16px;">2BA</div>
+                                    </div>
+                                    <div class="metric-card">
+                                        <div class="metric-card-label">Size</div>
+                                        <div class="metric-card-value" data-field="sqft" style="font-size: 16px;">950 sq ft</div>
+                                    </div>
+                                    <div class="metric-card">
+                                        <div class="metric-card-label">Year Built</div>
+                                        <div class="metric-card-value" data-field="year-built" style="font-size: 16px;">2018</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        </div>
+                        
+                        <!-- Investment Grade Card -->
+                        <div class="investment-grade-container">
+                            <div class="grade-badge-large grade-B" id="investment-grade">B+</div>
+                            <h2 class="h2" style="margin-bottom: 8px;">Investment Grade: B+</h2>
+                            <p id="investment-grade-desc" style="color: var(--gray-600); font-size: 16px;">Strong LTR opportunity, STR restricted by regulations</p>
+                        </div>
+                    </section>
+
+                    <!-- Section 2: Quick Investment Snapshot -->
+                    <section id="investment-snapshot">
+                        <h2 class="h2" style="text-align: center; margin-bottom: 8px;">Investment Strategy Comparison</h2>
+                        <p style="text-align: center; color: var(--gray-600); margin-bottom: 32px;">
+                            Quick overview of your rental options
+                        </p>
+                        
+                        <div class="comparison-teaser">
+                            <div class="teaser-card str">
+                                <div class="teaser-label">Short-Term Rental</div>
+                                <div class="teaser-value" id="comparison-str-monthly" style="color: var(--danger-red);">Restricted</div>
+                                <div class="teaser-subtitle">Not permitted</div>
+                                <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--gray-200);">
+                                    <div style="font-size: 12px; color: var(--gray-600);">Potential: $2,500/mo</div>
+                                </div>
+                            </div>
+                            
+                            <div class="teaser-card ltr">
+                                <div class="teaser-label">Long-Term Rental</div>
+                                <div class="teaser-value positive" id="comparison-ltr-monthly">$1,200</div>
+                                <div class="teaser-subtitle">Monthly cash flow</div>
+                                <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--gray-200);">
+                                    <div style="font-size: 12px; color: var(--gray-600);">Work: 2 hrs/mo</div>
+                                </div>
+                            </div>
+                            
+                            <div class="teaser-card verdict">
+                                <div class="teaser-label">Recommendation</div>
+                                <div class="teaser-value" id="comparison-recommendation" style="color: var(--success-green);">LTR</div>
+                                <div class="teaser-subtitle">Best option</div>
+                                <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--gray-200);">
+                                    <div style="font-size: 12px; color: var(--gray-600);">ROI: 11.7%/year</div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Section 3: Short-Term Rental Analysis -->
+                    <section id="str-analysis" class="card strategy-section restricted">
+                        <div id="str-section">
+                        <div class="restriction-banner" style="display: none;">
+                            ⚠️ STR RESTRICTED: <span class="restriction-text">This property is not eligible for short-term rentals due to zoning regulations</span>
+                        </div>
+                        
+                        <div class="section-header">
+                            <div class="section-title">
+                                <h2 class="h2">Short-Term Rental Analysis</h2>
+                                <span class="data-source-badge live-api">Airbnb API</span>
+                            </div>
+                        </div>
+
+                        <div class="metric-cards">
+                            <div class="metric-card">
+                                <div class="metric-card-label">
+                                    Monthly Revenue
+                                    <span class="data-source-badge calculated" style="font-size: 9px; padding: 1px 6px;">Calc</span>
+                                </div>
+                                <div class="metric-card-value" id="str-monthly-revenue">$8,500</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-card-label">
+                                    Nightly Rate
+                                    <span class="data-source-badge live-api" style="font-size: 9px; padding: 1px 6px;">API</span>
+                                </div>
+                                <div class="metric-card-value" id="str-daily-rate">$375</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-card-label">
+                                    Occupancy
+                                    <span class="data-source-badge live-api" style="font-size: 9px; padding: 1px 6px;">API</span>
+                                </div>
+                                <div class="metric-card-value" id="str-occupancy">75%</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-card-label">
+                                    Annual Revenue
+                                    <span class="data-source-badge calculated" style="font-size: 9px; padding: 1px 6px;">Calc</span>
+                                </div>
+                                <div class="metric-card-value positive" id="str-annual-revenue">$102,000</div>
+                            </div>
+                        </div>
+
+                        <!-- STR Comparables -->
+                        <div class="expandable-section">
+                            <div class="expand-toggle" onclick="toggleExpand(this)">
+                                <span>🏠 View Airbnb Comparables</span>
+                                <span>▼</span>
+                            </div>
+                            <div class="expand-content">
+                                <div class="comparables-grid" id="airbnb-comparables-container">
+                                    <div class="comparable-card">
+                                        <div class="comparable-image-container">
+                                            <img src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400&h=300&fit=crop" 
+                                                 alt="Comparable 1" class="comparable-image">
+                                            <div class="comparable-price">$209/night</div>
+                                            <div class="comparable-badge badge-top">Top Performer</div>
+                                        </div>
+                                        <div class="comparable-details">
+                                            <div class="comparable-title">Luxury 2BR Condo • King West</div>
+                                            <div class="comparable-stats">
+                                                <span class="comparable-stat comparable-rating">★ 4.92</span>
+                                                <span class="comparable-stat">156 reviews</span>
+                                                <span class="comparable-stat">85% booked</span>
+                                            </div>
+                                            <div class="comparable-revenue">
+                                                <span class="revenue-label">Monthly Revenue</span>
+                                                <span class="revenue-value">$6,850</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="comparable-card">
+                                        <div class="comparable-image-container">
+                                            <img src="https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=400&h=300&fit=crop" 
+                                                 alt="Comparable 2" class="comparable-image">
+                                            <div class="comparable-price">$175/night</div>
+                                            <div class="comparable-badge badge-similar">Most Similar</div>
+                                        </div>
+                                        <div class="comparable-details">
+                                            <div class="comparable-title">Modern 1BR+Den • Liberty Village</div>
+                                            <div class="comparable-stats">
+                                                <span class="comparable-stat comparable-rating">★ 4.85</span>
+                                                <span class="comparable-stat">89 reviews</span>
+                                                <span class="comparable-stat">78% booked</span>
+                                            </div>
+                                            <div class="comparable-revenue">
+                                                <span class="revenue-label">Monthly Revenue</span>
+                                                <span class="revenue-value">$5,100</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="comparable-card">
+                                        <div class="comparable-image-container">
+                                            <img src="https://images.unsplash.com/photo-1493809842364-78817add7ffb?w=400&h=300&fit=crop" 
+                                                 alt="Comparable 3" class="comparable-image">
+                                            <div class="comparable-price">$165/night</div>
+                                            <div class="comparable-badge badge-value">Best Value</div>
+                                        </div>
+                                        <div class="comparable-details">
+                                            <div class="comparable-title">Cozy 1BR • Entertainment District</div>
+                                            <div class="comparable-stats">
+                                                <span class="comparable-stat comparable-rating">★ 4.78</span>
+                                                <span class="comparable-stat">234 reviews</span>
+                                                <span class="comparable-stat">82% booked</span>
+                                            </div>
+                                            <div class="comparable-revenue">
+                                                <span class="revenue-label">Monthly Revenue</span>
+                                                <span class="revenue-value">$4,950</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Why STR is Restricted -->
+                        <div class="expandable-section">
+                            <div class="expand-toggle" onclick="toggleExpand(this)">
+                                <span>📋 Why STR is Not Permitted</span>
+                                <span>▼</span>
+                            </div>
+                            <div class="expand-content">
+                                <div style="padding: 20px; background: #FEF2F2; border-radius: 8px;">
+                                    <h4 style="color: var(--danger-red); margin-bottom: 16px;">Regulatory Restrictions</h4>
+                                    <ul style="margin-left: 20px; line-height: 2;">
+                                        <li><strong>Zoning:</strong> Residential only - commercial STR prohibited</li>
+                                        <li><strong>Condo Rules:</strong> Minimum 30-day rental requirement</li>
+                                        <li><strong>City License:</strong> Not available for investment properties</li>
+                                        <li><strong>Primary Residence:</strong> Toronto requires owner occupancy for STR</li>
+                                    </ul>
+                                    <p style="margin-top: 16px; font-weight: 600;">
+                                        Penalty for Non-Compliance: Fines up to $100,000
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        </div>
+                    </section>
+
+                    <!-- Section 4: Long-Term Rental Analysis -->
+                    <section id="ltr-analysis" class="card">
+                        <div id="ltr-section">
+                        <div class="section-header">
+                            <div class="section-title">
+                                <h2 class="h2">Long-Term Rental Analysis</h2>
+                                <span class="data-source-badge ai-enhanced">AI Research</span>
+                            </div>
+                            <span class="newly-added-badge">Recommended</span>
+                        </div>
+
+                        <div class="metric-cards">
+                            <div class="metric-card">
+                                <div class="metric-card-label">
+                                    Monthly Rent
+                                    <span class="data-source-badge ai-enhanced" style="font-size: 9px; padding: 1px 6px;">AI</span>
+                                </div>
+                                <div class="metric-card-value" id="ltr-monthly-rent">$3,950</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-card-label">
+                                    Vacancy Rate
+                                    <span class="data-source-badge ai-enhanced" style="font-size: 9px; padding: 1px 6px;">AI</span>
+                                </div>
+                                <div class="metric-card-value" id="ltr-vacancy-rate">5%</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-card-label">
+                                    Annual Income
+                                    <span class="data-source-badge calculated" style="font-size: 9px; padding: 1px 6px;">Calc</span>
+                                </div>
+                                <div class="metric-card-value" id="ltr-annual-income">$47,400</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-card-label">
+                                    Net Cash Flow
+                                    <span class="data-source-badge calculated" style="font-size: 9px; padding: 1px 6px;">Calc</span>
+                                </div>
+                                <div class="metric-card-value positive">+$1,200</div>
+                            </div>
+                        </div>
+
+                        <!-- LTR Calculator -->
+                        <div class="calculator-section">
+                            <h3 class="h3" style="margin-bottom: 20px;">Adjust Rental Assumptions</h3>
+                            <div class="calculator-grid">
+                                <div class="input-group">
+                                    <label class="input-label">Monthly Rent</label>
+                                    <div class="input-wrapper">
+                                        <input type="range" class="slider" id="ltrRent" min="3000" max="5000" value="3950" 
+                                               oninput="updateLTRCalculations()">
+                                        <span class="input-value" id="ltrRentValue">$3,950</span>
+                                    </div>
+                                </div>
+                                <div class="input-group">
+                                    <label class="input-label">Vacancy Rate</label>
+                                    <div class="input-wrapper">
+                                        <input type="range" class="slider" id="ltrVacancy" min="0" max="20" value="5" 
+                                               oninput="updateLTRCalculations()">
+                                        <span class="input-value" id="ltrVacancyValue">5%</span>
+                                    </div>
+                                </div>
+                                <div class="input-group">
+                                    <label class="input-label">Management Fee</label>
+                                    <div class="input-wrapper">
+                                        <input type="range" class="slider" id="ltrMgmt" min="0" max="15" value="8" 
+                                               oninput="updateLTRCalculations()">
+                                        <span class="input-value" id="ltrMgmtValue">8%</span>
+                                    </div>
+                                </div>
+                                <div class="input-group">
+                                    <label class="input-label">Annual Appreciation</label>
+                                    <div class="input-wrapper">
+                                        <input type="range" class="slider" id="ltrAppreciation" min="0" max="10" value="3.2" step="0.1"
+                                               oninput="updateLTRCalculations()">
+                                        <span class="input-value" id="ltrAppreciationValue">3.2%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- LTR Comparables -->
+                        <div class="expandable-section">
+                            <div class="expand-toggle" onclick="toggleExpand(this)">
+                                <span>🏘️ Rental Comparables in Area</span>
+                                <span>▼</span>
+                            </div>
+                            <div class="expand-content">
+                                <div class="comparables-grid" id="rental-comparables-container">
+                                    <div class="comparable-card">
+                                        <div class="comparable-image-container">
+                                            <img src="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=400&h=300&fit=crop" 
+                                                 alt="Rental 1" class="comparable-image">
+                                            <div class="comparable-price">$4,200/mo</div>
+                                        </div>
+                                        <div class="comparable-details">
+                                            <div class="comparable-title">2BR, 2BA • Liberty Village</div>
+                                            <div class="comparable-stats">
+                                                <span class="comparable-stat">980 sq ft</span>
+                                                <span class="comparable-stat">Parking included</span>
+                                            </div>
+                                            <div class="comparable-revenue">
+                                                <span class="revenue-label">Listed</span>
+                                                <span style="font-weight: 600;">3 days ago</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="comparable-card">
+                                        <div class="comparable-image-container">
+                                            <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=400&h=300&fit=crop" 
+                                                 alt="Rental 2" class="comparable-image">
+                                            <div class="comparable-price">$3,850/mo</div>
+                                        </div>
+                                        <div class="comparable-details">
+                                            <div class="comparable-title">2BR, 1BA • King West</div>
+                                            <div class="comparable-stats">
+                                                <span class="comparable-stat">920 sq ft</span>
+                                                <span class="comparable-stat">No parking</span>
+                                            </div>
+                                            <div class="comparable-revenue">
+                                                <span class="revenue-label">Listed</span>
+                                                <span style="font-weight: 600;">1 week ago</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="comparable-card">
+                                        <div class="comparable-image-container">
+                                            <img src="https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=400&h=300&fit=crop" 
+                                                 alt="Rental 3" class="comparable-image">
+                                            <div class="comparable-price">$3,900/mo</div>
+                                        </div>
+                                        <div class="comparable-details">
+                                            <div class="comparable-title">2BR, 2BA • Fort York</div>
+                                            <div class="comparable-stats">
+                                                <span class="comparable-stat">950 sq ft</span>
+                                                <span class="comparable-stat">Gym/Pool</span>
+                                            </div>
+                                            <div class="comparable-revenue">
+                                                <span class="revenue-label">Listed</span>
+                                                <span style="font-weight: 600;">2 weeks ago</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        </div>
+                    </section>
+
+                    <!-- Section 5: Financial Calculator -->
+                    <section id="financial-calculator" class="card">
+                        <div class="section-header">
+                            <div class="section-title">
+                                <h2 class="h2">Financial Analysis Calculator</h2>
+                                <span class="data-source-badge calculated">Interactive</span>
+                            </div>
+                            <div>
+                                <button style="padding: 8px 16px; background: var(--primary-blue); color: white; border: none; border-radius: 8px; font-weight: 500; cursor: pointer;">
+                                    📊 Export to Excel
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Financing Options -->
+                        <div class="calculator-section">
+                            <h3 class="h3" style="margin-bottom: 20px;">Financing Assumptions</h3>
+                            
+                            <div class="calculator-grid">
+                                <div class="input-group">
+                                    <label class="input-label">Down Payment</label>
+                                    <div class="input-wrapper">
+                                        <input type="range" class="slider" id="downPayment" min="20" max="50" value="20" 
+                                               oninput="updateFinancialCalculations()">
+                                        <span class="input-value">
+                                            <span id="downPaymentPercent">20%</span> 
+                                            (<span id="downPaymentAmount">$169,980</span>)
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="input-group">
+                                    <label class="input-label">Interest Rate</label>
+                                    <div class="input-wrapper">
+                                        <input type="range" class="slider" id="interestRate" min="4" max="8" value="6.5" step="0.1"
+                                               oninput="updateFinancialCalculations()">
+                                        <span class="input-value" id="interestRateValue">6.5%</span>
+                                    </div>
+                                </div>
+                                <div class="input-group">
+                                    <label class="input-label">Property Tax</label>
+                                    <div class="input-wrapper">
+                                        <input type="number" id="propertyTaxInput" value="458" step="1" 
+                                               style="padding: 6px; border: 1px solid var(--gray-300); border-radius: 4px; width: 100px;"
+                                               oninput="updateFinancialCalculations()">
+                                        <span class="input-value" id="propertyTaxMonthly">$458/mo</span>
+                                    </div>
+                                </div>
+                                <div class="input-group">
+                                    <label class="input-label">Insurance</label>
+                                    <div class="input-wrapper">
+                                        <input type="range" class="slider" id="insuranceSlider" min="100" max="500" value="250"
+                                               oninput="updateFinancialCalculations()">
+                                        <span class="input-value" id="insuranceValue">$250/mo</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Cash Flow Visualization -->
+                        <div class="cashflow-chart">
+                            <h3 class="h3" style="margin-bottom: 20px;">Monthly Cash Flow Comparison</h3>
+                            <svg viewBox="0 0 400 280" style="width: 100%; max-width: 500px; height: 280px; margin: 0 auto; display: block;">
+                                <!-- Grid lines -->
+                                <line x1="60" y1="30" x2="340" y2="30" stroke="#E5E7EB" stroke-width="1" stroke-dasharray="2,2"/>
+                                <line x1="60" y1="80" x2="340" y2="80" stroke="#E5E7EB" stroke-width="1" stroke-dasharray="2,2"/>
+                                <line x1="60" y1="130" x2="340" y2="130" stroke="#E5E7EB" stroke-width="1" stroke-dasharray="2,2"/>
+                                <line x1="60" y1="180" x2="340" y2="180" stroke="#E5E7EB" stroke-width="1" stroke-dasharray="2,2"/>
+                                <line x1="60" y1="230" x2="340" y2="230" stroke="#E5E7EB" stroke-width="1" stroke-dasharray="2,2"/>
+                                
+                                <!-- STR Bar (disabled/grayed) -->
+                                <rect id="strBar" x="80" y="180" width="80" height="50" fill="#9CA3AF" rx="4" opacity="0.5"/>
+                                <text x="120" y="250" text-anchor="middle" font-size="14" font-weight="600" fill="#9CA3AF">STR</text>
+                                <text id="strBarValue" x="120" y="170" text-anchor="middle" font-size="16" font-weight="700" fill="#9CA3AF">N/A</text>
+                                
+                                <!-- LTR Bar -->
+                                <rect id="ltrBar" x="240" y="130" width="80" height="100" fill="#10b981" rx="4"/>
+                                <text x="280" y="250" text-anchor="middle" font-size="14" font-weight="600" fill="#374151">LTR</text>
+                                <text id="ltrBarValue" x="280" y="120" text-anchor="middle" font-size="16" font-weight="700" fill="#10b981">$1,200</text>
+                                
+                                <!-- Y-axis -->
+                                <line x1="60" y1="230" x2="60" y2="30" stroke="#374151" stroke-width="2"/>
+                                <text x="45" y="235" text-anchor="end" font-size="11" fill="#6B7280">$0</text>
+                                <text x="45" y="185" text-anchor="end" font-size="11" fill="#6B7280">$1k</text>
+                                <text x="45" y="135" text-anchor="end" font-size="11" fill="#6B7280">$2k</text>
+                                <text x="45" y="85" text-anchor="end" font-size="11" fill="#6B7280">$3k</text>
+                                <text x="45" y="35" text-anchor="end" font-size="11" fill="#6B7280">$4k</text>
+                                
+                                <!-- X-axis -->
+                                <line x1="60" y1="230" x2="340" y2="230" stroke="#374151" stroke-width="2"/>
+                            </svg>
+                        </div>
+
+                        <!-- Financial Breakdown -->
+                        <div class="financial-breakdown">
+                            <div class="breakdown-card">
+                                <h4 style="margin-bottom: 16px;">Monthly Income</h4>
+                                <div class="breakdown-item">
+                                    <span class="breakdown-label">Rental Income</span>
+                                    <span class="breakdown-value positive" id="rentalIncome">+$3,950</span>
+                                </div>
+                                <div class="breakdown-item">
+                                    <span class="breakdown-label">Vacancy Loss (5%)</span>
+                                    <span class="breakdown-value negative" id="vacancyLoss">-$198</span>
+                                </div>
+                                <div class="breakdown-item">
+                                    <span class="breakdown-label">Effective Income</span>
+                                    <span class="breakdown-value positive" id="effectiveIncome">+$3,752</span>
+                                </div>
+                            </div>
+                            
+                            <div class="breakdown-card">
+                                <h4 style="margin-bottom: 16px;">Monthly Expenses</h4>
+                                <div class="breakdown-item">
+                                    <span class="breakdown-label">Mortgage Payment</span>
+                                    <span class="breakdown-value negative" id="mortgagePayment">-$3,200</span>
+                                </div>
+                                <div class="breakdown-item">
+                                    <span class="breakdown-label">Property Tax</span>
+                                    <span class="breakdown-value negative" id="propertyTax">-$458</span>
+                                </div>
+                                <div class="breakdown-item">
+                                    <span class="breakdown-label">Condo Fees</span>
+                                    <span class="breakdown-value negative">-$650</span>
+                                </div>
+                                <div class="breakdown-item">
+                                    <span class="breakdown-label">Insurance</span>
+                                    <span class="breakdown-value negative" id="insurance">-$250</span>
+                                </div>
+                                <div class="breakdown-item">
+                                    <span class="breakdown-label">Management (8%)</span>
+                                    <span class="breakdown-value negative" id="managementFee">-$316</span>
+                                </div>
+                                <div class="breakdown-item">
+                                    <span class="breakdown-label">Net Cash Flow</span>
+                                    <span class="breakdown-value positive" id="netCashFlow" style="font-size: 20px;">+$1,200</span>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Section 6: Final Comparison & Decision -->
+                    <section id="final-comparison" class="card">
+                        <div class="section-header">
+                            <div class="section-title">
+                                <h2 class="h2">Complete Strategy Comparison</h2>
+                            </div>
+                        </div>
+
+                        <table class="comparison-table">
+                            <thead>
+                                <tr>
+                                    <th>Comparison Factor</th>
+                                    <th>Short-Term Rental</th>
+                                    <th>Long-Term Rental</th>
+                                    <th>Winner</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Legal Status</strong></td>
+                                    <td style="color: var(--danger-red);">❌ Not Permitted</td>
+                                    <td style="color: var(--success-green);">✓ Fully Compliant</td>
+                                    <td>LTR ✓</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Monthly Cash Flow</strong></td>
+                                    <td>$2,500 (if allowed)</td>
+                                    <td>$1,200</td>
+                                    <td>LTR (only option)</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Time Commitment</strong></td>
+                                    <td>20-30 hours/month</td>
+                                    <td>2-5 hours/month</td>
+                                    <td>LTR ✓</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Income Stability</strong></td>
+                                    <td>Variable (seasonal)</td>
+                                    <td>Stable (12-month lease)</td>
+                                    <td>LTR ✓</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Startup Costs</strong></td>
+                                    <td>$15,000 (furnishing)</td>
+                                    <td>$0 (unfurnished)</td>
+                                    <td>LTR ✓</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>ROI (Annual)</strong></td>
+                                    <td>15.3% (if allowed)</td>
+                                    <td>11.7%</td>
+                                    <td>LTR ✓</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <!-- Final Recommendation -->
+                        <div class="recommendation-box">
+                            <h3 class="h3" style="margin-bottom: 16px;">📊 Investment Recommendation</h3>
+                            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 32px;">
+                                <div>
+                                    <h4 style="color: var(--success-green); margin-bottom: 12px;">
+                                        ✓ Proceed with Long-Term Rental Strategy
+                                    </h4>
+                                    <ul style="margin-left: 20px; line-height: 2;">
+                                        <li>Generates positive cash flow of $1,200/month from day one</li>
+                                        <li>Minimal time commitment - truly passive income</li>
+                                        <li>Property appreciation adds 3.2% annual return</li>
+                                        <li>Strong rental demand ensures low vacancy</li>
+                                        <li>No regulatory risk or compliance concerns</li>
+                                    </ul>
+                                </div>
+                                <div style="text-align: center;">
+                                    <div style="font-size: 14px; color: var(--gray-600); margin-bottom: 8px;">Total Expected Return</div>
+                                    <div style="font-size: 48px; font-weight: 700; color: var(--success-green);">11.7%</div>
+                                    <div style="font-size: 14px; color: var(--gray-600);">Annual ROI</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Next Steps -->
+                        <div class="next-steps">
+                            <h3 class="h3">🎯 Next Steps</h3>
+                            <div class="next-steps-grid">
+                                <div class="next-step-card">
+                                    <h4 style="color: var(--primary-blue); margin-bottom: 8px;">1. Make an Offer</h4>
+                                    <p class="small">Property listed 15 days. Consider offering $825,000 (97% of asking)</p>
+                                </div>
+                                <div class="next-step-card">
+                                    <h4 style="color: var(--primary-blue); margin-bottom: 8px;">2. Arrange Financing</h4>
+                                    <p class="small">Get pre-approved for $679,920 mortgage. Compare rates from multiple lenders.</p>
+                                </div>
+                                <div class="next-step-card">
+                                    <h4 style="color: var(--primary-blue); margin-bottom: 8px;">3. Find Tenants</h4>
+                                    <p class="small">List 60 days before closing. Screen carefully for stable, long-term tenants.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Scroll to section
+        function scrollToSection(sectionId) {
+            const section = document.getElementById(sectionId);
+            if (section) {
+                section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                
+                // Update active nav item
+                document.querySelectorAll('.sidebar-nav-item').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                event.target.classList.add('active');
+            }
+        }
+
+        // Toggle expandable sections
+        function toggleExpand(element) {
+            const content = element.nextElementSibling;
+            const arrow = element.querySelector('span:last-child');
+            
+            content.classList.toggle('show');
+            arrow.textContent = content.classList.contains('show') ? '▲' : '▼';
+        }
+
+        // Update LTR calculations
+        window.updateLTRCalculations = function() {
+            // Get elements with null checks
+            const rentEl = document.getElementById('ltrRent');
+            const vacancyEl = document.getElementById('ltrVacancy');
+            const mgmtEl = document.getElementById('ltrMgmt');
+            const appreciationEl = document.getElementById('ltrAppreciation');
+            
+            if (!rentEl || !vacancyEl || !mgmtEl || !appreciationEl) {
+                console.warn('LTR calculation elements not found');
+                return;
+            }
+            
+            const rent = rentEl.value;
+            const vacancy = vacancyEl.value;
+            const mgmt = mgmtEl.value;
+            const appreciation = appreciationEl.value;
+            
+            // Update displays with null checks
+            const rentValueEl = document.getElementById('ltrRentValue');
+            if (rentValueEl) rentValueEl.textContent = `$${parseInt(rent).toLocaleString()}`;
+            
+            const vacancyValueEl = document.getElementById('ltrVacancyValue');
+            if (vacancyValueEl) vacancyValueEl.textContent = `${vacancy}%`;
+            
+            const mgmtValueEl = document.getElementById('ltrMgmtValue');
+            if (mgmtValueEl) mgmtValueEl.textContent = `${mgmt}%`;
+            
+            const appreciationValueEl = document.getElementById('ltrAppreciationValue');
+            if (appreciationValueEl) appreciationValueEl.textContent = `${appreciation}%`;
+            
+            // Update financial calculations
+            updateFinancialCalculations();
+        }
+
+        // Update financial calculations
+        window.updateFinancialCalculations = function() {
+            const propertyPrice = 849900;
+            
+            // Get elements with null checks
+            const downPaymentEl = document.getElementById('downPayment');
+            const interestRateEl = document.getElementById('interestRate');
+            const propertyTaxEl = document.getElementById('propertyTaxInput');
+            const insuranceEl = document.getElementById('insuranceSlider');
+            
+            // Return early if elements are missing
+            if (!downPaymentEl || !interestRateEl || !propertyTaxEl || !insuranceEl) {
+                console.warn('Financial calculator elements not found');
+                return;
+            }
+            
+            const downPercent = downPaymentEl.value;
+            const interestRate = interestRateEl.value;
+            const propertyTax = propertyTaxEl.value;
+            const insurance = insuranceEl.value;
+            
+            const downAmount = propertyPrice * (downPercent/100);
+            const loanAmount = propertyPrice - downAmount;
+            const monthlyRate = interestRate / 100 / 12;
+            const numPayments = 25 * 12; // 25 year amortization
+            
+            // Calculate monthly payment
+            const monthlyPayment = loanAmount * (monthlyRate * Math.pow(1 + monthlyRate, numPayments)) / 
+                                  (Math.pow(1 + monthlyRate, numPayments) - 1);
+            
+            // Get rental values with null checks
+            const ltrRentEl = document.getElementById('ltrRent');
+            const ltrVacancyEl = document.getElementById('ltrVacancy');
+            const ltrMgmtEl = document.getElementById('ltrMgmt');
+            
+            if (!ltrRentEl || !ltrVacancyEl || !ltrMgmtEl) {
+                console.warn('LTR calculator elements not found');
+                return;
+            }
+            
+            const rent = parseFloat(ltrRentEl.value);
+            const vacancy = parseFloat(ltrVacancyEl.value);
+            const mgmtPercent = parseFloat(ltrMgmtEl.value);
+            
+            // Calculate effective income
+            const vacancyLoss = rent * (vacancy/100);
+            const effectiveIncome = rent - vacancyLoss;
+            const mgmtFee = effectiveIncome * (mgmtPercent/100);
+            
+            // Update display with null checks
+            const downPaymentPercentEl = document.getElementById('downPaymentPercent');
+            if (downPaymentPercentEl) downPaymentPercentEl.textContent = `${downPercent}%`;
+            
+            const downPaymentAmountEl = document.getElementById('downPaymentAmount');
+            if (downPaymentAmountEl) downPaymentAmountEl.textContent = `$${Math.round(downAmount).toLocaleString()}`;
+            document.getElementById('interestRateValue').textContent = `${interestRate}%`;
+            document.getElementById('propertyTaxMonthly').textContent = `$${propertyTax}/mo`;
+            document.getElementById('insuranceValue').textContent = `$${insurance}/mo`;
+            
+            // Update income breakdown
+            document.getElementById('rentalIncome').textContent = `+$${Math.round(rent).toLocaleString()}`;
+            document.getElementById('vacancyLoss').textContent = `-$${Math.round(vacancyLoss).toLocaleString()}`;
+            document.getElementById('effectiveIncome').textContent = `+$${Math.round(effectiveIncome).toLocaleString()}`;
+            
+            // Update expense breakdown
+            document.getElementById('mortgagePayment').textContent = `-$${Math.round(monthlyPayment).toLocaleString()}`;
+            document.getElementById('propertyTax').textContent = `-$${propertyTax}`;
+            document.getElementById('insurance').textContent = `-$${insurance}`;
+            document.getElementById('managementFee').textContent = `-$${Math.round(mgmtFee).toLocaleString()}`;
+            
+            // Calculate net cash flow
+            const totalExpenses = monthlyPayment + parseFloat(propertyTax) + 650 + parseFloat(insurance) + mgmtFee;
+            const netCashFlow = effectiveIncome - totalExpenses;
+            
+            document.getElementById('netCashFlow').textContent = 
+                netCashFlow >= 0 ? `+$${Math.round(netCashFlow).toLocaleString()}` : `-$${Math.abs(Math.round(netCashFlow)).toLocaleString()}`;
+            
+            // Update bar chart
+            const ltrHeight = Math.min(200, Math.abs(netCashFlow) / 20); // Scale for visualization
+            const ltrBar = document.getElementById('ltrBar');
+            
+            if (netCashFlow >= 0) {
+                ltrBar.setAttribute('y', 230 - ltrHeight);
+                ltrBar.setAttribute('height', ltrHeight);
+                ltrBar.setAttribute('fill', '#10b981');
+            } else {
+                ltrBar.setAttribute('y', 230);
+                ltrBar.setAttribute('height', ltrHeight);
+                ltrBar.setAttribute('fill', '#ef4444');
+            }
+            
+            document.getElementById('ltrBarValue').textContent = 
+                netCashFlow >= 0 ? `$${Math.round(netCashFlow).toLocaleString()}` : `-$${Math.abs(Math.round(netCashFlow)).toLocaleString()}`;
+            document.getElementById('ltrBarValue').setAttribute('fill', netCashFlow >= 0 ? '#10b981' : '#ef4444');
+        }
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof window.updateLTRCalculations === 'function') {
+                window.updateLTRCalculations();
+            }
+            if (typeof window.updateFinancialCalculations === 'function') {
+                window.updateFinancialCalculations();
+            }
+        });
+    </script>
+    
+    <!-- Core Modules for Mockup Testing -->
+    <script src="./mockup-config.js"></script>
+    <script src="./error-recovery.js"></script>
+    <script src="./api-integration.js"></script>
+    <script src="./extension-handler.js"></script>
+    
+    <!-- Initialize Enhanced Mockup Functionality -->
+    <script>
+        // Initialize mockup when DOM is ready
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('[Mockup2] Initializing base-mockup2.html with enhanced features');
+            
+            // Show configuration in console
+            if (window.mockupConfig) {
+                window.mockupConfig.logConfig();
+            }
+            
+            // Handle form submission
+            const form = document.getElementById('property-form');
+            if (form) {
+                form.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    console.log('[Mockup2] Form submitted');
+                    
+                    // Get form data
+                    const addressInput = form.querySelector('input[name="address"], input[type="text"]');
+                    const address = addressInput ? addressInput.value.trim() : '';
+                    
+                    if (!address) {
+                        alert('Please enter a property address');
+                        return;
+                    }
+                    
+                    // Check if we have extension data
+                    let analysisData;
+                    if (window.extensionHandler?.hasExtensionData()) {
+                        console.log('[Mockup2] Using extension data');
+                        analysisData = window.extensionHandler.getDataForAPI();
+                    } else {
+                        console.log('[Mockup2] Using form address:', address);
+                        analysisData = {
+                            propertyAddress: address,
+                            includeStrAnalysis: true,
+                            analysisType: 'both'
+                        };
+                    }
+                    
+                    // Analyze property
+                    try {
+                        console.log('[Mockup2] Starting property analysis...');
+                        const result = await window.propertyAPI.analyzeProperty(
+                            analysisData.propertyAddress,
+                            {
+                                includeStr: true,
+                                analysisType: 'both',
+                                showLoading: true,
+                                showErrors: true
+                            }
+                        );
+                        
+                        console.log('[Mockup2] Analysis complete:', result);
+                        
+                        // Update mockup with results
+                        if (result && result.data) {
+                            window.propertyAPI.updateMockup(result, 'mockup2');
+                            
+                            // Update comparison and investment grade
+                            updateQuickComparison(result.data);
+                            updateInvestmentGrade(result.data);
+                            
+                            // Show success message
+                            window.propertyAPI.showSuccessMessage('Property analysis complete! All enhanced features loaded.');
+                        }
+                        
+                    } catch (error) {
+                        console.error('[Mockup2] Analysis failed:', error);
+                        
+                        // Show error recovery UI
+                        if (window.errorRecovery) {
+                            window.errorRecovery.showErrorUI(error, 'property-hero');
+                        } else {
+                            alert(`Analysis failed: ${error.message}`);
+                        }
+                    }
+                });
+            }
+            
+            // Handle extension data if present
+            if (window.extensionHandler?.hasExtensionData()) {
+                console.log('[Mockup2] Extension data detected');
+                // Form will be auto-populated and potentially auto-submitted
+            }
+            
+            // Enhanced comparison functionality
+            function updateQuickComparison(data) {
+                console.log('[Mockup2] Updating quick comparison');
+                
+                const strData = data.shortTermRental || {};
+                const ltrData = data.longTermRental || {};
+                const isStrRestricted = data.regulations?.restricted;
+                
+                // Update comparison values
+                const strMonthlyEl = document.getElementById('str-bar-value');
+                const ltrMonthlyEl = document.getElementById('ltr-bar-value');
+                
+                if (strMonthlyEl) {
+                    if (isStrRestricted) {
+                        strMonthlyEl.textContent = 'N/A';
+                        document.getElementById('strBar')?.setAttribute('fill', '#9CA3AF');
+                    } else {
+                        const strRevenue = strData.monthlyRevenue || 0;
+                        strMonthlyEl.textContent = `$${Math.round(strRevenue).toLocaleString()}`;
+                        
+                        // Update bar height
+                        const strBar = document.getElementById('strBar');
+                        if (strBar) {
+                            const maxRevenue = Math.max(strRevenue, ltrData.monthlyRent || 0);
+                            const barHeight = (strRevenue / maxRevenue) * 120;
+                            strBar.setAttribute('height', barHeight);
+                            strBar.setAttribute('y', 130 - barHeight);
+                        }
+                    }
+                }
+                
+                if (ltrMonthlyEl) {
+                    const ltrRent = ltrData.monthlyRent || 0;
+                    ltrMonthlyEl.textContent = `$${Math.round(ltrRent).toLocaleString()}`;
+                    
+                    // Update bar height
+                    const ltrBar = document.getElementById('ltrBar');
+                    if (ltrBar) {
+                        const maxRevenue = Math.max(strData.monthlyRevenue || 0, ltrRent);
+                        const barHeight = (ltrRent / maxRevenue) * 120;
+                        ltrBar.setAttribute('height', barHeight);
+                        ltrBar.setAttribute('y', 130 - barHeight);
+                    }
+                }
+                
+                // Update recommendation
+                const recommendationEl = document.querySelector('.recommendation-text');
+                if (recommendationEl) {
+                    if (isStrRestricted) {
+                        recommendationEl.textContent = '✓ Long-Term Rental (STR Restricted)';
+                        recommendationEl.style.color = '#10B981';
+                    } else if ((strData.monthlyRevenue || 0) > (ltrData.monthlyRent || 0) * 1.3) {
+                        recommendationEl.textContent = '✓ Short-Term Rental (Higher Returns)';
+                        recommendationEl.style.color = '#10B981';
+                    } else {
+                        recommendationEl.textContent = '✓ Long-Term Rental (More Stable)';
+                        recommendationEl.style.color = '#3B82F6';
+                    }
+                }
+            }
+            
+            // Enhanced investment grade functionality
+            function updateInvestmentGrade(data) {
+                console.log('[Mockup2] Updating investment grade');
+                
+                const metrics = data.metrics || {};
+                const roi = parseFloat(metrics.totalRoi) || 0;
+                const capRate = parseFloat(metrics.capRate) || 0;
+                const cashFlow = metrics.monthlyProfit || 0;
+                
+                // Calculate grade
+                let grade, color, description;
+                if (roi > 15 && capRate > 8 && cashFlow > 0) {
+                    grade = 'A+';
+                    color = '#10B981';
+                    description = 'Exceptional Investment';
+                } else if (roi > 12 && capRate > 6 && cashFlow > 0) {
+                    grade = 'A';
+                    color = '#10B981';
+                    description = 'Excellent Opportunity';
+                } else if (roi > 10 && capRate > 5) {
+                    grade = 'B+';
+                    color = '#3B82F6';
+                    description = 'Strong Potential';
+                } else if (roi > 8 && capRate > 4) {
+                    grade = 'B';
+                    color = '#3B82F6';
+                    description = 'Good Investment';
+                } else if (roi > 5 && capRate > 3) {
+                    grade = 'C+';
+                    color = '#F59E0B';
+                    description = 'Moderate Returns';
+                } else {
+                    grade = 'C';
+                    color = '#EF4444';
+                    description = 'Review Carefully';
+                }
+                
+                // Update UI
+                const gradeEl = document.querySelector('.investment-grade');
+                if (gradeEl) {
+                    gradeEl.textContent = grade;
+                    gradeEl.style.background = `linear-gradient(135deg, ${color}, ${color}dd)`;
+                }
+                
+                const descEl = document.querySelector('.investment-description');
+                if (descEl) {
+                    descEl.textContent = description;
+                }
+                
+                // Update metrics
+                const updateMetric = (selector, value) => {
+                    const el = document.querySelector(selector);
+                    if (el) el.textContent = value;
+                };
+                
+                updateMetric('.roi-value', `${roi.toFixed(1)}%`);
+                updateMetric('.cap-rate-value', `${capRate.toFixed(1)}%`);
+                updateMetric('.cash-flow-value', cashFlow >= 0 
+                    ? `$${Math.round(cashFlow).toLocaleString()}` 
+                    : `-$${Math.abs(Math.round(cashFlow)).toLocaleString()}`);
+            }
+            
+            // Add event listeners for calculators
+            const financialInputs = document.querySelectorAll('input[type="range"], input[type="number"]');
+            financialInputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    if (typeof updateFinancialCalculations === 'function') {
+                        updateFinancialCalculations();
+                    }
+                    if (typeof updateLTRCalculations === 'function') {
+                        updateLTRCalculations();
+                    }
+                });
+            });
+            
+            console.log('[Mockup2] Enhanced initialization complete');
+        });
+    </script>
+
+    <!-- PDF Generation Modal and Scripts -->
+    <div id="pdfReportModal" style="display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.5); z-index: 9999; align-items: center; justify-content: center;">
+        <div style="background: white; border-radius: 12px; max-width: 600px; width: 90%; max-height: 90vh; overflow-y: auto; margin: 20px;">
+            <div style="padding: 24px; border-bottom: 1px solid var(--gray-200);">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h2 class="h2">Customize Your Report</h2>
+                    <button onclick="closePDFModal()" style="background: none; border: none; font-size: 24px; cursor: pointer; color: var(--gray-400);">×</button>
+                </div>
+                <p style="margin-top: 8px; color: var(--gray-600);">Select the sections you want to include in your PDF report</p>
+            </div>
+            
+            <div style="padding: 24px;">
+                <!-- Report Sections -->
+                <div style="margin-bottom: 24px;">
+                    <h3 class="h3" style="margin-bottom: 16px;">Report Sections</h3>
+                    <div style="display: flex; flex-direction: column; gap: 12px;">
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                            <input type="checkbox" id="section-executive" checked style="width: 20px; height: 20px;">
+                            <span>Executive Summary</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                            <input type="checkbox" id="section-property" checked style="width: 20px; height: 20px;">
+                            <span>Property Details</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                            <input type="checkbox" id="section-financial" checked style="width: 20px; height: 20px;">
+                            <span>Financial Analysis</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                            <input type="checkbox" id="section-ltr" checked style="width: 20px; height: 20px;">
+                            <span>Long-term Rental Analysis</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                            <input type="checkbox" id="section-str" checked style="width: 20px; height: 20px;">
+                            <span>Short-term Rental Analysis</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                            <input type="checkbox" id="section-comparables" checked style="width: 20px; height: 20px;">
+                            <span>Market Comparables</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                            <input type="checkbox" id="section-comparison" checked style="width: 20px; height: 20px;">
+                            <span>STR vs LTR Comparison</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                            <input type="checkbox" id="section-recommendations" checked style="width: 20px; height: 20px;">
+                            <span>Investment Recommendations</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <!-- Report Format -->
+                <div style="margin-bottom: 24px;">
+                    <h3 class="h3" style="margin-bottom: 16px;">Report Format</h3>
+                    <div style="display: flex; gap: 12px;">
+                        <label style="flex: 1; padding: 12px; border: 2px solid var(--primary-blue); border-radius: 8px; cursor: pointer; text-align: center;">
+                            <input type="radio" name="format" value="detailed" checked style="margin-right: 8px;">
+                            <span>Detailed Report</span>
+                        </label>
+                        <label style="flex: 1; padding: 12px; border: 2px solid var(--gray-300); border-radius: 8px; cursor: pointer; text-align: center;">
+                            <input type="radio" name="format" value="summary" style="margin-right: 8px;">
+                            <span>Summary Report</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <!-- Realtor Information -->
+                <div style="margin-bottom: 24px;">
+                    <h3 class="h3" style="margin-bottom: 16px;">Realtor Information (Optional)</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                        <input type="text" id="realtor-name" placeholder="Your Name" style="padding: 10px; border: 1px solid var(--gray-300); border-radius: 6px;">
+                        <input type="text" id="realtor-company" placeholder="Company Name" style="padding: 10px; border: 1px solid var(--gray-300); border-radius: 6px;">
+                        <input type="tel" id="realtor-phone" placeholder="Phone Number" style="padding: 10px; border: 1px solid var(--gray-300); border-radius: 6px;">
+                        <input type="email" id="realtor-email" placeholder="Email Address" style="padding: 10px; border: 1px solid var(--gray-300); border-radius: 6px;">
+                    </div>
+                </div>
+                
+                <!-- Custom Notes -->
+                <div style="margin-bottom: 24px;">
+                    <h3 class="h3" style="margin-bottom: 16px;">Custom Notes for Client</h3>
+                    <textarea id="custom-notes" rows="4" placeholder="Add any personalized notes or recommendations for your client..." 
+                              style="width: 100%; padding: 10px; border: 1px solid var(--gray-300); border-radius: 6px; resize: vertical;"></textarea>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div style="display: flex; gap: 12px;">
+                    <button onclick="generatePDFReport()" id="generateBtn" style="flex: 1; padding: 12px; background: var(--primary-blue); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">
+                        Generate PDF Report
+                    </button>
+                    <button onclick="closePDFModal()" style="flex: 1; padding: 12px; background: white; color: var(--gray-700); border: 1px solid var(--gray-300); border-radius: 8px; font-weight: 600; cursor: pointer;">
+                        Cancel
+                    </button>
+                </div>
+                
+                <!-- Progress/Status -->
+                <div id="pdfStatus" style="margin-top: 16px; padding: 12px; background: var(--gray-50); border-radius: 8px; display: none;">
+                    <div id="statusText" style="color: var(--gray-700); font-weight: 500;"></div>
+                    <div id="downloadLink" style="margin-top: 8px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load jsPDF from CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script>
+        // PDF Generation Functions
+        function openPDFModal() {
+            const modal = document.getElementById('pdfReportModal');
+            modal.style.display = 'flex';
+        }
+        
+        function closePDFModal() {
+            const modal = document.getElementById('pdfReportModal');
+            modal.style.display = 'none';
+            
+            // Reset status
+            const statusDiv = document.getElementById('pdfStatus');
+            statusDiv.style.display = 'none';
+        }
+        
+        async function generatePDFReport() {
+            const statusDiv = document.getElementById('pdfStatus');
+            const statusText = document.getElementById('statusText');
+            const downloadDiv = document.getElementById('downloadLink');
+            const generateBtn = document.getElementById('generateBtn');
+            
+            // Show status
+            statusDiv.style.display = 'block';
+            statusText.textContent = 'Generating PDF...';
+            downloadDiv.innerHTML = '';
+            generateBtn.disabled = true;
+            
+            try {
+                // Get selected sections
+                const selectedSections = {
+                    executiveSummary: document.getElementById('section-executive').checked,
+                    propertyDetails: document.getElementById('section-property').checked,
+                    financialAnalysis: document.getElementById('section-financial').checked,
+                    longTermRental: document.getElementById('section-ltr').checked,
+                    shortTermRental: document.getElementById('section-str').checked,
+                    comparables: document.getElementById('section-comparables').checked,
+                    comparison: document.getElementById('section-comparison').checked,
+                    recommendations: document.getElementById('section-recommendations').checked
+                };
+                
+                // Get realtor info
+                const realtorInfo = {
+                    name: document.getElementById('realtor-name').value,
+                    company: document.getElementById('realtor-company').value,
+                    phone: document.getElementById('realtor-phone').value,
+                    email: document.getElementById('realtor-email').value
+                };
+                
+                // Get custom notes
+                const customNotes = document.getElementById('custom-notes').value;
+                
+                // Get report format
+                const format = document.querySelector('input[name="format"]:checked').value;
+                
+                // Generate PDF with jsPDF
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                
+                // Add content
+                let yPosition = 20;
+                
+                // Title
+                doc.setFontSize(20);
+                doc.text('Investment Property Analysis Report', 20, yPosition);
+                yPosition += 15;
+                
+                // Property Address
+                doc.setFontSize(14);
+                doc.text('1514 - 150 East Liberty Street', 20, yPosition);
+                yPosition += 8;
+                doc.text('Toronto, Ontario M6K 3R5', 20, yPosition);
+                yPosition += 15;
+                
+                // Date
+                doc.setFontSize(10);
+                doc.text(`Generated: ${new Date().toLocaleDateString()}`, 20, yPosition);
+                yPosition += 15;
+                
+                // Add realtor info if provided
+                if (realtorInfo.name) {
+                    doc.setFontSize(12);
+                    doc.text('Prepared by:', 20, yPosition);
+                    yPosition += 8;
+                    doc.setFontSize(10);
+                    doc.text(realtorInfo.name, 20, yPosition);
+                    yPosition += 6;
+                    if (realtorInfo.company) {
+                        doc.text(realtorInfo.company, 20, yPosition);
+                        yPosition += 6;
+                    }
+                    if (realtorInfo.phone) {
+                        doc.text(realtorInfo.phone, 20, yPosition);
+                        yPosition += 6;
+                    }
+                    if (realtorInfo.email) {
+                        doc.text(realtorInfo.email, 20, yPosition);
+                        yPosition += 6;
+                    }
+                    yPosition += 10;
+                }
+                
+                // Add sections based on selection
+                if (selectedSections.executiveSummary) {
+                    doc.setFontSize(14);
+                    doc.text('Executive Summary', 20, yPosition);
+                    yPosition += 8;
+                    doc.setFontSize(10);
+                    doc.text('Investment Grade: B+', 20, yPosition);
+                    yPosition += 6;
+                    doc.text('Strong LTR opportunity with restricted STR potential.', 20, yPosition);
+                    yPosition += 6;
+                    doc.text('Recommended Strategy: Long-term rental with premium positioning.', 20, yPosition);
+                    yPosition += 15;
+                }
+                
+                if (selectedSections.propertyDetails) {
+                    if (yPosition > 250) {
+                        doc.addPage();
+                        yPosition = 20;
+                    }
+                    doc.setFontSize(14);
+                    doc.text('Property Details', 20, yPosition);
+                    yPosition += 8;
+                    doc.setFontSize(10);
+                    doc.text('Price: $849,900', 20, yPosition);
+                    yPosition += 6;
+                    doc.text('Bedrooms: 2 | Bathrooms: 2 | Size: 950 sq ft', 20, yPosition);
+                    yPosition += 6;
+                    doc.text('Property Type: Condo | Year Built: 2018', 20, yPosition);
+                    yPosition += 6;
+                    doc.text('Building: Modern high-rise with premium amenities', 20, yPosition);
+                    yPosition += 15;
+                }
+                
+                if (selectedSections.financialAnalysis) {
+                    if (yPosition > 250) {
+                        doc.addPage();
+                        yPosition = 20;
+                    }
+                    doc.setFontSize(14);
+                    doc.text('Financial Analysis', 20, yPosition);
+                    yPosition += 8;
+                    doc.setFontSize(10);
+                    doc.text('Down Payment (20%): $169,980', 20, yPosition);
+                    yPosition += 6;
+                    doc.text('Monthly Mortgage: $3,200', 20, yPosition);
+                    yPosition += 6;
+                    doc.text('Property Tax: $650/month', 20, yPosition);
+                    yPosition += 6;
+                    doc.text('HOA Fees: $450/month', 20, yPosition);
+                    yPosition += 6;
+                    doc.text('Total Monthly Expenses: $4,500', 20, yPosition);
+                    yPosition += 15;
+                }
+                
+                if (selectedSections.shortTermRental) {
+                    if (yPosition > 250) {
+                        doc.addPage();
+                        yPosition = 20;
+                    }
+                    doc.setFontSize(14);
+                    doc.text('Short-Term Rental Analysis', 20, yPosition);
+                    yPosition += 8;
+                    doc.setFontSize(10);
+                    doc.text('Status: RESTRICTED - Not permitted', 20, yPosition);
+                    yPosition += 6;
+                    doc.text('Zoning: Residential only, STR prohibited', 20, yPosition);
+                    yPosition += 6;
+                    doc.text('Potential Revenue (if allowed): $8,500/month', 20, yPosition);
+                    yPosition += 6;
+                    doc.text('Average Daily Rate: $375', 20, yPosition);
+                    yPosition += 6;
+                    doc.text('Occupancy Rate: 75%', 20, yPosition);
+                    yPosition += 15;
+                }
+                
+                if (selectedSections.longTermRental) {
+                    if (yPosition > 250) {
+                        doc.addPage();
+                        yPosition = 20;
+                    }
+                    doc.setFontSize(14);
+                    doc.text('Long-Term Rental Analysis', 20, yPosition);
+                    yPosition += 8;
+                    doc.setFontSize(10);
+                    doc.text('Monthly Rent: $3,950', 20, yPosition);
+                    yPosition += 6;
+                    doc.text('Monthly Cash Flow: $1,200', 20, yPosition);
+                    yPosition += 6;
+                    doc.text('Annual Cash Flow: $14,400', 20, yPosition);
+                    yPosition += 6;
+                    doc.text('Cash-on-Cash Return: 8.5%', 20, yPosition);
+                    yPosition += 6;
+                    doc.text('Annual ROI: 11.7%', 20, yPosition);
+                    yPosition += 6;
+                    doc.text('Vacancy Rate: 5%', 20, yPosition);
+                    yPosition += 15;
+                }
+                
+                if (selectedSections.comparables) {
+                    if (yPosition > 250) {
+                        doc.addPage();
+                        yPosition = 20;
+                    }
+                    doc.setFontSize(14);
+                    doc.text('Market Comparables', 20, yPosition);
+                    yPosition += 8;
+                    doc.setFontSize(10);
+                    doc.text('Similar 2BR condos in area:', 20, yPosition);
+                    yPosition += 6;
+                    doc.text('- 145 Liberty St: $825,000 (Sold)', 20, yPosition);
+                    yPosition += 6;
+                    doc.text('- 160 Liberty St: $875,000 (Listed)', 20, yPosition);
+                    yPosition += 6;
+                    doc.text('- 175 Liberty St: $850,000 (Sold)', 20, yPosition);
+                    yPosition += 6;
+                    doc.text('Average Price/Sqft: $895', 20, yPosition);
+                    yPosition += 15;
+                }
+                
+                if (selectedSections.comparison) {
+                    if (yPosition > 250) {
+                        doc.addPage();
+                        yPosition = 20;
+                    }
+                    doc.setFontSize(14);
+                    doc.text('STR vs LTR Comparison', 20, yPosition);
+                    yPosition += 8;
+                    doc.setFontSize(10);
+                    doc.text('Long-Term Rental:', 20, yPosition);
+                    yPosition += 6;
+                    doc.text('  - Monthly Revenue: $3,950', 20, yPosition);
+                    yPosition += 6;
+                    doc.text('  - Cash Flow: $1,200/month', 20, yPosition);
+                    yPosition += 6;
+                    doc.text('  - Management: 2 hours/month', 20, yPosition);
+                    yPosition += 8;
+                    doc.text('Short-Term Rental (Restricted):', 20, yPosition);
+                    yPosition += 6;
+                    doc.text('  - Not permitted in this property', 20, yPosition);
+                    yPosition += 6;
+                    doc.text('  - Recommendation: Focus on LTR strategy', 20, yPosition);
+                    yPosition += 15;
+                }
+                
+                if (selectedSections.recommendations) {
+                    if (yPosition > 230) {
+                        doc.addPage();
+                        yPosition = 20;
+                    }
+                    doc.setFontSize(14);
+                    doc.text('Investment Recommendations', 20, yPosition);
+                    yPosition += 8;
+                    doc.setFontSize(10);
+                    doc.text('1. Proceed with long-term rental strategy', 20, yPosition);
+                    yPosition += 6;
+                    doc.text('2. Target premium tenants with $3,950/month rent', 20, yPosition);
+                    yPosition += 6;
+                    doc.text('3. Consider furnished rental for higher returns', 20, yPosition);
+                    yPosition += 6;
+                    doc.text('4. Budget for 5% vacancy rate', 20, yPosition);
+                    yPosition += 6;
+                    doc.text('5. Review rent increases annually (max 2.5% in Ontario)', 20, yPosition);
+                    yPosition += 15;
+                }
+                
+                // Add custom notes if provided
+                if (customNotes) {
+                    if (yPosition > 230) {
+                        doc.addPage();
+                        yPosition = 20;
+                    }
+                    doc.setFontSize(14);
+                    doc.text('Additional Notes', 20, yPosition);
+                    yPosition += 8;
+                    doc.setFontSize(10);
+                    const lines = doc.splitTextToSize(customNotes, 170);
+                    doc.text(lines, 20, yPosition);
+                }
+                
+                // Convert PDF to base64
+                const pdfBase64 = doc.output('datauristring');
+                
+                // Simulate Firebase upload (in real test, this would use Firebase MCP)
+                const fileName = `reports/mockup2-test-${Date.now()}.pdf`;
+                
+                // Show success message
+                statusText.textContent = '✅ PDF Generated Successfully!';
+                statusText.style.color = 'var(--success-green)';
+                
+                // Create download link
+                const downloadLink = document.createElement('a');
+                downloadLink.href = pdfBase64;
+                downloadLink.download = fileName;
+                downloadLink.textContent = '📥 Download PDF Report';
+                downloadLink.style.color = 'var(--primary-blue)';
+                downloadLink.style.textDecoration = 'none';
+                downloadLink.style.fontWeight = '600';
+                downloadDiv.appendChild(downloadLink);
+                
+                // Log for testing
+                console.log('[Mockup2] PDF generated:', {
+                    fileName,
+                    sections: selectedSections,
+                    realtorInfo,
+                    format,
+                    customNotes: customNotes ? 'Yes' : 'No'
+                });
+                
+                // Note: In actual implementation with Firebase MCP, we would:
+                // 1. Upload the base64 PDF to Firebase Storage
+                // 2. Create a Firestore document with report metadata
+                // 3. Get the download URL from Firebase Storage
+                
+            } catch (error) {
+                statusText.textContent = '❌ Error generating PDF';
+                statusText.style.color = 'var(--danger-red)';
+                console.error('[Mockup2] PDF generation error:', error);
+            } finally {
+                generateBtn.disabled = false;
+            }
+        }
+        
+        // Wire up the Generate PDF button in sidebar
+        document.addEventListener('DOMContentLoaded', function() {
+            // Find the Generate PDF button and add click handler
+            const pdfButtons = document.querySelectorAll('.sidebar-btn-primary');
+            pdfButtons.forEach(button => {
+                if (button.textContent.includes('Generate PDF Report')) {
+                    button.onclick = openPDFModal;
+                }
+            });
+        });
+    </script>

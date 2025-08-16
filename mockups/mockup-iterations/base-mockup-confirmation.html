@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Base Mockup 1 - Property Confirmation</title>
+    
+    <!-- Load configuration and API integration -->
+    <script src="mockup-config.js"></script>
+    <script src="api-integration.js"></script>
+    <script src="error-recovery.js"></script>
+    <script src="extension-handler.js"></script>
+    
+    <!-- Use the original property confirmation styles -->
+    <link rel="stylesheet" href="../../styles/property-confirmation-card.css">
+    
+    <style>
+        /* Override body to not include header padding since this is standalone */
+        body {
+            padding-top: 0 !important;
+        }
+        
+        /* Ensure overlay covers full viewport */
+        .property-confirmation-overlay {
+            top: 0 !important;
+            height: 100vh !important;
+        }
+
+        /* Ensure selected cards get proper styling */
+        .analysis-card.selected {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+            border-color: #667eea !important;
+            color: white !important;
+        }
+        
+        .analysis-card.selected .card-title,
+        .analysis-card.selected .card-description,
+        .analysis-card.selected .feature-item,
+        .analysis-card.selected .feature-item span,
+        .analysis-card.selected .feature-check {
+            color: white !important;
+        }
+        
+        .analysis-card.selected .card-icon {
+            background: rgba(255, 255, 255, 0.2) !important;
+        }
+        
+        /* Loading state styles */
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .loading-overlay.active {
+            display: flex;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Using the exact original property confirmation structure -->
+    <div class="property-confirmation-overlay">
+        <div class="property-confirmation-container">
+            <div class="property-confirmation-main-card">
+                <!-- Header -->
+                <div class="property-confirmation-header">
+                    <h1 class="property-confirmation-title">Property Investment Analysis</h1>
+                    <p class="property-confirmation-subtitle">Confirm details and choose your analysis type</p>
+                </div>
+                
+                <!-- Content -->
+                <div class="property-confirmation-content">
+                    <!-- Property Details Card -->
+                    <div class="property-details-card">
+                        <div class="property-badge">Property Details</div>
+                        <div class="property-details-content">
+                            <!-- Property Image -->
+                            <div class="property-image-section">
+                                <div class="property-no-image">No Image</div>
+                            </div>
+                            
+                            <!-- Property Info -->
+                            <div class="property-info-section">
+                                <div class="property-address" id="propertyAddress">1514 - 150 East Liberty Street</div>
+                                <div class="property-location" id="propertyLocation">Toronto, Ontario M6K 3R5</div>
+                                
+                                <div class="property-stats-grid">
+                                    <div class="stat-item">
+                                        <span class="stat-label">List Price</span>
+                                        <span class="stat-value price" id="listPrice">$489,000</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-label">Type</span>
+                                        <span class="stat-value" id="propertyType">Apartment</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-label">Size</span>
+                                        <span class="stat-value" id="propertySize">1 Bed • 1 Bath</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-label">Area</span>
+                                        <span class="stat-value" id="propertyArea">650 sq ft</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-label">Property Tax</span>
+                                        <span class="stat-value" id="propertyTax">$2,548/yr</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-label">Condo Fee</span>
+                                        <span class="stat-value" id="condoFee">$554/mo</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Analysis Type Selection -->
+                    <h2 class="analysis-section-title">
+                        <span class="section-icon">📊</span>
+                        Choose Your Analysis Type
+                    </h2>
+                    
+                    <div class="analysis-cards-grid">
+                        <!-- Full Analysis Card -->
+                        <div class="analysis-card selected" data-type="both">
+                            <div class="recommended-ribbon">Best</div>
+                            <div class="card-icon">🚀</div>
+                            <div class="card-title">Full Analysis</div>
+                            <div class="card-description">
+                                Get comprehensive insights with both rental strategies
+                            </div>
+                            <div class="card-features">
+                                <div class="feature-item">
+                                    <span class="feature-check">✓</span>
+                                    <span>Short-Term Rental (Airbnb)</span>
+                                </div>
+                                <div class="feature-item">
+                                    <span class="feature-check">✓</span>
+                                    <span>Long-Term Rental</span>
+                                </div>
+                                <div class="feature-item">
+                                    <span class="feature-check">✓</span>
+                                    <span>Side-by-side comparison</span>
+                                </div>
+                            </div>
+                            <input type="radio" name="analysisType" value="both" checked class="analysis-radio">
+                        </div>
+                        
+                        <!-- Long-Term Only Card -->
+                        <div class="analysis-card" data-type="ltr">
+                            <div class="card-icon">🏠</div>
+                            <div class="card-title">Long-Term Only</div>
+                            <div class="card-description">
+                                Traditional rental analysis with market projections
+                            </div>
+                            <div class="card-features">
+                                <div class="feature-item">
+                                    <span class="feature-check">✓</span>
+                                    <span>Market rent analysis</span>
+                                </div>
+                                <div class="feature-item">
+                                    <span class="feature-check">✓</span>
+                                    <span>Cash flow projections</span>
+                                </div>
+                                <div class="feature-item">
+                                    <span class="feature-check">✓</span>
+                                    <span>10-year forecast</span>
+                                </div>
+                            </div>
+                            <input type="radio" name="analysisType" value="ltr" class="analysis-radio">
+                        </div>
+                    </div>
+                    
+                    <!-- Action Area -->
+                    <div class="action-area">
+                        <button id="property-confirm-analyze" class="continue-btn">
+                            Continue with Full Analysis
+                        </button>
+                        <div class="trial-notice" id="trial-notice" style="display: none;">
+                            You have <span class="trial-count">5 free STR analyses</span> remaining
+                        </div>
+                        <button id="property-confirm-cancel" class="cancel-link">
+                            Cancel and go back
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+    </div>
+
+    <script>
+        let selectedAnalysisType = 'both';
+        let propertyData = null;
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('[Base Mockup 1] Initializing property confirmation screen');
+            
+            try {
+                // Check for property data from extension or URL params
+                checkForPropertyData();
+            } catch (e) {
+                console.error('[Base Mockup 1] Error checking property data:', e);
+            }
+            
+            try {
+                // Initialize API integration
+                if (window.PropertyAnalysisAPI) {
+                    window.propertyAPI = new PropertyAnalysisAPI();
+                    console.log('[Base Mockup 1] API integration initialized');
+                }
+            } catch (e) {
+                console.error('[Base Mockup 1] Error initializing API:', e);
+            }
+            
+            // Setup card selection - CRITICAL, must run
+            try {
+                setupCardSelection();
+                console.log('[Base Mockup 1] Card selection setup complete');
+            } catch (e) {
+                console.error('[Base Mockup 1] CRITICAL ERROR setting up card selection:', e);
+            }
+            
+            // Setup cancel button
+            try {
+                const cancelBtn = document.getElementById('property-confirm-cancel');
+                if (cancelBtn) {
+                    cancelBtn.addEventListener('click', () => {
+                        console.log('[Base Mockup 1] Cancel clicked');
+                        window.history.back();
+                    });
+                }
+            } catch (e) {
+                console.error('[Base Mockup 1] Error setting up cancel button:', e);
+            }
+            
+            // Setup analyze button
+            try {
+                const analyzeBtn = document.getElementById('property-confirm-analyze');
+                if (analyzeBtn) {
+                    analyzeBtn.addEventListener('click', proceedToAnalysis);
+                }
+            } catch (e) {
+                console.error('[Base Mockup 1] Error setting up analyze button:', e);
+            }
+        });
+
+        function checkForPropertyData() {
+            // Check URL params for property data
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('propertyData')) {
+                try {
+                    propertyData = JSON.parse(decodeURIComponent(urlParams.get('propertyData')));
+                    updatePropertyDisplay(propertyData);
+                } catch (e) {
+                    console.error('Failed to parse property data from URL:', e);
+                }
+            }
+            
+            // Check for extension data (with error handling)
+            try {
+                if (window.extensionHandler && typeof window.extensionHandler.checkForData === 'function') {
+                    window.extensionHandler.checkForData((data) => {
+                        if (data) {
+                            propertyData = data;
+                            updatePropertyDisplay(data);
+                        }
+                    });
+                }
+            } catch (e) {
+                console.log('[Base Mockup 1] Extension handler not available:', e.message);
+            }
+        }
+
+        function updatePropertyDisplay(data) {
+            if (!data) return;
+            
+            // Update display elements
+            if (data.address) {
+                document.getElementById('propertyAddress').textContent = data.address;
+            }
+            if (data.city && data.province) {
+                document.getElementById('propertyLocation').textContent = 
+                    `${data.city}, ${data.province} ${data.postalCode || ''}`;
+            }
+            if (data.listPrice) {
+                document.getElementById('listPrice').textContent = 
+                    `$${parseInt(data.listPrice).toLocaleString()}`;
+            }
+            if (data.propertyType) {
+                document.getElementById('propertyType').textContent = data.propertyType;
+            }
+            if (data.bedrooms && data.bathrooms) {
+                document.getElementById('propertySize').textContent = 
+                    `${data.bedrooms} Bed • ${data.bathrooms} Bath`;
+            }
+            if (data.squareFeet) {
+                document.getElementById('propertyArea').textContent = 
+                    `${data.squareFeet} sq ft`;
+            }
+            if (data.propertyTax) {
+                document.getElementById('propertyTax').textContent = 
+                    `$${parseInt(data.propertyTax).toLocaleString()}/yr`;
+            }
+            if (data.condoFees) {
+                document.getElementById('condoFee').textContent = 
+                    `$${parseInt(data.condoFees).toLocaleString()}/mo`;
+            }
+        }
+
+        function setupCardSelection() {
+            const cards = document.querySelectorAll('.analysis-card');
+            const continueBtn = document.getElementById('property-confirm-analyze');
+            
+            console.log('[Base Mockup 1] Found', cards.length, 'analysis cards');
+            
+            cards.forEach(card => {
+                card.addEventListener('click', (e) => {
+                    console.log('[Base Mockup 1] Card clicked:', card.dataset.type);
+                    
+                    // Remove selected from all cards
+                    cards.forEach(c => {
+                        c.classList.remove('selected');
+                        console.log('[Base Mockup 1] Removed selected from:', c.dataset.type);
+                        
+                        // Reset inline styles
+                        c.style.background = '';
+                        c.style.borderColor = '';
+                        c.style.color = '';
+                        
+                        // Reset text colors
+                        c.querySelectorAll('.card-title, .card-description, .feature-item, .feature-item span, .feature-check').forEach(el => {
+                            el.style.color = '';
+                        });
+                    });
+                    
+                    // Add selected to clicked card
+                    card.classList.add('selected');
+                    console.log('[Base Mockup 1] Added selected to:', card.dataset.type);
+                    console.log('[Base Mockup 1] Card classes:', card.className);
+                    
+                    // Apply inline styles as fallback
+                    card.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+                    card.style.borderColor = '#667eea';
+                    card.style.color = 'white';
+                    
+                    // Style all text elements to white
+                    card.querySelectorAll('.card-title, .card-description, .feature-item, .feature-item span, .feature-check').forEach(el => {
+                        el.style.color = 'white';
+                    });
+                    
+                    // Check the radio button
+                    const radio = card.querySelector('input[type="radio"]');
+                    if (radio) {
+                        radio.checked = true;
+                        selectedAnalysisType = radio.value;
+                        
+                        // Update button text
+                        if (continueBtn) {
+                            continueBtn.textContent = selectedAnalysisType === 'both' 
+                                ? 'Continue with Full Analysis'
+                                : 'Continue with Long-Term Analysis';
+                        }
+                    }
+                });
+            });
+        }
+
+        async function proceedToAnalysis() {
+            console.log('[Base Mockup 1] Proceeding to analysis:', selectedAnalysisType);
+            
+            // Show loading overlay
+            document.getElementById('loadingOverlay').classList.add('active');
+            
+            try {
+                // Prepare property data for analysis
+                if (!propertyData) {
+                    propertyData = {
+                        address: '1514 - 150 East Liberty Street',
+                        city: 'Toronto',
+                        province: 'Ontario',
+                        postalCode: 'M6K 3R5',
+                        listPrice: 489000,
+                        propertyType: 'Apartment',
+                        bedrooms: 1,
+                        bathrooms: 1,
+                        squareFeet: 650,
+                        propertyTax: 2548,
+                        condoFees: 554
+                    };
+                }
+                
+                // Store data for the next page
+                sessionStorage.setItem('propertyData', JSON.stringify(propertyData));
+                sessionStorage.setItem('analysisType', selectedAnalysisType);
+                sessionStorage.setItem('performAnalysis', 'true'); // Flag to trigger analysis
+                
+                // Redirect to the main ROI finder app which has the proper progress tracking
+                // The main app will handle the analysis with progress display
+                setTimeout(() => {
+                    console.log('[Base Mockup 1] Redirecting to main app for analysis');
+                    // Pass property data as URL parameter
+                    const encodedData = encodeURIComponent(JSON.stringify(propertyData));
+                    window.location.href = `./base-mockup-integrated.html?propertyData=${encodedData}&analysisType=${selectedAnalysisType}`;
+                }, 1000);
+                
+            } catch (error) {
+                console.error('[Base Mockup 1] Error during analysis:', error);
+                document.getElementById('loadingOverlay').classList.remove('active');
+                
+                // Show error message
+                if (window.errorRecovery) {
+                    window.errorRecovery.handleError(error, 'analysis');
+                } else {
+                    alert('An error occurred during analysis. Please try again.');
+                }
+            }
+        }
+    </script>
+</body>
+</html>

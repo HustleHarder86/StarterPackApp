@@ -1,0 +1,461 @@
+[
+  {
+    "property": {
+      "address": "456 Queen Street West, Toronto, ON",
+      "bedrooms": 3,
+      "bathrooms": 2,
+      "sqft": 1800,
+      "propertyType": "Single Family",
+      "targetRent": 3500
+    },
+    "data": {
+      "averageRent": 3225,
+      "medianRent": 3050,
+      "comparablesCount": 9,
+      "confidence": "Medium",
+      "comparables": [
+        {
+          "address": "839 Queen Street W, Toronto",
+          "monthlyRent": 2600,
+          "bedrooms": 2,
+          "bathrooms": 2,
+          "sqft": null,
+          "distance": 0.3,
+          "daysOnMarket": 10,
+          "matchScore": 92,
+          "source": "Condos.ca [4]"
+        },
+        {
+          "address": "285 Dufferin Street, Toronto",
+          "monthlyRent": 2500,
+          "bedrooms": 2,
+          "bathrooms": 2,
+          "sqft": null,
+          "distance": 0.8,
+          "daysOnMarket": 7,
+          "matchScore": 90,
+          "source": "PadMapper [1]"
+        },
+        {
+          "address": "1118-68 Abell Street, Toronto",
+          "monthlyRent": 2850,
+          "bedrooms": 2,
+          "bathrooms": 2,
+          "sqft": null,
+          "distance": 0.9,
+          "daysOnMarket": 5,
+          "matchScore": 88,
+          "source": "Zumper [2]"
+        },
+        {
+          "address": "1205 Queen Street W #312, Toronto",
+          "monthlyRent": 2500,
+          "bedrooms": 1,
+          "bathrooms": 1,
+          "sqft": null,
+          "distance": 0.4,
+          "daysOnMarket": 12,
+          "matchScore": 85,
+          "source": "Condos.ca [3]"
+        },
+        {
+          "address": "1030 King Street W #834, Toronto",
+          "monthlyRent": 3000,
+          "bedrooms": 1,
+          "bathrooms": 1,
+          "sqft": null,
+          "distance": 0.7,
+          "daysOnMarket": 6,
+          "matchScore": 80,
+          "source": "PadMapper [1]"
+        },
+        {
+          "address": "38 Joe Shuster Way #1619, Toronto",
+          "monthlyRent": 2090,
+          "bedrooms": 1,
+          "bathrooms": 1,
+          "sqft": null,
+          "distance": 1,
+          "daysOnMarket": 1,
+          "matchScore": 78,
+          "source": "PadMapper [1]"
+        },
+        {
+          "address": "Novus 25 Ordnance St, Toronto",
+          "monthlyRent": 2500,
+          "bedrooms": 1,
+          "bathrooms": 1,
+          "sqft": null,
+          "distance": 1,
+          "daysOnMarket": 10,
+          "matchScore": 75,
+          "source": "PadMapper [1]"
+        },
+        {
+          "address": "Liberty Village (general), Toronto",
+          "monthlyRent": 2500,
+          "bedrooms": 1,
+          "bathrooms": 1,
+          "sqft": null,
+          "distance": 1,
+          "daysOnMarket": 10,
+          "matchScore": 75,
+          "source": "PadMapper [1]"
+        }
+      ],
+      "insights": "The West Queen West rental market in Toronto shows a strong demand for smaller units such as 1-2 bedroom apartments, with 3-bedroom units being less common but commanding higher rents, averaging around $3,913/month as of 2024 with a 13.5% increase year-over-year. The average rent for 2-bedroom units has decreased slightly, reflecting a softening in that segment. The scarcity of larger single-family rentals near Queen Street West contributes to higher rents for those available[2][1]."
+    },
+    "citations": [
+      "https://www.padmapper.com/apartments/toronto-on/west-queen-west",
+      "https://www.zumper.com/apartments-for-rent/toronto-on/west-queen-west",
+      "https://condos.ca/toronto/q-loft-1205-queen-st-w/unit-312-C12330238",
+      "https://condos.ca/toronto/839-queen-street-w-toronto",
+      "https://www.apartments.com/transit/on/toronto/bathurst-street-at-queen-street-west/f5250jr/"
+    ],
+    "citationUrls": [
+      "https://www.padmapper.com/apartments/toronto-on/west-queen-west",
+      "https://www.zumper.com/apartments-for-rent/toronto-on/west-queen-west",
+      "https://condos.ca/toronto/q-loft-1205-queen-st-w/unit-312-C12330238"
+    ],
+    "filtered": [
+      {
+        "address": "839 Queen Street W, Toronto",
+        "monthlyRent": 2600,
+        "bedrooms": 2,
+        "bathrooms": 2,
+        "sqft": null,
+        "distance": 0.3,
+        "daysOnMarket": 10,
+        "matchScore": 92,
+        "source": "Condos.ca [4]"
+      },
+      {
+        "address": "285 Dufferin Street, Toronto",
+        "monthlyRent": 2500,
+        "bedrooms": 2,
+        "bathrooms": 2,
+        "sqft": null,
+        "distance": 0.8,
+        "daysOnMarket": 7,
+        "matchScore": 90,
+        "source": "PadMapper [1]"
+      },
+      {
+        "address": "1118-68 Abell Street, Toronto",
+        "monthlyRent": 2850,
+        "bedrooms": 2,
+        "bathrooms": 2,
+        "sqft": null,
+        "distance": 0.9,
+        "daysOnMarket": 5,
+        "matchScore": 88,
+        "source": "Zumper [2]"
+      }
+    ],
+    "responseTime": 7950,
+    "error": null
+  },
+  {
+    "property": {
+      "address": "1 Bloor Street East, Toronto, ON",
+      "bedrooms": 2,
+      "bathrooms": 2,
+      "sqft": 1200,
+      "propertyType": "Condo",
+      "targetRent": 3000
+    },
+    "data": {
+      "averageRent": 3086,
+      "medianRent": 3115,
+      "comparablesCount": 9,
+      "confidence": "High",
+      "comparables": [
+        {
+          "address": "2718 - 585 Bloor St E",
+          "monthlyRent": 3400,
+          "bedrooms": 2,
+          "bathrooms": 2,
+          "sqft": 1200,
+          "distance": 0.05,
+          "daysOnMarket": 5,
+          "matchScore": 98,
+          "source": "Condos.ca[4]"
+        },
+        {
+          "address": "808 - 575 Bloor St E",
+          "monthlyRent": 3080,
+          "bedrooms": 2,
+          "bathrooms": 2,
+          "sqft": 778,
+          "distance": 0.35,
+          "daysOnMarket": 11,
+          "matchScore": 90,
+          "source": "Condos.ca[3]"
+        },
+        {
+          "address": "2103 - 575 Bloor St E",
+          "monthlyRent": 4200,
+          "bedrooms": 2,
+          "bathrooms": 2,
+          "sqft": 950,
+          "distance": 0.35,
+          "daysOnMarket": 29,
+          "matchScore": 88,
+          "source": "Strata.ca[2]"
+        },
+        {
+          "address": "808 - 575 Bloor St E",
+          "monthlyRent": 3350,
+          "bedrooms": 2,
+          "bathrooms": 2,
+          "sqft": 750,
+          "distance": 0.35,
+          "daysOnMarket": 7,
+          "matchScore": 87,
+          "source": "Strata.ca[2]"
+        },
+        {
+          "address": "0912 - Residences on Bloor",
+          "monthlyRent": 3150,
+          "bedrooms": 1,
+          "bathrooms": 1,
+          "sqft": 825,
+          "distance": 0.9,
+          "daysOnMarket": 36,
+          "matchScore": 85,
+          "source": "Rentfaster.ca[5]"
+        },
+        {
+          "address": "2512 - Residences on Bloor",
+          "monthlyRent": 3100,
+          "bedrooms": 1,
+          "bathrooms": 1,
+          "sqft": 825,
+          "distance": 0.9,
+          "daysOnMarket": 40,
+          "matchScore": 84,
+          "source": "Rentfaster.ca[5]"
+        },
+        {
+          "address": "1702 - 575 Bloor St E",
+          "monthlyRent": 3900,
+          "bedrooms": 3,
+          "bathrooms": 2,
+          "sqft": 1100,
+          "distance": 0.35,
+          "daysOnMarket": 12,
+          "matchScore": 80,
+          "source": "Strata.ca[2]"
+        },
+        {
+          "address": "2202 - 575 Bloor St E",
+          "monthlyRent": 3850,
+          "bedrooms": 3,
+          "bathrooms": 2,
+          "sqft": 1100,
+          "distance": 0.35,
+          "daysOnMarket": 41,
+          "matchScore": 79,
+          "source": "Strata.ca[2]"
+        },
+        {
+          "address": "2605 - 575 Bloor St E",
+          "monthlyRent": 2600,
+          "bedrooms": 1,
+          "bathrooms": 1,
+          "sqft": 550,
+          "distance": 0.35,
+          "daysOnMarket": 21,
+          "matchScore": 75,
+          "source": "Strata.ca[2]"
+        }
+      ],
+      "insights": "The rental market around 1 Bloor Street East remains highly competitive with strong demand for 2-bedroom condos, reflected in rents averaging around $3,000 to $3,400 for units close to 1200 sqft. Newer buildings like Via Bloor 2 and Residences on Bloor command premium rents due to location and amenities. Listings tend to have short market times, indicating a tight rental supply in this prime downtown Toronto area."
+    },
+    "citations": [
+      "https://strata.ca/toronto/585-bloor-st-e-via-bloor-2-condos",
+      "https://strata.ca/toronto/575-bloor-st-e-via-bloor-condos",
+      "https://condos.ca/toronto/via-bloor-575-bloor-st-e/unit-808-C12319620",
+      "https://condos.ca/toronto/via-bloor-2-585-bloor-st-e/unit-2718-C12326561/-for-Sale",
+      "https://www.rentfaster.ca/properties/235-bloor-street-east-toronto-338362"
+    ],
+    "citationUrls": [
+      "https://strata.ca/toronto/585-bloor-st-e-via-bloor-2-condos",
+      "https://strata.ca/toronto/575-bloor-st-e-via-bloor-condos",
+      "https://condos.ca/toronto/via-bloor-575-bloor-st-e/unit-808-C12319620",
+      "https://condos.ca/toronto/via-bloor-2-585-bloor-st-e/unit-2718-C12326561/-for-Sale",
+      "https://www.rentfaster.ca/properties/235-bloor-street-east-toronto-338362"
+    ],
+    "filtered": [
+      {
+        "address": "2718 - 585 Bloor St E",
+        "monthlyRent": 3400,
+        "bedrooms": 2,
+        "bathrooms": 2,
+        "sqft": 1200,
+        "distance": 0.05,
+        "daysOnMarket": 5,
+        "matchScore": 98,
+        "source": "Condos.ca[4]"
+      },
+      {
+        "address": "808 - 575 Bloor St E",
+        "monthlyRent": 3080,
+        "bedrooms": 2,
+        "bathrooms": 2,
+        "sqft": 778,
+        "distance": 0.35,
+        "daysOnMarket": 11,
+        "matchScore": 90,
+        "source": "Condos.ca[3]"
+      },
+      {
+        "address": "2103 - 575 Bloor St E",
+        "monthlyRent": 4200,
+        "bedrooms": 2,
+        "bathrooms": 2,
+        "sqft": 950,
+        "distance": 0.35,
+        "daysOnMarket": 29,
+        "matchScore": 88,
+        "source": "Strata.ca[2]"
+      },
+      {
+        "address": "808 - 575 Bloor St E",
+        "monthlyRent": 3350,
+        "bedrooms": 2,
+        "bathrooms": 2,
+        "sqft": 750,
+        "distance": 0.35,
+        "daysOnMarket": 7,
+        "matchScore": 87,
+        "source": "Strata.ca[2]"
+      },
+      {
+        "address": "0912 - Residences on Bloor",
+        "monthlyRent": 3150,
+        "bedrooms": 1,
+        "bathrooms": 1,
+        "sqft": 825,
+        "distance": 0.9,
+        "daysOnMarket": 36,
+        "matchScore": 85,
+        "source": "Rentfaster.ca[5]"
+      }
+    ],
+    "responseTime": 8992,
+    "error": null
+  },
+  {
+    "property": {
+      "address": "789 Dundas Street West, Toronto, ON",
+      "bedrooms": 1,
+      "bathrooms": 1,
+      "sqft": 650,
+      "propertyType": "Condo",
+      "targetRent": 2300
+    },
+    "data": {
+      "averageRent": 2670,
+      "medianRent": 2700,
+      "comparablesCount": 8,
+      "confidence": "Medium",
+      "comparables": [
+        {
+          "address": "607 - 280 Dundas Street W",
+          "monthlyRent": 2700,
+          "bedrooms": 1,
+          "bathrooms": 2,
+          "sqft": null,
+          "distance": 0.3,
+          "daysOnMarket": 5,
+          "matchScore": 95,
+          "source": "condos.ca[2]"
+        },
+        {
+          "address": "616 - 2625 Dundas Street W",
+          "monthlyRent": 2195,
+          "bedrooms": 1,
+          "bathrooms": 1,
+          "sqft": 500,
+          "distance": 0.9,
+          "daysOnMarket": 7,
+          "matchScore": 85,
+          "source": "property.ca[4]"
+        },
+        {
+          "address": "816 - 4208 Dundas Street W",
+          "monthlyRent": 1950,
+          "bedrooms": 1,
+          "bathrooms": 1,
+          "sqft": 629,
+          "distance": 1,
+          "daysOnMarket": 26,
+          "matchScore": 80,
+          "source": "strata.ca[3]"
+        },
+        {
+          "address": "708 - 280 Dundas Street W",
+          "monthlyRent": 5000,
+          "bedrooms": 3,
+          "bathrooms": 2,
+          "sqft": null,
+          "distance": 0.3,
+          "daysOnMarket": 5,
+          "matchScore": 60,
+          "source": "condos.ca[1]"
+        }
+      ],
+      "insights": "The rental market around Dundas Street West in Toronto remains competitive with 1-bedroom condos renting between approximately $1,950 and $2,700 per month. Larger units with more bedrooms command significantly higher rents, as seen in the 3-bedroom listing at $5,000. The area shows steady demand for well-sized 1-bedroom units close to transit and amenities, with listings typically staying on the market under a month."
+    },
+    "citations": [
+      "https://condos.ca/toronto/280-dundas-st-w-toronto/unit-708-C12327743",
+      "https://condos.ca/toronto/280-dundas-st-w-toronto/unit-607-C12327637",
+      "https://strata.ca/toronto/4208-dundas-st-w-kingsway-by-the-river-2",
+      "https://property.ca/toronto/2625-dundas-street-west-toronto/unit-616-W12327399",
+      "https://www.apartments.com/transit/on/toronto/dundas-street-west-at-yonge-street/9j8mh74/"
+    ],
+    "citationUrls": [
+      "https://condos.ca/toronto/280-dundas-st-w-toronto/unit-708-C12327743",
+      "https://condos.ca/toronto/280-dundas-st-w-toronto/unit-607-C12327637",
+      "https://strata.ca/toronto/4208-dundas-st-w-kingsway-by-the-river-2"
+    ],
+    "filtered": [
+      {
+        "address": "607 - 280 Dundas Street W",
+        "monthlyRent": 2700,
+        "bedrooms": 1,
+        "bathrooms": 2,
+        "sqft": null,
+        "distance": 0.3,
+        "daysOnMarket": 5,
+        "matchScore": 95,
+        "source": "condos.ca[2]"
+      },
+      {
+        "address": "616 - 2625 Dundas Street W",
+        "monthlyRent": 2195,
+        "bedrooms": 1,
+        "bathrooms": 1,
+        "sqft": 500,
+        "distance": 0.9,
+        "daysOnMarket": 7,
+        "matchScore": 85,
+        "source": "property.ca[4]"
+      },
+      {
+        "address": "816 - 4208 Dundas Street W",
+        "monthlyRent": 1950,
+        "bedrooms": 1,
+        "bathrooms": 1,
+        "sqft": 629,
+        "distance": 1,
+        "daysOnMarket": 26,
+        "matchScore": 80,
+        "source": "strata.ca[3]"
+      }
+    ],
+    "responseTime": 8783,
+    "error": null
+  }
+]

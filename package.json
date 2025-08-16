@@ -40,6 +40,10 @@
     "test:all": "npm run test && npm run test:e2e",
     "test:quick": "npm run test:syntax && npm run test:lint && npm run test:critical",
     "test:comprehensive": "npm run test:syntax && npm run test:e2e && npm run test:api && npm run test:visual && npm run test:mobile",
+    "test:human-like": "node tests/e2e/orchestrated-human-test.js",
+    "test:human-like:headed": "HEADLESS=false node tests/e2e/orchestrated-human-test.js",
+    "test:real-user": "node tests/e2e/comprehensive-real-user-test.js",
+    "test:real-user:headed": "HEADLESS=false node tests/e2e/comprehensive-real-user-test.js",
     "test:e2e:comprehensive": "start-server-and-test dev:vercel http://localhost:3000 'playwright test tests/e2e/comprehensive-e2e.spec.js'",
     "test:e2e:comprehensive:headed": "start-server-and-test dev:vercel http://localhost:3000 'playwright test tests/e2e/comprehensive-e2e.spec.js --headed'",
     "test:e2e:comprehensive:debug": "start-server-and-test dev:vercel http://localhost:3000 'playwright test tests/e2e/comprehensive-e2e.spec.js --debug'",
@@ -68,11 +72,13 @@
   "dependencies": {
     "apify-client": "^2.12.6",
     "axios": "^1.10.0",
+    "chart.js": "^4.5.0",
+    "chartjs-node-canvas": "^5.0.0",
     "firebase-admin": "^11.11.0",
+    "formidable": "^3.5.1",
     "jspdf": "^2.5.1",
     "jspdf-autotable": "^3.8.1",
-    "openai": "^5.9.0",
-    "puppeteer": "^24.15.0"
+    "openai": "^5.9.0"
   },
   "devDependencies": {
     "@babel/core": "^7.23.0",
@@ -88,8 +94,10 @@
     "husky": "^9.1.7",
     "jest": "^29.7.0",
     "lint-staged": "^16.1.4",
+    "puppeteer": "^24.16.1",
     "start-server-and-test": "^2.0.12",
     "supertest": "^6.3.3",
+    "uuid": "^11.1.0",
     "vercel": "^32.5.0"
   },
   "engines": {

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navigation Test</title>
+</head>
+<body>
+    <h1>Testing Navigation Function</h1>
+    <button onclick="testNav()">Test Navigation</button>
+    
+    <div id="results"></div>
+
+    <script>
+        function testNav() {
+            const results = document.getElementById('results');
+            
+            // Test finding sections
+            const ltrSection = document.getElementById('ltr-analysis-section');
+            const strVsLtrSection = document.getElementById('str-vs-ltr-section');
+            
+            results.innerHTML = `
+                <h2>Section Detection:</h2>
+                <p>LTR Section Found: ${ltrSection ? 'YES' : 'NO'}</p>
+                <p>STR vs LTR Section Found: ${strVsLtrSection ? 'YES' : 'NO'}</p>
+            `;
+            
+            // Open the main mockup to test
+            window.open('str-analysis-redesign-v3.html', '_blank');
+        }
+    </script>
+</body>
+</html>

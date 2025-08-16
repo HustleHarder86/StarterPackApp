@@ -10,6 +10,12 @@ const {
   calculateInsurance,
   parseBedroomBathroomValue
 } = require('../utils/property-calculations');
+const {
+  buildEnhancedLTRPrompt,
+  parseLTRResponse,
+  filterComparables,
+  formatComparablesForResponse
+} = require('../utils/ltr-parser');
 
 // Helper function to extract numeric value from text
 function extractNumericValue(text, keyword) {
@@ -143,6 +149,50 @@ async function analyzePropertyLogic({
     
     await updateProgress(40, 'Analyzing rental rates...');
     
+    // Make a separate call for enhanced LTR analysis
+    let ltrAnalysis = null;
+    try {
+      logger.info('Performing enhanced LTR analysis...');
+      const ltrResponse = await callPerplexityAI({
+        propertyAddress,
+        address,
+        estimatedValue,
+        propertyData,
+        analysisType: 'ltr'
+      });
+      
+      // Parse the LTR response
+      const ltrParsed = parseLTRResponse(ltrResponse.content, ltrResponse.citations);
+      
+      if (ltrParsed.success && ltrParsed.comparables.length > 0) {
+        // Filter comparables for relevance
+        const filtered = filterComparables(ltrParsed.comparables, {
+          bedrooms: propertyData?.bedrooms || 2,
+          bathrooms: propertyData?.bathrooms || 1,
+          sqft: propertyData?.sqft
+        });
+        
+        ltrAnalysis = {
+          averageRent: ltrParsed.averageRent,
+          medianRent: ltrParsed.medianRent,
+          confidence: ltrParsed.confidence,
+          comparables: formatComparablesForResponse(filtered),
+          insights: ltrParsed.insights,
+          sources: ltrParsed.sources
+        };
+        
+        logger.info('Enhanced LTR analysis successful', {
+          comparablesFound: ltrParsed.comparablesCount,
+          filtered: filtered.length,
+          averageRent: ltrAnalysis.averageRent
+        });
+      }
+    } catch (ltrError) {
+      logger.warn('Enhanced LTR analysis failed, falling back to standard', { error: ltrError.message });
+    }
+    
+    await updateProgress(50, 'Processing property data...');
+    
     // Process the research data
     const processedData = await processResearchData({
       researchContent: perplexityResponse.content,
@@ -150,7 +200,8 @@ async function analyzePropertyLogic({
       address,
       estimatedValue,
       propertyData,
-      citations: perplexityResponse.citations
+      citations: perplexityResponse.citations,
+      ltrAnalysis  // Pass enhanced LTR analysis
     });
     
     await updateProgress(60, 'Calculating financial metrics...');
@@ -223,11 +274,35 @@ async function analyzePropertyLogic({
 }
 
 // Call Perplexity AI for research
-async function callPerplexityAI({ propertyAddress, address, estimatedValue, propertyData }) {
+async function callPerplexityAI({ propertyAddress, address, estimatedValue, propertyData, analysisType = 'general' }) {
   const perplexityApiKey = config.apis.perplexity.key;
   
   if (!perplexityApiKey || !perplexityApiKey.startsWith('pplx-')) {
     throw new Error('Perplexity API key not configured');
+  }
+  
+  // Use enhanced prompt for LTR analysis
+  let prompt;
+  let systemPrompt;
+  
+  if (analysisType === 'ltr') {
+    prompt = buildEnhancedLTRPrompt({
+      address: propertyAddress,
+      city: address?.city || 'Toronto',
+      bedrooms: propertyData?.bedrooms || 2,
+      bathrooms: propertyData?.bathrooms || 1,
+      sqft: propertyData?.sqft,
+      propertyType: propertyData?.propertyType || 'Property'
+    });
+    systemPrompt = `You are a Canadian real estate market analyst specializing in rental comparables. 
+Use current data from Rentals.ca, MLS, Kijiji, Facebook Marketplace, Zumper, and other Canadian rental platforms. 
+Always cite your sources and provide accurate market data.`;
+  } else {
+    prompt = buildPerplexityPrompt({ propertyAddress, address, estimatedValue, propertyData });
+    systemPrompt = `You are a real estate investment analyst specializing in accurate property data research. 
+CRITICAL: Research CURRENT data as of ${new Date().toISOString()}. 
+Provide SPECIFIC NUMBERS from real sources.
+ALWAYS include source URLs in format: SOURCE: [URL]`;
   }
   
   const requestBody = {
@@ -235,20 +310,18 @@ async function callPerplexityAI({ propertyAddress, address, estimatedValue, prop
     messages: [
       {
         role: 'system',
-        content: `You are a real estate investment analyst specializing in accurate property data research. 
-CRITICAL: Research CURRENT data as of ${new Date().toISOString()}. 
-Provide SPECIFIC NUMBERS from real sources.
-ALWAYS include source URLs in format: SOURCE: [URL]`
+        content: systemPrompt
       },
       {
         role: 'user',
-        content: buildPerplexityPrompt({ propertyAddress, address, estimatedValue, propertyData })
+        content: prompt
       }
     ],
-    max_tokens: 3000,
+    max_tokens: analysisType === 'ltr' ? 2500 : 3000,
     temperature: 0.1,
     top_p: 0.9,
-    stream: false
+    stream: false,
+    return_citations: true  // Request citations
   };
   
   try {
@@ -367,7 +440,7 @@ USE THIS ACTUAL DATA in your analysis and calculations!` : ''}`;
 }
 
 // Process research data
-async function processResearchData({ researchContent, propertyAddress, address, estimatedValue, propertyData, citations }) {
+async function processResearchData({ researchContent, propertyAddress, address, estimatedValue, propertyData, citations, ltrAnalysis }) {
   // This is a simplified version - the full implementation would extract all the data
   // from the research content similar to the original analyze-property.js
   
@@ -380,6 +453,25 @@ async function processResearchData({ researchContent, propertyAddress, address, 
     price: propertyData?.price
   });
   
+  // Log the form data we received
+  logger.info('Form data for property details', {
+    formBedrooms: propertyData?.bedrooms,
+    formBedroomsType: typeof propertyData?.bedrooms,
+    formBathrooms: propertyData?.bathrooms,
+    formBathroomsType: typeof propertyData?.bathrooms,
+    formSqft: propertyData?.sqft,
+    formPrice: propertyData?.price
+  });
+  
+  // Use form data directly if available, with proper parsing
+  const formBedrooms = propertyData?.bedrooms ? 
+    (typeof propertyData.bedrooms === 'number' ? propertyData.bedrooms : parseBedroomBathroomValue(propertyData.bedrooms)) : 
+    null;
+  
+  const formBathrooms = propertyData?.bathrooms ? 
+    (typeof propertyData.bathrooms === 'number' ? propertyData.bathrooms : parseBedroomBathroomValue(propertyData.bathrooms)) : 
+    null;
+  
   const extractedData = {
     propertyDetails: {
       address: propertyAddress,
@@ -387,8 +479,8 @@ async function processResearchData({ researchContent, propertyAddress, address, 
       state: address.state,
       estimatedValue: propertyData?.price || estimatedValue,
       propertyType: propertyData?.propertyType || 'Single Family',
-      bedrooms: parseBedroomBathroomValue(propertyData?.bedrooms) || extractNumericValue(researchContent, 'bedroom') || 3,
-      bathrooms: parseBedroomBathroomValue(propertyData?.bathrooms) || extractNumericValue(researchContent, 'bathroom') || 2,
+      bedrooms: formBedrooms || extractNumericValue(researchContent, 'bedroom') || 3,
+      bathrooms: formBathrooms || extractNumericValue(researchContent, 'bathroom') || 2,
       sqft: propertyData?.sqft || extractNumericValue(researchContent, 'sq|square') || 1800,
       yearBuilt: propertyData?.yearBuilt || extractNumericValue(researchContent, 'built') || 2000
     },
@@ -403,14 +495,21 @@ async function processResearchData({ researchContent, propertyAddress, address, 
     }),
     // CRITICAL: Pass through the original propertyData to preserve actual values
     propertyData: propertyData || null,
-    rental: {
+    rental: ltrAnalysis ? {
+      monthlyRent: ltrAnalysis.averageRent,
+      medianRent: ltrAnalysis.medianRent,
+      confidence: ltrAnalysis.confidence,
+      comparables: ltrAnalysis.comparables,
+      insights: ltrAnalysis.insights,
+      sources: ltrAnalysis.sources
+    } : {
       monthlyRent: extractNumericValue(researchContent, 'rent|monthly') || 
                    estimateRentalRate(
                      propertyData?.price || estimatedValue,
                      address.city,
                      propertyData?.propertyType || 'Single Family'
                    ),
-      comparables: [] // Would extract from research content
+      comparables: [] // Fallback to empty if enhanced analysis failed
     },
     citations: citations || []
   };

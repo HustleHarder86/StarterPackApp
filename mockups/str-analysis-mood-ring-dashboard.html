@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mood Ring Dashboard - Revolutionary STR Analysis</title>
+    <style>
+        :root {
+            /* Mood-Based Color Themes */
+            --bull-primary: #10B981;
+            --bull-secondary: #84CC16;
+            --bull-accent: #FCD34D;
+            --bull-bg: #F0FDF4;
+            
+            --neutral-primary: #3B82F6;
+            --neutral-secondary: #6B7280;
+            --neutral-accent: #9CA3AF;
+            --neutral-bg: #F9FAFB;
+            
+            --bear-primary: #8B5CF6;
+            --bear-secondary: #6366F1;
+            --bear-accent: #94A3B8;
+            --bear-bg: #F5F3FF;
+            
+            /* Current Mood (default neutral) */
+            --primary: var(--neutral-primary);
+            --secondary: var(--neutral-secondary);
+            --accent: var(--neutral-accent);
+            --bg: var(--neutral-bg);
+            
+            /* Base Colors */
+            --white: #FFFFFF;
+            --black: #111827;
+            --gray-50: #F9FAFB;
+            --gray-100: #F3F4F6;
+            --gray-200: #E5E7EB;
+            --gray-300: #D1D5DB;
+            --gray-500: #6B7280;
+            --gray-700: #374151;
+            --gray-900: #111827;
+            
+            /* Spacing */
+            --space-xs: 4px;
+            --space-sm: 8px;
+            --space-md: 16px;
+            --space-lg: 24px;
+            --space-xl: 32px;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--black);
+            transition: background 0.5s ease;
+        }
+        
+        /* Trust Trinity Bar */
+        .trust-bar {
+            background: var(--white);
+            border-bottom: 2px solid var(--gray-200);
+            padding: 12px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .trust-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: var(--gray-700);
+        }
+        
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            background: #10B981;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.2); }
+        }
+        
+        .trust-link {
+            color: var(--primary);
+            cursor: pointer;
+            text-decoration: underline;
+        }
+        
+        /* Market Mood Selector */
+        .mood-selector {
+            background: var(--white);
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid var(--gray-200);
+        }
+        
+        .mood-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+        
+        .mood-buttons {
+            display: inline-flex;
+            gap: 12px;
+            padding: 4px;
+            background: var(--gray-100);
+            border-radius: 12px;
+        }
+        
+        .mood-btn {
+            padding: 12px 24px;
+            border: none;
+            background: transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .mood-btn.active {
+            background: var(--white);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .mood-btn.bear { color: var(--bear-primary); }
+        .mood-btn.neutral { color: var(--neutral-primary); }
+        .mood-btn.bull { color: var(--bull-primary); }
+        
+        .community-mood {
+            font-size: 14px;
+            color: var(--gray-500);
+            margin-top: 8px;
+        }
+        
+        /* Verdict Section */
+        .verdict-section {
+            background: var(--white);
+            padding: 32px;
+            text-align: center;
+            margin: 24px;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        
+        .verdict-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 16px;
+        }
+        
+        .scenarios {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            margin-top: 24px;
+            padding: 24px;
+            background: var(--bg);
+            border-radius: 12px;
+        }
+        
+        .scenario {
+            text-align: center;
+            padding: 20px;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+        
+        .scenario-worst {
+            background: linear-gradient(135deg, #FEE2E2, #FECACA);
+            border: 2px solid #EF4444;
+        }
+        
+        .scenario-likely {
+            background: linear-gradient(135deg, #FEF3C7, #FDE68A);
+            border: 2px solid #F59E0B;
+        }
+        
+        .scenario-best {
+            background: linear-gradient(135deg, #D1FAE5, #A7F3D0);
+            border: 2px solid #10B981;
+        }
+        
+        .scenario-value {
+            font-size: 32px;
+            font-weight: 700;
+            margin: 8px 0;
+        }
+        
+        .scenario-roi {
+            font-size: 18px;
+            font-weight: 600;
+            opacity: 0.8;
+        }
+        
+        /* Main Layout */
+        .dashboard-layout {
+            display: grid;
+            grid-template-columns: 240px 1fr 320px;
+            gap: 24px;
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+        
+        /* Navigation */
+        .nav-panel {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 20px;
+            height: fit-content;
+            position: sticky;
+            top: 100px;
+        }
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .nav-item:hover {
+            background: var(--bg);
+        }
+        
+        .nav-item.active {
+            background: var(--primary);
+            color: white;
+        }
+        
+        /* Time Machine */
+        .time-machine {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 32px;
+            margin-bottom: 24px;
+        }
+        
+        .time-machine-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        
+        .time-title {
+            font-size: 24px;
+            font-weight: 700;
+        }
+        
+        .year-display {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .time-slider {
+            width: 100%;
+            height: 8px;
+            background: var(--gray-200);
+            border-radius: 4px;
+            margin: 24px 0;
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .time-slider-fill {
+            height: 100%;
+            width: 20%;
+            background: var(--primary);
+            border-radius: 4px;
+            transition: width 0.3s;
+        }
+        
+        .time-slider-handle {
+            position: absolute;
+            top: -6px;
+            left: 20%;
+            width: 20px;
+            height: 20px;
+            background: var(--primary);
+            border: 3px solid white;
+            border-radius: 50%;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            transform: translateX(-50%);
+        }
+        
+        /* Race Visualization */
+        .race-track {
+            height: 200px;
+            background: linear-gradient(180deg, var(--gray-50) 0%, var(--gray-100) 100%);
+            border-radius: 12px;
+            padding: 20px;
+            position: relative;
+            margin: 24px 0;
+        }
+        
+        .race-lane {
+            height: 40px;
+            background: var(--white);
+            border-radius: 20px;
+            margin-bottom: 20px;
+            position: relative;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .race-car {
+            position: absolute;
+            top: 5px;
+            height: 30px;
+            padding: 0 12px;
+            background: var(--primary);
+            color: white;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            font-weight: 600;
+            font-size: 14px;
+            transition: left 0.5s ease;
+        }
+        
+        .race-car.str {
+            background: #10B981;
+            left: 35%;
+        }
+        
+        .race-car.ltr {
+            background: #3B82F6;
+            left: 20%;
+        }
+        
+        /* Stacked Calculator */
+        .calculator-stack {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 32px;
+            margin-bottom: 24px;
+        }
+        
+        .calc-layer {
+            background: var(--gray-50);
+            border: 2px solid var(--gray-200);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 12px;
+            position: relative;
+            transition: all 0.3s;
+        }
+        
+        .calc-layer.active {
+            background: var(--white);
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .calc-layer.locked {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+        
+        .layer-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        
+        .layer-title {
+            font-size: 18px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .layer-badge {
+            padding: 4px 12px;
+            background: var(--primary);
+            color: white;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .layer-checkbox {
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+        }
+        
+        /* AI Coach Sidebar */
+        .ai-coach {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 24px;
+            height: fit-content;
+            position: sticky;
+            top: 100px;
+        }
+        
+        .coach-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .coach-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+        
+        .coach-name {
+            font-size: 16px;
+            font-weight: 600;
+        }
+        
+        .coach-message {
+            background: var(--bg);
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            position: relative;
+        }
+        
+        .coach-message:before {
+            content: '';
+            position: absolute;
+            top: -8px;
+            left: 20px;
+            width: 16px;
+            height: 16px;
+            background: var(--bg);
+            transform: rotate(45deg);
+        }
+        
+        .suggestion {
+            background: linear-gradient(135deg, #FEF3C7, #FDE68A);
+            border: 1px solid #F59E0B;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .suggestion:hover {
+            transform: translateX(4px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .suggestion-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        
+        .suggestion-detail {
+            font-size: 14px;
+            color: var(--gray-600);
+        }
+        
+        /* Efficiency Curve */
+        .efficiency-chart {
+            height: 150px;
+            background: var(--gray-50);
+            border-radius: 8px;
+            position: relative;
+            margin-top: 20px;
+            padding: 12px;
+        }
+        
+        .efficiency-curve {
+            position: absolute;
+            top: 20%;
+            left: 10%;
+            right: 10%;
+            height: 60%;
+            border: 2px solid var(--primary);
+            border-radius: 50% 50% 0 0;
+            transform: rotate(180deg);
+        }
+        
+        .efficiency-dot {
+            position: absolute;
+            top: 45%;
+            left: 65%;
+            width: 12px;
+            height: 12px;
+            background: #EF4444;
+            border: 2px solid white;
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        /* Mobile Styles */
+        @media (max-width: 768px) {
+            .dashboard-layout {
+                grid-template-columns: 1fr;
+                padding: 12px;
+            }
+            
+            .nav-panel, .ai-coach {
+                position: relative;
+                top: 0;
+            }
+            
+            .scenarios {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+            
+            .trust-bar {
+                flex-direction: column;
+                gap: 8px;
+            }
+        }
+        
+        /* Mood Transitions */
+        body.bull-mood {
+            --primary: var(--bull-primary);
+            --secondary: var(--bull-secondary);
+            --accent: var(--bull-accent);
+            --bg: var(--bull-bg);
+        }
+        
+        body.bear-mood {
+            --primary: var(--bear-primary);
+            --secondary: var(--bear-secondary);
+            --accent: var(--bear-accent);
+            --bg: var(--bear-bg);
+        }
+        
+        /* Badge System */
+        .badge-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: white;
+            padding: 16px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transform: translateY(200%);
+            transition: transform 0.5s;
+        }
+        
+        .badge-container.show {
+            transform: translateY(0);
+        }
+        
+        .badge-icon {
+            font-size: 48px;
+            margin-bottom: 8px;
+        }
+        
+        .badge-text {
+            font-weight: 600;
+            color: var(--primary);
+        }
+    </style>
+</head>
+<body>
+    <!-- Trust Trinity Bar -->
+    <div class="trust-bar">
+        <div class="trust-item">
+            <span class="live-dot"></span>
+            <span>LIVE DATA</span>
+        </div>
+        <div class="trust-item">
+            <span>📊 Analyzing 10M+ Properties</span>
+        </div>
+        <div class="trust-item">
+            <span class="trust-link" onclick="showMethodology()">ⓘ How We Calculate</span>
+        </div>
+    </div>
+    
+    <!-- Market Mood Selector -->
+    <div class="mood-selector">
+        <div class="mood-title">MARKET MOOD: <span id="currentMood">NEUTRAL</span></div>
+        <div class="mood-buttons">
+            <button class="mood-btn bear" onclick="setMood('bear')">
+                🐻 BEAR
+            </button>
+            <button class="mood-btn neutral active" onclick="setMood('neutral')">
+                😐 NEUTRAL
+            </button>
+            <button class="mood-btn bull" onclick="setMood('bull')">
+                🐂 BULL
+            </button>
+        </div>
+        <div class="community-mood">67% of users viewing this property are in Bull Mode</div>
+    </div>
+    
+    <!-- Verdict Section -->
+    <div class="verdict-section">
+        <h1 class="verdict-title">Strong STR Opportunity → <span id="verdictAmount">$47k</span> profit Year 1</h1>
+        <div class="scenarios">
+            <div class="scenario scenario-worst">
+                <div>WORST CASE</div>
+                <div class="scenario-value" id="worstValue">$23k</div>
+                <div class="scenario-roi">6.2% ROI</div>
+            </div>
+            <div class="scenario scenario-likely">
+                <div>LIKELY CASE</div>
+                <div class="scenario-value" id="likelyValue">$47k</div>
+                <div class="scenario-roi">12.4% ROI</div>
+            </div>
+            <div class="scenario scenario-best">
+                <div>BEST CASE</div>
+                <div class="scenario-value" id="bestValue">$72k</div>
+                <div class="scenario-roi">18.7% ROI</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Main Dashboard Layout -->
+    <div class="dashboard-layout">
+        <!-- Navigation Panel -->
+        <nav class="nav-panel">
+            <div class="nav-item active">
+                <span>📊</span>
+                <span>Overview</span>
+            </div>
+            <div class="nav-item">
+                <span>🏠</span>
+                <span>STR Analysis</span>
+            </div>
+            <div class="nav-item">
+                <span>🔑</span>
+                <span>LTR Analysis</span>
+            </div>
+            <div class="nav-item">
+                <span>💰</span>
+                <span>Financing</span>
+            </div>
+        </nav>
+        
+        <!-- Main Content -->
+        <main>
+            <!-- Time Machine -->
+            <div class="time-machine">
+                <div class="time-machine-header">
+                    <h2 class="time-title">⏰ TIME MACHINE VIEW</h2>
+                    <div class="year-display">Year: <span id="yearValue">2</span> (2025)</div>
+                </div>
+                
+                <div class="time-slider" onclick="updateTimeSlider(event)">
+                    <div class="time-slider-fill" id="timeSliderFill"></div>
+                    <div class="time-slider-handle" id="timeSliderHandle"></div>
+                </div>
+                
+                <div class="race-track">
+                    <div class="race-lane">
+                        <div class="race-car str" id="strCar">STR: $47k</div>
+                    </div>
+                    <div class="race-lane">
+                        <div class="race-car ltr" id="ltrCar">LTR: $12k</div>
+                    </div>
+                </div>
+                
+                <button onclick="toggleDataTable()" style="width: 100%; padding: 12px; background: var(--gray-100); border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">
+                    📊 SHOW DATA TABLE
+                </button>
+            </div>
+            
+            <!-- Stacked Calculator -->
+            <div class="calculator-stack">
+                <h2 style="font-size: 24px; font-weight: 700; margin-bottom: 20px;">📐 CALCULATOR LAYERS</h2>
+                
+                <div class="calc-layer active">
+                    <div class="layer-header">
+                        <div class="layer-title">
+                            <input type="checkbox" class="layer-checkbox" checked disabled>
+                            ✅ Basic Calculations
+                        </div>
+                    </div>
+                    <div>Nightly Rate: $185 | Occupancy: 75% | Revenue: $4,162/mo</div>
+                </div>
+                
+                <div class="calc-layer" onclick="toggleLayer(this, 'seasonality')">
+                    <div class="layer-header">
+                        <div class="layer-title">
+                            <input type="checkbox" class="layer-checkbox">
+                            🌊 + Seasonality
+                        </div>
+                        <span class="layer-badge">UNLOCK</span>
+                    </div>
+                </div>
+                
+                <div class="calc-layer locked">
+                    <div class="layer-header">
+                        <div class="layer-title">
+                            <input type="checkbox" class="layer-checkbox" disabled>
+                            🔨 + Renovation
+                        </div>
+                        <span class="layer-badge">LOCKED</span>
+                    </div>
+                </div>
+                
+                <div class="calc-layer locked">
+                    <div class="layer-header">
+                        <div class="layer-title">
+                            <input type="checkbox" class="layer-checkbox" disabled>
+                            📉 + Recession Test
+                        </div>
+                        <span class="layer-badge">LOCKED</span>
+                    </div>
+                </div>
+            </div>
+        </main>
+        
+        <!-- AI Coach Sidebar -->
+        <aside class="ai-coach">
+            <div class="coach-header">
+                <div class="coach-avatar">🤖</div>
+                <div>
+                    <div class="coach-name">AI Investment Coach</div>
+                    <div style="font-size: 12px; color: var(--gray-500);">Optimizing your returns</div>
+                </div>
+            </div>
+            
+            <div class="coach-message">
+                "I notice you're in Neutral mode. Based on current market data, you might be leaving money on the table..."
+            </div>
+            
+            <div class="suggestion" onclick="applySuggestion('price')">
+                <div class="suggestion-title">💡 Try $195/night</div>
+                <div class="suggestion-detail">+5% revenue with only -2% occupancy</div>
+            </div>
+            
+            <div class="suggestion" onclick="applySuggestion('occupancy')">
+                <div class="suggestion-title">📈 Realistic occupancy: 72%</div>
+                <div class="suggestion-detail">You're 3% above market average</div>
+            </div>
+            
+            <div class="suggestion" onclick="applySuggestion('seasonal')">
+                <div class="suggestion-title">🌊 Enable seasonality</div>
+                <div class="suggestion-detail">Winter months need adjustment</div>
+            </div>
+            
+            <div style="margin-top: 24px;">
+                <h3 style="font-size: 16px; margin-bottom: 12px;">Efficiency Score</h3>
+                <div class="efficiency-chart">
+                    <div class="efficiency-curve"></div>
+                    <div class="efficiency-dot"></div>
+                </div>
+                <div style="text-align: center; margin-top: 8px; font-size: 14px;">
+                    You're at: <strong style="color: #EF4444;">85% optimal</strong>
+                </div>
+                <button onclick="optimize()" style="width: 100%; margin-top: 12px; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">
+                    🎯 OPTIMIZE NOW
+                </button>
+            </div>
+        </aside>
+    </div>
+    
+    <!-- Badge Popup -->
+    <div class="badge-container" id="badgePopup">
+        <div class="badge-icon">🏆</div>
+        <div class="badge-text">Seasonality Specialist Unlocked!</div>
+    </div>
+    
+    <script>
+        let currentMood = 'neutral';
+        let currentYear = 2;
+        let unlockedLayers = ['basic'];
+        let communityMood = { bear: 15, neutral: 18, bull: 67 };
+        
+        // Set Market Mood
+        function setMood(mood) {
+            currentMood = mood;
+            document.body.className = mood + '-mood';
+            document.getElementById('currentMood').textContent = mood.toUpperCase();
+            
+            // Update active button
+            document.querySelectorAll('.mood-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector('.mood-btn.' + mood).classList.add('active');
+            
+            // Recalculate values based on mood
+            updateScenarios();
+            updateCommunityMood();
+        }
+        
+        // Update Scenarios based on mood
+        function updateScenarios() {
+            const multipliers = {
+                bear: { worst: 0.5, likely: 0.7, best: 0.9 },
+                neutral: { worst: 0.7, likely: 1.0, best: 1.3 },
+                bull: { worst: 0.9, likely: 1.2, best: 1.6 }
+            };
+            
+            const base = 47000;
+            const mult = multipliers[currentMood];
+            
+            document.getElementById('worstValue').textContent = '$' + Math.round(base * mult.worst / 1000) + 'k';
+            document.getElementById('likelyValue').textContent = '$' + Math.round(base * mult.likely / 1000) + 'k';
+            document.getElementById('bestValue').textContent = '$' + Math.round(base * mult.best / 1000) + 'k';
+            document.getElementById('verdictAmount').textContent = '$' + Math.round(base * mult.likely / 1000) + 'k';
+        }
+        
+        // Update Community Mood
+        function updateCommunityMood() {
+            // Simulate community changes
+            if (Math.random() > 0.7) {
+                const change = Math.floor(Math.random() * 3) - 1;
+                communityMood[currentMood] += change;
+                communityMood[currentMood] = Math.max(0, Math.min(100, communityMood[currentMood]));
+            }
+            document.querySelector('.community-mood').textContent = 
+                `${communityMood[currentMood]}% of users viewing this property are in ${currentMood.charAt(0).toUpperCase() + currentMood.slice(1)} Mode`;
+        }
+        
+        // Time Machine Slider
+        function updateTimeSlider(event) {
+            const slider = event.currentTarget;
+            const rect = slider.getBoundingClientRect();
+            const percent = (event.clientX - rect.left) / rect.width;
+            const year = Math.round(percent * 10);
+            
+            currentYear = Math.max(0, Math.min(10, year));
+            document.getElementById('yearValue').textContent = currentYear;
+            document.getElementById('timeSliderFill').style.width = (currentYear * 10) + '%';
+            document.getElementById('timeSliderHandle').style.left = (currentYear * 10) + '%';
+            
+            updateRacePositions();
+        }
+        
+        // Update Race Car Positions
+        function updateRacePositions() {
+            const strGrowth = [0, 47, 95, 140, 180, 215, 245, 270, 290, 305, 315];
+            const ltrGrowth = [0, 12, 24, 36, 48, 60, 75, 90, 105, 120, 135];
+            
+            const strValue = strGrowth[currentYear];
+            const ltrValue = ltrGrowth[currentYear];
+            const maxValue = 315;
+            
+            document.getElementById('strCar').style.left = (strValue / maxValue * 80) + '%';
+            document.getElementById('ltrCar').style.left = (ltrValue / maxValue * 80) + '%';
+            
+            document.getElementById('strCar').textContent = 'STR: $' + strValue + 'k';
+            document.getElementById('ltrCar').textContent = 'LTR: $' + ltrValue + 'k';
+        }
+        
+        // Toggle Calculator Layer
+        function toggleLayer(element, layerType) {
+            if (!element.classList.contains('locked')) {
+                element.classList.toggle('active');
+                const checkbox = element.querySelector('.layer-checkbox');
+                checkbox.checked = !checkbox.checked;
+                
+                if (checkbox.checked && !unlockedLayers.includes(layerType)) {
+                    unlockedLayers.push(layerType);
+                    showBadge('🌊 Seasonality Specialist');
+                    
+                    // Unlock next layer
+                    const nextLayer = element.nextElementSibling;
+                    if (nextLayer && nextLayer.classList.contains('locked')) {
+                        nextLayer.classList.remove('locked');
+                    }
+                }
+            }
+        }
+        
+        // Show Badge
+        function showBadge(text) {
+            const badge = document.getElementById('badgePopup');
+            badge.querySelector('.badge-text').textContent = text + ' Unlocked!';
+            badge.classList.add('show');
+            setTimeout(() => badge.classList.remove('show'), 3000);
+        }
+        
+        // Apply AI Suggestion
+        function applySuggestion(type) {
+            const messages = {
+                price: "Great choice! I've updated your nightly rate to $195.",
+                occupancy: "Smart move! Adjusted to realistic 72% occupancy.",
+                seasonal: "Excellent! Seasonality layer is now active."
+            };
+            
+            document.querySelector('.coach-message').textContent = '"' + messages[type] + '"';
+            
+            if (type === 'seasonal') {
+                document.querySelectorAll('.calc-layer')[1].click();
+            }
+        }
+        
+        // Optimize
+        function optimize() {
+            document.querySelector('.efficiency-dot').style.left = '85%';
+            document.querySelector('.efficiency-dot').style.background = '#10B981';
+            alert('Optimization complete! Your settings are now 98% optimal.');
+        }
+        
+        // Show Methodology
+        function showMethodology() {
+            alert('Our calculations use:\n• 10M+ property data points\n• Machine learning algorithms\n• Real-time market feeds\n• Historical performance data\n• Seasonal adjustments');
+        }
+        
+        // Toggle Data Table
+        function toggleDataTable() {
+            alert('Data table would expand here showing detailed year-by-year projections');
+        }
+        
+        // Initialize
+        window.addEventListener('load', () => {
+            updateScenarios();
+            updateRacePositions();
+            
+            // Animate community mood
+            setInterval(updateCommunityMood, 5000);
+            
+            // Pulse live dot
+            setInterval(() => {
+                document.querySelector('.live-dot').style.animation = 'none';
+                setTimeout(() => {
+                    document.querySelector('.live-dot').style.animation = 'pulse 2s infinite';
+                }, 10);
+            }, 5000);
+        });
+    </script>
+</body>
+</html>

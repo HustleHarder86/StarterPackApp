@@ -741,6 +741,22 @@ class ComponentLoader {
       targetContainer.innerHTML = analysisLayout;
       this.attachEventHandlers();
       
+      // Initialize Financial Calculator script if present
+      setTimeout(() => {
+        if (financialCalculatorModule && financialCalculatorModule.financialCalculatorScript) {
+          console.log('Initializing Financial Calculator script');
+          try {
+            // Create and inject the script with propertyData
+            const scriptContent = financialCalculatorModule.financialCalculatorScript(propertyData);
+            const scriptEl = document.createElement('script');
+            scriptEl.textContent = scriptContent;
+            document.body.appendChild(scriptEl);
+          } catch (error) {
+            console.error('Failed to initialize Financial Calculator script:', error);
+          }
+        }
+      }, 100);
+      
       // Initialize STR components after DOM is ready
       setTimeout(() => {
         if (strChartsModule && strChartsModule.initializeSTRComponents) {

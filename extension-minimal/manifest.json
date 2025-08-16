@@ -1,0 +1,9 @@
+{
+  "manifest_version": 3,
+  "name": "StarterPack Test",
+  "version": "1.0.0",
+  "description": "Minimal test extension",
+  "action": {
+    "default_popup": "popup.html"
+  }
+}

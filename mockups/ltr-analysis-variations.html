@@ -1,0 +1,1292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LTR Analysis Component Variations</title>
+    <style>
+        :root {
+            --primary-blue: #3B82F6;
+            --success-green: #10B981;
+            --warning-yellow: #F59E0B;
+            --gray-50: #F9FAFB;
+            --gray-100: #F3F4F6;
+            --gray-200: #E5E7EB;
+            --gray-300: #D1D5DB;
+            --gray-400: #9CA3AF;
+            --gray-500: #6B7280;
+            --gray-600: #4B5563;
+            --gray-700: #374151;
+            --gray-800: #1F2937;
+            --gray-900: #111827;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: var(--gray-800);
+            background-color: var(--gray-50);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            color: var(--gray-900);
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            color: var(--gray-600);
+            font-size: 1.1rem;
+        }
+
+        .component-section {
+            margin-bottom: 4rem;
+        }
+
+        .section-title {
+            font-size: 1.875rem;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: 2rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 3px solid var(--primary-blue);
+        }
+
+        .variations-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+        }
+
+        .variation-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            overflow: hidden;
+            border: 2px solid var(--gray-200);
+            transition: all 0.3s ease;
+        }
+
+        .variation-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px rgba(0,0,0,0.1);
+            border-color: var(--primary-blue);
+        }
+
+        .variation-header {
+            background: var(--gray-100);
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .variation-title {
+            font-weight: 600;
+            color: var(--gray-900);
+            font-size: 1.125rem;
+        }
+
+        .variation-content {
+            padding: 1.5rem;
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--gray-700);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--gray-300);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--gray-300);
+            border-radius: 8px;
+            background: white;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        /* Slider Styles */
+        .slider-container {
+            margin: 1rem 0;
+        }
+
+        .slider {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: var(--gray-200);
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary-blue);
+            cursor: pointer;
+        }
+
+        .slider-value {
+            font-weight: 600;
+            color: var(--primary-blue);
+            float: right;
+        }
+
+        /* Button Styles */
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--primary-blue);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2563EB;
+        }
+
+        .btn-secondary {
+            background: var(--gray-200);
+            color: var(--gray-700);
+        }
+
+        .btn-secondary:hover {
+            background: var(--gray-300);
+        }
+
+        /* Tab Styles */
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid var(--gray-200);
+            margin-bottom: 1rem;
+        }
+
+        .tab {
+            padding: 0.75rem 1rem;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-weight: 500;
+            color: var(--gray-600);
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .tab.active {
+            color: var(--primary-blue);
+            border-bottom-color: var(--primary-blue);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Card Styles */
+        .metric-card {
+            background: var(--gray-50);
+            padding: 1.5rem;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .metric-value {
+            font-size: 1.875rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+            display: block;
+        }
+
+        .metric-label {
+            color: var(--gray-600);
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+
+        /* Chart Container */
+        .chart-container {
+            height: 300px;
+            background: var(--gray-50);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray-500);
+            font-weight: 500;
+            position: relative;
+        }
+
+        /* Table Styles */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .data-table th {
+            background: var(--gray-50);
+            font-weight: 600;
+            color: var(--gray-700);
+        }
+
+        /* Radio Button Styles */
+        .radio-group {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            padding: 1rem;
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .radio-option:hover {
+            background: var(--gray-50);
+        }
+
+        .radio-option input[type="radio"] {
+            margin-top: 0.125rem;
+        }
+
+        .radio-content h4 {
+            margin-bottom: 0.25rem;
+            color: var(--gray-800);
+        }
+
+        .radio-content p {
+            color: var(--gray-600);
+            font-size: 0.875rem;
+        }
+
+        /* Collapsible Sections */
+        .collapsible {
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            overflow: hidden;
+        }
+
+        .collapsible-header {
+            padding: 1rem;
+            background: var(--gray-50);
+            cursor: pointer;
+            font-weight: 500;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .collapsible-content {
+            padding: 1rem;
+            display: none;
+        }
+
+        .collapsible.open .collapsible-content {
+            display: block;
+        }
+
+        .chevron {
+            transition: transform 0.2s;
+        }
+
+        .collapsible.open .chevron {
+            transform: rotate(180deg);
+        }
+
+        /* Two Column Layout */
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        /* Timeline Styles */
+        .timeline {
+            position: relative;
+            padding-left: 2rem;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 10px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--gray-300);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 2rem;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -2rem;
+            top: 0.5rem;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--primary-blue);
+        }
+
+        .timeline-content {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        /* Progress Bar */
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: var(--gray-200);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--success-green);
+            transition: width 0.3s ease;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .variations-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .two-column {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>LTR Analysis Component Variations</h1>
+            <p>Three distinct design approaches for long-term rental analysis components</p>
+        </div>
+
+        <!-- Rental Income Settings Section -->
+        <div class="component-section">
+            <h2 class="section-title">1. Rental Income Settings</h2>
+            <div class="variations-grid">
+                <!-- Variation A: Two Column Layout -->
+                <div class="variation-card">
+                    <div class="variation-header">
+                        <h3 class="variation-title">Variation A: Two-Column Layout</h3>
+                    </div>
+                    <div class="variation-content">
+                        <div class="two-column">
+                            <div>
+                                <div class="form-group">
+                                    <label class="form-label">Monthly Rent</label>
+                                    <input type="number" class="form-input" value="3500" id="rent-a">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Security Deposit</label>
+                                    <input type="number" class="form-input" value="3500" id="deposit-a">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Utilities Included</label>
+                                    <select class="form-select">
+                                        <option>None</option>
+                                        <option>Partial ($150/month)</option>
+                                        <option>All ($300/month)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="metric-card">
+                                    <span class="metric-value" id="annual-income-a">$42,000</span>
+                                    <span class="metric-label">Annual Rental Income</span>
+                                </div>
+                                <div class="metric-card">
+                                    <span class="metric-value" id="monthly-net-a">$3,200</span>
+                                    <span class="metric-label">Net Monthly Income</span>
+                                </div>
+                                <div class="metric-card">
+                                    <span class="metric-value" id="roi-a">8.4%</span>
+                                    <span class="metric-label">Annual ROI</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Variation B: Single Column with Collapsible Sections -->
+                <div class="variation-card">
+                    <div class="variation-header">
+                        <h3 class="variation-title">Variation B: Collapsible Sections</h3>
+                    </div>
+                    <div class="variation-content">
+                        <div class="collapsible open">
+                            <div class="collapsible-header" onclick="toggleCollapsible(this)">
+                                <span>Income Settings</span>
+                                <span class="chevron">▼</span>
+                            </div>
+                            <div class="collapsible-content">
+                                <div class="form-group">
+                                    <label class="form-label">Monthly Rent</label>
+                                    <input type="number" class="form-input" value="3500" id="rent-b">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Additional Income (pets, parking)</label>
+                                    <input type="number" class="form-input" value="150" id="additional-b">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="collapsible">
+                            <div class="collapsible-header" onclick="toggleCollapsible(this)">
+                                <span>Deposit & Fees</span>
+                                <span class="chevron">▼</span>
+                            </div>
+                            <div class="collapsible-content">
+                                <div class="form-group">
+                                    <label class="form-label">Security Deposit</label>
+                                    <input type="number" class="form-input" value="3500">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Last Month Rent</label>
+                                    <input type="number" class="form-input" value="3500">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 85%"></div>
+                        </div>
+                        <p style="text-align: center; margin-top: 0.5rem; color: var(--gray-600);">Configuration 85% Complete</p>
+                    </div>
+                </div>
+
+                <!-- Variation C: Tabs -->
+                <div class="variation-card">
+                    <div class="variation-header">
+                        <h3 class="variation-title">Variation C: Tabbed Interface</h3>
+                    </div>
+                    <div class="variation-content">
+                        <div class="tabs">
+                            <button class="tab active" onclick="switchTab('income-tab', this)">Income</button>
+                            <button class="tab" onclick="switchTab('expenses-tab', this)">Expenses</button>
+                            <button class="tab" onclick="switchTab('financing-tab', this)">Financing</button>
+                        </div>
+
+                        <div id="income-tab" class="tab-content active">
+                            <div class="form-group">
+                                <label class="form-label">Base Monthly Rent</label>
+                                <input type="number" class="form-input" value="3500" id="rent-c">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Annual Rent Increases</label>
+                                <select class="form-select">
+                                    <option>2% annually</option>
+                                    <option>3% annually</option>
+                                    <option>Market rate</option>
+                                </select>
+                            </div>
+                            <div class="metric-card">
+                                <span class="metric-value" id="projected-income-c">$44,100</span>
+                                <span class="metric-label">Year 2 Projected Income</span>
+                            </div>
+                        </div>
+
+                        <div id="expenses-tab" class="tab-content">
+                            <div class="form-group">
+                                <label class="form-label">Property Management</label>
+                                <input type="number" class="form-input" value="350" placeholder="Monthly cost">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Maintenance Reserve</label>
+                                <input type="number" class="form-input" value="200" placeholder="Monthly reserve">
+                            </div>
+                        </div>
+
+                        <div id="financing-tab" class="tab-content">
+                            <div class="form-group">
+                                <label class="form-label">Mortgage Payment</label>
+                                <input type="number" class="form-input" value="2100" placeholder="Monthly P&I">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Property Taxes</label>
+                                <input type="number" class="form-input" value="458" placeholder="Monthly taxes">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Revenue Comparison Chart Section -->
+        <div class="component-section">
+            <h2 class="section-title">2. Revenue Comparison Chart</h2>
+            <div class="variations-grid">
+                <!-- Variation A: Vertical Bar Chart -->
+                <div class="variation-card">
+                    <div class="variation-header">
+                        <h3 class="variation-title">Variation A: Vertical Bar Chart</h3>
+                    </div>
+                    <div class="variation-content">
+                        <div class="chart-container">
+                            <canvas id="barChart" width="350" height="250"></canvas>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-top: 1rem;">
+                            <div class="metric-card" style="flex: 1; margin-right: 0.5rem;">
+                                <span class="metric-value">$42,000</span>
+                                <span class="metric-label">LTR Annual</span>
+                            </div>
+                            <div class="metric-card" style="flex: 1; margin-left: 0.5rem;">
+                                <span class="metric-value">$67,200</span>
+                                <span class="metric-label">STR Annual</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Variation B: Line Chart -->
+                <div class="variation-card">
+                    <div class="variation-header">
+                        <h3 class="variation-title">Variation B: 5-Year Projection</h3>
+                    </div>
+                    <div class="variation-content">
+                        <div class="chart-container">
+                            <canvas id="lineChart" width="350" height="250"></canvas>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Growth Scenario</label>
+                            <select class="form-select" onchange="updateProjection()">
+                                <option>Conservative (2% annual)</option>
+                                <option>Moderate (4% annual)</option>
+                                <option>Aggressive (6% annual)</option>
+                            </select>
+                        </div>
+                        <p style="color: var(--gray-600); font-size: 0.875rem; text-align: center;">
+                            LTR shows steady growth with lower volatility compared to STR
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Variation C: Donut Chart -->
+                <div class="variation-card">
+                    <div class="variation-header">
+                        <h3 class="variation-title">Variation C: Revenue Breakdown</h3>
+                    </div>
+                    <div class="variation-content">
+                        <div class="chart-container">
+                            <canvas id="donutChart" width="300" height="250"></canvas>
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem;">
+                            <div style="text-align: center;">
+                                <div style="display: inline-block; width: 12px; height: 12px; background: var(--primary-blue); margin-right: 0.5rem;"></div>
+                                <span style="font-size: 0.875rem;">Base Rent (83.3%)</span>
+                            </div>
+                            <div style="text-align: center;">
+                                <div style="display: inline-block; width: 12px; height: 12px; background: var(--success-green); margin-right: 0.5rem;"></div>
+                                <span style="font-size: 0.875rem;">Additional Income (16.7%)</span>
+                            </div>
+                        </div>
+                        <div class="metric-card" style="margin-top: 1rem;">
+                            <span class="metric-value">$3,650</span>
+                            <span class="metric-label">Total Monthly Revenue</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Vacancy & Market Settings Section -->
+        <div class="component-section">
+            <h2 class="section-title">3. Vacancy & Market Settings</h2>
+            <div class="variations-grid">
+                <!-- Variation A: Sliders -->
+                <div class="variation-card">
+                    <div class="variation-header">
+                        <h3 class="variation-title">Variation A: Interactive Sliders</h3>
+                    </div>
+                    <div class="variation-content">
+                        <div class="form-group">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <label class="form-label">Vacancy Rate</label>
+                                <span class="slider-value" id="vacancy-value-a">5%</span>
+                            </div>
+                            <div class="slider-container">
+                                <input type="range" min="0" max="20" value="5" class="slider" id="vacancy-slider-a" oninput="updateSliderValue('vacancy-slider-a', 'vacancy-value-a', '%')">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <label class="form-label">Market Appreciation</label>
+                                <span class="slider-value" id="appreciation-value-a">3.5%</span>
+                            </div>
+                            <div class="slider-container">
+                                <input type="range" min="0" max="10" value="3.5" step="0.5" class="slider" id="appreciation-slider-a" oninput="updateSliderValue('appreciation-slider-a', 'appreciation-value-a', '%')">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <label class="form-label">Rent Growth Rate</label>
+                                <span class="slider-value" id="rent-growth-value-a">2.5%</span>
+                            </div>
+                            <div class="slider-container">
+                                <input type="range" min="0" max="8" value="2.5" step="0.5" class="slider" id="rent-growth-slider-a" oninput="updateSliderValue('rent-growth-slider-a', 'rent-growth-value-a', '%')">
+                            </div>
+                        </div>
+
+                        <div class="metric-card">
+                            <span class="metric-value" id="effective-income-a">$39,900</span>
+                            <span class="metric-label">Effective Annual Income</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Variation B: Dropdown Presets -->
+                <div class="variation-card">
+                    <div class="variation-header">
+                        <h3 class="variation-title">Variation B: Preset Scenarios</h3>
+                    </div>
+                    <div class="variation-content">
+                        <div class="form-group">
+                            <label class="form-label">Market Scenario</label>
+                            <select class="form-select" id="scenario-select-b" onchange="updateScenario()">
+                                <option value="conservative">Conservative Market</option>
+                                <option value="moderate" selected>Moderate Market</option>
+                                <option value="aggressive">Aggressive Market</option>
+                            </select>
+                        </div>
+
+                        <div id="scenario-details-b">
+                            <table class="data-table">
+                                <tbody>
+                                    <tr>
+                                        <td>Vacancy Rate</td>
+                                        <td><strong>7%</strong></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Property Appreciation</td>
+                                        <td><strong>3%</strong></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Rent Growth</td>
+                                        <td><strong>2%</strong></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Market Stability</td>
+                                        <td><strong>Medium</strong></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="form-group" style="margin-top: 1.5rem;">
+                            <label class="form-label">Custom Adjustments</label>
+                            <button class="btn btn-secondary" onclick="enableCustomMode()">Enable Custom Mode</button>
+                        </div>
+
+                        <div class="metric-card">
+                            <span class="metric-value">$38,850</span>
+                            <span class="metric-label">Conservative Estimate</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Variation C: Radio Groups -->
+                <div class="variation-card">
+                    <div class="variation-header">
+                        <h3 class="variation-title">Variation C: Detailed Options</h3>
+                    </div>
+                    <div class="variation-content">
+                        <div class="form-group">
+                            <label class="form-label">Vacancy Expectations</label>
+                            <div class="radio-group">
+                                <label class="radio-option">
+                                    <input type="radio" name="vacancy-c" value="low" checked>
+                                    <div class="radio-content">
+                                        <h4>Low Vacancy (3-5%)</h4>
+                                        <p>High-demand area with stable tenant base. Good property management and prime location.</p>
+                                    </div>
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="vacancy-c" value="medium">
+                                    <div class="radio-content">
+                                        <h4>Medium Vacancy (6-8%)</h4>
+                                        <p>Average market conditions. Standard turnover rates and seasonal fluctuations.</p>
+                                    </div>
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="vacancy-c" value="high">
+                                    <div class="radio-content">
+                                        <h4>High Vacancy (9-12%)</h4>
+                                        <p>Competitive market or lower-demand area. Budget for longer vacancy periods.</p>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="metric-card">
+                            <span class="metric-value">4%</span>
+                            <span class="metric-label">Selected Vacancy Rate</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Financial Summary Section -->
+        <div class="component-section">
+            <h2 class="section-title">4. Financial Summary</h2>
+            <div class="variations-grid">
+                <!-- Variation A: Card Layout -->
+                <div class="variation-card">
+                    <div class="variation-header">
+                        <h3 class="variation-title">Variation A: Key Metrics Cards</h3>
+                    </div>
+                    <div class="variation-content">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                            <div class="metric-card">
+                                <span class="metric-value" style="color: var(--success-green);">$8,950</span>
+                                <span class="metric-label">Annual Cash Flow</span>
+                            </div>
+                            <div class="metric-card">
+                                <span class="metric-value">8.4%</span>
+                                <span class="metric-label">Cash-on-Cash Return</span>
+                            </div>
+                            <div class="metric-card">
+                                <span class="metric-value">1.2%</span>
+                                <span class="metric-label">Cap Rate</span>
+                            </div>
+                            <div class="metric-card">
+                                <span class="metric-value">15.2</span>
+                                <span class="metric-label">Price-to-Rent Ratio</span>
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 1.5rem;">
+                            <h4 style="margin-bottom: 1rem; color: var(--gray-800);">Monthly Breakdown</h4>
+                            <div style="display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid var(--gray-200);">
+                                <span>Gross Rental Income</span>
+                                <span style="font-weight: 600;">$3,500</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid var(--gray-200);">
+                                <span>Vacancy (5%)</span>
+                                <span style="color: var(--warning-yellow); font-weight: 600;">-$175</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid var(--gray-200);">
+                                <span>Operating Expenses</span>
+                                <span style="color: var(--warning-yellow); font-weight: 600;">-$1,580</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; padding: 0.5rem 0; font-weight: 600; color: var(--success-green);">
+                                <span>Net Operating Income</span>
+                                <span>$1,745</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Variation B: Detailed Table -->
+                <div class="variation-card">
+                    <div class="variation-header">
+                        <h3 class="variation-title">Variation B: Detailed Analysis Table</h3>
+                    </div>
+                    <div class="variation-content">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Category</th>
+                                    <th>Monthly</th>
+                                    <th>Annual</th>
+                                    <th>% of Rent</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Gross Rent</td>
+                                    <td>$3,500</td>
+                                    <td>$42,000</td>
+                                    <td>100%</td>
+                                </tr>
+                                <tr>
+                                    <td>Vacancy</td>
+                                    <td style="color: var(--warning-yellow);">-$175</td>
+                                    <td style="color: var(--warning-yellow);">-$2,100</td>
+                                    <td>5%</td>
+                                </tr>
+                                <tr>
+                                    <td>Property Taxes</td>
+                                    <td style="color: var(--warning-yellow);">-$458</td>
+                                    <td style="color: var(--warning-yellow);">-$5,496</td>
+                                    <td>13.1%</td>
+                                </tr>
+                                <tr>
+                                    <td>Insurance</td>
+                                    <td style="color: var(--warning-yellow);">-$125</td>
+                                    <td style="color: var(--warning-yellow);">-$1,500</td>
+                                    <td>3.6%</td>
+                                </tr>
+                                <tr>
+                                    <td>Maintenance</td>
+                                    <td style="color: var(--warning-yellow);">-$200</td>
+                                    <td style="color: var(--warning-yellow);">-$2,400</td>
+                                    <td>5.7%</td>
+                                </tr>
+                                <tr>
+                                    <td>Management</td>
+                                    <td style="color: var(--warning-yellow);">-$350</td>
+                                    <td style="color: var(--warning-yellow);">-$4,200</td>
+                                    <td>10%</td>
+                                </tr>
+                                <tr style="border-top: 2px solid var(--gray-300); font-weight: 600;">
+                                    <td>Net Operating Income</td>
+                                    <td style="color: var(--success-green);">$2,192</td>
+                                    <td style="color: var(--success-green);">$26,304</td>
+                                    <td>62.6%</td>
+                                </tr>
+                                <tr>
+                                    <td>Debt Service</td>
+                                    <td style="color: var(--warning-yellow);">-$1,950</td>
+                                    <td style="color: var(--warning-yellow);">-$23,400</td>
+                                    <td>55.7%</td>
+                                </tr>
+                                <tr style="border-top: 2px solid var(--primary-blue); font-weight: 600; background: var(--gray-50);">
+                                    <td>Cash Flow</td>
+                                    <td style="color: var(--primary-blue);">$242</td>
+                                    <td style="color: var(--primary-blue);">$2,904</td>
+                                    <td>6.9%</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <div class="btn" style="width: 100%; margin-top: 1rem; text-align: center; background: var(--gray-100);">
+                            Download Detailed Report (PDF)
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Variation C: Timeline Visualization -->
+                <div class="variation-card">
+                    <div class="variation-header">
+                        <h3 class="variation-title">Variation C: Cash Flow Timeline</h3>
+                    </div>
+                    <div class="variation-content">
+                        <div class="timeline">
+                            <div class="timeline-item">
+                                <div class="timeline-content">
+                                    <h4 style="color: var(--gray-800); margin-bottom: 0.5rem;">Year 1</h4>
+                                    <p>Initial cash flow: <strong style="color: var(--success-green);">$2,904/year</strong></p>
+                                    <p>Cash-on-Cash: <strong>8.4%</strong></p>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 25%"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="timeline-item">
+                                <div class="timeline-content">
+                                    <h4 style="color: var(--gray-800); margin-bottom: 0.5rem;">Year 2-3</h4>
+                                    <p>Rent increases: <strong style="color: var(--success-green);">$3,468/year</strong></p>
+                                    <p>Property appreciation: <strong>$18,000</strong></p>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 45%"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="timeline-item">
+                                <div class="timeline-content">
+                                    <h4 style="color: var(--gray-800); margin-bottom: 0.5rem;">Year 4-5</h4>
+                                    <p>Mortgage paydown: <strong style="color: var(--success-green);">$4,200/year</strong></p>
+                                    <p>Total equity: <strong>$84,000</strong></p>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 85%"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="timeline-item">
+                                <div class="timeline-content">
+                                    <h4 style="color: var(--gray-800); margin-bottom: 0.5rem;">5-Year Total</h4>
+                                    <p>Cumulative cash flow: <strong style="color: var(--primary-blue);">$18,540</strong></p>
+                                    <p>Total return: <strong style="color: var(--primary-blue);">$126,540</strong></p>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 100%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="metric-card" style="margin-top: 1.5rem; background: var(--primary-blue); color: white;">
+                            <span class="metric-value" style="color: white;">368%</span>
+                            <span class="metric-label" style="color: rgba(255,255,255,0.8);">5-Year Total Return on Investment</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Chart drawing functions
+        function drawBarChart() {
+            const canvas = document.getElementById('barChart');
+            const ctx = canvas.getContext('2d');
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Data
+            const ltrValue = 42000;
+            const strValue = 67200;
+            const maxValue = Math.max(ltrValue, strValue);
+            
+            // Chart dimensions
+            const chartWidth = canvas.width - 80;
+            const chartHeight = canvas.height - 80;
+            const barWidth = 80;
+            
+            // Draw bars
+            const ltrHeight = (ltrValue / maxValue) * chartHeight;
+            const strHeight = (strValue / maxValue) * chartHeight;
+            
+            // LTR Bar
+            ctx.fillStyle = '#3B82F6';
+            ctx.fillRect(80, canvas.height - 40 - ltrHeight, barWidth, ltrHeight);
+            
+            // STR Bar
+            ctx.fillStyle = '#10B981';
+            ctx.fillRect(200, canvas.height - 40 - strHeight, barWidth, strHeight);
+            
+            // Labels
+            ctx.fillStyle = '#374151';
+            ctx.font = '14px -apple-system, BlinkMacSystemFont, sans-serif';
+            ctx.textAlign = 'center';
+            
+            ctx.fillText('LTR', 120, canvas.height - 20);
+            ctx.fillText('STR', 240, canvas.height - 20);
+            
+            // Values
+            ctx.font = '12px -apple-system, BlinkMacSystemFont, sans-serif';
+            ctx.fillText(`$${ltrValue.toLocaleString()}`, 120, canvas.height - 50 - ltrHeight);
+            ctx.fillText(`$${strValue.toLocaleString()}`, 240, canvas.height - 50 - strHeight);
+        }
+
+        function drawLineChart() {
+            const canvas = document.getElementById('lineChart');
+            const ctx = canvas.getContext('2d');
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Data points for 5 years
+            const ltrData = [42000, 42840, 43697, 44571, 45462];
+            const strData = [67200, 67872, 68551, 69237, 69930];
+            
+            const maxValue = Math.max(...strData);
+            const minValue = Math.min(...ltrData) * 0.9;
+            
+            const chartWidth = canvas.width - 80;
+            const chartHeight = canvas.height - 80;
+            
+            function getY(value) {
+                return canvas.height - 40 - ((value - minValue) / (maxValue - minValue)) * chartHeight;
+            }
+            
+            function getX(index) {
+                return 40 + (index / 4) * chartWidth;
+            }
+            
+            // Draw LTR line
+            ctx.beginPath();
+            ctx.strokeStyle = '#3B82F6';
+            ctx.lineWidth = 3;
+            ctx.moveTo(getX(0), getY(ltrData[0]));
+            for (let i = 1; i < ltrData.length; i++) {
+                ctx.lineTo(getX(i), getY(ltrData[i]));
+            }
+            ctx.stroke();
+            
+            // Draw STR line
+            ctx.beginPath();
+            ctx.strokeStyle = '#10B981';
+            ctx.lineWidth = 3;
+            ctx.moveTo(getX(0), getY(strData[0]));
+            for (let i = 1; i < strData.length; i++) {
+                ctx.lineTo(getX(i), getY(strData[i]));
+            }
+            ctx.stroke();
+            
+            // Add points
+            ltrData.forEach((value, index) => {
+                ctx.beginPath();
+                ctx.fillStyle = '#3B82F6';
+                ctx.arc(getX(index), getY(value), 4, 0, 2 * Math.PI);
+                ctx.fill();
+            });
+            
+            strData.forEach((value, index) => {
+                ctx.beginPath();
+                ctx.fillStyle = '#10B981';
+                ctx.arc(getX(index), getY(value), 4, 0, 2 * Math.PI);
+                ctx.fill();
+            });
+            
+            // Labels
+            ctx.fillStyle = '#374151';
+            ctx.font = '12px -apple-system, BlinkMacSystemFont, sans-serif';
+            ctx.textAlign = 'center';
+            
+            for (let i = 0; i < 5; i++) {
+                ctx.fillText(`Year ${i + 1}`, getX(i), canvas.height - 20);
+            }
+            
+            // Legend
+            ctx.fillStyle = '#3B82F6';
+            ctx.fillRect(20, 20, 15, 3);
+            ctx.fillStyle = '#374151';
+            ctx.textAlign = 'left';
+            ctx.fillText('LTR', 40, 25);
+            
+            ctx.fillStyle = '#10B981';
+            ctx.fillRect(20, 35, 15, 3);
+            ctx.fillStyle = '#374151';
+            ctx.fillText('STR', 40, 40);
+        }
+
+        function drawDonutChart() {
+            const canvas = document.getElementById('donutChart');
+            const ctx = canvas.getContext('2d');
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const radius = 80;
+            const innerRadius = 45;
+            
+            // Data
+            const baseRent = 3500;
+            const additional = 650;
+            const total = baseRent + additional;
+            
+            const baseAngle = (baseRent / total) * 2 * Math.PI;
+            
+            // Draw base rent arc
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius, 0, baseAngle);
+            ctx.arc(centerX, centerY, innerRadius, baseAngle, 0, true);
+            ctx.fillStyle = '#3B82F6';
+            ctx.fill();
+            
+            // Draw additional income arc
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius, baseAngle, 2 * Math.PI);
+            ctx.arc(centerX, centerY, innerRadius, 2 * Math.PI, baseAngle, true);
+            ctx.fillStyle = '#10B981';
+            ctx.fill();
+            
+            // Center text
+            ctx.fillStyle = '#374151';
+            ctx.font = '16px -apple-system, BlinkMacSystemFont, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('$3,650', centerX, centerY - 5);
+            ctx.font = '12px -apple-system, BlinkMacSystemFont, sans-serif';
+            ctx.fillText('Monthly', centerX, centerY + 12);
+        }
+
+        // Interactive functions
+        function updateSliderValue(sliderId, displayId, suffix = '') {
+            const slider = document.getElementById(sliderId);
+            const display = document.getElementById(displayId);
+            display.textContent = slider.value + suffix;
+            
+            // Update effective income calculation
+            if (sliderId === 'vacancy-slider-a') {
+                const vacancyRate = parseFloat(slider.value) / 100;
+                const grossIncome = 42000;
+                const effectiveIncome = grossIncome * (1 - vacancyRate);
+                document.getElementById('effective-income-a').textContent = '$' + effectiveIncome.toLocaleString();
+            }
+        }
+
+        function toggleCollapsible(header) {
+            const collapsible = header.parentElement;
+            collapsible.classList.toggle('open');
+        }
+
+        function switchTab(tabId, button) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Remove active class from all tabs
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected tab and mark button as active
+            document.getElementById(tabId).classList.add('active');
+            button.classList.add('active');
+        }
+
+        function updateScenario() {
+            const select = document.getElementById('scenario-select-b');
+            const details = document.getElementById('scenario-details-b');
+            
+            const scenarios = {
+                conservative: {
+                    vacancy: '10%',
+                    appreciation: '2%',
+                    growth: '1.5%',
+                    stability: 'High'
+                },
+                moderate: {
+                    vacancy: '7%',
+                    appreciation: '3%',
+                    growth: '2%',
+                    stability: 'Medium'
+                },
+                aggressive: {
+                    vacancy: '4%',
+                    appreciation: '5%',
+                    growth: '4%',
+                    stability: 'Low'
+                }
+            };
+            
+            const scenario = scenarios[select.value];
+            details.innerHTML = `
+                <table class="data-table">
+                    <tbody>
+                        <tr><td>Vacancy Rate</td><td><strong>${scenario.vacancy}</strong></td></tr>
+                        <tr><td>Property Appreciation</td><td><strong>${scenario.appreciation}</strong></td></tr>
+                        <tr><td>Rent Growth</td><td><strong>${scenario.growth}</strong></td></tr>
+                        <tr><td>Market Stability</td><td><strong>${scenario.stability}</strong></td></tr>
+                    </tbody>
+                </table>
+            `;
+        }
+
+        function enableCustomMode() {
+            alert('Custom mode would allow individual adjustment of each parameter with sliders or inputs.');
+        }
+
+        function updateProjection() {
+            // This would update the line chart based on the selected growth scenario
+            drawLineChart();
+        }
+
+        // Initialize charts when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            drawBarChart();
+            drawLineChart();
+            drawDonutChart();
+            
+            // Update rental income calculations
+            function updateRentalCalculations() {
+                const rentInputs = ['rent-a', 'rent-b', 'rent-c'];
+                rentInputs.forEach(id => {
+                    const input = document.getElementById(id);
+                    if (input) {
+                        input.addEventListener('input', function() {
+                            const rent = parseFloat(this.value) || 0;
+                            const annual = rent * 12;
+                            const net = rent - 300; // Assuming $300 expenses
+                            const roi = ((annual - 3600) / 50000 * 100).toFixed(1);
+                            
+                            if (id === 'rent-a') {
+                                document.getElementById('annual-income-a').textContent = '$' + annual.toLocaleString();
+                                document.getElementById('monthly-net-a').textContent = '$' + net.toLocaleString();
+                                document.getElementById('roi-a').textContent = roi + '%';
+                            }
+                        });
+                    }
+                });
+            }
+            
+            updateRentalCalculations();
+        });
+    </script>
+</body>
+</html>

@@ -3,9 +3,28 @@
  */
 
 export const FinancialCalculator = ({ strData, ltrData, propertyData }) => {
-  const purchasePrice = propertyData?.purchase_price || propertyData?.purchasePrice || propertyData?.price || 849900;
-  const monthlyRevenue = strData?.monthly_revenue || strData?.monthlyRevenue || 11044;
-  const ltrRent = ltrData?.monthly_rent || ltrData?.monthlyRent || 4000;
+  // Only use real data - no fallback values
+  const purchasePrice = propertyData?.purchase_price || propertyData?.purchasePrice || propertyData?.price;
+  const monthlyRevenue = strData?.monthly_revenue || strData?.monthlyRevenue;
+  const ltrRent = ltrData?.monthly_rent || ltrData?.monthlyRent;
+  
+  // If critical data is missing, show error message
+  if (!purchasePrice || !monthlyRevenue || !ltrRent) {
+    return `
+      <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <h3 class="text-lg font-bold text-gray-900 mb-6">Financial Analysis Calculator</h3>
+        <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+          <p class="text-red-700 font-medium">⚠️ Unable to display financial analysis</p>
+          <p class="text-red-600 text-sm mt-2">Required data is not available. Please ensure the property analysis has completed successfully.</p>
+          <ul class="text-red-600 text-sm mt-2 list-disc list-inside">
+            ${!purchasePrice ? '<li>Property price data missing</li>' : ''}
+            ${!monthlyRevenue ? '<li>STR revenue data missing</li>' : ''}
+            ${!ltrRent ? '<li>LTR rent data missing</li>' : ''}
+          </ul>
+        </div>
+      </div>
+    `;
+  }
   
   return `
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
@@ -132,9 +151,16 @@ export const FinancialCalculator = ({ strData, ltrData, propertyData }) => {
   `;
 };
 
-export const financialCalculatorScript = `
+export const financialCalculatorScript = (propertyData = {}, strData = {}, ltrData = {}) => `
   function updateFinancialCalculator() {
-    const purchasePrice = ${propertyData?.purchase_price || propertyData?.purchasePrice || 849900};
+    // Only use real data - no fallback values
+    const purchasePrice = ${propertyData?.purchase_price || propertyData?.purchasePrice || propertyData?.price || 'null'};
+    
+    // If critical data is missing, disable calculator
+    if (!purchasePrice) {
+      console.error('[FinancialCalculator] Cannot initialize calculator - purchase price missing');
+      return;
+    }
     
     // Get slider values
     const strNightlyRate = parseFloat(document.getElementById('strNightlyRate').value);
@@ -154,7 +180,9 @@ export const financialCalculatorScript = `
     
     // Calculate revenues
     const strMonthlyRevenue = strNightlyRate * 30.4 * strOccupancy;
-    const strOperatingExpenses = strMonthlyRevenue * managementFee + 500; // $500 base expenses
+    // Use actual operating expenses from data if available
+    const baseExpenses = ${strData?.operating_expenses || strData?.operatingExpenses || 'strMonthlyRevenue * 0.15'};
+    const strOperatingExpenses = strMonthlyRevenue * managementFee + baseExpenses;
     
     // Calculate mortgage
     const loanAmount = purchasePrice * (1 - downPayment);
@@ -164,7 +192,9 @@ export const financialCalculatorScript = `
     
     // Calculate net cash flows
     const strNetCashFlow = strMonthlyRevenue - strOperatingExpenses - mortgagePayment;
-    const ltrNetCashFlow = ltrRent - mortgagePayment - 200; // $200 maintenance for LTR
+    // Use actual maintenance costs from data if available
+    const maintenanceCost = ${ltrData?.maintenance_cost || ltrData?.maintenanceCost || 'ltrRent * 0.05'};
+    const ltrNetCashFlow = ltrRent - mortgagePayment - maintenanceCost;
     
     // Update bar chart
     const maxCashFlow = 10000;
@@ -207,9 +237,14 @@ export const financialCalculatorScript = `
   document.getElementById('interestRate').addEventListener('input', updateFinancialCalculator);
   
   document.getElementById('resetFinancialCalc').addEventListener('click', function() {
-    document.getElementById('strNightlyRate').value = 363;
-    document.getElementById('strOccupancy').value = 75;
-    document.getElementById('ltrRent').value = 4000;
+    // Reset to actual data values or reasonable defaults based on property data
+    const strNightlyDefault = ${strData?.nightly_rate || strData?.nightlyRate || 'Math.round(${monthlyRevenue || 'null'} / 30.4 / 0.75)' || 300};
+    const strOccupancyDefault = ${strData?.occupancy_rate || strData?.occupancyRate || 75};
+    const ltrRentDefault = ${ltrData?.monthly_rent || ltrData?.monthlyRent || ltrRent || 3000};
+    
+    document.getElementById('strNightlyRate').value = strNightlyDefault;
+    document.getElementById('strOccupancy').value = strOccupancyDefault;
+    document.getElementById('ltrRent').value = ltrRentDefault;
     document.getElementById('managementFee').value = 25;
     document.getElementById('downPayment').value = 20;
     document.getElementById('interestRate').value = 6.5;

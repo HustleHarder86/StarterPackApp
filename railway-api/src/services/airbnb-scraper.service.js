@@ -305,6 +305,11 @@ class AirbnbScraperService {
         const checkOutDate = new Date(item.checkOut || this.getCheckOutDate());
         const nights = Math.ceil((checkOutDate - checkInDate) / (1000 * 60 * 60 * 24)) || 7;
         
+        // Log pricing details for debugging
+        if (item.id && item.pricing.label) {
+          logger.debug(`Pricing for listing ${item.id}: label="${item.pricing.label}", nights=${nights}`);
+        }
+        
         // First try the label field which often contains the total price
         if (item.pricing.label) {
           const labelMatch = item.pricing.label.match(/\$?([\d,]+(?:\.\d{2})?)/);
@@ -327,17 +332,9 @@ class AirbnbScraperService {
         if (!nightlyPrice && item.pricing.rate?.amount) {
           nightlyPrice = item.pricing.rate.amount;
         }
-        // Check for qualifier that indicates "per night"
-        if (item.pricing.qualifier && item.pricing.qualifier.includes('night')) {
-          // If qualifier says "per night", the price might already be nightly
-          // Re-extract if needed
-          if (item.pricing.price) {
-            const priceMatch = item.pricing.price.match(/\$?([\d,]+(?:\.\d{2})?)/);
-            if (priceMatch) {
-              nightlyPrice = parseFloat(priceMatch[1].replace(/,/g, ''));
-            }
-          }
-        }
+        // REMOVED: The qualifier check was causing weekly totals to overwrite nightly rates
+        // The pricing.label and pricing.price fields contain TOTAL prices for the stay
+        // which we already divide by nights above
       }
       
       // Fallback to top-level price field
@@ -381,6 +378,16 @@ class AirbnbScraperService {
 
       // Extract room type
       const roomType = item.roomType || item.room_type || item.property_type || 'Entire place';
+
+      // Sanity check: If nightly price seems unreasonably high (>$2000/night for regular listings),
+      // it might be a weekly rate mistakenly not divided
+      if (nightlyPrice > 2000 && !item.luxury) {
+        logger.warn(`Suspiciously high nightly rate: $${nightlyPrice} for listing ${item.id || 'unknown'}. May be weekly rate.`);
+        // Attempt to correct by dividing by 7
+        const possibleWeeklyRate = nightlyPrice;
+        nightlyPrice = Math.round(nightlyPrice / 7);
+        logger.info(`Adjusted potential weekly rate $${possibleWeeklyRate} to nightly rate $${nightlyPrice}`);
+      }
 
       return {
         id: item.id || item.listing_id || Math.random().toString(36).substr(2, 9),

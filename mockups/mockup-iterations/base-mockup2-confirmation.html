@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Base Mockup 2 - Property Confirmation</title>
+    
+    <!-- Load configuration and API integration -->
+    <script src="mockup-config.js"></script>
+    <script src="api-integration.js"></script>
+    <script src="error-recovery.js"></script>
+    <script src="extension-handler.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .confirmation-container {
+            max-width: 720px;
+            width: 100%;
+        }
+
+        .confirmation-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+        }
+
+        .confirmation-header {
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            padding: 24px 28px;
+            text-align: center;
+            color: white;
+        }
+
+        .confirmation-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .confirmation-subtitle {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .confirmation-content {
+            padding: 24px 28px 28px;
+        }
+
+        .property-showcase {
+            background: linear-gradient(135deg, #eff6ff 0%, #ede9fe 100%);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            position: relative;
+            border: 2px solid #e0e7ff;
+        }
+
+        .property-badge {
+            position: absolute;
+            top: -10px;
+            left: 20px;
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .property-layout {
+            display: grid;
+            grid-template-columns: 120px 1fr;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .property-visual {
+            width: 120px;
+            height: 90px;
+            background: linear-gradient(135deg, #ffffff 0%, #f3f4f6 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: #9ca3af;
+            border: 1px solid #e5e7eb;
+        }
+
+        .property-info {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .property-header {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .property-address {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        .property-location {
+            font-size: 13px;
+            color: #6b7280;
+        }
+
+        .property-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 12px;
+        }
+
+        .metric-card {
+            background: white;
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .metric-label {
+            font-size: 10px;
+            color: #9ca3af;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .metric-value {
+            font-size: 14px;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        .metric-value.highlight {
+            font-size: 18px;
+            color: #3b82f6;
+        }
+
+        .analysis-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .analysis-option {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .analysis-option:hover {
+            border-color: #3b82f6;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(59, 130, 246, 0.1);
+        }
+
+        .analysis-option.selected {
+            background: linear-gradient(135deg, #eff6ff 0%, #ede9fe 100%);
+            border-color: #3b82f6;
+        }
+
+        .analysis-option.selected::after {
+            content: '✓';
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            width: 24px;
+            height: 24px;
+            background: #3b82f6;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+
+        .analysis-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 8px;
+            font-size: 18px;
+        }
+
+        .analysis-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 4px;
+        }
+
+        .analysis-description {
+            font-size: 12px;
+            color: #6b7280;
+            line-height: 1.4;
+        }
+
+        .recommended-tag {
+            position: absolute;
+            top: -8px;
+            right: 12px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .action-section {
+            display: flex;
+            gap: 12px;
+        }
+
+        .secondary-btn {
+            background: white;
+            color: #6b7280;
+            border: 2px solid #e5e7eb;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .secondary-btn:hover {
+            border-color: #9ca3af;
+            color: #4b5563;
+        }
+
+        .primary-btn {
+            flex: 1;
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            color: white;
+            border: none;
+            padding: 12px 32px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .primary-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
+        }
+
+        .primary-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* Loading State */
+        .loading-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .loading-modal.active {
+            display: flex;
+        }
+
+        .loading-content {
+            background: white;
+            border-radius: 12px;
+            padding: 32px;
+            text-align: center;
+            max-width: 300px;
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid #e5e7eb;
+            border-top: 4px solid #3b82f6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        .loading-text {
+            font-size: 14px;
+            color: #6b7280;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="confirmation-container">
+        <div class="confirmation-card">
+            <div class="confirmation-header">
+                <h1 class="confirmation-title">Investment Property Analysis</h1>
+                <p class="confirmation-subtitle">Review property details and select analysis type</p>
+            </div>
+            
+            <div class="confirmation-content">
+                <!-- Property Showcase -->
+                <div class="property-showcase">
+                    <div class="property-badge">✓ Property Confirmed</div>
+                    <div class="property-layout">
+                        <div class="property-visual">
+                            📍 Property Photo
+                        </div>
+                        <div class="property-info">
+                            <div class="property-header">
+                                <div class="property-address" id="propertyAddress">
+                                    1514 - 150 East Liberty Street
+                                </div>
+                                <div class="property-location" id="propertyLocation">
+                                    Toronto, Ontario M6K 3R5
+                                </div>
+                            </div>
+                            <div class="property-grid">
+                                <div class="metric-card">
+                                    <div class="metric-label">Price</div>
+                                    <div class="metric-value highlight" id="listPrice">$489,000</div>
+                                </div>
+                                <div class="metric-card">
+                                    <div class="metric-label">Type</div>
+                                    <div class="metric-value" id="propertyType">Apartment</div>
+                                </div>
+                                <div class="metric-card">
+                                    <div class="metric-label">Bedrooms</div>
+                                    <div class="metric-value" id="bedrooms">1 Bed</div>
+                                </div>
+                                <div class="metric-card">
+                                    <div class="metric-label">Bathrooms</div>
+                                    <div class="metric-value" id="bathrooms">1 Bath</div>
+                                </div>
+                                <div class="metric-card">
+                                    <div class="metric-label">Sq Ft</div>
+                                    <div class="metric-value" id="squareFeet">650</div>
+                                </div>
+                                <div class="metric-card">
+                                    <div class="metric-label">Tax/Year</div>
+                                    <div class="metric-value" id="propertyTax">$2,548</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Analysis Options -->
+                <div class="analysis-grid">
+                    <div class="analysis-option selected" onclick="selectAnalysisType(this, 'str')">
+                        <div class="recommended-tag">Best ROI</div>
+                        <div class="analysis-icon">🏖️</div>
+                        <div class="analysis-title">Short-Term Rental</div>
+                        <div class="analysis-description">
+                            Airbnb & VRBO analysis with live market data and comparable properties
+                        </div>
+                    </div>
+                    
+                    <div class="analysis-option" onclick="selectAnalysisType(this, 'ltr')">
+                        <div class="analysis-icon">🏠</div>
+                        <div class="analysis-title">Long-Term Rental</div>
+                        <div class="analysis-description">
+                            Traditional rental income projections and market rent analysis
+                        </div>
+                    </div>
+                    
+                    <div class="analysis-option" onclick="selectAnalysisType(this, 'hybrid')">
+                        <div class="analysis-icon">🔄</div>
+                        <div class="analysis-title">Hybrid Strategy</div>
+                        <div class="analysis-description">
+                            Combine STR peak seasons with LTR for optimal returns
+                        </div>
+                    </div>
+                    
+                    <div class="analysis-option" onclick="selectAnalysisType(this, 'calculator')">
+                        <div class="analysis-icon">📊</div>
+                        <div class="analysis-title">Financial Modeling</div>
+                        <div class="analysis-description">
+                            Advanced calculator with financing options and scenarios
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="action-section">
+                    <button class="secondary-btn" onclick="goBack()">
+                        Back
+                    </button>
+                    <button class="primary-btn" onclick="startAnalysis()">
+                        Start STR Analysis →
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Modal -->
+    <div class="loading-modal" id="loadingModal">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">Analyzing property data...</div>
+        </div>
+    </div>
+
+    <script>
+        let selectedType = 'str';
+        let propertyData = null;
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('[Base Mockup 2] Initializing property confirmation');
+            
+            // Check for property data
+            loadPropertyData();
+            
+            // Initialize API if available
+            if (window.PropertyAnalysisAPI) {
+                window.propertyAPI = new PropertyAnalysisAPI();
+                console.log('[Base Mockup 2] API integration ready');
+            }
+        });
+
+        function loadPropertyData() {
+            // Check URL parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('data')) {
+                try {
+                    propertyData = JSON.parse(decodeURIComponent(urlParams.get('data')));
+                    displayPropertyData(propertyData);
+                } catch (e) {
+                    console.error('Failed to parse property data:', e);
+                }
+            }
+            
+            // Check for extension data
+            if (window.extensionHandler) {
+                window.extensionHandler.checkForData((data) => {
+                    if (data) {
+                        propertyData = data;
+                        displayPropertyData(data);
+                    }
+                });
+            }
+            
+            // Check session storage
+            const storedData = sessionStorage.getItem('propertyData');
+            if (storedData && !propertyData) {
+                try {
+                    propertyData = JSON.parse(storedData);
+                    displayPropertyData(propertyData);
+                } catch (e) {
+                    console.error('Failed to parse stored data:', e);
+                }
+            }
+        }
+
+        function displayPropertyData(data) {
+            if (!data) return;
+            
+            // Update all display fields
+            const updates = {
+                'propertyAddress': data.address || '1514 - 150 East Liberty Street',
+                'propertyLocation': `${data.city || 'Toronto'}, ${data.province || 'Ontario'} ${data.postalCode || 'M6K 3R5'}`,
+                'listPrice': `$${(data.listPrice || 489000).toLocaleString()}`,
+                'propertyType': data.propertyType || 'Apartment',
+                'bedrooms': `${data.bedrooms || 1} Bed`,
+                'bathrooms': `${data.bathrooms || 1} Bath`,
+                'squareFeet': data.squareFeet || '650',
+                'propertyTax': `$${(data.propertyTax || 2548).toLocaleString()}`
+            };
+            
+            for (const [id, value] of Object.entries(updates)) {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.textContent = value;
+                }
+            }
+        }
+
+        function selectAnalysisType(element, type) {
+            // Update selection
+            document.querySelectorAll('.analysis-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            element.classList.add('selected');
+            selectedType = type;
+            
+            // Update button text
+            const btn = document.querySelector('.primary-btn');
+            const typeNames = {
+                'str': 'STR Analysis',
+                'ltr': 'LTR Analysis',
+                'hybrid': 'Hybrid Analysis',
+                'calculator': 'Financial Calculator'
+            };
+            btn.textContent = `Start ${typeNames[type]} →`;
+        }
+
+        async function startAnalysis() {
+            console.log('[Base Mockup 2] Starting analysis:', selectedType);
+            
+            // Show loading modal
+            document.getElementById('loadingModal').classList.add('active');
+            
+            try {
+                // Fetch analysis data if API is available
+                if (propertyData && window.propertyAPI) {
+                    const analysisResult = await window.propertyAPI.analyzeProperty(propertyData);
+                    console.log('[Base Mockup 2] Analysis complete:', analysisResult);
+                    
+                    // Store results
+                    sessionStorage.setItem('analysisData', JSON.stringify(analysisResult));
+                    sessionStorage.setItem('selectedType', selectedType);
+                }
+                
+                // Navigate to the integrated version with live API data
+                setTimeout(() => {
+                    console.log('[Base Mockup 2] Redirecting to integrated analysis page');
+                    const encodedData = encodeURIComponent(JSON.stringify(propertyData));
+                    window.location.href = `./base-mockup2-integrated.html?propertyData=${encodedData}&analysisType=${selectedType}`;
+                }, 2000);
+                
+            } catch (error) {
+                console.error('[Base Mockup 2] Analysis error:', error);
+                document.getElementById('loadingModal').classList.remove('active');
+                
+                // Handle error
+                if (window.errorRecovery) {
+                    window.errorRecovery.handleError(error, 'analysis');
+                } else {
+                    alert('Unable to complete analysis. Please try again.');
+                }
+            }
+        }
+
+        function goBack() {
+            // Navigate back or to home
+            window.history.back();
+        }
+    </script>
+</body>
+</html>

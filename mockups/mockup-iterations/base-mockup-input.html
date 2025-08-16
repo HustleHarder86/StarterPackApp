@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Property Analysis - Address Entry</title>
+    <style>
+        :root {
+            --primary-purple: #8B5CF6;
+            --primary-purple-dark: #7C3AED;
+            --gray-50: #F9FAFB;
+            --gray-100: #F3F4F6;
+            --gray-200: #E5E7EB;
+            --gray-300: #D1D5DB;
+            --gray-400: #9CA3AF;
+            --gray-500: #6B7280;
+            --gray-600: #4B5563;
+            --gray-700: #374151;
+            --gray-800: #1F2937;
+            --gray-900: #111827;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            width: 100%;
+            padding: 40px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        h1 {
+            color: var(--gray-900);
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: var(--gray-600);
+            font-size: 16px;
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        label {
+            display: block;
+            color: var(--gray-700);
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--gray-200);
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: var(--primary-purple);
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+        }
+
+        .input-hint {
+            font-size: 12px;
+            color: var(--gray-500);
+            margin-top: 4px;
+        }
+
+        /* Mockup Selection */
+        .mockup-selection {
+            margin-bottom: 24px;
+        }
+
+        .mockup-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .mockup-option {
+            position: relative;
+        }
+
+        .mockup-option input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+        }
+
+        .mockup-option label {
+            display: block;
+            padding: 16px;
+            border: 2px solid var(--gray-200);
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 0;
+        }
+
+        .mockup-option input[type="radio"]:checked + label {
+            border-color: var(--primary-purple);
+            background: rgba(139, 92, 246, 0.05);
+            color: var(--primary-purple);
+        }
+
+        .mockup-option label:hover {
+            border-color: var(--gray-300);
+        }
+
+        .mockup-title {
+            font-weight: 600;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .mockup-desc {
+            font-size: 12px;
+            color: var(--gray-500);
+        }
+
+        /* Button */
+        .btn {
+            width: 100%;
+            padding: 14px 24px;
+            background: var(--primary-purple);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            background: var(--primary-purple-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 10px 15px -3px rgba(139, 92, 246, 0.3);
+        }
+
+        .btn:disabled {
+            background: var(--gray-300);
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Loading State */
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .loading-overlay.active {
+            display: flex;
+        }
+
+        .loading-content {
+            background: white;
+            padding: 32px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid var(--gray-200);
+            border-top-color: var(--primary-purple);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Extension Data Card */
+        .extension-card {
+            background: linear-gradient(135deg, #10B981 0%, #065F46 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            display: none;
+        }
+
+        .extension-card.active {
+            display: block;
+        }
+
+        .extension-card h3 {
+            font-size: 16px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .extension-address {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .extension-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 12px;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .extension-detail {
+            font-size: 12px;
+        }
+
+        .extension-detail strong {
+            display: block;
+            font-size: 14px;
+            margin-top: 2px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Property Analysis</h1>
+            <p class="subtitle">Enter a property address to analyze investment potential</p>
+        </div>
+
+        <!-- Extension Data Card (shown when data comes from extension) -->
+        <div id="extensionCard" class="extension-card">
+            <h3>
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    <path d="M10 0L13.09 6.26L20 7.27L15 12.14L16.18 20L10 16.77L3.82 20L5 12.14L0 7.27L6.91 6.26L10 0Z" fill="currentColor"/>
+                </svg>
+                Property Loaded from Realtor.ca
+            </h3>
+            <div class="extension-address" id="extensionAddress">Loading...</div>
+            <div class="extension-details" id="extensionDetails"></div>
+        </div>
+
+        <form id="propertyForm">
+            <!-- Manual Address Input -->
+            <div class="form-group" id="manualInputGroup">
+                <label for="address">Property Address</label>
+                <input 
+                    type="text" 
+                    id="address" 
+                    name="address" 
+                    placeholder="e.g., 123 Main Street, Toronto, ON"
+                    required
+                >
+                <p class="input-hint">Enter the full address including street, city, and province</p>
+            </div>
+
+            <!-- Mockup Selection -->
+            <div class="mockup-selection">
+                <label>Choose Analysis View</label>
+                <div class="mockup-options">
+                    <div class="mockup-option">
+                        <input type="radio" id="mockup1" name="mockup" value="1" checked>
+                        <label for="mockup1">
+                            <span class="mockup-title">Base Mockup 1</span>
+                            <span class="mockup-desc">Comprehensive view</span>
+                        </label>
+                    </div>
+                    <div class="mockup-option">
+                        <input type="radio" id="mockup2" name="mockup" value="2">
+                        <label for="mockup2">
+                            <span class="mockup-title">Base Mockup 2</span>
+                            <span class="mockup-desc">Simplified view</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="btn" id="submitBtn">
+                Continue to Property Confirmation
+            </button>
+        </form>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-content">
+            <div class="spinner"></div>
+            <p>Processing property data...</p>
+        </div>
+    </div>
+
+    <!-- Extension Handler -->
+    <script src="./extension-handler.js"></script>
+    
+    <script>
+        // Check for extension data
+        const urlParams = new URLSearchParams(window.location.search);
+        const isFromExtension = urlParams.get('fromExtension') === 'true';
+        let extensionData = null;
+
+        if (isFromExtension && window.extensionHandler) {
+            extensionData = window.extensionHandler.extensionData;
+            
+            if (extensionData && extensionData.address) {
+                // Show extension card
+                const card = document.getElementById('extensionCard');
+                card.classList.add('active');
+                
+                // Display address
+                document.getElementById('extensionAddress').textContent = 
+                    extensionData.address.full || 'Property Address';
+                
+                // Display details
+                const detailsContainer = document.getElementById('extensionDetails');
+                const details = [];
+                
+                if (extensionData.price) {
+                    details.push(`<div class="extension-detail">Price<strong>$${extensionData.price.toLocaleString()}</strong></div>`);
+                }
+                if (extensionData.bedrooms) {
+                    details.push(`<div class="extension-detail">Bedrooms<strong>${extensionData.bedrooms}</strong></div>`);
+                }
+                if (extensionData.bathrooms) {
+                    details.push(`<div class="extension-detail">Bathrooms<strong>${extensionData.bathrooms}</strong></div>`);
+                }
+                if (extensionData.sqft) {
+                    details.push(`<div class="extension-detail">Sq Ft<strong>${extensionData.sqft.toLocaleString()}</strong></div>`);
+                }
+                
+                detailsContainer.innerHTML = details.join('');
+                
+                // Hide manual input
+                document.getElementById('manualInputGroup').style.display = 'none';
+                
+                // Auto-populate hidden field
+                document.getElementById('address').value = extensionData.address.full;
+            }
+        }
+
+        // Form submission
+        document.getElementById('propertyForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const address = document.getElementById('address').value;
+            const mockupVersion = document.querySelector('input[name="mockup"]:checked').value;
+            
+            if (!address) {
+                alert('Please enter a property address');
+                return;
+            }
+            
+            // Show loading
+            document.getElementById('loadingOverlay').classList.add('active');
+            
+            // Prepare property data
+            const propertyData = extensionData || {
+                address: address,
+                source: 'manual-input'
+            };
+            
+            // Store in session storage
+            sessionStorage.setItem('propertyData', JSON.stringify(propertyData));
+            
+            // Redirect to appropriate confirmation screen
+            const confirmationPage = mockupVersion === '1' 
+                ? './base-mockup-confirmation.html'
+                : './base-mockup2-confirmation.html';
+            
+            // Add property data to URL if it's from extension
+            if (extensionData) {
+                const encodedData = encodeURIComponent(JSON.stringify(propertyData));
+                window.location.href = `${confirmationPage}?fromExtension=true&propertyData=${encodedData}`;
+            } else {
+                // For manual input, just pass the address
+                const encodedData = encodeURIComponent(JSON.stringify({ address: address }));
+                window.location.href = `${confirmationPage}?propertyData=${encodedData}`;
+            }
+        });
+    </script>
+</body>
+</html>

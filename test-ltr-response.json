@@ -1,0 +1,148 @@
+{
+  "success": true,
+  "data": {
+    "success": true,
+    "property_address": "456 Queen Street West, Toronto, ON",
+    "timestamp": "2025-08-12T01:44:34.831Z",
+    "execution_time": "26.39 seconds",
+    "api_costs": {
+      "input_tokens": 791,
+      "output_tokens": 901,
+      "total_tokens": 1692,
+      "input_cost": "0.0020",
+      "output_cost": "0.0090",
+      "total_cost": "0.0110",
+      "model": "perplexity-sonar"
+    },
+    "property_details": {
+      "address": "456 Queen Street West, Toronto, ON",
+      "city": "Toronto",
+      "state": "ON",
+      "estimated_value": 1100000,
+      "property_type": "Single Family",
+      "bedrooms": 3,
+      "bathrooms": 2,
+      "sqft": 1800,
+      "year_built": 2000
+    },
+    "expenses": {
+      "property_tax_annual": 6710,
+      "property_tax_rate": 0.0061,
+      "insurance_annual": 4620,
+      "maintenance_annual": 11000,
+      "hoa_monthly": 0,
+      "utilities_monthly": 250,
+      "calculation_method": "location_based_estimate",
+      "total_monthly_expenses": 2111,
+      "total_annual_expenses": 25330
+    },
+    "property_data": {
+      "bedrooms": 3,
+      "bathrooms": 2,
+      "sqft": 1800,
+      "property_type": "Single Family",
+      "price": 1100000
+    },
+    "citations": [
+      "https://www.toronto.ca/services-payments/property-taxes-utilities/property-tax/property-assessment-and-appeals/",
+      "https://wowa.ca/toronto-housing-market",
+      "https://housesigma.com/on/niagara-on-the-lake-real-estate/456-queen-st/home/obqB176N6pj7ZajD/",
+      "https://www.mpac.ca/en/PropertyTypes/ResidentialPropertyAssessments"
+    ],
+    "purchase": {
+      "price": 1100000,
+      "down_payment": 220000,
+      "mortgage_amount": 880000,
+      "closing_costs": 16500
+    },
+    "monthly_expenses": {
+      "mortgage": 5144,
+      "property_tax": 559,
+      "insurance": 385,
+      "maintenance": 917,
+      "utilities": 250,
+      "hoa": 0,
+      "management": 252,
+      "total": 7507
+    },
+    "cash_flow": {
+      "monthly": -4357,
+      "annual": -52284
+    },
+    "metrics": {
+      "cap_rate": "0.86",
+      "cash_on_cash_return": "-23.77",
+      "total_r_o_i": "-8.77"
+    },
+    "costs": {
+      "property_tax_annual": 6710,
+      "property_tax_rate": 0.0061,
+      "insurance_annual": 4620,
+      "maintenance_annual": 11000,
+      "hoa_monthly": 0,
+      "utilities_monthly": 250,
+      "calculation_method": "location_based_estimate",
+      "total_monthly_expenses": 2111,
+      "total_annual_expenses": 25330
+    },
+    "insights": [
+      {
+        "type": "negative",
+        "category": "cash_flow",
+        "message": "Negative cash flow of $4,357/month"
+      },
+      {
+        "type": "negative",
+        "category": "cap_rate",
+        "message": "Low cap rate of 0.86%"
+      }
+    ],
+    "metadata": {
+      "data_source": "listing_with_ai_enhancement",
+      "confidence": "high",
+      "has_actual_property_tax": false,
+      "has_actual_condo_fees": false
+    },
+    "long_term_rental": {
+      "monthly_rent": 3150,
+      "median_rent": 3050,
+      "confidence": "medium",
+      "comparables": [
+        {
+          "address": "839 Queen Street W, Toronto",
+          "monthly_rent": 2600,
+          "bedrooms": 2,
+          "bathrooms": 2,
+          "sqft": null,
+          "distance_km": 0.4,
+          "days_on_market": 10,
+          "match_score": 90,
+          "source": "Condos.ca",
+          "source_url": null
+        },
+        {
+          "address": "285 Dufferin Street",
+          "monthly_rent": 2500,
+          "bedrooms": 2,
+          "bathrooms": 2,
+          "sqft": null,
+          "distance_km": 0.9,
+          "days_on_market": 5,
+          "match_score": 85,
+          "source": "Padmapper",
+          "source_url": null
+        }
+      ],
+      "insights": "The rental market in the West Queen West area of Toronto remains competitive with a strong demand for 2-3 bedroom units near transit and amenities. Rents for 2-bedroom units typically range from $2,500 to $3,050 per month, with larger or more updated units commanding higher rents. The area attracts renters seeking proximity to downtown and vibrant neighborhood features, keeping vacancy rates low and prices stable to slightly increasing[1][2][4].",
+      "sources": [
+        "https://www.padmapper.com/apartments/toronto-on/west-queen-west",
+        "https://condos.ca/toronto/839-queen-street-w-toronto",
+        "https://www.apartments.com/transit/on/toronto/bathurst-street-at-queen-street-west/f5250jr/",
+        "https://strata.ca/toronto/downtown/queen-west/condos-for-rent",
+        "https://condos.ca/toronto/q-loft-1205-queen-st-w/unit-312-C12330238"
+      ]
+    },
+    "analysis_timestamp": "2025-08-12T01:44:34.831Z"
+  },
+  "message": "Analysis completed"
+}
