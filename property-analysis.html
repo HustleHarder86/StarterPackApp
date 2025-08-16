@@ -8,685 +8,246 @@
     
     <!-- Design System -->
     <link rel="stylesheet" href="styles/design-system.css">
+    <link rel="stylesheet" href="styles/property-confirmation-card.css">
     <script src="https://cdn.tailwindcss.com"></script>
     
     <style>
-        :root {
-            --primary-purple: #8B5CF6;
-            --primary-purple-dark: #7C3AED;
-            --primary-blue: #3B82F6;
-            --success-green: #10B981;
-            --gray-50: #F9FAFB;
-            --gray-100: #F3F4F6;
-            --gray-200: #E5E7EB;
-            --gray-300: #D1D5DB;
-            --gray-400: #9CA3AF;
-            --gray-500: #6B7280;
-            --gray-600: #4B5563;
-            --gray-700: #374151;
-            --gray-800: #1F2937;
-            --gray-900: #111827;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-
-        .container {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-            max-width: 700px;
-            width: 100%;
-            padding: 40px;
-            animation: fadeIn 0.5s ease;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 32px;
-        }
-
-        h1 {
-            color: var(--gray-900);
-            font-size: 32px;
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
-
-        .subtitle {
-            color: var(--gray-600);
-            font-size: 18px;
-            margin-bottom: 24px;
-        }
-
-        /* View Mode Toggle */
-        .view-mode-section {
-            background: var(--gray-50);
-            border-radius: 12px;
-            padding: 24px;
-            margin-bottom: 32px;
-            border: 2px solid var(--gray-200);
-        }
-
-        .view-mode-label {
-            font-size: 16px;
-            font-weight: 600;
-            color: var(--gray-800);
-            margin-bottom: 16px;
-            display: block;
-        }
-
-        .view-toggle {
-            display: inline-flex;
-            background: var(--gray-100);
-            border-radius: 12px;
-            padding: 4px;
-            position: relative;
-            width: 100%;
-        }
-
-        .view-toggle button {
-            position: relative;
-            z-index: 2;
-            background: none;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
-            color: var(--gray-600);
-            cursor: pointer;
-            transition: color 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            flex: 1;
-        }
-
-        .view-toggle button.active {
-            color: white;
-        }
-
-        .view-toggle-slider {
-            position: absolute;
-            top: 4px;
-            left: 4px;
-            width: calc(50% - 4px);
-            height: calc(100% - 8px);
-            background: var(--primary-blue);
-            border-radius: 8px;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 1;
-        }
-
-        .view-toggle[data-active="detailed"] .view-toggle-slider {
-            transform: translateX(100%);
-        }
-
-        /* Extension Data Card */
-        .extension-card {
-            background: linear-gradient(135deg, var(--success-green) 0%, #065F46 100%);
-            color: white;
-            padding: 24px;
-            border-radius: 12px;
-            margin-bottom: 24px;
-            display: none;
-            animation: slideIn 0.3s ease;
-        }
-
-        .extension-card.active {
-            display: block;
-        }
-
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .extension-card h3 {
-            font-size: 18px;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .extension-address {
-            font-size: 16px;
-            opacity: 0.9;
-            margin-bottom: 16px;
-            font-weight: 500;
-        }
-
-        .extension-details {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-            gap: 16px;
-        }
-
-        .extension-detail {
-            text-align: center;
-        }
-
-        .extension-detail-label {
-            font-size: 12px;
-            opacity: 0.8;
-            margin-bottom: 4px;
-        }
-
-        .extension-detail-value {
-            font-size: 16px;
-            font-weight: 600;
-        }
-
-        /* Form Styles */
-        .form-section {
-            margin-bottom: 24px;
-        }
-
-        .form-group {
-            margin-bottom: 24px;
-        }
-
-        label {
-            display: block;
-            color: var(--gray-700);
-            font-size: 16px;
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
-
-        input[type="text"] {
-            width: 100%;
-            padding: 16px 20px;
-            border: 2px solid var(--gray-200);
-            border-radius: 12px;
-            font-size: 16px;
-            transition: all 0.3s ease;
-            background: var(--gray-50);
-        }
-
-        input[type="text"]:focus {
-            outline: none;
-            border-color: var(--primary-purple);
-            background: white;
-            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
-        }
-
-        /* Buttons */
-        .btn {
-            background: linear-gradient(135deg, var(--primary-purple) 0%, var(--primary-purple-dark) 100%);
-            color: white;
-            border: none;
-            padding: 16px 32px;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            width: 100%;
-            margin-top: 8px;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 15px -3px rgba(139, 92, 246, 0.3);
-        }
-
-        .btn:disabled {
-            background: var(--gray-300);
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .btn-secondary {
-            background: var(--gray-200);
-            color: var(--gray-700);
-        }
-
-        .btn-secondary:hover {
-            background: var(--gray-300);
-        }
-
-        /* Loading State */
-        .loading-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .loading-overlay.active {
-            display: flex;
-        }
-
-        .loading-content {
-            background: white;
-            padding: 40px;
-            border-radius: 12px;
-            text-align: center;
-            max-width: 400px;
-            margin: 20px;
-        }
-
-        .spinner {
-            width: 48px;
-            height: 48px;
-            border: 4px solid var(--gray-200);
-            border-top-color: var(--primary-purple);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 16px;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .loading-text {
-            color: var(--gray-700);
-            font-size: 16px;
-            margin-bottom: 8px;
-        }
-
-        .loading-subtext {
-            color: var(--gray-500);
-            font-size: 14px;
-        }
-
-        /* Feature highlights */
-        .features {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 16px;
-            margin-top: 24px;
-            padding-top: 24px;
-            border-top: 1px solid var(--gray-200);
-        }
-
-        .feature {
-            text-align: center;
-            padding: 16px;
-        }
-
-        .feature-icon {
-            font-size: 24px;
-            margin-bottom: 8px;
-        }
-
-        .feature-text {
-            font-size: 14px;
-            color: var(--gray-600);
-        }
-
-        /* Responsive */
-        @media (max-width: 640px) {
-            .container {
-                padding: 24px;
-                margin: 10px;
-            }
-            
-            h1 {
-                font-size: 28px;
-            }
-            
-            .subtitle {
-                font-size: 16px;
-            }
-            
-            .extension-details {
-                grid-template-columns: repeat(2, 1fr);
-            }
+            background: #f8fafc;
+            margin: 0;
+            padding: 0;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <!-- Header -->
-        <div class="header">
-            <h1>🏠 Property Investment Analysis</h1>
-            <p class="subtitle">Analyze rental income potential with live market data</p>
-        </div>
+    <!-- Content will be dynamically inserted here -->
+    <div id="app-container"></div>
 
-        <!-- View Mode Selection -->
-        <div class="view-mode-section">
-            <label class="view-mode-label">Choose your analysis view:</label>
-            <div class="view-toggle" data-active="simple">
-                <div class="view-toggle-slider"></div>
-                <button data-view="simple">
-                    <span>⚡</span>
-                    <span>Simple View</span>
-                </button>
-                <button data-view="detailed">
-                    <span>📊</span>
-                    <span>Detailed View</span>
-                </button>
-            </div>
-        </div>
+    <!-- Property Confirmation Component -->
+    <script type="module" src="components/PropertyConfirmation.js"></script>
+    
+    <!-- Property Analysis API -->
+    <script type="module" src="js/modules/property-analysis-api.js"></script>
+    
+    <!-- Firebase Config -->
+    <script type="module" src="js/config.js"></script>
 
-        <!-- Extension Data Card (shown when coming from extension) -->
-        <div class="extension-card" id="extensionCard">
-            <h3>
-                <span>🎯</span>
-                Property detected from Realtor.ca
-            </h3>
-            <div class="extension-address" id="extensionAddress">
-                Property Address
-            </div>
-            <div class="extension-details" id="extensionDetails">
-                <!-- Details populated by JavaScript -->
-            </div>
-        </div>
+    <!-- Main Application Script -->
+    <script type="module">
+        import { PropertyConfirmation } from './components/PropertyConfirmation.js';
+        import { initializeApp } from './js/config.js';
 
-        <!-- Manual Address Input Form -->
-        <form id="propertyForm" class="form-section">
-            <div class="form-group" id="manualInputGroup">
-                <label for="address">Property Address</label>
-                <input 
-                    type="text" 
-                    id="address" 
-                    name="address" 
-                    placeholder="Enter Canadian property address (e.g., 123 Main St, Toronto, ON)"
-                    required
-                >
-            </div>
-
-            <button type="submit" class="btn" id="analyzeBtn">
-                <span id="btnText">Analyze Property Investment</span>
-            </button>
-        </form>
-
-        <!-- Feature Highlights -->
-        <div class="features">
-            <div class="feature">
-                <div class="feature-icon">🏘️</div>
-                <div class="feature-text">Live Airbnb comparable analysis</div>
-            </div>
-            <div class="feature">
-                <div class="feature-icon">📈</div>
-                <div class="feature-text">Real-time rental market data</div>
-            </div>
-            <div class="feature">
-                <div class="feature-icon">💰</div>
-                <div class="feature-text">Complete ROI calculations</div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Loading Overlay -->
-    <div class="loading-overlay" id="loadingOverlay">
-        <div class="loading-content">
-            <div class="spinner"></div>
-            <div class="loading-text">Analyzing Property Investment</div>
-            <div class="loading-subtext">This may take up to 5 minutes for complete Airbnb analysis...</div>
-        </div>
-    </div>
-
-    <script>
-        let selectedViewMode = 'simple';
-        let propertyData = null;
-        let isFromExtension = false;
-
-        // Initialize when page loads
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('[Property Analysis] Initializing entry page');
-            
-            // Load saved view preference
-            loadViewPreference();
-            
-            // Setup view mode toggle
-            setupViewToggle();
-            
-            // Check for extension data
-            checkForExtensionData();
-            
-            // Setup form submission
-            setupFormSubmission();
-        });
-
-        function loadViewPreference() {
-            try {
-                const savedMode = localStorage.getItem('propertyAnalysisViewMode') || 'simple';
-                selectedViewMode = savedMode;
-                setViewMode(savedMode, false);
-                console.log('[Property Analysis] Loaded view preference:', savedMode);
-            } catch (e) {
-                console.warn('[Property Analysis] Could not load view preference:', e);
+        class PropertyAnalysisApp {
+            constructor() {
+                this.propertyData = null;
+                this.userData = null;
+                this.analysisType = 'both';
+                this.init();
             }
-        }
 
-        function setupViewToggle() {
-            const viewButtons = document.querySelectorAll('.view-toggle button');
-            
-            viewButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    const mode = button.dataset.view;
-                    setViewMode(mode, true);
-                });
-            });
-        }
-
-        function setViewMode(mode, save = true) {
-            selectedViewMode = mode;
-            
-            // Update toggle UI
-            const toggle = document.querySelector('.view-toggle');
-            const buttons = document.querySelectorAll('.view-toggle button');
-            
-            toggle.setAttribute('data-active', mode);
-            
-            buttons.forEach(button => {
-                if (button.dataset.view === mode) {
-                    button.classList.add('active');
-                } else {
-                    button.classList.remove('active');
-                }
-            });
-            
-            // Update button text based on mode
-            const btnText = document.getElementById('btnText');
-            if (mode === 'simple') {
-                btnText.textContent = 'Analyze with Simple View';
-            } else {
-                btnText.textContent = 'Analyze with Detailed View';
-            }
-            
-            // Save preference
-            if (save) {
-                try {
-                    localStorage.setItem('propertyAnalysisViewMode', mode);
-                    console.log('[Property Analysis] Saved view preference:', mode);
-                } catch (e) {
-                    console.warn('[Property Analysis] Could not save view preference:', e);
-                }
-            }
-        }
-
-        function checkForExtensionData() {
-            // Check URL parameters for extension data
-            const urlParams = new URLSearchParams(window.location.search);
-            isFromExtension = urlParams.get('fromExtension') === 'true';
-            
-            if (isFromExtension) {
-                console.log('[Property Analysis] Detected extension flow');
+            async init() {
+                // Initialize Firebase
+                await initializeApp();
                 
-                // Try to get property data from URL
+                // Get property data from URL parameters
+                this.extractPropertyDataFromURL();
+                
+                // Load user data
+                await this.loadUserData();
+                
+                // Show property confirmation screen
+                this.showPropertyConfirmation();
+            }
+
+            extractPropertyDataFromURL() {
+                const urlParams = new URLSearchParams(window.location.search);
                 const propertyDataParam = urlParams.get('propertyData');
+                const fromExtension = urlParams.get('fromExtension') === 'true';
+                
                 if (propertyDataParam) {
                     try {
-                        propertyData = JSON.parse(decodeURIComponent(propertyDataParam));
-                        console.log('[Property Analysis] Extension property data:', propertyData);
-                        displayExtensionData(propertyData);
-                    } catch (e) {
-                        console.error('[Property Analysis] Failed to parse extension data:', e);
+                        this.propertyData = JSON.parse(decodeURIComponent(propertyDataParam));
+                        console.log('[Property Analysis] Property data extracted:', this.propertyData);
+                        
+                        // Mark as from extension if applicable
+                        if (fromExtension) {
+                            this.propertyData.source = 'extension';
+                        }
+                    } catch (error) {
+                        console.error('[Property Analysis] Error parsing property data:', error);
+                        this.showError('Invalid property data provided');
+                        return;
                     }
-                }
-            }
-        }
-
-        function displayExtensionData(data) {
-            const card = document.getElementById('extensionCard');
-            const addressElement = document.getElementById('extensionAddress');
-            const detailsContainer = document.getElementById('extensionDetails');
-            
-            // Show the card
-            card.classList.add('active');
-            
-            // Display address
-            if (data.address) {
-                const fullAddress = typeof data.address === 'string' 
-                    ? data.address 
-                    : data.address.full || data.address.street || 'Property Address';
-                addressElement.textContent = fullAddress;
-                
-                // Auto-populate the hidden input
-                document.getElementById('address').value = fullAddress;
-            }
-            
-            // Build details
-            const details = [];
-            
-            if (data.price) {
-                details.push(`
-                    <div class="extension-detail">
-                        <div class="extension-detail-label">Price</div>
-                        <div class="extension-detail-value">$${data.price.toLocaleString()}</div>
-                    </div>
-                `);
-            }
-            
-            if (data.bedrooms) {
-                details.push(`
-                    <div class="extension-detail">
-                        <div class="extension-detail-label">Bedrooms</div>
-                        <div class="extension-detail-value">${data.bedrooms}</div>
-                    </div>
-                `);
-            }
-            
-            if (data.bathrooms) {
-                details.push(`
-                    <div class="extension-detail">
-                        <div class="extension-detail-label">Bathrooms</div>
-                        <div class="extension-detail-value">${data.bathrooms}</div>
-                    </div>
-                `);
-            }
-            
-            if (data.sqft) {
-                details.push(`
-                    <div class="extension-detail">
-                        <div class="extension-detail-label">Sq Ft</div>
-                        <div class="extension-detail-value">${data.sqft.toLocaleString()}</div>
-                    </div>
-                `);
-            }
-            
-            if (data.propertyType) {
-                details.push(`
-                    <div class="extension-detail">
-                        <div class="extension-detail-label">Type</div>
-                        <div class="extension-detail-value">${data.propertyType}</div>
-                    </div>
-                `);
-            }
-            
-            detailsContainer.innerHTML = details.join('');
-            
-            // Hide manual input when extension data is present
-            document.getElementById('manualInputGroup').style.display = 'none';
-        }
-
-        function setupFormSubmission() {
-            const form = document.getElementById('propertyForm');
-            
-            form.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                
-                const address = document.getElementById('address').value.trim();
-                
-                if (!address) {
-                    alert('Please enter a property address');
+                } else {
+                    // No property data - show manual input form or redirect
+                    this.showManualInput();
                     return;
                 }
-                
-                console.log('[Property Analysis] Starting analysis:', {
-                    address,
-                    viewMode: selectedViewMode,
-                    isFromExtension
-                });
-                
-                // Show loading
-                document.getElementById('loadingOverlay').classList.add('active');
-                
+            }
+
+            async loadUserData() {
                 try {
-                    // Prepare property data
-                    const analysisData = propertyData || {
-                        address: address,
-                        source: 'manual-input'
-                    };
+                    // Try to get current user from Firebase Auth
+                    const { auth } = await import('./js/config.js');
                     
-                    // Store analysis preferences
-                    sessionStorage.setItem('propertyData', JSON.stringify(analysisData));
-                    sessionStorage.setItem('analysisType', 'both'); // Always do both STR and LTR
-                    sessionStorage.setItem('viewMode', selectedViewMode);
-                    sessionStorage.setItem('performAnalysis', 'true');
-                    
-                    // Redirect to analysis dashboard
-                    const encodedData = encodeURIComponent(JSON.stringify(analysisData));
-                    const dashboardUrl = `./property-analysis-dashboard.html?propertyData=${encodedData}&analysisType=both&view=${selectedViewMode}`;
-                    
-                    console.log('[Property Analysis] Redirecting to dashboard:', dashboardUrl);
-                    
-                    // Small delay for UX
-                    setTimeout(() => {
-                        window.location.href = dashboardUrl;
-                    }, 1000);
-                    
+                    return new Promise((resolve) => {
+                        auth.onAuthStateChanged(async (user) => {
+                            if (user) {
+                                // Load user data from Firestore
+                                const { db } = await import('./js/config.js');
+                                const { doc, getDoc } = await import('https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js');
+                                
+                                try {
+                                    const userDoc = await getDoc(doc(db, 'users', user.uid));
+                                    if (userDoc.exists()) {
+                                        this.userData = { uid: user.uid, ...userDoc.data() };
+                                        console.log('[Property Analysis] User data loaded:', this.userData);
+                                    } else {
+                                        // Create basic user data
+                                        this.userData = {
+                                            uid: user.uid,
+                                            email: user.email,
+                                            strTrialUsed: 0,
+                                            subscriptionTier: 'free'
+                                        };
+                                    }
+                                } catch (error) {
+                                    console.error('[Property Analysis] Error loading user data:', error);
+                                    this.userData = {
+                                        uid: user.uid,
+                                        email: user.email,
+                                        strTrialUsed: 0,
+                                        subscriptionTier: 'free'
+                                    };
+                                }
+                            } else {
+                                // Anonymous user - use basic trial data
+                                this.userData = {
+                                    strTrialUsed: 0,
+                                    subscriptionTier: 'free'
+                                };
+                                console.log('[Property Analysis] Anonymous user');
+                            }
+                            resolve();
+                        });
+                    });
                 } catch (error) {
-                    console.error('[Property Analysis] Error starting analysis:', error);
-                    document.getElementById('loadingOverlay').classList.remove('active');
-                    alert('An error occurred starting the analysis. Please try again.');
+                    console.error('[Property Analysis] Error initializing auth:', error);
+                    this.userData = {
+                        strTrialUsed: 0,
+                        subscriptionTier: 'free'
+                    };
                 }
-            });
+            }
+
+            showPropertyConfirmation() {
+                if (!this.propertyData) {
+                    this.showError('No property data available');
+                    return;
+                }
+
+                // Create property confirmation component
+                const confirmation = PropertyConfirmation(
+                    this.propertyData,
+                    (analysisType) => this.handleConfirm(analysisType),
+                    () => this.handleCancel()
+                );
+
+                // Insert HTML
+                document.getElementById('app-container').innerHTML = confirmation.html;
+
+                // Setup component
+                confirmation.setup(this.userData);
+            }
+
+            handleConfirm(analysisType) {
+                this.analysisType = analysisType;
+                console.log('[Property Analysis] Analysis confirmed with type:', analysisType);
+                
+                // Redirect to property analysis dashboard with the selected analysis type
+                const dashboardUrl = new URL('./property-analysis-dashboard.html', window.location.origin);
+                dashboardUrl.searchParams.set('propertyData', encodeURIComponent(JSON.stringify(this.propertyData)));
+                dashboardUrl.searchParams.set('analysisType', analysisType);
+                
+                if (this.propertyData.source === 'extension') {
+                    dashboardUrl.searchParams.set('fromExtension', 'true');
+                }
+                
+                window.location.href = dashboardUrl.toString();
+            }
+
+            handleCancel() {
+                console.log('[Property Analysis] Analysis cancelled');
+                
+                // If from extension, close the tab
+                if (this.propertyData && this.propertyData.source === 'extension') {
+                    window.close();
+                } else {
+                    // Redirect to main app
+                    window.location.href = './roi-finder.html';
+                }
+            }
+
+            showManualInput() {
+                // Redirect to main app for manual input
+                window.location.href = './roi-finder.html';
+            }
+
+            showError(message) {
+                document.getElementById('app-container').innerHTML = `
+                    <div style="
+                        position: fixed;
+                        top: 0;
+                        left: 0;
+                        right: 0;
+                        bottom: 0;
+                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        padding: 20px;
+                    ">
+                        <div style="
+                            background: white;
+                            border-radius: 12px;
+                            padding: 40px;
+                            text-align: center;
+                            max-width: 400px;
+                            width: 100%;
+                            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+                        ">
+                            <h1 style="
+                                color: #1a1a1a;
+                                font-size: 24px;
+                                font-weight: 700;
+                                margin-bottom: 16px;
+                            ">Oops!</h1>
+                            <p style="
+                                color: #666;
+                                font-size: 16px;
+                                margin-bottom: 24px;
+                            ">${message}</p>
+                            <button onclick="window.location.href='./roi-finder.html'" style="
+                                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                                color: white;
+                                border: none;
+                                padding: 12px 24px;
+                                border-radius: 8px;
+                                font-size: 16px;
+                                font-weight: 600;
+                                cursor: pointer;
+                            ">Go to Dashboard</button>
+                        </div>
+                    </div>
+                `;
+            }
         }
+
+        // Initialize the app when DOM is ready
+        document.addEventListener('DOMContentLoaded', () => {
+            new PropertyAnalysisApp();
+        });
     </script>
 </body>
 </html>
