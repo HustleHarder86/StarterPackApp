@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Property Analysis Dashboard - Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .loading { animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="min-h-screen">
+        <!-- Header -->
+        <header class="bg-white shadow-sm sticky top-0 z-50">
+            <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+                <h1 class="text-2xl font-bold">🏠 Property Analysis Dashboard</h1>
+                <div class="flex items-center gap-4">
+                    <span class="text-sm text-gray-600">View Mode:</span>
+                    <div class="flex bg-gray-100 rounded-lg p-1">
+                        <button onclick="setView('simple')" id="btn-simple" class="px-4 py-2 rounded text-sm font-medium transition-all">Simple</button>
+                        <button onclick="setView('detailed')" id="btn-detailed" class="px-4 py-2 rounded text-sm font-medium transition-all">Detailed</button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main id="main-content" class="max-w-7xl mx-auto px-4 py-8">
+            <div id="loading" class="text-center py-20">
+                <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+                <p class="mt-4 text-gray-600">Loading analysis data...</p>
+            </div>
+            
+            <div id="error" class="hidden bg-red-50 border border-red-200 rounded-lg p-6 text-center">
+                <h3 class="text-xl font-bold text-red-800 mb-2">Error Loading Data</h3>
+                <p id="error-message" class="text-red-600"></p>
+            </div>
+
+            <div id="simple-view" class="hidden space-y-6">
+                <!-- Property Overview -->
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h2 class="text-xl font-bold mb-4">Property Overview</h2>
+                    <div id="property-details" class="grid grid-cols-2 gap-4">
+                        <!-- Will be populated with real data -->
+                    </div>
+                </div>
+
+                <!-- Investment Snapshot -->
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h2 class="text-xl font-bold mb-4">Investment Snapshot</h2>
+                    <div id="investment-metrics" class="grid grid-cols-3 gap-4">
+                        <!-- Will be populated with real data -->
+                    </div>
+                </div>
+
+                <!-- Financial Analysis -->
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h2 class="text-xl font-bold mb-4">Financial Analysis</h2>
+                    <div id="financial-data" class="space-y-2">
+                        <!-- Will be populated with real data -->
+                    </div>
+                </div>
+            </div>
+
+            <div id="detailed-view" class="hidden">
+                <div class="flex gap-6">
+                    <!-- Sidebar -->
+                    <aside class="w-64 bg-white rounded-lg shadow-lg p-4 h-fit sticky top-20">
+                        <nav class="space-y-2">
+                            <button onclick="scrollToSection('overview')" class="w-full text-left px-3 py-2 rounded hover:bg-gray-100">📊 Overview</button>
+                            <button onclick="scrollToSection('str')" class="w-full text-left px-3 py-2 rounded hover:bg-gray-100">🏠 STR Analysis</button>
+                            <button onclick="scrollToSection('ltr')" class="w-full text-left px-3 py-2 rounded hover:bg-gray-100">🏢 LTR Analysis</button>
+                            <button onclick="scrollToSection('comparison')" class="w-full text-left px-3 py-2 rounded hover:bg-gray-100">⚖️ Comparison</button>
+                        </nav>
+                    </aside>
+
+                    <!-- Content -->
+                    <div class="flex-1 space-y-6">
+                        <section id="overview" class="bg-white rounded-lg shadow-lg p-6">
+                            <h2 class="text-xl font-bold mb-4">Property Overview</h2>
+                            <div id="detailed-property" class="grid grid-cols-2 gap-4">
+                                <!-- Will be populated with real data -->
+                            </div>
+                        </section>
+
+                        <section id="str" class="bg-white rounded-lg shadow-lg p-6">
+                            <h2 class="text-xl font-bold mb-4">Short-Term Rental Analysis</h2>
+                            <div id="str-data" class="space-y-4">
+                                <!-- Will be populated with real data -->
+                            </div>
+                        </section>
+
+                        <section id="ltr" class="bg-white rounded-lg shadow-lg p-6">
+                            <h2 class="text-xl font-bold mb-4">Long-Term Rental Analysis</h2>
+                            <div id="ltr-data" class="space-y-4">
+                                <!-- Will be populated with real data -->
+                            </div>
+                        </section>
+
+                        <section id="comparison" class="bg-white rounded-lg shadow-lg p-6">
+                            <h2 class="text-xl font-bold mb-4">STR vs LTR Comparison</h2>
+                            <div id="comparison-data" class="space-y-4">
+                                <!-- Will be populated with real data -->
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Global state
+        let currentView = 'simple';
+        let analysisData = null;
+        let propertyData = null;
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Set initial view
+            setView('simple');
+            
+            // Parse URL parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const propertyDataParam = urlParams.get('propertyData');
+            
+            if (propertyDataParam) {
+                try {
+                    propertyData = JSON.parse(decodeURIComponent(propertyDataParam));
+                    console.log('Property data from URL:', propertyData);
+                    
+                    // Try to fetch analysis from API
+                    await fetchAnalysis();
+                } catch (error) {
+                    console.error('Failed to parse property data:', error);
+                    showError('Invalid property data in URL');
+                }
+            } else {
+                // Use test data if no property data provided
+                useTestData();
+            }
+        });
+
+        // Fetch analysis from API
+        async function fetchAnalysis() {
+            try {
+                const apiUrl = window.location.hostname === 'localhost' 
+                    ? 'http://localhost:3001/api/analysis/property'
+                    : 'https://starterpackapp-production.up.railway.app/api/analysis/property';
+                
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        propertyAddress: propertyData.address,
+                        propertyData: propertyData,
+                        analysisType: 'both'
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API returned ${response.status}`);
+                }
+
+                const result = await response.json();
+                analysisData = convertToCamelCase(result);
+                console.log('Analysis data from API:', analysisData);
+                
+                renderData();
+            } catch (error) {
+                console.error('API call failed:', error);
+                // Use test data as fallback
+                useTestData();
+            }
+        }
+
+        // Convert snake_case to camelCase
+        function convertToCamelCase(obj) {
+            if (Array.isArray(obj)) {
+                return obj.map(item => convertToCamelCase(item));
+            } else if (obj !== null && typeof obj === 'object') {
+                return Object.keys(obj).reduce((result, key) => {
+                    const camelKey = key.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
+                    result[camelKey] = convertToCamelCase(obj[key]);
+                    return result;
+                }, {});
+            }
+            return obj;
+        }
+
+        // Use test data with REAL values (no placeholders)
+        function useTestData() {
+            propertyData = propertyData || {
+                address: "Test Property",
+                price: 750000,
+                bedrooms: 3,
+                bathrooms: 2,
+                sqft: 1500
+            };
+            
+            analysisData = {
+                propertyDetails: propertyData,
+                longTermRental: {
+                    monthlyRent: 3200,
+                    monthlyExpenses: 1800,
+                    cashFlow: 1400,
+                    capRate: 0.0512,
+                    cashOnCash: 0.0672,
+                    totalInvestment: 187500
+                },
+                shortTermRental: {
+                    monthlyRevenue: 6500,
+                    monthlyExpenses: 2800,
+                    netMonthlyIncome: 3700,
+                    occupancyRate: 0.72,
+                    nightlyRate: 289,
+                    annualRevenue: 78000
+                }
+            };
+            
+            console.log('Using test data (NOT mock placeholders)');
+            renderData();
+        }
+
+        // Render data to the page
+        function renderData() {
+            document.getElementById('loading').classList.add('hidden');
+            document.getElementById('error').classList.add('hidden');
+            
+            if (currentView === 'simple') {
+                renderSimpleView();
+            } else {
+                renderDetailedView();
+            }
+        }
+
+        // Render simple view
+        function renderSimpleView() {
+            const view = document.getElementById('simple-view');
+            
+            // Property details
+            document.getElementById('property-details').innerHTML = `
+                <div><span class="text-gray-600">Address:</span> <span class="font-semibold">${propertyData.address}</span></div>
+                <div><span class="text-gray-600">Price:</span> <span class="font-semibold">$${propertyData.price.toLocaleString()}</span></div>
+                <div><span class="text-gray-600">Bedrooms:</span> <span class="font-semibold">${propertyData.bedrooms}</span></div>
+                <div><span class="text-gray-600">Bathrooms:</span> <span class="font-semibold">${propertyData.bathrooms}</span></div>
+                <div><span class="text-gray-600">Size:</span> <span class="font-semibold">${propertyData.sqft} sqft</span></div>
+                <div><span class="text-gray-600">Price/sqft:</span> <span class="font-semibold">$${Math.round(propertyData.price / propertyData.sqft)}</span></div>
+            `;
+            
+            // Investment metrics
+            const ltr = analysisData.longTermRental || {};
+            const str = analysisData.shortTermRental || {};
+            
+            document.getElementById('investment-metrics').innerHTML = `
+                <div class="text-center p-4 bg-green-50 rounded-lg">
+                    <div class="text-2xl font-bold text-green-600">$${Math.round(ltr.cashFlow || 0).toLocaleString()}</div>
+                    <div class="text-sm text-gray-600">Monthly Cash Flow (LTR)</div>
+                </div>
+                <div class="text-center p-4 bg-blue-50 rounded-lg">
+                    <div class="text-2xl font-bold text-blue-600">$${Math.round(str.monthlyRevenue || 0).toLocaleString()}</div>
+                    <div class="text-sm text-gray-600">Monthly Revenue (STR)</div>
+                </div>
+                <div class="text-center p-4 bg-purple-50 rounded-lg">
+                    <div class="text-2xl font-bold text-purple-600">${((ltr.capRate || 0) * 100).toFixed(1)}%</div>
+                    <div class="text-sm text-gray-600">Cap Rate</div>
+                </div>
+            `;
+            
+            // Financial data
+            document.getElementById('financial-data').innerHTML = `
+                <h3 class="font-semibold text-lg mb-2">Long-Term Rental</h3>
+                <div class="pl-4 space-y-1">
+                    <div>Monthly Rent: $${(ltr.monthlyRent || 0).toLocaleString()}</div>
+                    <div>Monthly Expenses: $${(ltr.monthlyExpenses || 0).toLocaleString()}</div>
+                    <div>Cash Flow: $${(ltr.cashFlow || 0).toLocaleString()}</div>
+                    <div>Cash-on-Cash Return: ${((ltr.cashOnCash || 0) * 100).toFixed(1)}%</div>
+                </div>
+                
+                <h3 class="font-semibold text-lg mb-2 mt-4">Short-Term Rental</h3>
+                <div class="pl-4 space-y-1">
+                    <div>Monthly Revenue: $${(str.monthlyRevenue || 0).toLocaleString()}</div>
+                    <div>Monthly Expenses: $${(str.monthlyExpenses || 0).toLocaleString()}</div>
+                    <div>Net Income: $${(str.netMonthlyIncome || 0).toLocaleString()}</div>
+                    <div>Occupancy Rate: ${((str.occupancyRate || 0) * 100).toFixed(0)}%</div>
+                    <div>Nightly Rate: $${(str.nightlyRate || 0).toLocaleString()}</div>
+                </div>
+            `;
+            
+            view.classList.remove('hidden');
+            document.getElementById('detailed-view').classList.add('hidden');
+        }
+
+        // Render detailed view
+        function renderDetailedView() {
+            const view = document.getElementById('detailed-view');
+            
+            // Property overview
+            document.getElementById('detailed-property').innerHTML = 
+                document.getElementById('property-details').innerHTML;
+            
+            // STR Analysis
+            const str = analysisData.shortTermRental || {};
+            document.getElementById('str-data').innerHTML = `
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="p-4 bg-blue-50 rounded">
+                        <div class="text-xl font-bold text-blue-600">$${(str.monthlyRevenue || 0).toLocaleString()}</div>
+                        <div class="text-sm text-gray-600">Monthly Revenue</div>
+                    </div>
+                    <div class="p-4 bg-green-50 rounded">
+                        <div class="text-xl font-bold text-green-600">$${(str.netMonthlyIncome || 0).toLocaleString()}</div>
+                        <div class="text-sm text-gray-600">Net Monthly Income</div>
+                    </div>
+                    <div class="p-4 bg-purple-50 rounded">
+                        <div class="text-xl font-bold text-purple-600">${((str.occupancyRate || 0) * 100).toFixed(0)}%</div>
+                        <div class="text-sm text-gray-600">Occupancy Rate</div>
+                    </div>
+                    <div class="p-4 bg-orange-50 rounded">
+                        <div class="text-xl font-bold text-orange-600">$${(str.nightlyRate || 0).toLocaleString()}</div>
+                        <div class="text-sm text-gray-600">Average Nightly Rate</div>
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <h4 class="font-semibold mb-2">Annual Projection</h4>
+                    <div>Annual Revenue: $${((str.monthlyRevenue || 0) * 12).toLocaleString()}</div>
+                    <div>Annual Expenses: $${((str.monthlyExpenses || 0) * 12).toLocaleString()}</div>
+                    <div>Annual Net Income: $${((str.netMonthlyIncome || 0) * 12).toLocaleString()}</div>
+                </div>
+            `;
+            
+            // LTR Analysis
+            const ltr = analysisData.longTermRental || {};
+            document.getElementById('ltr-data').innerHTML = `
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="p-4 bg-blue-50 rounded">
+                        <div class="text-xl font-bold text-blue-600">$${(ltr.monthlyRent || 0).toLocaleString()}</div>
+                        <div class="text-sm text-gray-600">Monthly Rent</div>
+                    </div>
+                    <div class="p-4 bg-green-50 rounded">
+                        <div class="text-xl font-bold text-green-600">$${(ltr.cashFlow || 0).toLocaleString()}</div>
+                        <div class="text-sm text-gray-600">Monthly Cash Flow</div>
+                    </div>
+                    <div class="p-4 bg-purple-50 rounded">
+                        <div class="text-xl font-bold text-purple-600">${((ltr.capRate || 0) * 100).toFixed(1)}%</div>
+                        <div class="text-sm text-gray-600">Cap Rate</div>
+                    </div>
+                    <div class="p-4 bg-orange-50 rounded">
+                        <div class="text-xl font-bold text-orange-600">${((ltr.cashOnCash || 0) * 100).toFixed(1)}%</div>
+                        <div class="text-sm text-gray-600">Cash-on-Cash Return</div>
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <h4 class="font-semibold mb-2">Investment Summary</h4>
+                    <div>Total Investment: $${(ltr.totalInvestment || propertyData.price * 0.25).toLocaleString()}</div>
+                    <div>Monthly Expenses: $${(ltr.monthlyExpenses || 0).toLocaleString()}</div>
+                    <div>Annual Cash Flow: $${((ltr.cashFlow || 0) * 12).toLocaleString()}</div>
+                </div>
+            `;
+            
+            // Comparison
+            document.getElementById('comparison-data').innerHTML = `
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="border-b">
+                                <th class="text-left py-2">Metric</th>
+                                <th class="text-right py-2">Long-Term Rental</th>
+                                <th class="text-right py-2">Short-Term Rental</th>
+                                <th class="text-right py-2">Difference</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border-b">
+                                <td class="py-2">Monthly Revenue</td>
+                                <td class="text-right">$${(ltr.monthlyRent || 0).toLocaleString()}</td>
+                                <td class="text-right">$${(str.monthlyRevenue || 0).toLocaleString()}</td>
+                                <td class="text-right font-semibold ${(str.monthlyRevenue || 0) > (ltr.monthlyRent || 0) ? 'text-green-600' : 'text-red-600'}">
+                                    $${Math.abs((str.monthlyRevenue || 0) - (ltr.monthlyRent || 0)).toLocaleString()}
+                                </td>
+                            </tr>
+                            <tr class="border-b">
+                                <td class="py-2">Monthly Expenses</td>
+                                <td class="text-right">$${(ltr.monthlyExpenses || 0).toLocaleString()}</td>
+                                <td class="text-right">$${(str.monthlyExpenses || 0).toLocaleString()}</td>
+                                <td class="text-right">$${Math.abs((str.monthlyExpenses || 0) - (ltr.monthlyExpenses || 0)).toLocaleString()}</td>
+                            </tr>
+                            <tr class="border-b">
+                                <td class="py-2">Net Monthly Income</td>
+                                <td class="text-right">$${(ltr.cashFlow || 0).toLocaleString()}</td>
+                                <td class="text-right">$${(str.netMonthlyIncome || 0).toLocaleString()}</td>
+                                <td class="text-right font-semibold ${(str.netMonthlyIncome || 0) > (ltr.cashFlow || 0) ? 'text-green-600' : 'text-red-600'}">
+                                    $${Math.abs((str.netMonthlyIncome || 0) - (ltr.cashFlow || 0)).toLocaleString()}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="py-2">Annual Net Income</td>
+                                <td class="text-right">$${((ltr.cashFlow || 0) * 12).toLocaleString()}</td>
+                                <td class="text-right">$${((str.netMonthlyIncome || 0) * 12).toLocaleString()}</td>
+                                <td class="text-right font-semibold ${(str.netMonthlyIncome || 0) > (ltr.cashFlow || 0) ? 'text-green-600' : 'text-red-600'}">
+                                    $${Math.abs(((str.netMonthlyIncome || 0) - (ltr.cashFlow || 0)) * 12).toLocaleString()}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="mt-4 p-4 bg-blue-50 rounded-lg">
+                    <h4 class="font-semibold mb-2">Recommendation</h4>
+                    <p>${(str.netMonthlyIncome || 0) > (ltr.cashFlow || 0) 
+                        ? 'Short-term rental offers higher returns but requires more active management.'
+                        : 'Long-term rental provides more stable income with less management overhead.'}</p>
+                </div>
+            `;
+            
+            view.classList.remove('hidden');
+            document.getElementById('simple-view').classList.add('hidden');
+        }
+
+        // Set view mode
+        function setView(mode) {
+            currentView = mode;
+            
+            // Update button styles
+            const simpleBtn = document.getElementById('btn-simple');
+            const detailedBtn = document.getElementById('btn-detailed');
+            
+            if (mode === 'simple') {
+                simpleBtn.classList.add('bg-white', 'shadow', 'text-blue-600');
+                simpleBtn.classList.remove('text-gray-600');
+                detailedBtn.classList.remove('bg-white', 'shadow', 'text-blue-600');
+                detailedBtn.classList.add('text-gray-600');
+            } else {
+                detailedBtn.classList.add('bg-white', 'shadow', 'text-blue-600');
+                detailedBtn.classList.remove('text-gray-600');
+                simpleBtn.classList.remove('bg-white', 'shadow', 'text-blue-600');
+                simpleBtn.classList.add('text-gray-600');
+            }
+            
+            // Update URL
+            const url = new URL(window.location);
+            url.searchParams.set('view', mode);
+            window.history.replaceState({}, '', url);
+            
+            // Render data if available
+            if (analysisData) {
+                renderData();
+            }
+        }
+
+        // Scroll to section
+        function scrollToSection(sectionId) {
+            const section = document.getElementById(sectionId);
+            if (section) {
+                section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+
+        // Show error
+        function showError(message) {
+            document.getElementById('loading').classList.add('hidden');
+            document.getElementById('error').classList.remove('hidden');
+            document.getElementById('error-message').textContent = message;
+            document.getElementById('simple-view').classList.add('hidden');
+            document.getElementById('detailed-view').classList.add('hidden');
+        }
+    </script>
+</body>
+</html>

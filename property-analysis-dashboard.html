@@ -5,6 +5,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Property Investment Analysis Dashboard - StarterPackApp</title>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    
+    <!-- Unified Design System (same as roi-finder.html) -->
+    <link rel="stylesheet" href="styles/unified-design.css">
+    <link rel="stylesheet" href="styles/color-override.css">
+    
+    <!-- External Dependencies -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.2/firebase-firestore-compat.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.8/purify.min.js"></script>
+    
+    <!-- Design System -->
+    <link rel="stylesheet" href="styles/design-tokens-consolidated.css">
+    <link rel="stylesheet" href="styles/design-system.css">
+    <link rel="stylesheet" href="styles/property-confirmation-card.css">
+    <link rel="stylesheet" href="styles/sidebar-layout.css">
+    <link rel="stylesheet" href="styles/mobile-fixes.css">
+    <link rel="stylesheet" href="styles/mobile-overlap-fix.css">
+    <link rel="stylesheet" href="styles/color-override-final.css">
+    
     <style>
         :root {
             /* Shared colors */
@@ -245,35 +267,50 @@
         <span id="toast-message">View mode changed</span>
     </div>
 
-    <!-- External scripts -->
-    <script src="./js/modules/mockup-config.js"></script>
+    <!-- Core modules -->
     <script src="./js/modules/property-analysis-api.js"></script>
-    <script src="./js/modules/property-extension-handler.js"></script>
+    <script src="./js/firebase-wrapper.js"></script>
 
-    <script>
-        class ViewModeManager {
+    <!-- Component Loader Module -->
+    <script type="module">
+        import ComponentLoader from './js/modules/componentLoader.js';
+        
+        // Initialize Firebase (non-module version for compatibility)
+        const script = document.createElement('script');
+        script.src = './js/firebase-wrapper.js';
+        script.onload = async () => {
+            window.firebaseWrapper = new FirebaseWrapper();
+            await window.firebaseWrapper.initialize();
+        };
+        document.head.appendChild(script);
+        
+        class DashboardManager {
             constructor() {
+                this.componentLoader = new ComponentLoader();
                 this.container = document.querySelector('[data-current-view]');
                 this.toggleContainer = document.querySelector('.view-toggle');
                 this.toggleButtons = document.querySelectorAll('.view-toggle button');
                 this.currentMode = this.loadPreference() || 'simple';
                 this.toast = document.getElementById('toast');
                 this.toastMessage = document.getElementById('toast-message');
+                this.analysisData = null;
+                this.propertyData = null;
                 
                 this.init();
             }
             
-            init() {
+            async init() {
                 this.setupEventListeners();
                 this.setMode(this.currentMode, false);
-                this.loadContent();
+                await this.loadAnalysisData();
+                await this.renderCurrentView();
             }
             
             setupEventListeners() {
                 this.toggleButtons.forEach(button => {
-                    button.addEventListener('click', () => {
+                    button.addEventListener('click', async () => {
                         const mode = button.dataset.view;
-                        this.setMode(mode, true);
+                        await this.setMode(mode, true);
                     });
                 });
                 
@@ -281,11 +318,11 @@
                 const urlParams = new URLSearchParams(window.location.search);
                 const urlMode = urlParams.get('view');
                 if (urlMode && ['simple', 'detailed'].includes(urlMode)) {
-                    this.setMode(urlMode, false);
+                    this.currentMode = urlMode;
                 }
             }
             
-            setMode(mode, animate = true) {
+            async setMode(mode, animate = true) {
                 this.currentMode = mode;
                 this.container.setAttribute('data-current-view', mode);
                 this.toggleContainer.setAttribute('data-active', mode);
@@ -299,14 +336,8 @@
                     }
                 });
                 
-                // Re-setup navigation for the current view
-                setTimeout(() => {
-                    if (mode === 'simple') {
-                        this.setupSimpleViewNavigation();
-                    } else {
-                        this.setupDetailedViewNavigation();
-                    }
-                }, 100);
+                // Re-render view when mode changes
+                await this.renderCurrentView();
                 
                 this.savePreference(mode);
                 this.updateURL(mode);
@@ -317,150 +348,364 @@
                 }
             }
             
-            loadContent() {
-                // Load Simple View content (base-mockup2-integrated.html)
-                fetch('./mockups/mockup-iterations/base-mockup2-integrated.html')
-                    .then(response => response.text())
-                    .then(html => {
-                        // Extract body content
-                        const parser = new DOMParser();
-                        const doc = parser.parseFromString(html, 'text/html');
-                        const bodyContent = doc.body.innerHTML;
-                        
-                        // Insert into simple view
-                        const simpleContent = document.getElementById('simple-content');
-                        simpleContent.innerHTML = bodyContent;
-                        
-                        // Extract and apply styles
-                        const styles = doc.head.querySelector('style');
-                        if (styles) {
-                            const styleEl = document.createElement('style');
-                            styleEl.textContent = `.simple-view { ${styles.textContent} }`;
-                            document.head.appendChild(styleEl);
-                        }
-                        
-                        // Extract and execute scripts
-                        this.executeEmbeddedScripts(doc, simpleContent);
-                        
-                        // Set up sidebar navigation for Simple view
-                        this.setupSimpleViewNavigation();
-                        
-                        console.log('✅ Simple view content loaded');
-                        
-                        // Trigger API analysis if property data is present
-                        this.triggerAnalysisIfNeeded();
-                    })
-                    .catch(err => {
-                        console.error('❌ Failed to load simple view:', err);
-                        document.getElementById('simple-content').innerHTML = 
-                            '<div style="padding: 40px; text-align: center; color: #666;">Failed to load Simple view content</div>';
-                    });
-                
-                // Load Detailed View content (base-mockup-integrated.html)
-                fetch('./mockups/mockup-iterations/base-mockup-integrated.html')
-                    .then(response => response.text())
-                    .then(html => {
-                        // Extract body content
-                        const parser = new DOMParser();
-                        const doc = parser.parseFromString(html, 'text/html');
-                        const bodyContent = doc.body.innerHTML;
-                        
-                        // Insert into detailed view
-                        const detailedContent = document.getElementById('detailed-content');
-                        detailedContent.innerHTML = bodyContent;
-                        
-                        // Extract and apply styles
-                        const styles = doc.head.querySelector('style');
-                        if (styles) {
-                            const styleEl = document.createElement('style');
-                            styleEl.textContent = `.detailed-view { ${styles.textContent} }`;
-                            document.head.appendChild(styleEl);
-                        }
-                        
-                        // Extract and execute scripts
-                        this.executeEmbeddedScripts(doc, detailedContent);
-                        
-                        // Set up sidebar navigation for Detailed view
-                        this.setupDetailedViewNavigation();
-                        
-                        console.log('✅ Detailed view content loaded');
-                    })
-                    .catch(err => {
-                        console.error('❌ Failed to load detailed view:', err);
-                        document.getElementById('detailed-content').innerHTML = 
-                            '<div style="padding: 40px; text-align: center; color: #666;">Failed to load Detailed view content</div>';
-                    });
-            }
-            
-            executeEmbeddedScripts(doc, container) {
-                // Execute scripts from the embedded content
-                const scripts = doc.querySelectorAll('script');
-                scripts.forEach(script => {
-                    if (script.src) {
-                        // External script - already loaded by main page
-                        return;
-                    }
-                    
-                    try {
-                        // Inline script - execute in context
-                        const scriptContent = script.textContent;
-                        if (scriptContent.trim()) {
-                            eval(scriptContent);
-                        }
-                    } catch (error) {
-                        console.warn('Script execution error:', error);
-                    }
-                });
-            }
-            
-            triggerAnalysisIfNeeded() {
+            async loadAnalysisData() {
                 // Check for property data in URL parameters
                 const urlParams = new URLSearchParams(window.location.search);
                 const propertyDataParam = urlParams.get('propertyData');
-                const analysisType = urlParams.get('analysisType') || 'both';
+                const analysisId = urlParams.get('analysisId');
                 
-                if (propertyDataParam && window.propertyAPI) {
+                if (propertyDataParam) {
                     try {
-                        const propertyData = JSON.parse(decodeURIComponent(propertyDataParam));
-                        console.log('[Hybrid] Found property data, triggering live analysis:', propertyData);
+                        this.propertyData = JSON.parse(decodeURIComponent(propertyDataParam));
+                        console.log('[Dashboard] Found property data in URL:', this.propertyData);
                         
                         // Show loading state
                         this.showAnalysisLoading();
                         
-                        // Trigger the analysis
-                        setTimeout(async () => {
-                            try {
-                                const result = await window.propertyAPI.analyzeProperty(
-                                    propertyData.address,
-                                    {
-                                        includeStr: analysisType === 'both' || analysisType === 'str',
-                                        analysisType: analysisType,
-                                        showLoading: false,
-                                        propertyData: propertyData
-                                    }
-                                );
-                                
-                                if (result) {
-                                    console.log('[Hybrid] Analysis completed, updating displays');
-                                    this.updateDisplaysWithLiveData(result, propertyData);
-                                    this.hideAnalysisLoading();
-                                } else {
-                                    console.warn('[Hybrid] Analysis returned no result');
-                                    this.hideAnalysisLoading();
+                        // Fetch analysis from API
+                        if (window.propertyAPI) {
+                            const result = await window.propertyAPI.analyzeProperty(
+                                this.propertyData.address,
+                                {
+                                    includeStr: true,
+                                    analysisType: 'both',
+                                    propertyData: this.propertyData
                                 }
-                            } catch (error) {
-                                console.error('[Hybrid] Analysis failed:', error);
-                                this.hideAnalysisLoading();
+                            );
+                            
+                            if (result) {
+                                this.analysisData = result;
+                                console.log('[Dashboard] Analysis completed:', this.analysisData);
                             }
-                        }, 1000);
+                        }
                         
+                        this.hideAnalysisLoading();
                     } catch (error) {
-                        console.error('[Hybrid] Failed to parse property data:', error);
+                        console.error('[Dashboard] Failed to load property data:', error);
+                        this.hideAnalysisLoading();
+                        this.showError('Failed to load property data');
+                    }
+                } else if (analysisId) {
+                    // Load from Firebase if analysisId provided
+                    try {
+                        this.showAnalysisLoading();
+                        const doc = await window.firebaseWrapper.db.collection('analyses').doc(analysisId).get();
+                        if (doc.exists) {
+                            this.analysisData = doc.data();
+                            this.propertyData = this.analysisData.propertyDetails || {};
+                            console.log('[Dashboard] Loaded analysis from Firebase:', this.analysisData);
+                        }
+                        this.hideAnalysisLoading();
+                    } catch (error) {
+                        console.error('[Dashboard] Failed to load analysis:', error);
+                        this.hideAnalysisLoading();
+                        this.showError('Failed to load analysis data');
                     }
                 } else {
-                    console.log('[Hybrid] No property data found, keeping default content');
+                    console.log('[Dashboard] No property data provided');
+                    this.showError('No property data provided. Please submit a property for analysis.');
+                }
+                
+                // Store globally for PDF generation
+                if (this.analysisData) {
+                    window.currentAnalysisData = {
+                        analysisResult: this.analysisData,
+                        propertyData: this.propertyData,
+                        timestamp: new Date().toISOString(),
+                        source: 'property-analysis-dashboard'
+                    };
                 }
             }
+            
+            async renderCurrentView() {
+                if (!this.analysisData) {
+                    console.log('[Dashboard] No analysis data to render');
+                    return;
+                }
+                
+                if (this.currentMode === 'simple') {
+                    await this.renderSimpleView();
+                } else {
+                    await this.renderDetailedView();
+                }
+            }
+            
+            async renderSimpleView() {
+                const simpleContent = document.getElementById('simple-content');
+                if (!simpleContent) return;
+                
+                try {
+                    // Show loading state
+                    simpleContent.innerHTML = `
+                        <div class="container mx-auto p-lg">
+                            <div class="animate-pulse space-y-lg">
+                                <div class="h-32 bg-gray-200 rounded-xl"></div>
+                                <div class="h-64 bg-gray-200 rounded-xl"></div>
+                                <div class="h-48 bg-gray-200 rounded-xl"></div>
+                            </div>
+                        </div>
+                    `;
+                    
+                    // Load components for simple view
+                    const [propertyHeroModule, ltrModule, financialModule] = await Promise.all([
+                        this.componentLoader.loadComponent('components/analysis/PropertyHeroSection.js'),
+                        this.componentLoader.loadComponent('components/analysis/LongTermRentalCalculator.js'),
+                        this.componentLoader.loadComponent('components/calculator/EnhancedFinancialCalculator.js')
+                    ]);
+                    
+                    // Build the simple view HTML
+                    let html = '<div class="container mx-auto p-lg space-y-xl">';
+                    
+                    // Property Hero Section
+                    if (propertyHeroModule?.PropertyHeroSection) {
+                        html += propertyHeroModule.PropertyHeroSection({
+                            property: this.propertyData,
+                            analysis: this.analysisData
+                        });
+                    }
+                    
+                    // Investment Snapshot
+                    html += this.renderInvestmentSnapshot();
+                    
+                    // LTR Analysis
+                    if (ltrModule?.LongTermRentalCalculator && this.analysisData.longTermRental) {
+                        html += ltrModule.LongTermRentalCalculator({
+                            analysis: this.analysisData.longTermRental,
+                            property: this.propertyData
+                        });
+                    }
+                    
+                    // Financial Calculator
+                    if (financialModule?.EnhancedFinancialCalculator) {
+                        html += financialModule.EnhancedFinancialCalculator({
+                            property: this.propertyData,
+                            analysis: this.analysisData
+                        });
+                    }
+                    
+                    html += '</div>';
+                    
+                    // Render to DOM
+                    simpleContent.innerHTML = html;
+                    
+                    // Initialize any interactive components
+                    this.initializeInteractiveComponents();
+                    
+                    console.log('✅ Simple view rendered with real data');
+                    
+                } catch (error) {
+                    console.error('❌ Failed to render simple view:', error);
+                    simpleContent.innerHTML = `
+                        <div class="container mx-auto p-lg">
+                            <div class="text-center text-red-600">
+                                <h3 class="text-xl font-bold mb-2">Error Loading View</h3>
+                                <p>${error.message}</p>
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+            
+            async renderDetailedView() {
+                const detailedContent = document.getElementById('detailed-content');
+                if (!detailedContent) return;
+                
+                try {
+                    // Show loading state
+                    detailedContent.innerHTML = `
+                        <div class="container mx-auto p-lg">
+                            <div class="animate-pulse space-y-lg">
+                                <div class="h-32 bg-gray-200 rounded-xl"></div>
+                                <div class="h-96 bg-gray-200 rounded-xl"></div>
+                                <div class="h-64 bg-gray-200 rounded-xl"></div>
+                            </div>
+                        </div>
+                    `;
+                    
+                    // Load components for detailed view
+                    const [
+                        propertyHeroModule,
+                        airbnbHeroModule,
+                        ltrAnalysisModule,
+                        financialModule,
+                        comparisonModule
+                    ] = await Promise.all([
+                        this.componentLoader.loadComponent('components/analysis/PropertyHeroSection.js'),
+                        this.componentLoader.loadComponent('components/analysis/AirbnbHeroSection.js'),
+                        this.componentLoader.loadComponent('components/analysis/LongTermRentalAnalysis.js'),
+                        this.componentLoader.loadComponent('components/analysis/InteractiveFinancialCalculator.js'),
+                        this.componentLoader.loadComponent('components/ui/ComparisonView.js')
+                    ]);
+                    
+                    // Build the detailed view HTML with sidebar
+                    let html = `
+                        <div class="flex">
+                            <!-- Sidebar Navigation -->
+                            <aside class="w-64 bg-white shadow-lg sticky top-16 h-screen overflow-y-auto">
+                                <nav class="p-4 space-y-2">
+                                    <button onclick="window.scrollToSection('overview')" class="w-full text-left px-4 py-2 rounded hover:bg-gray-100">📊 Overview</button>
+                                    <button onclick="window.scrollToSection('str-analysis')" class="w-full text-left px-4 py-2 rounded hover:bg-gray-100">🏠 STR Analysis</button>
+                                    <button onclick="window.scrollToSection('ltr-analysis')" class="w-full text-left px-4 py-2 rounded hover:bg-gray-100">🏢 LTR Analysis</button>
+                                    <button onclick="window.scrollToSection('financial')" class="w-full text-left px-4 py-2 rounded hover:bg-gray-100">💰 Financial</button>
+                                    <button onclick="window.scrollToSection('comparison')" class="w-full text-left px-4 py-2 rounded hover:bg-gray-100">⚖️ Comparison</button>
+                                </nav>
+                            </aside>
+                            
+                            <!-- Main Content -->
+                            <main class="flex-1 p-lg space-y-xl">
+                    `;
+                    
+                    // Property Overview
+                    html += '<section id="overview">';
+                    if (propertyHeroModule?.PropertyHeroSection) {
+                        html += propertyHeroModule.PropertyHeroSection({
+                            property: this.propertyData,
+                            analysis: this.analysisData
+                        });
+                    }
+                    html += '</section>';
+                    
+                    // STR Analysis (Position #2 as requested)
+                    html += '<section id="str-analysis">';
+                    if (airbnbHeroModule?.AirbnbHeroSection && this.analysisData.shortTermRental) {
+                        html += airbnbHeroModule.AirbnbHeroSection({
+                            strAnalysis: this.analysisData.shortTermRental,
+                            property: this.propertyData
+                        });
+                    }
+                    html += '</section>';
+                    
+                    // LTR Analysis
+                    html += '<section id="ltr-analysis">';
+                    if (ltrAnalysisModule?.LongTermRentalAnalysis && this.analysisData.longTermRental) {
+                        html += ltrAnalysisModule.LongTermRentalAnalysis({
+                            ltrAnalysis: this.analysisData.longTermRental,
+                            property: this.propertyData
+                        });
+                    }
+                    html += '</section>';
+                    
+                    // Financial Calculator
+                    html += '<section id="financial">';
+                    if (financialModule?.InteractiveFinancialCalculator) {
+                        html += financialModule.InteractiveFinancialCalculator({
+                            property: this.propertyData,
+                            analysis: this.analysisData
+                        });
+                    }
+                    html += '</section>';
+                    
+                    // Comparison
+                    html += '<section id="comparison">';
+                    if (comparisonModule?.ComparisonView) {
+                        html += comparisonModule.ComparisonView({
+                            ltrAnalysis: this.analysisData.longTermRental,
+                            strAnalysis: this.analysisData.shortTermRental
+                        });
+                    }
+                    html += '</section>';
+                    
+                    html += `
+                            </main>
+                        </div>
+                    `;
+                    
+                    // Render to DOM
+                    detailedContent.innerHTML = html;
+                    
+                    // Initialize scroll functionality
+                    window.scrollToSection = (sectionId) => {
+                        const section = document.getElementById(sectionId);
+                        if (section) {
+                            section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        }
+                    };
+                    
+                    // Initialize any interactive components
+                    this.initializeInteractiveComponents();
+                    
+                    console.log('✅ Detailed view rendered with real data');
+                    
+                } catch (error) {
+                    console.error('❌ Failed to render detailed view:', error);
+                    detailedContent.innerHTML = `
+                        <div class="container mx-auto p-lg">
+                            <div class="text-center text-red-600">
+                                <h3 class="text-xl font-bold mb-2">Error Loading View</h3>
+                                <p>${error.message}</p>
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+            
+            renderInvestmentSnapshot() {
+                if (!this.analysisData) return '';
+                
+                const ltr = this.analysisData.longTermRental || {};
+                const str = this.analysisData.shortTermRental || {};
+                
+                return `
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <h2 class="text-2xl font-bold mb-4">Investment Snapshot</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="text-center p-4 bg-gray-50 rounded-lg">
+                                <div class="text-3xl font-bold text-green-600">
+                                    ${ltr.cashFlow ? `$${Math.round(ltr.cashFlow).toLocaleString()}` : 'N/A'}
+                                </div>
+                                <div class="text-sm text-gray-600">Monthly Cash Flow (LTR)</div>
+                            </div>
+                            <div class="text-center p-4 bg-gray-50 rounded-lg">
+                                <div class="text-3xl font-bold text-blue-600">
+                                    ${str.monthlyRevenue ? `$${Math.round(str.monthlyRevenue).toLocaleString()}` : 'N/A'}
+                                </div>
+                                <div class="text-sm text-gray-600">Monthly Revenue (STR)</div>
+                            </div>
+                            <div class="text-center p-4 bg-gray-50 rounded-lg">
+                                <div class="text-3xl font-bold text-purple-600">
+                                    ${ltr.capRate ? `${(ltr.capRate * 100).toFixed(1)}%` : 'N/A'}
+                                </div>
+                                <div class="text-sm text-gray-600">Cap Rate</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            initializeInteractiveComponents() {
+                // Initialize any charts, calculators, or interactive elements
+                // This would be called after components are rendered
+                console.log('[Dashboard] Initializing interactive components');
+                
+                // Dispatch event for components to initialize
+                window.dispatchEvent(new CustomEvent('componentsLoaded', {
+                    detail: { analysisData: this.analysisData }
+                }));
+            }
+            
+            showError(message) {
+                const simpleContent = document.getElementById('simple-content');
+                const detailedContent = document.getElementById('detailed-content');
+                
+                const errorHtml = `
+                    <div class="container mx-auto p-lg">
+                        <div class="bg-red-50 border border-red-200 rounded-xl p-6 text-center">
+                            <svg class="w-12 h-12 text-red-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <h3 class="text-xl font-bold text-red-800 mb-2">Unable to Load Analysis</h3>
+                            <p class="text-red-600">${message}</p>
+                            <a href="/roi-finder.html" class="inline-block mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                                Start New Analysis
+                            </a>
+                        </div>
+                    </div>
+                `;
+                
+                if (simpleContent) simpleContent.innerHTML = errorHtml;
+                if (detailedContent) detailedContent.innerHTML = errorHtml;
+            }
+            
             
             showAnalysisLoading() {
                 // Create full-screen loading overlay with progress bars
@@ -732,265 +977,6 @@
                 setTimeout(updateProgress, 500);
             }
             
-            updateDisplaysWithLiveData(analysisResult, propertyData) {
-                console.log('[Hybrid] Updating displays with live data:', analysisResult);
-                
-                // Store analysis data globally for PDF generation
-                window.currentAnalysisData = {
-                    analysisResult,
-                    propertyData,
-                    timestamp: new Date().toISOString(),
-                    source: 'property-analysis-dashboard'
-                };
-                console.log('[Hybrid] Analysis data stored for PDF generation');
-                
-                // Update both simple and detailed views with live data
-                this.updateSimpleViewWithLiveData(analysisResult, propertyData);
-                this.updateDetailedViewWithLiveData(analysisResult, propertyData);
-                
-                // Inject PDF buttons after data is updated
-                setTimeout(() => {
-                    if (window.injectPDFButtons) {
-                        window.injectPDFButtons();
-                    }
-                }, 500);
-            }
-            
-            updateSimpleViewWithLiveData(analysisResult, propertyData) {
-                const simpleContent = document.getElementById('simple-content');
-                if (!simpleContent) return;
-                
-                // Update property address and details
-                const addressElements = simpleContent.querySelectorAll('h1, h2, h3');
-                addressElements.forEach(el => {
-                    if (el.textContent.includes('East Liberty') || el.textContent.includes('1514')) {
-                        el.textContent = propertyData.address;
-                    }
-                });
-                
-                // Update price if analysis has property details
-                if (analysisResult.propertyDetails || propertyData.price) {
-                    const price = analysisResult.propertyDetails?.price || propertyData.price;
-                    const priceElements = simpleContent.querySelectorAll('[style*="color"], .price, [class*="price"]');
-                    priceElements.forEach(el => {
-                        if (el.textContent.includes('$') && el.textContent.includes('849')) {
-                            el.textContent = new Intl.NumberFormat('en-US', {
-                                style: 'currency',
-                                currency: 'USD',
-                                maximumFractionDigits: 0
-                            }).format(price);
-                        }
-                    });
-                }
-                
-                // Update financial metrics if available
-                if (analysisResult.longTermRental) {
-                    const ltr = analysisResult.longTermRental;
-                    
-                    // Update cash flow
-                    const cashFlowElements = simpleContent.querySelectorAll('*');
-                    cashFlowElements.forEach(el => {
-                        if (el.textContent.includes('$1,200') && el.textContent.includes('Cash Flow')) {
-                            el.textContent = `$${Math.round(ltr.netMonthlyIncome || ltr.monthly_cash_flow || 1200)}`;
-                        }
-                    });
-                }
-                
-                console.log('[Hybrid] Simple view updated with live data');
-            }
-            
-            updateDetailedViewWithLiveData(analysisResult, propertyData) {
-                const detailedContent = document.getElementById('detailed-content');
-                if (!detailedContent) return;
-                
-                // Update property address and details
-                const addressElements = detailedContent.querySelectorAll('h1, h2, h3');
-                addressElements.forEach(el => {
-                    if (el.textContent.includes('East Liberty') || el.textContent.includes('1514')) {
-                        el.textContent = propertyData.address;
-                    }
-                });
-                
-                // Update price
-                if (analysisResult.propertyDetails || propertyData.price) {
-                    const price = analysisResult.propertyDetails?.price || propertyData.price;
-                    const priceElements = detailedContent.querySelectorAll('[style*="color"], .price, [class*="price"]');
-                    priceElements.forEach(el => {
-                        if (el.textContent.includes('$') && el.textContent.includes('849')) {
-                            el.textContent = new Intl.NumberFormat('en-US', {
-                                style: 'currency',
-                                currency: 'USD',
-                                maximumFractionDigits: 0
-                            }).format(price);
-                        }
-                    });
-                }
-                
-                // Update STR metrics if available
-                if (analysisResult.shortTermRental) {
-                    const str = analysisResult.shortTermRental;
-                    
-                    // Update monthly revenue
-                    const revenueElements = detailedContent.querySelectorAll('*');
-                    revenueElements.forEach(el => {
-                        if (el.textContent.includes('$11,044') || (el.textContent.includes('Monthly Revenue') && el.textContent.includes('$'))) {
-                            const revenue = str.monthlyRevenue || str.monthly_revenue || 11044;
-                            el.textContent = `$${Math.round(revenue).toLocaleString()}`;
-                        }
-                        if (el.textContent.includes('$8,500') || (el.textContent.includes('Cash Flow') && el.textContent.includes('+'))) {
-                            const cashFlow = str.netMonthlyIncome || str.net_monthly_income || 8500;
-                            el.textContent = `+$${Math.round(cashFlow).toLocaleString()}`;
-                        }
-                    });
-                }
-                
-                console.log('[Hybrid] Detailed view updated with live data');
-            }
-            
-            setupSimpleViewNavigation() {
-                console.log('[Hybrid] Setting up Simple view navigation');
-                
-                const simpleContent = document.getElementById('simple-content');
-                if (!simpleContent) return;
-                
-                // Find all sidebar navigation buttons in Simple view
-                const navButtons = simpleContent.querySelectorAll('.sidebar button, .sidebar-nav button, [class*="sidebar"] button, nav button');
-                
-                navButtons.forEach((button, index) => {
-                    // Remove existing event listeners
-                    const newButton = button.cloneNode(true);
-                    button.parentNode.replaceChild(newButton, button);
-                    
-                    // Add new event listener
-                    newButton.addEventListener('click', (e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        
-                        console.log('[Simple Nav] Button clicked:', newButton.textContent.trim());
-                        
-                        // Remove active class from all buttons
-                        navButtons.forEach(btn => {
-                            btn.classList.remove('active');
-                            btn.style.background = '';
-                            btn.style.color = '';
-                        });
-                        
-                        // Add active class to clicked button
-                        newButton.classList.add('active');
-                        newButton.style.background = 'var(--success-green, #10B981)';
-                        newButton.style.color = 'white';
-                        
-                        // Find target section based on button text
-                        const buttonText = newButton.textContent.trim().toLowerCase();
-                        let targetId = '';
-                        
-                        if (buttonText.includes('overview')) targetId = 'simple-overview';
-                        else if (buttonText.includes('snapshot') || buttonText.includes('investment')) targetId = 'simple-investment';
-                        else if (buttonText.includes('str')) targetId = 'simple-str';
-                        else if (buttonText.includes('ltr')) targetId = 'simple-ltr';
-                        else if (buttonText.includes('financial') || buttonText.includes('calculator')) targetId = 'simple-financial';
-                        else if (buttonText.includes('comparison') || buttonText.includes('final')) targetId = 'simple-comparison';
-                        
-                        // Scroll to target section
-                        if (targetId) {
-                            const targetSection = simpleContent.querySelector(`#${targetId}, [id*="${targetId.replace('simple-', '')}"]`);
-                            if (targetSection) {
-                                targetSection.scrollIntoView({ 
-                                    behavior: 'smooth', 
-                                    block: 'start',
-                                    inline: 'nearest'
-                                });
-                                console.log('[Simple Nav] Scrolled to:', targetId);
-                            } else {
-                                console.log('[Simple Nav] Target section not found:', targetId);
-                                // Fallback: scroll to any section with similar content
-                                const sections = simpleContent.querySelectorAll('section, .card, .section');
-                                const matchingSection = Array.from(sections).find(section => 
-                                    section.textContent.toLowerCase().includes(buttonText.split(' ')[0])
-                                );
-                                if (matchingSection) {
-                                    matchingSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                                    console.log('[Simple Nav] Scrolled to matching section');
-                                }
-                            }
-                        }
-                    });
-                });
-                
-                console.log(`[Simple Nav] Set up ${navButtons.length} navigation buttons`);
-            }
-            
-            setupDetailedViewNavigation() {
-                console.log('[Hybrid] Setting up Detailed view navigation');
-                
-                const detailedContent = document.getElementById('detailed-content');
-                if (!detailedContent) return;
-                
-                // Find all sidebar navigation buttons in Detailed view
-                const navButtons = detailedContent.querySelectorAll('.sidebar button, .sidebar-nav button, [class*="sidebar"] button, nav button');
-                
-                navButtons.forEach((button, index) => {
-                    // Remove existing event listeners
-                    const newButton = button.cloneNode(true);
-                    button.parentNode.replaceChild(newButton, button);
-                    
-                    // Add new event listener
-                    newButton.addEventListener('click', (e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        
-                        console.log('[Detailed Nav] Button clicked:', newButton.textContent.trim());
-                        
-                        // Remove active class from all buttons
-                        navButtons.forEach(btn => {
-                            btn.classList.remove('active');
-                            btn.style.background = '';
-                            btn.style.color = '';
-                        });
-                        
-                        // Add active class to clicked button
-                        newButton.classList.add('active');
-                        newButton.style.background = 'var(--primary-blue, #3B82F6)';
-                        newButton.style.color = 'white';
-                        
-                        // Find target section based on button text
-                        const buttonText = newButton.textContent.trim().toLowerCase();
-                        let targetId = '';
-                        
-                        if (buttonText.includes('overview') || buttonText.includes('property')) targetId = 'overview-section';
-                        else if (buttonText.includes('str')) targetId = 'str-section';
-                        else if (buttonText.includes('ltr')) targetId = 'ltr-section';
-                        else if (buttonText.includes('financial') || buttonText.includes('calculator')) targetId = 'financial-section';
-                        else if (buttonText.includes('comparison') || buttonText.includes('vs')) targetId = 'comparison-section';
-                        
-                        // Scroll to target section
-                        if (targetId) {
-                            const targetSection = detailedContent.querySelector(`#${targetId}, [id*="${targetId}"], [data-section*="${targetId}"]`);
-                            if (targetSection) {
-                                targetSection.scrollIntoView({ 
-                                    behavior: 'smooth', 
-                                    block: 'start',
-                                    inline: 'nearest'
-                                });
-                                console.log('[Detailed Nav] Scrolled to:', targetId);
-                            } else {
-                                console.log('[Detailed Nav] Target section not found:', targetId);
-                                // Fallback: scroll to any section with similar content
-                                const sections = detailedContent.querySelectorAll('section, .card, .section');
-                                const matchingSection = Array.from(sections).find(section => 
-                                    section.textContent.toLowerCase().includes(buttonText.split(' ')[0])
-                                );
-                                if (matchingSection) {
-                                    matchingSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                                    console.log('[Detailed Nav] Scrolled to matching section');
-                                }
-                            }
-                        }
-                    });
-                });
-                
-                console.log(`[Detailed Nav] Set up ${navButtons.length} navigation buttons`);
-            }
             
             savePreference(mode) {
                 try {
@@ -1025,26 +1011,41 @@
             }
         }
 
-        // Initialize the view manager when DOM is loaded
+        // Initialize the dashboard manager when DOM is loaded
         document.addEventListener('DOMContentLoaded', () => {
-            window.viewManager = new ViewModeManager();
+            window.dashboardManager = new DashboardManager();
         });
     </script>
 
     <!-- PDF Generation Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
-    <script type="module" src="utils/enhanced-pdf-report-builder-es6.js"></script>
-    <script type="module" src="utils/pdf-report-builder.js"></script>
 
     <!-- PDF Generation Integration -->
     <script type="module">
-        import { generatePDFReport } from './utils/pdf-report-builder.js';
+        // Dynamically import PDF module when needed
+        let pdfModule = null;
+        
+        async function loadPDFModule() {
+            if (!pdfModule) {
+                pdfModule = await import('./utils/pdf-report-builder.js');
+            }
+            return pdfModule;
+        }
 
         // Add PDF generation functionality to global scope
         window.generatePropertyPDF = async function(analysisData) {
             try {
                 console.log('🔄 Generating PDF report...', analysisData);
+                
+                // Check if analysis data exists
+                if (!analysisData || !analysisData.analysisResult) {
+                    alert('No analysis data available. Please complete an analysis first.');
+                    return;
+                }
+                
+                // Load PDF module
+                const { generatePDFReport } = await loadPDFModule();
                 
                 // Show loading state
                 const originalButtonText = {};
@@ -1095,8 +1096,8 @@
                 });
                 
                 // Show success message
-                if (window.viewManager) {
-                    window.viewManager.showToast('✅ PDF report generated successfully!');
+                if (window.dashboardManager) {
+                    window.dashboardManager.showToast('✅ PDF report generated successfully!');
                 }
                 
                 console.log('✅ PDF generated and downloaded:', fileName);
@@ -1112,8 +1113,8 @@
                 });
                 
                 // Show error message
-                if (window.viewManager) {
-                    window.viewManager.showToast('❌ PDF generation failed. Please try again.');
+                if (window.dashboardManager) {
+                    window.dashboardManager.showToast('❌ PDF generation failed. Please try again.');
                 }
             }
         };
@@ -1164,159 +1165,36 @@
 
         // Function to inject PDF buttons into loaded content
         window.injectPDFButtons = function() {
-            console.log('🔄 Injecting PDF generation buttons...');
+            console.log('🔄 Adding PDF generation buttons...');
             
-            // Inject into Simple View
-            const simpleContent = document.getElementById('simple-content');
-            if (simpleContent && !simpleContent.querySelector('.pdf-generate-btn')) {
-                // Find a good place to insert the button (after main content)
-                const insertionPoint = simpleContent.querySelector('.main-content, .container, .analysis-results') || simpleContent;
-                
-                const pdfButtonContainer = document.createElement('div');
-                pdfButtonContainer.className = 'pdf-button-container';
-                pdfButtonContainer.innerHTML = `
-                    <button class="pdf-generate-btn" id="simple-pdf-btn" onclick="window.generatePropertyPDF(window.currentAnalysisData)">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                            <polyline points="14,2 14,8 20,8"/>
-                            <line x1="16" y1="13" x2="8" y2="13"/>
-                            <line x1="16" y1="17" x2="8" y2="17"/>
-                            <polyline points="10,9 9,9 8,9"/>
-                        </svg>
-                        Generate PDF Report
-                    </button>
-                `;
-                
-                if (insertionPoint === simpleContent) {
-                    insertionPoint.appendChild(pdfButtonContainer);
-                } else {
-                    insertionPoint.parentNode.insertBefore(pdfButtonContainer, insertionPoint.nextSibling);
+            // Add PDF button to both views
+            const views = ['simple-content', 'detailed-content'];
+            views.forEach(viewId => {
+                const content = document.getElementById(viewId);
+                if (content && !content.querySelector('.pdf-generate-btn')) {
+                    const pdfButtonHtml = `
+                        <div class="pdf-button-container text-center mt-8">
+                            <button class="pdf-generate-btn" onclick="window.generatePropertyPDF(window.currentAnalysisData)">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                    <polyline points="14,2 14,8 20,8"/>
+                                    <line x1="16" y1="13" x2="8" y2="13"/>
+                                    <line x1="16" y1="17" x2="8" y2="17"/>
+                                </svg>
+                                Generate PDF Report
+                            </button>
+                        </div>
+                    `;
+                    content.insertAdjacentHTML('beforeend', pdfButtonHtml);
                 }
-                
-                console.log('✅ PDF button injected into Simple view');
-            }
-            
-            // Inject into Detailed View  
-            const detailedContent = document.getElementById('detailed-content');
-            if (detailedContent && !detailedContent.querySelector('.pdf-generate-btn')) {
-                // Find a good place to insert the button
-                const insertionPoint = detailedContent.querySelector('.main-content, .container, .analysis-results') || detailedContent;
-                
-                const pdfButtonContainer = document.createElement('div');
-                pdfButtonContainer.className = 'pdf-button-container';
-                pdfButtonContainer.innerHTML = `
-                    <button class="pdf-generate-btn" id="detailed-pdf-btn" onclick="window.generatePropertyPDF(window.currentAnalysisData)">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                            <polyline points="14,2 14,8 20,8"/>
-                            <line x1="16" y1="13" x2="8" y2="13"/>
-                            <line x1="16" y1="17" x2="8" y2="17"/>
-                            <polyline points="10,9 9,9 8,9"/>
-                        </svg>
-                        Generate PDF Report
-                    </button>
-                `;
-                
-                if (insertionPoint === detailedContent) {
-                    insertionPoint.appendChild(pdfButtonContainer);
-                } else {
-                    insertionPoint.parentNode.insertBefore(pdfButtonContainer, insertionPoint.nextSibling);
-                }
-                
-                console.log('✅ PDF button injected into Detailed view');
-            }
+            });
         };
 
-        // Auto-inject PDF buttons when content loads
-        const originalLoadContent = window.viewManager?.loadContent;
-        if (originalLoadContent) {
-            window.viewManager.loadContent = function() {
-                originalLoadContent.call(this);
-                // Inject PDF buttons after a short delay to ensure content is loaded
-                setTimeout(() => {
-                    window.injectPDFButtons();
-                    
-                    // Initialize fallback analysis data if not already present
-                    if (!window.currentAnalysisData) {
-                        const urlParams = new URLSearchParams(window.location.search);
-                        const propertyDataParam = urlParams.get('propertyData');
-                        
-                        if (propertyDataParam) {
-                            try {
-                                const propertyData = JSON.parse(decodeURIComponent(propertyDataParam));
-                                window.currentAnalysisData = {
-                                    propertyData,
-                                    analysisResult: {
-                                        // Fallback/mock data for PDF generation
-                                        ltr: {
-                                            monthlyRent: 2800,
-                                            netMonthlyIncome: 1200,
-                                            annualizedReturn: 8.5,
-                                            cashOnCashReturn: 12.3
-                                        },
-                                        str: {
-                                            averageNightly: 180,
-                                            monthlyRevenue: 4200,
-                                            netMonthlyIncome: 2100,
-                                            annualizedReturn: 15.2
-                                        },
-                                        comparison: {
-                                            ltrTotal: 33600,
-                                            strTotal: 50400,
-                                            difference: 16800,
-                                            recommendation: "STR"
-                                        }
-                                    },
-                                    timestamp: new Date().toISOString(),
-                                    source: 'dashboard-fallback'
-                                };
-                                console.log('[PDF] Initialized fallback analysis data for PDF generation');
-                            } catch (e) {
-                                console.warn('[PDF] Could not parse property data from URL');
-                            }
-                        }
-                    }
-                }, 1000);
-            };
-        }
-        
-        // Initialize fallback data on page load for immediate PDF access
-        document.addEventListener('DOMContentLoaded', () => {
+        // Listen for components loaded event to inject PDF buttons
+        window.addEventListener('componentsLoaded', () => {
             setTimeout(() => {
-                if (!window.currentAnalysisData) {
-                    window.currentAnalysisData = {
-                        propertyData: {
-                            address: 'Sample Property Analysis',
-                            price: 500000,
-                            bedrooms: 2,
-                            bathrooms: 1
-                        },
-                        analysisResult: {
-                            ltr: {
-                                monthlyRent: 2800,
-                                netMonthlyIncome: 1200,
-                                annualizedReturn: 8.5,
-                                cashOnCashReturn: 12.3
-                            },
-                            str: {
-                                averageNightly: 180,
-                                monthlyRevenue: 4200,
-                                netMonthlyIncome: 2100,
-                                annualizedReturn: 15.2
-                            },
-                            comparison: {
-                                ltrTotal: 33600,
-                                strTotal: 50400,
-                                difference: 16800,
-                                recommendation: "STR"
-                            }
-                        },
-                        timestamp: new Date().toISOString(),
-                        source: 'page-load-fallback'
-                    };
-                    console.log('[PDF] Initialized basic fallback analysis data');
-                }
-            }, 2000);
+                window.injectPDFButtons();
+            }, 500);
         });
     </script>
 </body>
